@@ -92,6 +92,7 @@ const athleteName = decodeURIComponent(params.get("name") || "");
         .then(res => res.text())
         .then(csv => {
             const rows = parseCSV(csv);
+            console.log(data);
             localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
             processData(rows);
             

@@ -600,12 +600,12 @@ td:last-child {
 }
 
 /* OTHER COLUMNS */
-#totalTable th:nth-child(4),
-#totalTable td:nth-child(4),
-#leaderboardTable th:nth-child(4),
-#leaderboardTable td:nth-child(4),
-#totalTable th:nth-child(4),
-#totalTable td:nth-child(4),
+#totalTable th:nth-child(1),
+#totalTable td:nth-child(1),
+#leaderboardTable th:nth-child(2),
+#leaderboardTable td:nth-child(2),
+#totalTable th:nth-child(3),
+#totalTable td:nth-child(3),
 #leaderboardTable th:nth-child(4),
 #leaderboardTable td:nth-child(4) {
   width: 25%;
