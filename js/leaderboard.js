@@ -54,6 +54,9 @@ const formatScore = (val) => {
             .then(res => res.text())
             .then(csv => {
                 const rows = parseCSV(csv);
+
+                
+
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
                 processData(rows);
             })
@@ -80,7 +83,7 @@ const formatScore = (val) => {
 
             return {
                 name: row[0]?.trim(),
-                date: row[1] || "",
+                date: `${row[1] || ""}${row[2] ? ", " + row[2].trim() : ""}`,
                 total: bench + squat + clean,
                 score: toNumber(row[30])
             };
@@ -105,60 +108,60 @@ const formatScore = (val) => {
         }
     }
 
+
+    
     // =====================
     // RENDER TABLES
     // =====================
     function renderTables(data) {
 
-        const totalTable = document.querySelector("#totalTable tbody");
-        const scoreTable = document.querySelector("#leaderboardTable tbody");
+    const totalTable = document.querySelector("#totalTable tbody");
+    const scoreTable = document.querySelector("#leaderboardTable tbody");
 
-        if (!totalTable || !scoreTable) return;
+    if (!totalTable || !scoreTable) return;
 
-        totalTable.innerHTML = "";
-        scoreTable.innerHTML = "";
+    const topTotals = [...data].sort((a, b) => b.total - a.total);
+    const topScores = [...data].sort((a, b) => b.score - a.score);
 
-        const topTotals = [...data]
-            .sort((a, b) => b.total - a.total)
-            
+    // ===== TOTAL TABLE =====
+    let totalHTML = "";
 
-        const topScores = [...data]
-            .sort((a, b) => b.score - a.score)
-            
+    topTotals.forEach((athlete, index) => {
+        totalHTML += `
+            <tr>
+                <td>${index + 1}</td>
+                <td>
+                    <a href="athlete.html?name=${encodeURIComponent(athlete.name)}">
+                        ${athlete.name}
+                    </a>
+                </td>
+                <td>${athlete.total > 0 ? Math.round(athlete.total) : "-"}</td>
+                <td>${athlete.date}</td>
+            </tr>
+        `;
+    });
 
-        // TOTAL TABLE
-        topTotals.forEach((athlete, index) => {
-            totalTable.innerHTML += `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>
-                        <a href="athlete.html?name=${encodeURIComponent(athlete.name)}">
-                            ${athlete.name}
-                        </a>
-                    </td>
-                    
-                    <td>${athlete.total > 0 ? Math.round(athlete.total) : "-"}</td>
-                    <td>${athlete.date}</td>
-                </tr>
-            `;
-        });
+    totalTable.innerHTML = totalHTML;
 
-        // SCORE TABLE
-        topScores.forEach((athlete, index) => {
-            scoreTable.innerHTML += `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>
-                        <a href="athlete.html?name=${encodeURIComponent(athlete.name)}">
-                            ${athlete.name}
-                        </a>
-                    </td>
-                    
-                    <td>${formatScore(athlete.score)}</td>
-                    <td>${athlete.date}</td>
-                </tr>
-            `;
-        });
-    }
+    // ===== SCORE TABLE =====
+    let scoreHTML = "";
+
+    topScores.forEach((athlete, index) => {
+        scoreHTML += `
+            <tr>
+                <td>${index + 1}</td>
+                <td>
+                    <a href="athlete.html?name=${encodeURIComponent(athlete.name)}">
+                        ${athlete.name}
+                    </a>
+                </td>
+                <td>${formatScore(athlete.score)}</td>
+                <td>${athlete.date}</td>
+            </tr>
+        `;
+    });
+
+    scoreTable.innerHTML = scoreHTML;
+}
 
 });

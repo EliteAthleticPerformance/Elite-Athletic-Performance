@@ -304,9 +304,6 @@ gap:30px;
         grid-template-columns: 1fr;
     }
 
-    .leaderboard-grid {
-        flex-direction: column;
-    }
 
     #schoolHeader {
         flex-direction: column;
@@ -463,76 +460,9 @@ border-radius:6px;
 border:none;
 }
 
-#leaderboard {
-    margin-top: 20px;
-}
+/* ===== LEADERBOARD LAYOUT ===== */
 
-/* LEADERBOARD FIXED LAYOUT */
-
-#leaderboard{
-width:100%;
-max-width:1400px;
-margin:0 auto;
-}
-
-/* 🔥 THIS IS THE KEY FIX */
-.leaderboard-grid{
-display:flex;
-justify-content:space-between;
-align-items:flex-start;
-gap:40px;
-margin-top:30px;
-}
-
-/* LEFT SIDE */
-.leaderboard-left{
-width:50%;
-text-align:center;
-}
-
-/* RIGHT SIDE */
-.leaderboard-right{
-width:50%;
-text-align:center;
-}
-
-#leaderboard{
-text-align:center;
-}
-
-#leaderboardTable{
-width:100%;
-margin:20px auto;
-border-collapse:collapse;
-}
-
-#leaderboardTable th,
-#leaderboardTable td{
-text-align:center;
-padding:10px;
-border:1px solid #777;
-}
-
-#leaderboardTable th{
-background:#111;
-}
-
-#totalTable,
-#leaderboardTable {
-  table-layout: fixed;
-  width: 100%;
-}
-
-#totalTable td,
-#leaderboardTable td {
-  white-space: nowrap;
-}
-
-
-
-
-/* BOTH TABLES MATCH EXACTLY */
-
+/* ===== TABLE BASE ===== */
 #totalTable,
 #leaderboardTable {
   width: 100%;
@@ -545,70 +475,40 @@ background:#111;
 #leaderboardTable th {
   background: #111;
   border: 1px solid #777;
-  padding: 10px;
-  text-align: center;
+  padding: 12px;
 }
 
 /* CELLS */
 #totalTable td,
 #leaderboardTable td {
   border: 1px solid #777;
-  padding: 10px;
+  padding: 12px;
   text-align: center;
   white-space: nowrap;
 }
 
-/* OPTIONAL: equal column widths */
-
-
-#totalTable th,
-#totalTable td{
-text-align:center;
-padding:10px;
-border:1px solid #777;
-}
-
-#totalTable th{
-background:#111;
-}
-
-th, td {
-    text-align: center;
-    padding: 10px;
-}
-
-td:last-child {
-    color: #ccc; /* subtle gray for date */
-}
-
-/* 🎯 COLUMN WIDTH CONTROL */
-
-/* RANK (smaller) */
+/* COLUMN WIDTHS */
 #totalTable th:nth-child(1),
-#totalTable td:nth-child(1),
-#leaderboardTable th:nth-child(1),
-#leaderboardTable td:nth-child(1) {
-  width: 8%;
-}
+#leaderboardTable th:nth-child(1) { width: 10%; }
 
-/* ATHLETE (bigger) */
 #totalTable th:nth-child(2),
-#totalTable td:nth-child(2),
-#leaderboardTable th:nth-child(2),
-#leaderboardTable td:nth-child(2) {
-  width: 42%;
+#leaderboardTable th:nth-child(2) { width: 40%; }
+
+#totalTable th:nth-child(3),
+#leaderboardTable th:nth-child(3) { width: 20%; }
+
+#totalTable th:nth-child(4),
+#leaderboardTable th:nth-child(4) { width: 30%; }
+
+/* ROW STYLING */
+#totalTable tr:nth-child(even),
+#leaderboardTable tr:nth-child(even) {
+  background: #1a1a1a;
 }
 
-/* OTHER COLUMNS */
-#totalTable th:nth-child(1),
-#totalTable td:nth-child(1),
-#leaderboardTable th:nth-child(2),
-#leaderboardTable td:nth-child(2),
-#totalTable th:nth-child(3),
-#totalTable td:nth-child(3),
-#leaderboardTable th:nth-child(4),
-#leaderboardTable td:nth-child(4) {
-  width: 25%;
+#totalTable tr:hover,
+#leaderboardTable tr:hover {
+  background: #222;
 }
 
 .profile-container{
@@ -1029,6 +929,85 @@ h3 {
     margin: 25px 0 10px;
     text-shadow: 0 0 8px rgba(65, 105, 225, 0.6);
 }
+
+.leaderboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #111;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.leaderboard-table th {
+  background: #0a0a0a;
+  font-size: 1.1rem;
+  padding: 14px;
+}
+
+.leaderboard-table td {
+  padding: 12px;
+  text-align: center;
+}
+
+.leaderboard-table tr:nth-child(even) {
+  background: #1a1a1a;
+}
+
+.leaderboard-table tr:hover {
+  background: #222;
+}
+
+#totalTable,
+#leaderboardTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+#totalTable th,
+#leaderboardTable th {
+  background: #111;
+  border: 1px solid #777;
+  padding: 12px;
+}
+
+#totalTable td,
+#leaderboardTable td {
+  border: 1px solid #777;
+  padding: 12px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* COLUMN WIDTHS */
+#totalTable th:nth-child(1),
+#leaderboardTable th:nth-child(1) { width: 10%; }
+
+#totalTable th:nth-child(2),
+#leaderboardTable th:nth-child(2) { width: 40%; }
+
+#totalTable th:nth-child(3),
+#leaderboardTable th:nth-child(3) { width: 20%; }
+
+#totalTable th:nth-child(4),
+#leaderboardTable th:nth-child(4) { width: 30%; }
+
+.leaderboard-left,
+.leaderboard-right {
+  width: 100%;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
 
 
 
