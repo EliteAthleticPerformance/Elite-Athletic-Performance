@@ -37,9 +37,7 @@
 
   <!-- GRID -->
   <section class="section">
-
     <div id="athleteGrid" class="grid grid-auto"></div>
-
   </section>
 
 </main>
@@ -66,10 +64,12 @@ function getTag(score) {
 
 /* ---------- LOAD DATA ---------- */
 
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv";
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THCtlSa9Wvaa77owi-_BAR/pub?output=csv";
+
 fetch(CSV_URL + "&t=" + Date.now())
   .then(res => res.text())
   .then(text => {
+
     console.log("CSV:", text);
 
     if (text.includes("<!DOCTYPE html>")) {
@@ -77,13 +77,21 @@ fetch(CSV_URL + "&t=" + Date.now())
       return;
     }
 
-    const rows = text.split("\n").slice(1);
+    const rows = text.trim().split("\n").slice(1);
     const map = {};
 
     rows.forEach(r => {
-      const cols = r.split(",");
-      const name = cols[0];
-      const score = Number(cols[1]);
+
+      // ✅ Proper CSV parsing (handles commas inside quotes)
+      const cols = r.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
+
+      if (!cols) return;
+
+      // ✅ Clean name
+      const name = cols[0].replace(/"/g, "").trim();
+
+      // ✅ Use last column as score (safe fallback)
+      const score = Number(cols[cols.length - 1]);
 
       if (!name) return;
 
@@ -115,12 +123,15 @@ function render(list) {
     grid.innerHTML += `
       <div class="card" onclick="goToAthlete('${a.name}')">
         <h3>${clean(a.name)}</h3>
+
         <p style="color: var(--muted); margin-top:6px;">
           Score: ${clean(a.score)}
         </p>
+
         <div class="tag ${tagClass}">
           ${tagText}
         </div>
+
       </div>
     `;
   });
