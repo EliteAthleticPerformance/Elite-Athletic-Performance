@@ -1,167 +1,216 @@
+/* ========================================
+   🔥 ELITE V3 ENTER ENGINE
+   ======================================== */
+
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxC3FetWgkN8c6kkn45lv_Y7GKXrXxp7Fc7qGW945A2UwMIKVL-jV_tmtvRQNdnrdF9/exec";
 
-/* =====================
+/* ========================================
+   INIT
+   ======================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+  focusFirstInput();
+  setupEnterSubmit();
+});
+
+/* ========================================
    HELPERS
-===================== */
+   ======================================== */
 
 function getValue(id) {
-    const el = document.getElementById(id);
-    return el ? el.value.trim() : "";
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : "";
 }
 
 function toNumber(val) {
-    const num = parseFloat(val);
-    return isNaN(num) ? 0 : num;
+  const num = parseFloat(val);
+  return isNaN(num) ? 0 : num;
 }
 
 function todayISO() {
-    return new Date().toISOString().split("T")[0];
+  return new Date().toISOString().split("T")[0];
 }
 
-/* =====================
-   ⚖️ WEIGHT CLASS
-===================== */
+/* ========================================
+   ⚖️ WEIGHT CLASS SYSTEM
+   ======================================== */
 
 function getWeightClass(weight) {
-    if (weight <= 120) return "100";
-    if (weight <= 140) return "121";
-    if (weight <= 160) return "141";
-    if (weight <= 180) return "161";
-    if (weight <= 195) return "181";
-    if (weight <= 210) return "196";
-    if (weight <= 225) return "211";
-    if (weight <= 240) return "226";
-    if (weight <= 255) return "241";
-    if (weight <= 270) return "256";
-    if (weight <= 285) return "271";
-    if (weight <= 300) return "286";
-    return "301";
+  if (weight <= 120) return "100";
+  if (weight <= 140) return "121";
+  if (weight <= 160) return "141";
+  if (weight <= 180) return "161";
+  if (weight <= 195) return "181";
+  if (weight <= 210) return "196";
+  if (weight <= 225) return "211";
+  if (weight <= 240) return "226";
+  if (weight <= 255) return "241";
+  if (weight <= 270) return "256";
+  if (weight <= 285) return "271";
+  if (weight <= 300) return "286";
+  return "301+";
 }
 
-/* =====================
-   💾 SAVE FUNCTION
-===================== */
+/* ========================================
+   MAIN SAVE FUNCTION
+   ======================================== */
 
 async function saveAthlete() {
 
-    const name = getValue("name");
-    const date = getValue("date") || todayISO();
-    const weight = toNumber(getValue("weight"));
+  const entry = buildEntry();
 
-    if (!name) {
-        showMessage("Enter athlete name", "error");
-        return;
-    }
+  if (!validateEntry(entry)) return;
 
-    const entry = {
-        name,
-        date,
-        weight,
-        weightClass: getWeightClass(weight),
+  try {
+    await sendToGoogle(entry);
+    showMessage("✅ Saved to Google Sheets!", "success");
 
-        bench: toNumber(getValue("bench")),
-        squat: toNumber(getValue("squat")),
-        clean: toNumber(getValue("clean")),
+  } catch (err) {
+    console.warn("Cloud save failed, using offline:", err);
+    saveOffline(entry);
+    showMessage("⚠️ Offline — saved locally", "warning");
+  }
 
-        vertical: toNumber(getValue("vertical")),
-        broad: toNumber(getValue("broad")),
-        medball: toNumber(getValue("medball")),
-
-        agility: getValue("agility"),
-        ten: getValue("ten"),
-        forty: getValue("forty"),
-        situps: getValue("situps")
-    };
-
-    // Derived
-    entry.total = entry.bench + entry.squat + entry.clean;
-    entry.score = 0; // calculated in Sheets
-
-    try {
-        await fetch(SCRIPT_URL, {
-            method: "POST",
-            body: JSON.stringify(entry),
-            headers: { "Content-Type": "application/json" }
-        });
-
-        showMessage("✅ Saved to Google Sheets!", "success");
-
-    } catch (err) {
-        saveOffline(entry);
-        showMessage("⚠️ Offline — saved locally", "warning");
-    }
-
-    clearForm();
+  clearForm();
 }
 
-/* =====================
-   💾 OFFLINE SAVE
-===================== */
+/* ========================================
+   BUILD ENTRY OBJECT
+   ======================================== */
+
+function buildEntry() {
+
+  const weight = toNumber(getValue("weight"));
+
+  const entry = {
+    name: getValue("name"),
+    date: getValue("date") || todayISO(),
+    weight,
+    weightClass: getWeightClass(weight),
+
+    bench: toNumber(getValue("bench")),
+    squat: toNumber(getValue("squat")),
+    clean: toNumber(getValue("clean")),
+
+    vertical: toNumber(getValue("vertical")),
+    broad: toNumber(getValue("broad")),
+    medball: toNumber(getValue("medball")),
+
+    agility: toNumber(getValue("agility")),
+    ten: toNumber(getValue("ten")),
+    forty: toNumber(getValue("forty")),
+    situps: toNumber(getValue("situps"))
+  };
+
+  // Derived metrics
+  entry.total = entry.bench + entry.squat + entry.clean;
+  entry.score = 0; // calculated in Sheets
+
+  return entry;
+}
+
+/* ========================================
+   VALIDATION
+   ======================================== */
+
+function validateEntry(entry) {
+
+  if (!entry.name) {
+    showMessage("Enter athlete name", "error");
+    return false;
+  }
+
+  if (!entry.weight) {
+    showMessage("Enter weight", "error");
+    return false;
+  }
+
+  if (!entry.bench && !entry.squat && !entry.clean) {
+    showMessage("Enter at least one strength value", "error");
+    return false;
+  }
+
+  return true;
+}
+
+/* ========================================
+   API CALL
+   ======================================== */
+
+async function sendToGoogle(entry) {
+  return fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify(entry),
+    headers: { "Content-Type": "application/json" }
+  });
+}
+
+/* ========================================
+   OFFLINE SAVE (SMARTER)
+   ======================================== */
 
 function saveOffline(entry) {
 
-    let data = JSON.parse(localStorage.getItem("athleteScores")) || [];
+  let data = JSON.parse(localStorage.getItem("athleteScores")) || [];
 
-    let athlete = data.find(a => a.name === entry.name);
+  data.push(entry);
 
-    if (!athlete) {
-        athlete = { name: entry.name, history: [] };
-        data.push(athlete);
-    }
-
-    athlete.history.push(entry);
-
-    localStorage.setItem("athleteScores", JSON.stringify(data));
+  localStorage.setItem("athleteScores", JSON.stringify(data));
 }
 
-/* =====================
+/* ========================================
    UI HELPERS
-===================== */
+   ======================================== */
 
 function clearForm() {
-    document.querySelectorAll("input").forEach(i => i.value = "");
+  document.querySelectorAll("input, select").forEach(el => {
+    el.value = "";
+  });
+
+  focusFirstInput();
 }
 
 function showMessage(msg, type) {
 
-    let el = document.getElementById("formMessage");
+  let el = document.getElementById("formMessage");
 
-    if (!el) {
-        el = document.createElement("div");
-        el.id = "formMessage";
-        el.style.marginTop = "15px";
-        el.style.textAlign = "center";
-        document.querySelector(".form-card")?.appendChild(el);
-    }
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "formMessage";
+    el.style.marginTop = "15px";
+    el.style.textAlign = "center";
+    document.querySelector(".card")?.appendChild(el);
+  }
 
-    el.textContent = msg;
+  el.textContent = msg;
 
-    el.style.color =
-        type === "success" ? "#00e676" :
-        type === "error" ? "#ff5252" :
-        "#ffd740";
+  el.style.color =
+    type === "success" ? "#00e676" :
+    type === "error" ? "#ff5252" :
+    "#ffd740";
 
-    setTimeout(() => {
-        el.textContent = "";
-    }, 3000);
+  setTimeout(() => {
+    el.textContent = "";
+  }, 3000);
 }
 
-/* =====================
-   OPTIONAL UX BOOSTS
-===================== */
+/* ========================================
+   UX BOOSTS
+   ======================================== */
 
-// Auto-focus first input
-document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("name")?.focus();
-});
+function focusFirstInput() {
+  document.getElementById("name")?.focus();
+}
 
-// Submit on Enter (mobile-friendly)
-document.addEventListener("keydown", (e) => {
+function setupEnterSubmit() {
+  document.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
-        const active = document.activeElement;
-        if (active && active.tagName === "INPUT") {
-            e.preventDefault();
-            saveAthlete();
-        }
+      const active = document.activeElement;
+
+      if (active && ["INPUT", "SELECT"].includes(active.tagName)) {
+        e.preventDefault();
+        saveAthlete();
+      }
     }
-});
+  });
+}

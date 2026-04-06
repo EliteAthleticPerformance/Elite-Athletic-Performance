@@ -7,27 +7,38 @@
 
   <!-- CENTER -->
   <div class="header-center">
-    <span id="headerMotto">
-      Wildcats <br> Athletic Performance
-    </span>
+    <div id="headerMotto">
+      Wildcats<br>
+      <span style="font-size: 0.8em; color: #aaa;">
+        Athletic Performance
+      </span>
+    </div>
   </div>
 
   <!-- RIGHT -->
   <div class="header-right">
 
-    <button onclick="logout()">Logout</button>
-    
-    <!-- ☰ MENU BUTTON -->
+    <!-- COACH BUTTON -->
+    <button class="btn-small" onclick="logout()" id="logoutBtn">
+      Logout
+    </button>
+
+    <!-- MENU TOGGLE -->
     <div id="menuToggle">☰</div>
 
-    <!-- DROPDOWN NAV -->
+    <!-- NAV DROPDOWN -->
     <nav id="mainNav" class="dropdown">
-      <a href="index.html">Home</a>
-      <a href="timer.html">Timer</a>
-      <a href="athletes.html">Athletes</a>
-      <a href="testing.html">Testing</a>
-      <a href="leaderboard.html">Leaderboard</a>
-      <a href="enter.html">➕ Enter Test</a>
+
+      <a href="index.html">🏠 Home</a>
+      <a href="timer.html">⏱ Timer</a>
+      <a href="athletes.html">👥 Athletes</a>
+      <a href="testing.html">📋 Testing</a>
+      <a href="leaderboard.html">🏆 Leaderboard</a>
+
+      <div class="nav-divider"></div>
+
+      <a href="#" onclick="goToEnterTest()">➕ Enter Test</a>
+
     </nav>
 
   </div>

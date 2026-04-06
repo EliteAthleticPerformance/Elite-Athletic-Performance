@@ -1,183 +1,199 @@
-document.addEventListener("DOMContentLoaded", () => {
-
-/* =========================
-   ⚙️ CONFIG
-========================= */
+/* ========================================
+   🔥 ELITE V3 HEADER SYSTEM
+   ======================================== */
 
 const STORAGE_KEY = "athleteScores";
 const SESSION_KEY = "coachAccess";
 const COACH_PASSWORD = "coach123";
 
-/* =========================
+/* ========================================
+   INIT
+   ======================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+  updateStats();
+  loadHeader();
+});
+
+/* ========================================
    📊 DASHBOARD STATS
-========================= */
+   ======================================== */
 
 function updateStats() {
-    try {
-        const rawData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  try {
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
-        const valid = rawData.filter(a =>
-            a && a.name && a.name.trim() !== ""
-        );
+    const valid = raw.filter(a =>
+      a && a.name && a.name.trim() !== ""
+    );
 
-        const totalTests = valid.length;
+    const totalTests = valid.length;
 
-        const uniqueAthletes = new Set(
-            valid.map(a => a.name.trim())
-        ).size;
+    const uniqueAthletes = new Set(
+      valid.map(a => a.name.trim())
+    ).size;
 
-        const testsEl = document.getElementById("totalTests");
-        const athletesEl = document.getElementById("totalAthletes");
+    updateElement("totalTests", totalTests);
+    updateElement("totalAthletes", uniqueAthletes);
 
-        if (testsEl) testsEl.textContent = totalTests;
-        if (athletesEl) athletesEl.textContent = uniqueAthletes;
-
-    } catch (err) {
-        console.warn("Stats error:", err);
-    }
+  } catch (err) {
+    console.warn("Stats error:", err);
+  }
 }
 
-/* =========================
-   🔒 AUTH (COACH ACCESS)
-========================= */
+/* ========================================
+   🔒 AUTH SYSTEM
+   ======================================== */
 
 function isCoach() {
-    return sessionStorage.getItem(SESSION_KEY) === "true";
+  return sessionStorage.getItem(SESSION_KEY) === "true";
 }
 
 window.goToEnterTest = function () {
-    if (isCoach()) {
-        window.location.href = "enter.html";
-        return;
-    }
 
-    const password = prompt("Enter coach password:");
+  if (isCoach()) {
+    navigate("enter.html");
+    return;
+  }
 
-    if (password === null) return; // user cancelled
+  const password = prompt("Enter coach password:");
 
-    if (password === COACH_PASSWORD) {
-        sessionStorage.setItem(SESSION_KEY, "true");
-        window.location.href = "enter.html";
-    } else {
-        alert("Incorrect password");
-    }
+  if (password === null) return;
+
+  if (password === COACH_PASSWORD) {
+    sessionStorage.setItem(SESSION_KEY, "true");
+    navigate("enter.html");
+  } else {
+    alert("Incorrect password");
+  }
 };
 
 window.logout = function () {
-    sessionStorage.removeItem(SESSION_KEY);
-    location.reload();
+  sessionStorage.removeItem(SESSION_KEY);
+  location.reload();
 };
 
-/* =========================
-   🧱 LOAD HEADER
-========================= */
+/* ========================================
+   🧱 HEADER LOAD
+   ======================================== */
 
-function loadHeader() {
-    const container = document.getElementById("header-placeholder");
+async function loadHeader() {
 
-    if (!container) {
-        console.warn("No #header-placeholder found");
-        return;
-    }
+  const container = document.getElementById("header-placeholder");
 
-    fetch("components/header.html")
-        .then(res => {
-            if (!res.ok) throw new Error("Header failed to load");
-            return res.text();
-        })
-        .then(html => {
-            container.innerHTML = html;
+  if (!container) {
+    console.warn("Missing #header-placeholder");
+    return;
+  }
 
-            initHeaderUI();
-        })
-        .catch(err => {
-            console.error("Header load error:", err);
-        });
+  try {
+    const res = await fetch("components/header.html");
+
+    if (!res.ok) throw new Error("Header fetch failed");
+
+    const html = await res.text();
+
+    container.innerHTML = html;
+
+    initHeaderUI();
+
+  } catch (err) {
+    console.error("Header load error:", err);
+  }
 }
 
-/* =========================
-   🎯 INIT HEADER UI
-========================= */
+/* ========================================
+   🎯 HEADER UI INIT
+   ======================================== */
 
 function initHeaderUI() {
-    scaleHeaderText();
-    setupMenuToggle();
-    setupResizeHandler();
+  scaleHeaderText();
+  setupMenu();
+  setupResize();
 }
 
-/* =========================
-   📏 SCALE HEADER TEXT
-========================= */
+/* ========================================
+   📏 RESPONSIVE TITLE SCALING
+   ======================================== */
 
 function scaleHeaderText() {
-    const header = document.getElementById("schoolHeader");
-    const left = document.querySelector(".header-left");
-    const right = document.querySelector(".header-right");
-    const title = document.getElementById("headerMotto");
 
-    if (!header || !left || !right || !title) return;
+  const header = document.getElementById("schoolHeader");
+  const left = document.querySelector(".header-left");
+  const right = document.querySelector(".header-right");
+  const title = document.getElementById("headerMotto");
 
-    // Reset before recalculating
-    title.style.transform = "scale(1)";
+  if (!header || !left || !right || !title) return;
 
-    const availableWidth =
-        header.clientWidth -
-        left.offsetWidth -
-        right.offsetWidth -
-        40;
+  title.style.transform = "scale(1)";
 
-    const textWidth = title.scrollWidth;
+  const available =
+    header.clientWidth -
+    left.offsetWidth -
+    right.offsetWidth -
+    40;
 
-    if (!textWidth) return;
+  const textWidth = title.scrollWidth;
 
-    let scale = availableWidth / textWidth;
+  if (!textWidth) return;
 
-    // Clamp for readability
-    scale = Math.min(Math.max(scale, 0.65), 1.2);
+  let scale = available / textWidth;
 
-    title.style.transform = `scale(${scale})`;
+  scale = clamp(scale, 0.65, 1.2);
+
+  title.style.transform = `scale(${scale})`;
 }
 
-/* =========================
+/* ========================================
    ☰ MOBILE MENU
-========================= */
+   ======================================== */
 
-function setupMenuToggle() {
-    const toggle = document.getElementById("menuToggle");
-    const nav = document.getElementById("mainNav");
+function setupMenu() {
 
-    if (!toggle || !nav) return;
+  const toggle = document.getElementById("menuToggle");
+  const nav = document.getElementById("mainNav");
 
-    toggle.addEventListener("click", (e) => {
-        e.stopPropagation();
-        nav.classList.toggle("show");
-    });
+  if (!toggle || !nav) return;
 
-    document.addEventListener("click", (e) => {
-        if (!nav.contains(e.target) && !toggle.contains(e.target)) {
-            nav.classList.remove("show");
-        }
-    });
+  toggle.addEventListener("click", (e) => {
+    e.stopPropagation();
+    nav.classList.toggle("show");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!nav.contains(e.target) && !toggle.contains(e.target)) {
+      nav.classList.remove("show");
+    }
+  });
 }
 
-/* =========================
+/* ========================================
    📱 RESIZE HANDLING
-========================= */
+   ======================================== */
 
-function setupResizeHandler() {
-    let resizeTimeout;
+function setupResize() {
 
-    window.addEventListener("resize", () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(scaleHeaderText, 100);
-    });
+  let timeout;
+
+  window.addEventListener("resize", () => {
+    clearTimeout(timeout);
+    timeout = setTimeout(scaleHeaderText, 100);
+  });
 }
 
-/* =========================
-   🚀 INIT
-========================= */
+/* ========================================
+   🧰 UTILITIES
+   ======================================== */
 
-updateStats();
-loadHeader();
+function updateElement(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
 
-});
+function navigate(url) {
+  window.location.href = url;
+}
+
+function clamp(val, min, max) {
+  return Math.min(Math.max(val, min), max);
+}

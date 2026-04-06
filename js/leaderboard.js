@@ -1,274 +1,280 @@
-document.addEventListener("DOMContentLoaded", () => {
-
-/* =====================
-   CONFIG
-===================== */
+/* ========================================
+   🔥 ELITE V3 LEADERBOARD ENGINE
+   ======================================== */
 
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv";
-const STORAGE_KEY = "wildcatsData";
 
-const searchInput = document.getElementById("leaderboardSearch");
+/* ========================================
+   STATE
+   ======================================== */
 
-/* =====================
-   HELPERS
-===================== */
+let rawData = [];
+let leaderboardData = [];
 
-function clean(val) {
-    if (val === undefined || val === null || val === "" || val === "NaN") {
-        return "-";
-    }
-    return String(val).trim();
+/* ========================================
+   INIT
+   ======================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadData();
+  setupSearch();
+});
+
+/* ========================================
+   FETCH DATA
+   ======================================== */
+
+async function loadData() {
+  try {
+    const res = await fetch(SHEET_URL + "?t=" + Date.now());
+    const text = await res.text();
+
+    rawData = parseCSV(text);
+
+    leaderboardData = processData(rawData);
+
+    render(leaderboardData);
+
+  } catch (err) {
+    console.error("Leaderboard load error:", err);
+  }
 }
 
-function toNumber(val) {
-    const num = parseFloat(String(val).replace(/[^0-9.\-]/g, ""));
-    return isNaN(num) ? 0 : num;
-}
-
-function formatScore(val) {
-    return val ? Math.round(val) : "-";
-}
-
-function formatDate(val) {
-    if (!val) return "-";
-    const d = new Date(val);
-    if (isNaN(d.getTime())) return "-";
-    return d.toLocaleDateString();
-}
-
-function getTag(score) {
-    if (score >= 900) return ["elite", "🔥 Elite"];
-    if (score >= 800) return ["strong", "💪 Strong"];
-    if (score >= 700) return ["developing", "⚡ Developing"];
-    return ["needs", "📈 Needs Work"];
-}
-
-/* =====================
-   CSV PARSER (ROBUST)
-===================== */
+/* ========================================
+   CSV PARSER (SAFE)
+   ======================================== */
 
 function parseCSV(text) {
-    return text.trim().split(/\r?\n/).map(row => {
-        const cols = [];
-        let current = '';
-        let insideQuotes = false;
+  const rows = [];
+  let current = "";
+  let insideQuotes = false;
+  let row = [];
 
-        for (let i = 0; i < row.length; i++) {
-            const char = row[i];
-
-            if (char === '"' && row[i + 1] === '"') {
-                current += '"';
-                i++;
-            } else if (char === '"') {
-                insideQuotes = !insideQuotes;
-            } else if (char === ',' && !insideQuotes) {
-                cols.push(current);
-                current = '';
-            } else {
-                current += char;
-            }
-        }
-
-        cols.push(current);
-        return cols;
-    });
-}
-
-/* =====================
-   TIMER (SAFARI SAFE)
-===================== */
-
-const startTimes = ["08:00"];
-
-function toSeconds(timeStr) {
-    const [h, m] = timeStr.split(":").map(Number);
-    return h * 3600 + m * 60;
-}
-
-function getActiveStartTime(currentTime, startTimes) {
-    const now = toSeconds(currentTime);
-    let active = startTimes[0];
-
-    for (let time of startTimes) {
-        if (toSeconds(time) <= now) active = time;
+  for (let char of text) {
+    if (char === '"') insideQuotes = !insideQuotes;
+    else if (char === "," && !insideQuotes) {
+      row.push(current);
+      current = "";
     }
-    return active;
-}
-
-function getPhase(elapsed) {
-    const phases = [
-        { name: "Dress Out", duration: 480 },
-        { name: "Stretch", duration: 300 },
-        { name: "Lift", duration: 600 },
-        { name: "Rotate", duration: 600 }
-    ];
-
-    let total = 0;
-
-    for (let phase of phases) {
-        if (elapsed < total + phase.duration) {
-            return {
-                name: phase.name,
-                timeLeft: (total + phase.duration) - elapsed
-            };
-        }
-        total += phase.duration;
+    else if (char === "\n" && !insideQuotes) {
+      row.push(current);
+      rows.push(row);
+      row = [];
+      current = "";
     }
+    else {
+      current += char;
+    }
+  }
 
-    return { name: "Finished", timeLeft: 0 };
+  if (current) {
+    row.push(current);
+    rows.push(row);
+  }
+
+  return rows;
 }
 
-function updateCenterClock() {
-    const now = new Date();
-
-    const currentTimeStr =
-        `${now.getHours()}:${String(now.getMinutes()).padStart(2, "0")}`;
-
-    const activeStart = getActiveStartTime(currentTimeStr, startTimes);
-    const elapsed = toSeconds(currentTimeStr) - toSeconds(activeStart);
-
-    const phase = getPhase(elapsed);
-
-    const minutes = Math.floor(phase.timeLeft / 60);
-    const seconds = phase.timeLeft % 60;
-
-    const clock = document.getElementById("centerClock");
-    const label = document.getElementById("phaseLabel");
-
-    if (clock) clock.innerText = `${minutes}:${String(seconds).padStart(2, "0")}`;
-    if (label) label.innerText = phase.name;
-}
-
-/* =====================
-   LOAD DATA
-===================== */
-
-function loadData() {
-    fetch(SHEET_URL + "?t=" + Date.now())
-        .then(res => res.text())
-        .then(csv => {
-            const rows = parseCSV(csv);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
-            processData(rows);
-        })
-        .catch(() => {
-            const cached = localStorage.getItem(STORAGE_KEY);
-            if (cached) processData(JSON.parse(cached));
-            else console.error("No data available");
-        });
-}
-
-/* =====================
-   PROCESS DATA
-===================== */
+/* ========================================
+   DATA PROCESSING
+   ======================================== */
 
 function processData(rows) {
 
-    const dataRows = rows.slice(1);
+  const headers = rows.shift().map(h => h.trim());
 
-    const data = dataRows.map(row => {
+  const getIndex = (name) =>
+    headers.findIndex(h => h.toLowerCase().includes(name.toLowerCase()));
 
-        const name = clean(row[0]);
-        const date = clean(row[1]);
+  const grouped = {};
 
-        const bench = toNumber(row[6]);
-        const squat = toNumber(row[9]);
-        const cleanLift = toNumber(row[12]);
+  rows.forEach(cols => {
 
-        const total = bench + squat + cleanLift;
-        const score = toNumber(row[30]);
+    const name = (cols[getIndex("student")] || "").trim();
+    if (!name) return;
 
-        return { name, date, total, score };
+    const athlete = {
+      name,
+      date: formatDate(cols[getIndex("date")]),
 
-    }).filter(a => a.name !== "-" && a.name !== "Student-Athlete");
+      bench: toNumber(cols[getIndex("bench")]),
+      squat: toNumber(cols[getIndex("squat")]),
+      clean: toNumber(cols[getIndex("clean")]),
 
-    render(data);
+      vertical: toNumber(cols[getIndex("vertical")]),
+      broad: toNumber(cols[getIndex("broad")]),
+      med: toNumber(cols[getIndex("med")]),
 
-    // SEARCH
-    if (searchInput) {
-        searchInput.addEventListener("input", () => {
-            const term = searchInput.value.toLowerCase();
+      agility: toNumber(cols[getIndex("agility")]),
+      situps: toNumber(cols[getIndex("sit")]),
 
-            const filtered = data.filter(a =>
-                a.name.toLowerCase().includes(term)
-            );
+      ten: toNumber(cols[getIndex("10")]),
+      forty: toNumber(cols[getIndex("40")])
+    };
 
-            render(filtered);
-        });
-    }
+    if (!grouped[name]) grouped[name] = [];
+    grouped[name].push(athlete);
+  });
+
+  // Keep most recent test
+  const latest = Object.values(grouped).map(arr =>
+    arr.sort((a, b) => new Date(b.date) - new Date(a.date))[0]
+  );
+
+  return latest.map(a => ({
+    ...a,
+    scores: calculateScores(a)
+  }));
 }
 
-/* =====================
+/* ========================================
+   SCORE ENGINE (🔥 CORE)
+   ======================================== */
+
+function calculateScores(a) {
+
+  const strength = avg(a.bench, a.squat, a.clean);
+  const explosive = avg(a.vertical, a.broad, a.med);
+  const speed = avg(a.ten, a.forty);
+  const conditioning = avg(a.agility, a.situps);
+
+  const performance = avg(
+    strength,
+    explosive,
+    speed,
+    conditioning
+  );
+
+  return {
+    strength: round(strength),
+    explosive: round(explosive),
+    speed: round(speed),
+    conditioning: round(conditioning),
+    performance: round(performance)
+  };
+}
+
+/* ========================================
    RENDER
-===================== */
+   ======================================== */
 
 function render(data) {
 
-    const totalTable = document.querySelector("#totalTable tbody");
-    const scoreTable = document.querySelector("#leaderboardTable tbody");
+  const liftBody = document.querySelector("#liftTable tbody");
+  const scoreBody = document.querySelector("#scoreTable tbody");
 
-    const totalCards = document.getElementById("totalCards");
-    const scoreCards = document.getElementById("scoreCards");
+  const mobileLift = document.getElementById("mobileLift");
+  const mobileScore = document.getElementById("mobileScore");
 
-    const topTotals = [...data].sort((a, b) => b.total - a.total);
-    const topScores = [...data].sort((a, b) => b.score - a.score);
+  if (!liftBody || !scoreBody) return;
 
-    // ===== TABLES =====
-    if (totalTable) {
-        totalTable.innerHTML = topTotals.map((a, i) => `
-            <tr onclick="goToAthlete('${a.name}')">
-                <td>${i + 1}</td>
-                <td>${a.name}</td>
-                <td>${a.total ? Math.round(a.total) : "-"}</td>
-                <td>${formatDate(a.date)}</td>
-            </tr>
-        `).join("");
-    }
+  // Sort copies
+  const liftRank = [...data].sort((a, b) =>
+    (b.bench + b.squat + b.clean) - (a.bench + a.squat + a.clean)
+  );
 
-    if (scoreTable) {
-        scoreTable.innerHTML = topScores.map((a, i) => `
-            <tr onclick="goToAthlete('${a.name}')">
-                <td>${i + 1}</td>
-                <td>${a.name}</td>
-                <td>${formatScore(a.score)}</td>
-                <td>${formatDate(a.date)}</td>
-            </tr>
-        `).join("");
-    }
+  const scoreRank = [...data].sort((a, b) =>
+    b.scores.performance - a.scores.performance
+  );
 
-    // ===== MOBILE CARDS =====
-    if (scoreCards) {
-        scoreCards.innerHTML = topScores.map((a, i) => {
-            const [tagClass, tagText] = getTag(a.score);
-
-            return `
-                <div class="card" onclick="goToAthlete('${a.name}')">
-                    <div class="card-rank">#${i + 1}</div>
-                    <div class="card-name">${a.name}</div>
-                    <div class="card-value">${formatScore(a.score)}</div>
-                    <div class="tag ${tagClass}">${tagText}</div>
-                    <div class="card-date">${formatDate(a.date)}</div>
-                </div>
-            `;
-        }).join("");
-    }
+  renderTable(liftBody, mobileLift, liftRank, "lift");
+  renderTable(scoreBody, mobileScore, scoreRank, "score");
 }
 
-/* =====================
-   NAVIGATION
-===================== */
+/* ========================================
+   TABLE BUILDER
+   ======================================== */
 
-window.goToAthlete = function(name) {
-    const encoded = encodeURIComponent(name);
-    window.location.href = `athlete.html?name=${encoded}`;
-};
+function renderTable(tbody, mobile, data, type) {
 
-/* =====================
-   INIT
-===================== */
+  tbody.innerHTML = "";
+  if (mobile) mobile.innerHTML = "";
 
-loadData();
-updateCenterClock();
-setInterval(updateCenterClock, 1000);
+  data.forEach((a, i) => {
 
-});
+    const medal =
+  i === 0 ? "rank-1" :
+  i === 1 ? "rank-2" :
+  i === 2 ? "rank-3" : "";
+
+tr.innerHTML = `
+  <td class="${medal}">${i + 1}</td>
+  <td>${a.name}</td>
+  <td><strong>${value}</strong></td>
+  <td>${a.date}</td>
+`;
+
+    const value =
+      type === "lift"
+        ? (a.bench + a.squat + a.clean)
+        : a.scores.performance;
+
+    // TABLE ROW
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td class="${medal}">${i + 1}</td>
+      <td>${a.name}</td>
+      <td>${value || "-"}</td>
+      <td>${a.date}</td>
+    `;
+
+    tbody.appendChild(tr);
+
+    // MOBILE CARD
+    if (mobile) {
+      mobile.innerHTML += `
+        <div class="card">
+          <strong class="${medal}">${i + 1}. ${a.name}</strong><br>
+          ${type === "lift" ? "Total" : "Score"}: ${value || "-"}<br>
+          ${a.date}
+        </div>
+      `;
+    }
+  });
+}
+
+/* ========================================
+   SEARCH
+   ======================================== */
+
+function setupSearch() {
+  const input = document.getElementById("search");
+
+  if (!input) return;
+
+  input.addEventListener("input", () => {
+    const term = input.value.toLowerCase();
+
+    const filtered = leaderboardData.filter(a =>
+      a.name.toLowerCase().includes(term)
+    );
+
+    render(filtered);
+  });
+}
+
+/* ========================================
+   UTILITIES
+   ======================================== */
+
+function toNumber(val) {
+  if (!val) return 0;
+  return parseFloat(String(val).replace(/[^0-9.\-]/g, "")) || 0;
+}
+
+function formatDate(raw) {
+  if (!raw) return "-";
+  const d = new Date(raw);
+  return `${d.toLocaleString("default", { month: "short" })} ${d.getFullYear()}`;
+}
+
+function avg(...nums) {
+  const valid = nums.filter(n => !isNaN(n));
+  if (!valid.length) return 0;
+  return valid.reduce((a, b) => a + b, 0) / valid.length;
+}
+
+function round(n) {
+  return Math.round(n || 0);
+}

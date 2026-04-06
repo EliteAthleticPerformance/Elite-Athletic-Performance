@@ -2,70 +2,93 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Wildcats Performance System</title>
+<title>Wildcats Performance System</title>
 
-    <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-    <!-- ✅ HEADER -->
-    <div id="header-placeholder"></div>
+<!-- ===== HEADER ===== -->
+<div id="header-placeholder"></div>
+<script src="js/header.js"></script>
 
-    <main>
+<!-- ===== MAIN ===== -->
+<main>
 
-        <!-- 🏠 HERO -->
-        <div class="home-header">
-            <h1 class="hero-title">Track. Compete. Improve.</h1>
-        </div>
+  <!-- ===== HERO ===== -->
+  <section class="section" style="text-align:center;">
+    <h1 class="hero-title">Track. Compete. Improve.</h1>
+    <p style="color: var(--muted); margin-top:10px;">
+      Elite Athlete Performance Tracking System
+    </p>
+  </section>
 
-        <!-- ➕ QUICK ACTION -->
-        <div style="text-align:center; margin: 15px;">
-    <button class="cta-button" onclick="goToEnterTest()">
-        Enter Test
+  <!-- ===== PRIMARY ACTION ===== -->
+  <section class="section" style="text-align:center;">
+    <button class="btn" onclick="goToEnterTest()">
+      ➕ Enter Test
     </button>
-</div>
+  </section>
 
-        <div class="quick-stats">
-    <div>👥 Athletes: <span id="totalAthletes">0</span></div>
-    <div>📊 Tests: <span id="totalTests">0</span></div>
-</div>
+  <!-- ===== QUICK STATS ===== -->
+  <section class="section">
+    <div class="grid grid-2">
 
-        <!-- 🧭 DASHBOARD -->
-        <div id="dashboard">
-            <div class="dashboard-grid">
+      <div class="card" style="text-align:center;">
+        <h3 style="color: var(--muted);">👥 Athletes</h3>
+        <p style="font-size:28px; font-weight:bold;" id="totalAthletes">0</p>
+      </div>
 
-                <a class="dashboard-card" href="timer.html">
-                    <h2>⏱ Training Timer</h2>
-                    <p>4 Quadrant Weight Room Timer</p>
-                </a>
+      <div class="card" style="text-align:center;">
+        <h3 style="color: var(--muted);">📊 Tests</h3>
+        <p style="font-size:28px; font-weight:bold;" id="totalTests">0</p>
+      </div>
 
-                <a class="dashboard-card" href="testing.html">
-                    <h2>📋 Combine Testing</h2>
-                    <p>Record and Analyze Results</p>
-                </a>
+    </div>
+  </section>
 
-                <a class="dashboard-card" href="athletes.html">
-                    <h2>🧑 Athlete Profiles</h2>
-                    <p>View Performance Ratings</p>
-                </a>
+  <!-- ===== DASHBOARD ===== -->
+  <section class="section">
 
-                <a class="dashboard-card" href="leaderboard.html">
-                    <h2>🏆 Leaderboard</h2>
-                    <p>Athlete Rankings</p>
-                </a>
+    <div class="grid grid-auto">
 
-            </div>
-        </div>
+      <a class="card" href="timer.html">
+        <h2>⏱ Training Timer</h2>
+        <p style="color: var(--muted); margin-top:8px;">
+          4 Quadrant Weight Room Timer
+        </p>
+      </a>
 
-    </main>
+      <a class="card" href="testing.html">
+        <h2>📋 Combine Testing</h2>
+        <p style="color: var(--muted); margin-top:8px;">
+          Record and Analyze Results
+        </p>
+      </a>
 
-    <!-- ✅ SCRIPTS -->
-    <script src="js/header.js"></script>
-    
+      <a class="card" href="athletes.html">
+        <h2>🧑 Athlete Profiles</h2>
+        <p style="color: var(--muted); margin-top:8px;">
+          View Performance Ratings
+        </p>
+      </a>
+
+      <a class="card" href="leaderboard.html">
+        <h2>🏆 Leaderboard</h2>
+        <p style="color: var(--muted); margin-top:8px;">
+          Athlete Rankings
+        </p>
+      </a>
+
+    </div>
+
+  </section>
+
+</main>
 
 </body>
 </html>

@@ -1,248 +1,242 @@
-/* -----------------------------
-TABLE SORT FUNCTION
------------------------------ */
-
-const format = (val) => {
-    if (!val || val === 0) return "-";
-    return Math.round(val);
-};
-
-
-function sortTable(colIndex){
-
-const table = document.getElementById("testingTable");
-const tbody = table.querySelector("tbody");
-
-const rows = Array.from(tbody.querySelectorAll("tr"));
-
-const ascending =
-table.dataset.sortCol == colIndex && table.dataset.sortDir === "asc"
-? false
-: true;
-
-rows.sort((a,b)=>{
-
-let A = a.children[colIndex].innerText.trim();
-let B = b.children[colIndex].innerText.trim();
-
-const numA = parseFloat(A);
-const numB = parseFloat(B);
-
-if(!isNaN(numA) && !isNaN(numB)){
-return ascending ? numA - numB : numB - numA;
-}
-
-return ascending ? A.localeCompare(B) : B.localeCompare(A);
-
-});
-
-tbody.innerHTML = "";
-rows.forEach(r => tbody.appendChild(r));
-
-table.dataset.sortCol = colIndex;
-table.dataset.sortDir = ascending ? "asc" : "desc";
-}
-
-/* -----------------------------
-GOOGLE SHEET DATA LOAD
------------------------------ */
+/* ========================================
+   🔥 ELITE V3 TESTING ENGINE
+   ======================================== */
 
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv";
 
-document.addEventListener("DOMContentLoaded", function () {
+/* ========================================
+   HELPERS
+   ======================================== */
 
-fetch(sheetURL)
-.then(res => res.text())
-.then(data => {
+const format = (val) => {
+  if (!val || val === 0) return "-";
+  return Math.round(val);
+};
 
-/* -----------------------------
-SAFE CSV PARSER
------------------------------ */
+const cleanNumber = (val) => {
+  if (!val) return 0;
+  val = val.replace(/"/g, "").trim();
+  if (val === "#DIV/0!" || val === "") return 0;
+  return parseFloat(val) || 0;
+};
+
+const formatDate = (raw) => {
+  if (!raw) return "-";
+  const d = new Date(raw);
+  return `${d.toLocaleString("default", { month: "short" })} ${d.getFullYear()}`;
+};
+
+/* ========================================
+   STATE
+   ======================================== */
+
+let tableData = [];
+let currentSort = { col: null, dir: "asc" };
+
+/* ========================================
+   CSV PARSER (SAFE)
+   ======================================== */
 
 function parseCSV(text) {
-const rows = [];
-let current = '';
-let insideQuotes = false;
-let row = [];
+  const rows = [];
+  let current = "";
+  let insideQuotes = false;
+  let row = [];
 
-for (let char of text) {
+  for (let char of text) {
+    if (char === '"') insideQuotes = !insideQuotes;
+    else if (char === "," && !insideQuotes) {
+      row.push(current);
+      current = "";
+    }
+    else if (char === "\n" && !insideQuotes) {
+      row.push(current);
+      rows.push(row);
+      row = [];
+      current = "";
+    }
+    else {
+      current += char;
+    }
+  }
 
-if (char === '"') insideQuotes = !insideQuotes;
+  if (current) {
+    row.push(current);
+    rows.push(row);
+  }
 
-else if (char === ',' && !insideQuotes) {
-row.push(current);
-current = '';
+  return rows;
 }
 
-else if (char === '\n' && !insideQuotes) {
-row.push(current);
-rows.push(row);
-row = [];
-current = '';
-}
+/* ========================================
+   INIT
+   ======================================== */
 
-else {
-current += char;
-}
-}
-
-if (current) {
-row.push(current);
-rows.push(row);
-}
-
-return rows;
-}
-
-const parsed = parseCSV(data);
-
-// 🔥 GET HEADERS (CRITICAL FIX)
-const headers = parsed.shift().map(h => h.trim());
-
-function getIndex(name){
-return headers.findIndex(h => h.toLowerCase().includes(name.toLowerCase()));
-}
-
-/* -----------------------------
-SAFE NUMBER CLEANER
------------------------------ */
-
-function cleanNumber(val){
-if(!val) return 0;
-
-val = val.replace(/"/g,"").trim();
-
-if(val === "#DIV/0!" || val === "") return 0;
-
-return parseFloat(val) || 0;
-}
-
-/* -----------------------------
-TABLE BUILD
------------------------------ */
-
-const tableBody = document.querySelector("#testingTable tbody");
-const athletes = [];
-
-parsed.forEach(cols => {
-
-if(!cols || !cols.length) return;
-
-/* ---------- DATA (DYNAMIC MAPPING) ---------- */
-
-const name = (cols[getIndex("student")] || "").replace(",", ", ");
-if (!name || name.trim() === "") return;
-const rawDate = cols[getIndex("date")] || "";
-const score = cleanNumber(cols[getIndex("score")]);
-
-let testDate = "";
-
-if(rawDate){
-const d = new Date(rawDate);
-const month = d.toLocaleString("default",{month:"long"});
-const year = d.getFullYear();
-testDate = `${year}, ${month}`;
-}
-
-const hour = cleanNumber(cols[getIndex("hour")]);
-const grade = cleanNumber(cols[getIndex("grade")]);
-const weight = cleanNumber(cols[getIndex("actual weight")]);
-const group = cols[getIndex("weight group")] || "";
-
-const bench = cleanNumber(cols[getIndex("bench")]);
-const squat = cleanNumber(cols[getIndex("squat")]);
-const clean = cleanNumber(cols[getIndex("clean")]);
-const vertical = cleanNumber(cols[getIndex("vertical")]);
-
-const broad = cleanNumber(cols[getIndex("broad")]);
-const med = cleanNumber(cols[getIndex("med")]);
-const agility = cleanNumber(cols[getIndex("agility")]);
-const situps = cleanNumber(cols[getIndex("sit")]);
-const ten = cleanNumber(cols[getIndex("10")]);
-const forty = cleanNumber(cols[getIndex("40")]);
-
-/* ---------- CALCULATIONS ---------- */
-
-const total = bench + squat + clean;
-const points = total + vertical;
-const strengthScore = weight ? (total / weight).toFixed(2) : 0;
-
-/* ---------- TABLE ROW ---------- */
-
-const tr = document.createElement("tr");
-
-tr.innerHTML = `
-
-<td>${name}</td>
-<td>${testDate}</td>
-<td>${hour}</td>
-<td>${grade}</td>
-<td>${format(weight)}</td>
-<td>${group}</td>
-<td>${format(bench)}</td>
-<td>${format(squat)}</td>
-<td>${format(clean)}</td>
-<td>${format(vertical)}</td>
-<td>${broad || "-"}</td>
-<td>${med || "-"}</td>
-<td>${agility || "-"}</td>
-<td>${format(situps) || "-"}</td>
-<td>${ten || "-"}</td>
-<td>${forty || "-"}</td>
-<td>${format(score)}</td>
-`;
-
-tableBody.appendChild(tr);
-
-/* ---------- SAVE FOR LEADERBOARD ---------- */
-
-athletes.push({
-name,
-weight,
-group,
-bench,
-squat,
-clean,
-vertical,
-total,
-points,
-strengthScore,
-score
+document.addEventListener("DOMContentLoaded", () => {
+  loadData();
+  setupSearch();
 });
 
-});
+/* ========================================
+   LOAD DATA
+   ======================================== */
 
-/* ---------- SAVE TO LOCAL STORAGE ---------- */
+async function loadData() {
+  try {
+    const res = await fetch(sheetURL + "?t=" + Date.now());
+    const text = await res.text();
 
-localStorage.setItem("athleteScores", JSON.stringify(athletes));
+    const parsed = parseCSV(text);
+    const headers = parsed.shift().map(h => h.trim());
 
-})
-.catch(err => console.error("Sheet load error:", err));
+    const getIndex = (name) =>
+      headers.findIndex(h => h.toLowerCase().includes(name.toLowerCase()));
 
-/* -----------------------------
-SEARCH (NAME ONLY)
------------------------------ */
+    tableData = parsed
+      .map(cols => buildAthlete(cols, getIndex))
+      .filter(Boolean);
 
-const input = document.getElementById("searchInput");
+    renderTable(tableData);
 
-if(input){
-input.addEventListener("keyup", function(){
+    // Save for other pages
+    localStorage.setItem("athleteScores", JSON.stringify(tableData));
 
-const filter = input.value.toLowerCase();
-const rows = document.querySelectorAll("#testingTable tbody tr");
-
-rows.forEach(row=>{
-
-const nameCell = row.children[0];
-if(!nameCell) return;
-
-const name = nameCell.textContent.toLowerCase();
-
-row.style.display = name.includes(filter) ? "" : "none";
-
-});
-
-});
+  } catch (err) {
+    console.error("Sheet load error:", err);
+  }
 }
 
-});
+/* ========================================
+   BUILD ATHLETE OBJECT
+   ======================================== */
+
+function buildAthlete(cols, getIndex) {
+
+  const name = (cols[getIndex("student")] || "").replace(",", ", ");
+  if (!name.trim()) return null;
+
+  const weight = cleanNumber(cols[getIndex("actual weight")]);
+  const bench = cleanNumber(cols[getIndex("bench")]);
+  const squat = cleanNumber(cols[getIndex("squat")]);
+  const clean = cleanNumber(cols[getIndex("clean")]);
+  const vertical = cleanNumber(cols[getIndex("vertical")]);
+
+  const athlete = {
+    name,
+    date: formatDate(cols[getIndex("date")]),
+    hour: cleanNumber(cols[getIndex("hour")]),
+    grade: cleanNumber(cols[getIndex("grade")]),
+    weight,
+    group: cols[getIndex("weight group")] || "",
+
+    bench,
+    squat,
+    clean,
+    vertical,
+
+    broad: cleanNumber(cols[getIndex("broad")]),
+    med: cleanNumber(cols[getIndex("med")]),
+    agility: cleanNumber(cols[getIndex("agility")]),
+    situps: cleanNumber(cols[getIndex("sit")]),
+    ten: cleanNumber(cols[getIndex("10")]),
+    forty: cleanNumber(cols[getIndex("40")]),
+
+    score: cleanNumber(cols[getIndex("score")])
+  };
+
+  return athlete;
+}
+
+/* ========================================
+   RENDER TABLE
+   ======================================== */
+
+function renderTable(data) {
+  const tbody = document.querySelector("#testingTable tbody");
+  tbody.innerHTML = "";
+
+  data.forEach(a => {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${a.name}</td>
+      <td>${a.date}</td>
+      <td>${a.hour}</td>
+      <td>${a.grade}</td>
+      <td>${format(a.weight)}</td>
+      <td>${a.group}</td>
+
+      <td>${format(a.bench)}</td>
+      <td>${format(a.squat)}</td>
+      <td>${format(a.clean)}</td>
+
+      <td>${format(a.vertical)}</td>
+      <td>${a.broad || "-"}</td>
+      <td>${a.med || "-"}</td>
+
+      <td>${a.agility || "-"}</td>
+      <td>${format(a.situps)}</td>
+      <td>${a.ten || "-"}</td>
+      <td>${a.forty || "-"}</td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+/* ========================================
+   SORTING (UPGRADED)
+   ======================================== */
+
+function sortTable(colIndex) {
+
+  const keys = [
+    "name","date","hour","grade","weight","group",
+    "bench","squat","clean",
+    "vertical","broad","med",
+    "agility","situps","ten","forty"
+  ];
+
+  const key = keys[colIndex];
+
+  const asc = currentSort.col === colIndex
+    ? currentSort.dir !== "asc"
+    : true;
+
+  tableData.sort((a, b) => {
+
+    let A = a[key];
+    let B = b[key];
+
+    if (typeof A === "number" && typeof B === "number") {
+      return asc ? A - B : B - A;
+    }
+
+    return asc
+      ? String(A).localeCompare(String(B))
+      : String(B).localeCompare(String(A));
+  });
+
+  currentSort = { col: colIndex, dir: asc ? "asc" : "desc" };
+
+  renderTable(tableData);
+}
+
+/* ========================================
+   SEARCH
+   ======================================== */
+
+function setupSearch() {
+  const input = document.getElementById("searchInput");
+  if (!input) return;
+
+  input.addEventListener("input", () => {
+    const term = input.value.toLowerCase();
+
+    const filtered = tableData.filter(a =>
+      a.name.toLowerCase().includes(term)
+    );
+
+    renderTable(filtered);
+  });
+}

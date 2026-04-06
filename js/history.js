@@ -1,289 +1,298 @@
-document.addEventListener("DOMContentLoaded", () => {
-
-/* =====================
-   CONFIG
-===================== */
+/* ========================================
+   🔥 ELITE V3 HISTORY ENGINE
+   ======================================== */
 
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv";
-const STORAGE_KEY = "wildcatsData";
 
-const input = document.getElementById("searchAthlete");
-const container = document.getElementById("historyContainer");
+/* ========================================
+   STATE
+   ======================================== */
 
-/* =====================
-   HELPERS
-===================== */
+let rawData = [];
+let processedData = [];
 
-function clean(val) {
-    if (val === undefined || val === null || val === "" || val === "NaN") {
-        return "-";
-    }
-    return String(val).trim();
+/* ========================================
+   INIT
+   ======================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadData();
+});
+
+/* ========================================
+   FETCH DATA
+   ======================================== */
+
+async function loadData() {
+  try {
+    const res = await fetch(SHEET_URL + "?t=" + Date.now());
+    const text = await res.text();
+
+    rawData = parseCSV(text);
+    processedData = processData(rawData);
+
+    setupSearch();
+
+  } catch (err) {
+    console.error("History load error:", err);
+    showError("Failed to load data");
+  }
 }
 
-function toNumber(val) {
-    const num = parseFloat(String(val).replace(/[^0-9.\-]/g, ""));
-    return isNaN(num) ? 0 : num;
-}
-
-function formatDate(val) {
-    if (!val || val === "-") return "—";
-    const d = new Date(val);
-    if (isNaN(d.getTime())) return "—";
-    return d.toLocaleDateString();
-}
-
-function normalize(str) {
-    return (str || "")
-        .toLowerCase()
-        .replace(/[^a-z]/g, "");
-}
-
-/* =====================
-   CSV PARSER (ROBUST)
-===================== */
+/* ========================================
+   CSV PARSER (SAFE)
+   ======================================== */
 
 function parseCSV(text) {
-    return text.trim().split(/\r?\n/).map(row => {
-        const cols = [];
-        let current = '';
-        let insideQuotes = false;
+  const rows = [];
+  let current = "";
+  let insideQuotes = false;
+  let row = [];
 
-        for (let i = 0; i < row.length; i++) {
-            const char = row[i];
+  for (let char of text) {
+    if (char === '"') insideQuotes = !insideQuotes;
+    else if (char === "," && !insideQuotes) {
+      row.push(current);
+      current = "";
+    }
+    else if (char === "\n" && !insideQuotes) {
+      row.push(current);
+      rows.push(row);
+      row = [];
+      current = "";
+    }
+    else {
+      current += char;
+    }
+  }
 
-            if (char === '"' && row[i + 1] === '"') {
-                current += '"';
-                i++;
-            } else if (char === '"') {
-                insideQuotes = !insideQuotes;
-            } else if (char === ',' && !insideQuotes) {
-                cols.push(current);
-                current = '';
-            } else {
-                current += char;
-            }
-        }
+  if (current) {
+    row.push(current);
+    rows.push(row);
+  }
 
-        cols.push(current);
-        return cols;
-    });
+  return rows;
 }
 
-/* =====================
-   LOAD DATA (WITH CACHE)
-===================== */
-
-function loadData() {
-    fetch(SHEET_URL + "?t=" + Date.now())
-        .then(res => res.text())
-        .then(csv => {
-            const rows = parseCSV(csv);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
-            processData(rows);
-        })
-        .catch(() => {
-            const cached = localStorage.getItem(STORAGE_KEY);
-
-            if (cached) {
-                processData(JSON.parse(cached));
-            } else {
-                container.innerHTML = "<p>No data available</p>";
-            }
-        });
-}
-
-/* =====================
-   PROCESS DATA
-===================== */
+/* ========================================
+   DATA PROCESSING
+   ======================================== */
 
 function processData(rows) {
 
-    const headers = rows[0];
-    const dataRows = rows.slice(1);
+  const headers = rows.shift().map(h => h.trim());
 
-    const data = dataRows.map(cols => {
+  const getIndex = (name) =>
+    headers.findIndex(h => h.toLowerCase().includes(name.toLowerCase()));
 
-        const obj = {};
-        headers.forEach((h, i) => {
-            obj[h.trim().toLowerCase()] = cols[i];
-        });
+  return rows.map(cols => {
 
-        return {
-            name: clean(obj["student-athlete"]),
-            date: clean(obj["test date"]),
-            grade: clean(obj["grade"]),
-            weight: clean(obj["actual weight"]),
-            group: clean(obj["weight group"]),
-            total: toNumber(obj["3 lift projected max total"]),
-            score: toNumber(obj["total athletic performance points"])
-        };
+    const name = clean(cols[getIndex("student")]);
+    if (!name) return null;
 
-    }).filter(a => a.name !== "-" && a.name !== "");
+    return {
+      name,
+      date: formatDate(cols[getIndex("date")]),
+      grade: clean(cols[getIndex("grade")]),
+      weight: clean(cols[getIndex("actual weight")]),
+      group: clean(cols[getIndex("weight group")]),
 
-    setupSearch(data);
+      total: toNumber(cols[getIndex("3 lift")]),
+      score: toNumber(cols[getIndex("performance")])
+    };
+
+  }).filter(Boolean);
 }
 
-/* =====================
-   SEARCH (DEBOUNCED)
-===================== */
+/* ========================================
+   SEARCH SYSTEM
+   ======================================== */
 
-function setupSearch(data) {
+function setupSearch() {
 
-    let timeout;
+  const input = document.getElementById("searchAthlete");
+  if (!input) return;
 
-    input.addEventListener("input", () => {
+  let timeout;
 
-        clearTimeout(timeout);
+  input.addEventListener("input", () => {
 
-        timeout = setTimeout(() => {
+    clearTimeout(timeout);
 
-            const term = normalize(input.value);
-            container.innerHTML = "";
+    timeout = setTimeout(() => {
 
-            if (!term) return;
+      const term = normalize(input.value);
+      if (!term) return clearResults();
 
-            const matches = data.filter(a =>
-                normalize(a.name).includes(term)
-            );
+      const matches = processedData.filter(a =>
+        normalize(a.name).includes(term)
+      );
 
-            if (!matches.length) {
-                container.innerHTML = "<p>No athlete found</p>";
-                return;
-            }
+      render(matches);
 
-            render(matches);
+    }, 200);
 
-        }, 200);
-    });
+  });
 }
 
-/* =====================
+/* ========================================
    RENDER
-===================== */
+   ======================================== */
 
-function render(matches) {
+function render(data) {
 
-    const grouped = {};
+  const container = document.getElementById("historyContainer");
+  container.innerHTML = "";
 
-    matches.forEach(a => {
-        if (!grouped[a.name]) grouped[a.name] = [];
-        grouped[a.name].push(a);
-    });
+  const grouped = groupByName(data);
 
-    Object.keys(grouped).forEach(name => {
+  Object.keys(grouped).forEach(name => {
 
-        const history = grouped[name]
-            .sort((a, b) => new Date(b.date) - new Date(a.date));
+    const history = grouped[name]
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        const bestTotal = Math.max(...history.map(a => a.total));
-        const bestScore = Math.max(...history.map(a => a.score));
+    const bestTotal = Math.max(...history.map(a => a.total));
+    const bestScore = Math.max(...history.map(a => a.score));
 
-        const chartId = `chart-${name.replace(/[^a-z0-9]/gi, '')}`;
+    const chartId = `chart-${sanitize(name)}`;
 
-        const rowsHTML = history.map(h => {
+    const rowsHTML = history.map(h => {
 
-            const isTotalPR = h.total === bestTotal;
-            const isScorePR = h.score === bestScore;
+      const isTotalPR = h.total === bestTotal;
+      const isScorePR = h.score === bestScore;
 
-            return `
-                <tr class="${isTotalPR ? "pr-row" : ""}">
-                    <td>${h.name}</td>
-                    <td>${formatDate(h.date)}</td>
-                    <td>${h.grade}</td>
-                    <td>${h.weight}</td>
-                    <td>${h.group}</td>
-                    <td>${h.total || "—"} ${isTotalPR ? "🏆" : ""}</td>
-                    <td>${h.score ? Math.round(h.score) : "—"} ${isScorePR ? "🔥" : ""}</td>
-                </tr>
-            `;
-        }).join("");
+      return `
+        <tr class="${isTotalPR ? "pr-row" : ""}">
+          <td>${h.name}</td>
+          <td>${h.date}</td>
+          <td>${h.grade}</td>
+          <td>${h.weight}</td>
+          <td>${h.group}</td>
+          <td>${h.total || "—"} ${isTotalPR ? "🏆" : ""}</td>
+          <td>${h.score || "—"} ${isScorePR ? "🔥" : ""}</td>
+        </tr>
+      `;
+    }).join("");
 
-        const card = document.createElement("div");
-        card.className = "history-card";
+    const card = document.createElement("div");
+    card.className = "card history-card";
 
-        card.innerHTML = `
-            <h2>${name}</h2>
+    card.innerHTML = `
+      <h2>${name}</h2>
 
-            <canvas id="${chartId}" height="100"></canvas>
+      <canvas id="${chartId}" height="120"></canvas>
 
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Athlete</th>
-                            <th>Date</th>
-                            <th>Grade</th>
-                            <th>Weight</th>
-                            <th>Group</th>
-                            <th>Total</th>
-                            <th>Score</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${rowsHTML}
-                    </tbody>
-                </table>
-            </div>
-        `;
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Athlete</th>
+              <th>Date</th>
+              <th>Grade</th>
+              <th>Weight</th>
+              <th>Group</th>
+              <th>Total</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHTML}
+          </tbody>
+        </table>
+      </div>
+    `;
 
-        container.appendChild(card);
+    container.appendChild(card);
 
-        /* =====================
-           CHART (CLEAN LINE)
-        ===================== */
-
-        if (typeof Chart !== "undefined") {
-
-            const ctx = document.getElementById(chartId).getContext("2d");
-
-            new Chart(ctx, {
-                type: "line",
-                data: {
-                    labels: history.map(a => formatDate(a.date)).reverse(),
-                    datasets: [
-                        {
-                            label: "Total",
-                            data: history.map(a => a.total).reverse(),
-                            tension: 0.3
-                        },
-                        {
-                            label: "Score",
-                            data: history.map(a => a.score).reverse(),
-                            tension: 0.3
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            labels: { color: "#fff" }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            ticks: { color: "#aaa" }
-                        },
-                        y: {
-                            ticks: { color: "#aaa" },
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
-
-    });
+    renderChart(chartId, history);
+  });
 }
 
-/* =====================
-   INIT
-===================== */
+/* ========================================
+   CHART
+   ======================================== */
 
-loadData();
+function renderChart(id, history) {
 
-// Auto refresh every 60s (keeps data fresh)
-setInterval(loadData, 60000);
+  if (typeof Chart === "undefined") return;
 
-});
+  const ctx = document.getElementById(id).getContext("2d");
+
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: history.map(a => a.date).reverse(),
+      datasets: [
+        {
+          label: "Total",
+          data: history.map(a => a.total).reverse(),
+          tension: 0.3
+        },
+        {
+          label: "Score",
+          data: history.map(a => a.score).reverse(),
+          tension: 0.3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          labels: { color: "#fff" }
+        }
+      },
+      scales: {
+        x: { ticks: { color: "#aaa" } },
+        y: { ticks: { color: "#aaa" }, beginAtZero: true }
+      }
+    }
+  });
+}
+
+/* ========================================
+   UTILITIES
+   ======================================== */
+
+function groupByName(data) {
+  return data.reduce((acc, a) => {
+    if (!acc[a.name]) acc[a.name] = [];
+    acc[a.name].push(a);
+    return acc;
+  }, {});
+}
+
+function sanitize(str) {
+  return str.replace(/[^a-z0-9]/gi, "");
+}
+
+function clean(val) {
+  if (!val || val === "NaN") return "";
+  return String(val).trim();
+}
+
+function toNumber(val) {
+  return parseFloat(String(val).replace(/[^0-9.\-]/g, "")) || 0;
+}
+
+function formatDate(raw) {
+  if (!raw) return "-";
+  const d = new Date(raw);
+  return isNaN(d) ? "-" : `${d.toLocaleDateString()}`;
+}
+
+function normalize(str) {
+  return (str || "")
+    .toLowerCase()
+    .replace(/[^a-z]/g, "");
+}
+
+function clearResults() {
+  const container = document.getElementById("historyContainer");
+  container.innerHTML = "";
+}
+
+function showError(msg) {
+  const container = document.getElementById("historyContainer");
+  container.innerHTML = `<p>${msg}</p>`;
+}

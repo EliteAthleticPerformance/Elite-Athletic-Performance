@@ -1,128 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Athletes | Wildcats Performance</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="stylesheet" href="styles.css">
+<title>Athletes | Wildcats Performance</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: #000;
-      color: white;
-    }
-
-    .container {
-      padding: 15px;
-      padding-bottom: 90px;
-      max-width: 900px;
-      margin: auto;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid #222;
-      background: #111;
-      color: white;
-      margin-bottom: 20px;
-      font-size: 1rem;
-    }
-
-    /* GRID */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 12px;
-    }
-
-    .card {
-      background: #111;
-      padding: 15px;
-      border-radius: 12px;
-      border: 1px solid #222;
-      text-align: center;
-      cursor: pointer;
-      transition: transform 0.15s ease;
-    }
-
-    .card:hover {
-      transform: scale(1.03);
-    }
-
-    .name {
-      font-weight: 600;
-      font-size: 1rem;
-    }
-
-    .meta {
-      font-size: 0.85rem;
-      color: #aaa;
-      margin-top: 5px;
-    }
-
-    .tag {
-      display: inline-block;
-      margin-top: 8px;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.75rem;
-    }
-
-    .elite { background: gold; color: black; }
-    .strong { background: #00c853; }
-    .developing { background: #00b0ff; }
-    .needs { background: #ff5252; }
-
-    /* NAV */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      background: #111;
-      display: flex;
-      justify-content: space-around;
-      padding: 12px 0;
-      border-top: 1px solid #222;
-    }
-
-    .bottom-nav a {
-      color: white;
-      text-decoration: none;
-      font-size: 1.2rem;
-    }
-  </style>
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-<div class="container">
+<!-- ===== HEADER ===== -->
+<div id="header-placeholder"></div>
+<script src="js/header.js"></script>
 
-  <h1>👥 Athletes</h1>
+<!-- ===== MAIN ===== -->
+<main>
 
-  <input type="text" id="search" placeholder="Search athletes..." onkeyup="filterAthletes()">
+  <!-- TITLE -->
+  <section class="section" style="text-align:center;">
+    <h1>👥 Athletes</h1>
+  </section>
 
-  <div id="athleteGrid" class="grid"></div>
+  <!-- SEARCH -->
+  <section class="section">
+    <input 
+      type="text" 
+      id="search" 
+      class="search"
+      placeholder="Search athletes..."
+      onkeyup="filterAthletes()"
+    >
+  </section>
 
-</div>
+  <!-- GRID -->
+  <section class="section">
 
-<!-- NAV -->
-<div class="bottom-nav">
-  <a href="index.html">🏠</a>
-  <a href="leaderboard.html">🏆</a>
-  <a href="history.html">📊</a>
-</div>
+    <div id="athleteGrid" class="grid grid-auto"></div>
 
+  </section>
+
+</main>
+
+<!-- ===== SCRIPT ===== -->
 <script>
+
 const csvUrl = "YOUR_CSV_URL_HERE"; // 🔥 replace
 
 let athletes = [];
@@ -147,8 +71,8 @@ function getTag(score) {
 fetch(csvUrl + "?t=" + Date.now())
   .then(res => res.text())
   .then(text => {
-    const rows = text.split("\n").slice(1);
 
+    const rows = text.split("\n").slice(1);
     const map = {};
 
     rows.forEach(r => {
@@ -158,7 +82,6 @@ fetch(csvUrl + "?t=" + Date.now())
 
       if (!name) return;
 
-      // Keep BEST score per athlete
       if (!map[name] || score > map[name]) {
         map[name] = score;
       }
@@ -185,9 +108,17 @@ function render(list) {
 
     grid.innerHTML += `
       <div class="card" onclick="goToAthlete('${a.name}')">
-        <div class="name">${clean(a.name)}</div>
-        <div class="meta">Score: ${clean(a.score)}</div>
-        <div class="tag ${tagClass}">${tagText}</div>
+
+        <h3>${clean(a.name)}</h3>
+
+        <p style="color: var(--muted); margin-top:6px;">
+          Score: ${clean(a.score)}
+        </p>
+
+        <div class="tag ${tagClass}">
+          ${tagText}
+        </div>
+
       </div>
     `;
   });
@@ -211,6 +142,7 @@ function goToAthlete(name) {
   const encoded = encodeURIComponent(name);
   window.location.href = `history.html?name=${encoded}`;
 }
+
 </script>
 
 </body>
