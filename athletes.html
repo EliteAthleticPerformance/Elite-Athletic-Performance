@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Athletes | Wildcats Performance</title>
-
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -66,32 +66,19 @@ function getTag(score) {
 
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THCtlSa9Wvaa77owi-_BAR/pub?output=csv";
 
-fetch(CSV_URL + "&t=" + Date.now())
-  .then(res => res.text())
-  .then(text => {
+Papa.parse(CSV_URL + "&t=" + Date.now(), {
+  download: true,
+  header: false,
+  skipEmptyLines: true,
+  complete: function(results) {
 
-    console.log("CSV:", text);
-
-    if (text.includes("<!DOCTYPE html>")) {
-      console.error("❌ Invalid CSV URL");
-      return;
-    }
-
-    const rows = text.trim().split("\n").slice(1);
+    const data = results.data;
     const map = {};
 
-    rows.forEach(r => {
+    data.slice(1).forEach(row => {
 
-      // ✅ Proper CSV parsing (handles commas inside quotes)
-      const cols = r.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
-
-      if (!cols) return;
-
-      // ✅ Clean name
-      const name = cols[0].replace(/"/g, "").trim();
-
-      // ✅ Use last column as score (safe fallback)
-      const score = Number(cols[cols.length - 1]);
+      const name = row[0];
+      const score = Number(row[row.length - 1]);
 
       if (!name) return;
 
@@ -101,15 +88,15 @@ fetch(CSV_URL + "&t=" + Date.now())
     });
 
     athletes = Object.keys(map).map(name => ({
-      name,
+      name: name.replace(/"/g, "").trim(),
       score: map[name]
     }));
 
     athletes.sort((a, b) => b.score - a.score);
 
     render(athletes);
-  })
-  .catch(err => console.error("FETCH ERROR:", err));
+  }
+});
 
 /* ---------- RENDER ---------- */
 
