@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Athlete Profile</title>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <main style="padding: 40px; text-align: center;">
+
+    <h1 id="name"></h1>
+
+    <p id="subtitle" style="color: var(--muted); margin-top: 10px;">
+      Athlete Performance Profile
+    </p>
+
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get("name");
+
+    document.getElementById("name").textContent = name || "Athlete";
+  </script>
+
+</body>
+</html>
