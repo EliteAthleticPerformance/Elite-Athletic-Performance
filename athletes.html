@@ -67,9 +67,12 @@ function getTag(score) {
 
 /* ---------- LOAD DATA ---------- */
 
+const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THCtlSa9Wvaa77owi-_BAR/pub?output=csv";
+
 fetch(csvUrl + "&t=" + Date.now())
   .then(res => res.text())
   .then(text => {
+    console.log("CSV:", text); // debug
 
     const rows = text.split("\n").slice(1);
     const map = {};
