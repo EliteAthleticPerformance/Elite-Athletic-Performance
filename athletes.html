@@ -66,12 +66,12 @@ function getTag(score) {
 
 /* ---------- LOAD DATA ---------- */
 
-const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv";
+const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THCtlSa9Wvaa77owi-_BAR/pub?output=csv";
 
-fetch(csvUrl + "&t=" + Date.now())
+fetch(url + "&t=" + Date.now())
   .then(res => res.text())
   .then(text => {
-    console.log("CSV:", text); // debug
+    console.log("CSV:", text);
 
     const rows = text.split("\n").slice(1);
     const map = {};
@@ -87,6 +87,17 @@ fetch(csvUrl + "&t=" + Date.now())
         map[name] = score;
       }
     });
+
+    athletes = Object.keys(map).map(name => ({
+      name,
+      score: map[name]
+    }));
+
+    athletes.sort((a, b) => b.score - a.score);
+
+    render(athletes);
+  })
+  .catch(err => console.error("FETCH ERROR:", err));
 
     athletes = Object.keys(map).map(name => ({
       name,
