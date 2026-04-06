@@ -2,7 +2,7 @@
    🔥 ELITE V3 ENTER ENGINE
    ======================================== */
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxC3FetWgkN8c6kkn45lv_Y7GKXrXxp7Fc7qGW945A2UwMIKVL-jV_tmtvRQNdnrdF9/exec";
+const SCRIPT_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv";
 
 /* ========================================
    INIT

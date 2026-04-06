@@ -1,280 +1,270 @@
-/* ========================================
-   🔥 ELITE V3 LEADERBOARD ENGINE
-   ======================================== */
+// ===============================
+// CONFIG
+// ===============================
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv";
 
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv";
+// ===============================
+// GLOBAL STATE
+// ===============================
+let grouped = {};
+let athletes = [];
 
-/* ========================================
-   STATE
-   ======================================== */
+// ===============================
+// INIT
+// ===============================
+document.addEventListener("DOMContentLoaded", init);
 
-let rawData = [];
-let leaderboardData = [];
-
-/* ========================================
-   INIT
-   ======================================== */
-
-document.addEventListener("DOMContentLoaded", () => {
+function init() {
   loadData();
-  setupSearch();
-});
+  const search = document.getElementById("leaderboardSearch");
+  if (search) search.addEventListener("input", render);
+}
 
-/* ========================================
-   FETCH DATA
-   ======================================== */
+// ===============================
+// CSV PARSER (SAFE)
+// ===============================
+function parseCSV(text) {
+  return text.trim().split(/\r?\n/).map(row => {
+    const cols = [];
+    let current = '';
+    let insideQuotes = false;
 
+    for (let i = 0; i < row.length; i++) {
+      const char = row[i];
+
+      if (char === '"' && row[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else if (char === '"') {
+        insideQuotes = !insideQuotes;
+      } else if (char === ',' && !insideQuotes) {
+        cols.push(current);
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+
+    cols.push(current);
+    return cols.map(c => c.trim());
+  });
+}
+
+// ===============================
+// UTIL
+// ===============================
+function toNumber(val) {
+  const num = parseFloat(String(val || "").replace(/[^0-9.\-]/g, ""));
+  return isNaN(num) ? 0 : num;
+}
+
+function safe(val) {
+  return val && val !== 0 ? val : "-";
+}
+
+function medal(i) {
+  if (i === 0) return "gold";
+  if (i === 1) return "silver";
+  if (i === 2) return "bronze";
+  return "";
+}
+
+// ===============================
+// LOAD DATA
+// ===============================
 async function loadData() {
   try {
-    const res = await fetch(SHEET_URL + "?t=" + Date.now());
+    const res = await fetch(CSV_URL + "&t=" + Date.now());
     const text = await res.text();
 
-    rawData = parseCSV(text);
-
-    leaderboardData = processData(rawData);
-
-    render(leaderboardData);
+    const rows = parseCSV(text);
+    processData(rows);
 
   } catch (err) {
-    console.error("Leaderboard load error:", err);
+    console.error("LOAD ERROR:", err);
   }
 }
 
-/* ========================================
-   CSV PARSER (SAFE)
-   ======================================== */
-
-function parseCSV(text) {
-  const rows = [];
-  let current = "";
-  let insideQuotes = false;
-  let row = [];
-
-  for (let char of text) {
-    if (char === '"') insideQuotes = !insideQuotes;
-    else if (char === "," && !insideQuotes) {
-      row.push(current);
-      current = "";
-    }
-    else if (char === "\n" && !insideQuotes) {
-      row.push(current);
-      rows.push(row);
-      row = [];
-      current = "";
-    }
-    else {
-      current += char;
-    }
-  }
-
-  if (current) {
-    row.push(current);
-    rows.push(row);
-  }
-
-  return rows;
-}
-
-/* ========================================
-   DATA PROCESSING
-   ======================================== */
-
+// ===============================
+// PROCESS DATA
+// ===============================
 function processData(rows) {
 
-  const headers = rows.shift().map(h => h.trim());
+  const headers = rows[0];
 
-  const getIndex = (name) =>
-    headers.findIndex(h => h.toLowerCase().includes(name.toLowerCase()));
+  const idx = (name) => headers.findIndex(h => h.includes(name));
 
-  const grouped = {};
+  const i = {
+    name: idx("Student-Athlete"),
+    date: idx("Test Date"),
 
-  rows.forEach(cols => {
+    bench: idx("Bench Press"),
+    squat: idx("Squat"),
+    clean: idx("Hang Clean"),
 
-    const name = (cols[getIndex("student")] || "").trim();
-    if (!name) return;
+    vertical: idx("Vertical Jump"),
+    broad: idx("Broad Jump"),
+    med: idx("Med Ball Toss"),
 
-    const athlete = {
-      name,
-      date: formatDate(cols[getIndex("date")]),
+    pro: idx("Pro Agility"),
+    ten: idx("10 yd"),
+    forty: idx("40 yd"),
 
-      bench: toNumber(cols[getIndex("bench")]),
-      squat: toNumber(cols[getIndex("squat")]),
-      clean: toNumber(cols[getIndex("clean")]),
+    sit: idx("Sit-Ups"),
 
-      vertical: toNumber(cols[getIndex("vertical")]),
-      broad: toNumber(cols[getIndex("broad")]),
-      med: toNumber(cols[getIndex("med")]),
+    score: idx("Total Athletic"),
+    lift: idx("3 Lift Projected")
+  };
 
-      agility: toNumber(cols[getIndex("agility")]),
-      situps: toNumber(cols[getIndex("sit")]),
+  const parsed = rows.slice(1).map(row => {
 
-      ten: toNumber(cols[getIndex("10")]),
-      forty: toNumber(cols[getIndex("40")])
+    return {
+      name: row[i.name],
+      dateRaw: row[i.date],
+      date: new Date(row[i.date]),
+
+      bench: toNumber(row[i.bench]),
+      squat: toNumber(row[i.squat]),
+      clean: toNumber(row[i.clean]),
+
+      vertical: toNumber(row[i.vertical]),
+      broad: toNumber(row[i.broad]),
+      med: toNumber(row[i.med]),
+
+      pro: toNumber(row[i.pro]),
+      ten: toNumber(row[i.ten]),
+      forty: toNumber(row[i.forty]),
+
+      sit: toNumber(row[i.sit]),
+
+      score: toNumber(row[i.score]),
+      lift: toNumber(row[i.lift])
     };
 
-    if (!grouped[name]) grouped[name] = [];
-    grouped[name].push(athlete);
+  }).filter(a => a.name && !a.name.includes("{"));
+
+  // GROUP
+  grouped = {};
+
+  parsed.forEach(a => {
+    if (!grouped[a.name]) grouped[a.name] = [];
+    grouped[a.name].push(a);
   });
 
-  // Keep most recent test
-  const latest = Object.values(grouped).map(arr =>
-    arr.sort((a, b) => new Date(b.date) - new Date(a.date))[0]
-  );
+  // SORT each athlete
+  Object.values(grouped).forEach(arr => {
+    arr.sort((a, b) => b.date - a.date);
+  });
 
-  return latest.map(a => ({
-    ...a,
-    scores: calculateScores(a)
-  }));
+  // TAKE latest
+  athletes = Object.keys(grouped).map(name => grouped[name][0]);
+
+  render();
 }
 
-/* ========================================
-   SCORE ENGINE (🔥 CORE)
-   ======================================== */
+// ===============================
+// RENDER
+// ===============================
+function render() {
 
-function calculateScores(a) {
+  const search = document.getElementById("leaderboardSearch")?.value.toLowerCase() || "";
 
-  const strength = avg(a.bench, a.squat, a.clean);
-  const explosive = avg(a.vertical, a.broad, a.med);
-  const speed = avg(a.ten, a.forty);
-  const conditioning = avg(a.agility, a.situps);
-
-  const performance = avg(
-    strength,
-    explosive,
-    speed,
-    conditioning
+  const filtered = athletes.filter(a =>
+    a.name.toLowerCase().includes(search)
   );
 
-  return {
-    strength: round(strength),
-    explosive: round(explosive),
-    speed: round(speed),
-    conditioning: round(conditioning),
-    performance: round(performance)
-  };
+  renderTable(filtered, "totalTable", "lift");
+  renderTable(filtered, "leaderboardTable", "score");
 }
 
-/* ========================================
-   RENDER
-   ======================================== */
+// ===============================
+// TABLE RENDER
+// ===============================
+function renderTable(data, tableId, type) {
 
-function render(data) {
-
-  const liftBody = document.querySelector("#liftTable tbody");
-  const scoreBody = document.querySelector("#scoreTable tbody");
-
-  const mobileLift = document.getElementById("mobileLift");
-  const mobileScore = document.getElementById("mobileScore");
-
-  if (!liftBody || !scoreBody) return;
-
-  // Sort copies
-  const liftRank = [...data].sort((a, b) =>
-    (b.bench + b.squat + b.clean) - (a.bench + a.squat + a.clean)
-  );
-
-  const scoreRank = [...data].sort((a, b) =>
-    b.scores.performance - a.scores.performance
-  );
-
-  renderTable(liftBody, mobileLift, liftRank, "lift");
-  renderTable(scoreBody, mobileScore, scoreRank, "score");
-}
-
-/* ========================================
-   TABLE BUILDER
-   ======================================== */
-
-function renderTable(tbody, mobile, data, type) {
+  const tbody = document.querySelector(`#${tableId} tbody`);
+  if (!tbody) return;
 
   tbody.innerHTML = "";
-  if (mobile) mobile.innerHTML = "";
 
-  data.forEach((a, i) => {
+  const sorted = [...data].sort((a, b) => b[type] - a[type]);
 
-    const medal =
-  i === 0 ? "rank-1" :
-  i === 1 ? "rank-2" :
-  i === 2 ? "rank-3" : "";
-
-tr.innerHTML = `
-  <td class="${medal}">${i + 1}</td>
-  <td>${a.name}</td>
-  <td><strong>${value}</strong></td>
-  <td>${a.date}</td>
-`;
-
-    const value =
-      type === "lift"
-        ? (a.bench + a.squat + a.clean)
-        : a.scores.performance;
-
-    // TABLE ROW
-    const tr = document.createElement("tr");
-
-    tr.innerHTML = `
-      <td class="${medal}">${i + 1}</td>
-      <td>${a.name}</td>
-      <td>${value || "-"}</td>
-      <td>${a.date}</td>
-    `;
-
+  sorted.forEach((a, i) => {
+    const tr = createRow(a, i, type);
     tbody.appendChild(tr);
+  });
+}
 
-    // MOBILE CARD
-    if (mobile) {
-      mobile.innerHTML += `
-        <div class="card">
-          <strong class="${medal}">${i + 1}. ${a.name}</strong><br>
-          ${type === "lift" ? "Total" : "Score"}: ${value || "-"}<br>
-          ${a.date}
-        </div>
-      `;
+// ===============================
+// CREATE ROW
+// ===============================
+function createRow(a, index, type) {
+
+  const tr = document.createElement("tr");
+
+  tr.innerHTML = `
+    <td class="${medal(index)}">${index + 1}</td>
+    <td>${a.name}</td>
+    <td>${safe(a[type])}</td>
+    <td>${a.dateRaw || "-"}</td>
+  `;
+
+  const detail = document.createElement("tr");
+  detail.style.display = "none";
+
+  const td = document.createElement("td");
+  td.colSpan = 4;
+  detail.appendChild(td);
+
+  tr.onclick = () => {
+
+    if (detail.style.display === "table-row") {
+      detail.style.display = "none";
+      return;
     }
-  });
-}
 
-/* ========================================
-   SEARCH
-   ======================================== */
+    detail.style.display = "table-row";
 
-function setupSearch() {
-  const input = document.getElementById("search");
+    const latest = grouped[a.name][0];
+    const prev = grouped[a.name][1];
 
-  if (!input) return;
+    const diff = (x, y, reverse = false) => {
+      if (!x || !y) return "";
+      const d = reverse ? (y - x) : (x - y);
 
-  input.addEventListener("input", () => {
-    const term = input.value.toLowerCase();
+      if (d > 0) return `<span style="color:#4caf50">(+${d.toFixed(1)})</span>`;
+      if (d < 0) return `<span style="color:red">(${d.toFixed(1)})</span>`;
+      return "";
+    };
 
-    const filtered = leaderboardData.filter(a =>
-      a.name.toLowerCase().includes(term)
-    );
+    td.innerHTML = `
+      <div style="padding:10px">
 
-    render(filtered);
-  });
-}
+      <strong>🏋️ Strength</strong><br>
+      Bench: ${safe(latest.bench)} ${prev ? diff(latest.bench, prev.bench) : ""}<br>
+      Squat: ${safe(latest.squat)} ${prev ? diff(latest.squat, prev.squat) : ""}<br>
+      Clean: ${safe(latest.clean)} ${prev ? diff(latest.clean, prev.clean) : ""}<br><br>
 
-/* ========================================
-   UTILITIES
-   ======================================== */
+      <strong>🏃 Performance</strong><br>
+      Vertical: ${safe(latest.vertical)} ${prev ? diff(latest.vertical, prev.vertical) : ""}<br>
+      Broad: ${safe(latest.broad)} ${prev ? diff(latest.broad, prev.broad) : ""}<br>
+      Med Ball: ${safe(latest.med)} ${prev ? diff(latest.med, prev.med) : ""}<br><br>
 
-function toNumber(val) {
-  if (!val) return 0;
-  return parseFloat(String(val).replace(/[^0-9.\-]/g, "")) || 0;
-}
+      <strong>⚡ Speed</strong><br>
+      10 yd: ${safe(latest.ten)} ${prev ? diff(latest.ten, prev.ten, true) : ""}<br>
+      40 yd: ${safe(latest.forty)} ${prev ? diff(latest.forty, prev.forty, true) : ""}<br>
+      Pro Agility: ${safe(latest.pro)} ${prev ? diff(latest.pro, prev.pro, true) : ""}<br><br>
 
-function formatDate(raw) {
-  if (!raw) return "-";
-  const d = new Date(raw);
-  return `${d.toLocaleString("default", { month: "short" })} ${d.getFullYear()}`;
-}
+      <strong>💪 Conditioning</strong><br>
+      Sit Ups: ${safe(latest.sit)} ${prev ? diff(latest.sit, prev.sit) : ""}
 
-function avg(...nums) {
-  const valid = nums.filter(n => !isNaN(n));
-  if (!valid.length) return 0;
-  return valid.reduce((a, b) => a + b, 0) / valid.length;
-}
+      </div>
+    `;
+  };
 
-function round(n) {
-  return Math.round(n || 0);
+  const frag = document.createDocumentFragment();
+  frag.appendChild(tr);
+  frag.appendChild(detail);
+
+  return frag;
 }

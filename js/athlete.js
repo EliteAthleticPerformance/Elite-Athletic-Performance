@@ -1,421 +1,211 @@
-/* ========================================
-   🔥 ELITE V3 ATHLETE PROFILE ENGINE
-   ======================================== */
+// ===============================
+// CONFIG
+// ===============================
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv";
 
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv";
+// ===============================
+// INIT
+// ===============================
+document.addEventListener("DOMContentLoaded", init);
 
-/* ========================================
-   STATE
-   ======================================== */
+function init() {
+  const params = new URLSearchParams(window.location.search);
+  const athleteName = decodeURIComponent(params.get("name") || "");
 
-let rawData = [];
-let processedData = [];
+  document.getElementById("athleteName").textContent = athleteName;
 
-const params = new URLSearchParams(window.location.search);
-const athleteName = decodeURIComponent(params.get("name") || "");
+  loadData(athleteName);
+}
 
-/* ========================================
-   INIT
-   ======================================== */
-
-document.addEventListener("DOMContentLoaded", () => {
-  loadData();
-});
-
-/* ========================================
-   FETCH DATA
-   ======================================== */
-
-async function loadData() {
+// ===============================
+// LOAD DATA
+// ===============================
+async function loadData(name) {
   try {
-    const res = await fetch(SHEET_URL + "?t=" + Date.now());
+    const res = await fetch(CSV_URL + "&t=" + Date.now());
     const text = await res.text();
 
-    rawData = parseCSV(text);
-    processedData = processData(rawData);
-
-    render();
+    const rows = parseCSV(text);
+    processData(rows, name);
 
   } catch (err) {
-    console.error("Athlete load error:", err);
+    console.error("LOAD ERROR:", err);
   }
 }
 
-/* ========================================
-   CSV PARSER
-   ======================================== */
-
+// ===============================
+// CSV PARSER (SAFE)
+// ===============================
 function parseCSV(text) {
-  const rows = [];
-  let current = "";
-  let insideQuotes = false;
-  let row = [];
+  return text.trim().split(/\r?\n/).map(row => {
+    const cols = [];
+    let current = '';
+    let insideQuotes = false;
 
-  for (let char of text) {
-    if (char === '"') insideQuotes = !insideQuotes;
-    else if (char === "," && !insideQuotes) {
-      row.push(current);
-      current = "";
-    }
-    else if (char === "\n" && !insideQuotes) {
-      row.push(current);
-      rows.push(row);
-      row = [];
-      current = "";
-    }
-    else {
-      current += char;
-    }
-  }
+    for (let i = 0; i < row.length; i++) {
+      const char = row[i];
 
-  if (current) {
-    row.push(current);
-    rows.push(row);
-  }
+      if (char === '"' && row[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else if (char === '"') {
+        insideQuotes = !insideQuotes;
+      } else if (char === ',' && !insideQuotes) {
+        cols.push(current);
+        current = '';
+      } else {
+        current += char;
+      }
+    }
 
-  return rows;
+    cols.push(current);
+    return cols.map(c => c.trim());
+  });
 }
 
-/* ========================================
-   PROCESS DATA
-   ======================================== */
+// ===============================
+// UTIL
+// ===============================
+function toNumber(val) {
+  const num = parseFloat(String(val || "").replace(/[^0-9.\-]/g, ""));
+  return isNaN(num) ? 0 : num;
+}
 
-function processData(rows) {
+function safe(val) {
+  return (val && val !== "0") ? val : "-";
+}
 
-  const headers = rows.shift().map(h => h.trim());
+// ===============================
+// PROCESS DATA
+// ===============================
+function processData(rows, athleteName) {
 
-  const getIndex = (name) =>
-    headers.findIndex(h => h.toLowerCase().includes(name.toLowerCase()));
+  const headers = rows[0];
 
-  return rows.map(cols => {
+  // dynamic column lookup (THIS fixes your issues permanently)
+  const idx = (name) => headers.findIndex(h => h.includes(name));
 
-    const name = clean(cols[getIndex("student")]);
-    if (!name) return null;
+  const i = {
+    name: idx("Student-Athlete"),
+    date: idx("Test Date"),
+    hour: idx("Hour"),
+    grade: idx("Grade"),
+    weight: idx("Actual Weight"),
+
+    bench: idx("Bench Press"),
+    squat: idx("Squat"),
+    clean: idx("Hang Clean"),
+
+    vertical: idx("Vertical Jump"),
+    broad: idx("Broad Jump"),
+    med: idx("Med Ball Toss"),
+
+    pro: idx("Pro Agility"),
+    ten: idx("10 yd"),
+    forty: idx("40 yd"),
+
+    sit: idx("Sit-Ups"),
+    score: idx("Total Athletic")
+  };
+
+  const data = rows.slice(1).map(row => {
 
     return {
-      name,
-      date: formatDate(cols[getIndex("date")]),
-      weight: toNumber(cols[getIndex("weight")]),
+      name: row[i.name],
+      dateRaw: row[i.date],
+      date: new Date(row[i.date]),
 
-      bench: toNumber(cols[getIndex("bench")]),
-      squat: toNumber(cols[getIndex("squat")]),
-      clean: toNumber(cols[getIndex("clean")]),
+      hour: row[i.hour],
+      grade: row[i.grade],
+      weight: row[i.weight],
 
-      vertical: toNumber(cols[getIndex("vertical")]),
-      broad: toNumber(cols[getIndex("broad")]),
-      med: toNumber(cols[getIndex("med")]),
+      bench: toNumber(row[i.bench]),
+      squat: toNumber(row[i.squat]),
+      clean: toNumber(row[i.clean]),
 
-      agility: toNumber(cols[getIndex("agility")]),
-      situps: toNumber(cols[getIndex("sit")]),
-      ten: toNumber(cols[getIndex("10")]),
-      forty: toNumber(cols[getIndex("40")])
+      vertical: toNumber(row[i.vertical]),
+      broad: toNumber(row[i.broad]),
+      med: toNumber(row[i.med]),
+
+      pro: toNumber(row[i.pro]),
+      ten: toNumber(row[i.ten]),
+      forty: toNumber(row[i.forty]),
+
+      sit: toNumber(row[i.sit]),
+      score: toNumber(row[i.score])
     };
 
-  }).filter(Boolean);
-}
-
-/* ========================================
-   MAIN RENDER
-   ======================================== */
-
-function render() {
-
-  const athleteData = processedData.filter(a =>
-    normalize(a.name).includes(normalize(athleteName))
+  }).filter(a =>
+    a.name &&
+    a.name.trim() === athleteName
   );
 
-  if (!athleteData.length) {
-    setText("athleteName", "Athlete not found");
+  if (!data.length) {
+    document.getElementById("profile").innerHTML = "<p>No data found</p>";
     return;
   }
 
-  const sorted = [...athleteData]
-    .sort((a, b) => new Date(b.date) - new Date(a.date));
+  // sort newest first
+  data.sort((a, b) => b.date - a.date);
 
-  const latest = sorted[0];
-  const prev = sorted[1];
-
-  /* ===== TEAM RANK ===== */
-
-  const latestAll = getLatestPerAthlete(processedData);
-
-  const ranked = [...latestAll]
-    .map(a => ({
-      ...a,
-      score: calcPerformance(a)
-    }))
-    .sort((a, b) => b.score - a.score);
-
-  const rank = ranked.findIndex(a =>
-    normalize(a.name) === normalize(latest.name)
-  ) + 1;
-
-  const percentile = Math.round((1 - (rank - 1) / ranked.length) * 100);
-
-  /* ===== DISPLAY ===== */
-
-  setText("athleteName", latest.name);
-
-  setMetric("bench", latest.bench, prev?.bench);
-  setMetric("squat", latest.squat, prev?.squat);
-  setMetric("clean", latest.clean, prev?.clean);
-
-  setMetric("verticalScore", latest.vertical, prev?.vertical);
-  setMetric("broadScore", latest.broad, prev?.broad);
-  setMetric("medballScore", latest.med, prev?.med);
-
-  setMetric("proagility", latest.agility, prev?.agility);
-  setMetric("situps", latest.situps, prev?.situps);
-  setMetric("tenyard", latest.ten, prev?.ten);
-  setMetric("forty", latest.forty, prev?.forty);
-
-  setText("rank", `#${rank} / ${ranked.length}`);
-  setText("percentile", `Top ${percentile}%`);
-
-  renderHistoryTable(sorted);
-  renderChart(sorted);
-  renderRadarChart(latest);
+  render(data);
 }
 
-/* ========================================
-   HISTORY TABLE
-   ======================================== */
+// ===============================
+// RENDER
+// ===============================
+function render(data) {
 
-function renderHistoryTable(data) {
+  const container = document.getElementById("profile");
+  container.innerHTML = "";
 
-  const tbody = document.querySelector("#historyTable tbody");
-  if (!tbody) return;
+  const bestScore = Math.max(...data.map(d => d.score || 0));
 
-  tbody.innerHTML = data.map(a => `
+  data.forEach((entry, index) => {
 
-    <tr>
-      <td>${a.date}</td>
-      <td>${a.bench || "-"}</td>
-      <td>${a.squat || "-"}</td>
-      <td>${a.clean || "-"}</td>
-      <td>${avg(a.bench, a.squat, a.clean)}</td>
+    const prev = data[index + 1];
 
-      <td>${a.vertical || "-"}</td>
-      <td>${a.broad || "-"}</td>
-      <td>${a.med || "-"}</td>
+    const diff = (a, b, reverse=false) => {
+      if (!a || !b) return "";
+      const change = reverse ? (b - a) : (a - b);
 
-      <td>${a.agility || "-"}</td>
-      <td>${a.situps || "-"}</td>
-      <td>${a.ten || "-"}</td>
-      <td>${a.forty || "-"}</td>
+      if (change > 0) return `<span style="color:#4caf50">(+${change.toFixed(1)})</span>`;
+      if (change < 0) return `<span style="color:red">(${change.toFixed(1)})</span>`;
+      return "";
+    };
 
-      <td>${calcPerformance(a)}</td>
-    </tr>
+    const card = document.createElement("div");
+    card.className = "card";
 
-  `).join("");
-}
+    card.innerHTML = `
+      ${index === 0 ? "<div style='color:#4caf50'>LATEST TEST</div><br>" : ""}
 
-/* ========================================
-   CHART
-   ======================================== */
+      <strong>Date:</strong> ${entry.dateRaw}<br>
+      <strong>Grade:</strong> ${entry.grade} | Hour: ${entry.hour}<br>
+      <strong>Weight:</strong> ${entry.weight}<br><br>
 
-function renderChart(history) {
+      <strong>🏋️ Strength</strong><br>
+      Bench: ${safe(entry.bench)} ${prev ? diff(entry.bench, prev.bench) : ""}<br>
+      Squat: ${safe(entry.squat)} ${prev ? diff(entry.squat, prev.squat) : ""}<br>
+      Clean: ${safe(entry.clean)} ${prev ? diff(entry.clean, prev.clean) : ""}<br><br>
 
-  if (typeof Chart === "undefined") return;
+      <strong>🏃 Performance</strong><br>
+      Vertical: ${safe(entry.vertical)} ${prev ? diff(entry.vertical, prev.vertical) : ""}<br>
+      Broad: ${safe(entry.broad)} ${prev ? diff(entry.broad, prev.broad) : ""}<br>
+      Med Ball: ${safe(entry.med)} ${prev ? diff(entry.med, prev.med) : ""}<br><br>
 
-  const ctx = document.getElementById("progressChart");
-  if (!ctx) return;
+      <strong>⚡ Speed</strong><br>
+      10 yd: ${safe(entry.ten)} ${prev ? diff(entry.ten, prev.ten, true) : ""}<br>
+      40 yd: ${safe(entry.forty)} ${prev ? diff(entry.forty, prev.forty, true) : ""}<br>
+      Pro Agility: ${safe(entry.pro)} ${prev ? diff(entry.pro, prev.pro, true) : ""}<br><br>
 
-  if (window.chart) window.chart.destroy();
+      <strong>💪 Conditioning</strong><br>
+      Sit Ups: ${safe(entry.sit)} ${prev ? diff(entry.sit, prev.sit) : ""}<br><br>
 
-  window.chart = new Chart(ctx, {
-    type: "line",
-    data: {
-      labels: history.map(a => a.date).reverse(),
-      datasets: [
-        {
-          label: "Strength",
-          data: history.map(a =>
-            avg(a.bench, a.squat, a.clean)
-          ).reverse()
-        },
-        {
-          label: "Performance",
-          data: history.map(a =>
-            calcPerformance(a)
-          ).reverse()
-        }
-      ]
-    }
+      <strong>🏆 Score:</strong> ${entry.score || "-"}
+      ${entry.score === bestScore ? "<div style='color:gold;'>BEST SCORE</div>" : ""}
+    `;
+
+    container.appendChild(card);
   });
-}
-
-function renderRadarChart(a) {
-
-  if (typeof Chart === "undefined") return;
-
-  const ctx = document.getElementById("radarChart");
-  if (!ctx) return;
-
-  if (window.radarChart) window.radarChart.destroy();
-
-  /* =========================
-     🔥 NORMALIZATION (KEY)
-  ========================= */
-
-  const normalize = (val, min, max) => {
-    if (!val) return 0;
-    return Math.max(0, Math.min(100, ((val - min) / (max - min)) * 100));
-  };
-
-  const data = [
-    normalize(a.bench, 100, 400),
-    normalize(a.squat, 150, 500),
-    normalize(a.clean, 100, 300),
-
-    normalize(a.vertical, 15, 40),
-    normalize(a.broad, 6, 11),
-    normalize(a.med, 10, 25),
-
-    normalize(a.forty, 6, 4),     // reversed (lower is better)
-    normalize(a.agility, 6, 4)    // reversed
-  ];
-
-  /* =========================
-     🎨 COLOR SYSTEM
-  ========================= */
-
-  const gradient = ctx.getContext("2d").createRadialGradient(150,150,20,150,150,200);
-  gradient.addColorStop(0, "rgba(0,230,118,0.6)");
-  gradient.addColorStop(1, "rgba(0,102,255,0.1)");
-
-  /* =========================
-     📊 CHART
-  ========================= */
-
-  window.radarChart = new Chart(ctx, {
-    type: "radar",
-    data: {
-      labels: [
-        "Bench","Squat","Clean",
-        "Vertical","Broad","Med Ball",
-        "Speed","Agility"
-      ],
-      datasets: [{
-        label: "Performance",
-        data: data,
-        backgroundColor: gradient,
-        borderColor: "#00E676",
-        borderWidth: 2,
-        pointBackgroundColor: "#00E676",
-        pointBorderColor: "#fff",
-        pointRadius: 4
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false }
-      },
-      scales: {
-        r: {
-          min: 0,
-          max: 100,
-          ticks: {
-            display: false
-          },
-          grid: {
-            color: "rgba(255,255,255,0.1)"
-          },
-          angleLines: {
-            color: "rgba(255,255,255,0.2)"
-          },
-          pointLabels: {
-            color: "#ccc",
-            font: {
-              size: 12,
-              weight: "600"
-            }
-          }
-        }
-      }
-    }
-  });
-}
-
-/* ========================================
-   UTILITIES
-   ======================================== */
-
-function getLatestPerAthlete(data) {
-  const grouped = {};
-
-  data.forEach(a => {
-    if (!grouped[a.name]) grouped[a.name] = [];
-    grouped[a.name].push(a);
-  });
-
-  return Object.values(grouped).map(arr =>
-    arr.sort((a, b) => new Date(b.date) - new Date(a.date))[0]
-  );
-}
-
-function calcPerformance(a) {
-  return Math.round(avg(
-    a.vertical,
-    a.broad,
-    a.med,
-    a.agility,
-    a.situps,
-    a.ten,
-    a.forty
-  ));
-}
-
-function setMetric(id, current, previous) {
-  const el = document.getElementById(id);
-  if (!el) return;
-
-  const change = previous !== undefined
-    ? current - previous
-    : null;
-
-  let text = current || "-";
-
-  if (change !== null) {
-    if (change > 0) text += ` ↑ +${change}`;
-    if (change < 0) text += ` ↓ ${change}`;
-  }
-
-  el.textContent = text;
-  el.style.color = getColor(current);
-}
-
-function setText(id, value) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = value;
-}
-
-function getColor(score) {
-  if (score >= 90) return "#00E676";
-  if (score >= 75) return "#FFD54F";
-  return "#FF5252";
-}
-
-function avg(...nums) {
-  const valid = nums.filter(n => !isNaN(n));
-  if (!valid.length) return 0;
-  return Math.round(valid.reduce((a, b) => a + b, 0) / valid.length);
-}
-
-function clean(v) {
-  return v ? String(v).trim() : "";
-}
-
-function toNumber(val) {
-  return parseFloat(String(val).replace(/[^0-9.\-]/g, "")) || 0;
-}
-
-function formatDate(raw) {
-  const d = new Date(raw);
-  return isNaN(d) ? "-" : d.toLocaleDateString();
-}
-
-function normalize(str) {
-  return (str || "").toLowerCase().replace(/[^a-z0-9]/g, "");
 }
