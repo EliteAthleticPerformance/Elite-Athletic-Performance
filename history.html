@@ -100,6 +100,67 @@ Papa.parse(CSV_URL + "&t=" + Date.now(), {
 
     ALL_ROWS = rows;
 CURRENT_ATHLETE = athlete;
+updateComparison();
+
+function updateComparison() {
+
+  function extractMetrics(row) {
+    return {
+      strength: cleanNum(row[6]) + cleanNum(row[8]),
+      power: cleanNum(row[10]) + cleanNum(row[12]),
+      explosive: cleanNum(row[14]) + cleanNum(row[16]),
+      agility: cleanNum(row[18]) + cleanNum(row[20]),
+      speed: cleanNum(row[22]) + cleanNum(row[24])
+    };
+  }
+
+  const player = extractMetrics(CURRENT_ATHLETE);
+
+  let group = [];
+
+  if (compareMode === "team") {
+    group = ALL_ROWS.filter(r => r !== CURRENT_ATHLETE);
+  }
+
+  if (compareMode === "top5") {
+    group = [...ALL_ROWS]
+      .sort((a, b) => cleanNum(b[30]) - cleanNum(a[30]))
+      .slice(0, 5);
+  }
+
+  if (compareMode === "weight") {
+    const weight = cleanNum(CURRENT_ATHLETE[5]);
+
+    group = ALL_ROWS.filter(r => {
+      const w = cleanNum(r[5]);
+      return Math.abs(w - weight) <= 10 && r !== CURRENT_ATHLETE;
+    });
+  }
+
+  let totals = { speed:0, strength:0, power:0, agility:0, explosive:0 };
+
+  group.forEach(r => {
+    const m = extractMetrics(r);
+    totals.speed += m.speed;
+    totals.strength += m.strength;
+    totals.power += m.power;
+    totals.agility += m.agility;
+    totals.explosive += m.explosive;
+  });
+
+  const count = group.length || 1;
+
+  const avg = {
+    speed: totals.speed / count,
+    strength: totals.strength / count,
+    power: totals.power / count,
+    agility: totals.agility / count,
+    explosive: totals.explosive / count
+  };
+
+  renderRadarChart(player, avg);
+}
+
 
     // ---------- EXTRACT FUNCTION ----------
     function extractMetrics(row) {
