@@ -75,22 +75,37 @@ function cleanNum(val) {
 }
 
 function extractMetrics(row) {
+
   const bench = cleanNum(row[6]);
   const squat = cleanNum(row[8]);
   const clean = cleanNum(row[10]);
   const vertical = cleanNum(row[12]);
   const broad = cleanNum(row[14]);
   const medBall = cleanNum(row[16]);
-  const proAgility = cleanNum(row[18]); // was agility
+  const proAgility = cleanNum(row[18]);
   const situps = cleanNum(row[20]);
   const dash10 = cleanNum(row[22]);
   const dash40 = cleanNum(row[24]);
 
   return {
-    strength: bench + squat + situps,        // ✅ added situps
-    power: clean + vertical,
-    explosive: broad + medBall,
-    speed: dash10 + dash40 + proAgility      // ✅ added pro agility
+    speed: dash10 + dash40 + proAgility,          // ✅ UPDATED
+    power: clean,                                 // ✅ UPDATED (no longer combined)
+    strength: squat + bench + situps,             // ✅ UPDATED
+    explosive: broad + vertical + medBall         // ✅ UPDATED
+  };
+}
+
+
+function scale(val, min, max) {
+  return Math.max(0, Math.min(100, ((val - min) / (max - min)) * 100));
+}
+
+function normalizeMetrics(m) {
+  return {
+    speed: scale(m.speed, 0, 100),
+    power: scale(m.power, 100, 400),
+    strength: scale(m.strength, 200, 800),
+    explosive: scale(m.explosive, 50, 300)
   };
 }
 
@@ -128,9 +143,7 @@ const allMetrics = validRows.map(r => extractMetrics(r));
 };
 }
 
-function norm(val) {
-  return Math.min(val / 5, 100);
-}
+
 
 /* ================= LOAD DATA ================= */
 
@@ -214,6 +227,16 @@ function updateComparison() {
 });
   }
 
+
+  // ✅ FIX — handle empty group FIRST
+if (group.length === 0) {
+  group = [CURRENT_ATHLETE];
+}
+
+// ✅ FIX HERE
+const count = group.length || 1;
+
+
   let totals = { speed:0, strength:0, power:0, explosive:0 };
 
 group.forEach(r => {
@@ -225,13 +248,7 @@ group.forEach(r => {
 });
 
 
-// ✅ FIX — handle empty group FIRST
-if (group.length === 0) {
-  group = [CURRENT_ATHLETE];
-}
 
-// ✅ FIX HERE
-const count = group.length || 1;
 
 const avg = {
   speed: totals.speed / count,
@@ -296,6 +313,9 @@ function getColor(score) {
 
 function renderRadarChart(player, avg) {
 
+  const p = normalizeMetrics(player);
+const a = normalizeMetrics(avg);
+
   const canvas = document.getElementById("radarChart");
 const ctx = canvas.getContext("2d");
 
@@ -316,17 +336,19 @@ gradient.addColorStop(1, "rgba(59,130,246,0.05)");
       labels: ["Speed", "Strength", "Power", "Explosive"],
       datasets: [
   {
+
+    
     label: "Athlete",
     data: [
-      norm(player.speed),
-      norm(player.strength),
-      norm(player.power),
-      norm(player.explosive)
+      p.speed,
+            p.strength,
+            p.power,
+            p.explosive
     ],
     backgroundColor: gradient,
     borderColor: getColor(cleanNum(CURRENT_ATHLETE[30])),
     borderWidth: 3,
-borderColor: getColor(cleanNum(CURRENT_ATHLETE[30])),
+
 pointBorderColor: "#fff",
     pointBackgroundColor: getColor(cleanNum(CURRENT_ATHLETE[30])),
     pointRadius: 5,
@@ -335,10 +357,10 @@ pointBorderColor: "#fff",
   {
     label: "Comparison",
     data: [
-      norm(avg.speed),
-      norm(avg.strength),
-      norm(avg.power),
-      norm(avg.explosive)
+      a.speed,
+            a.strength,
+            a.power,
+            a.explosive
     ],
     backgroundColor: "rgba(255,255,255,0.08)",
     borderColor: "#888",
