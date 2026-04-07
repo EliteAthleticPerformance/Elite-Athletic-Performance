@@ -75,12 +75,22 @@ function cleanNum(val) {
 }
 
 function extractMetrics(row) {
+  const bench = cleanNum(row[6]);
+  const squat = cleanNum(row[8]);
+  const clean = cleanNum(row[10]);
+  const vertical = cleanNum(row[12]);
+  const broad = cleanNum(row[14]);
+  const medBall = cleanNum(row[16]);
+  const proAgility = cleanNum(row[18]); // was agility
+  const situps = cleanNum(row[20]);
+  const dash10 = cleanNum(row[22]);
+  const dash40 = cleanNum(row[24]);
+
   return {
-    strength: cleanNum(row[6]) + cleanNum(row[8]),
-    power: cleanNum(row[10]) + cleanNum(row[12]),
-    explosive: cleanNum(row[14]) + cleanNum(row[16]),
-    agility: cleanNum(row[18]) + cleanNum(row[20]),
-    speed: cleanNum(row[22]) + cleanNum(row[24])
+    strength: bench + squat + situps,        // ✅ added situps
+    power: clean + vertical,
+    explosive: broad + medBall,
+    speed: dash10 + dash40 + proAgility      // ✅ added pro agility
   };
 }
 
@@ -111,12 +121,11 @@ const allMetrics = validRows.map(r => extractMetrics(r));
   }
 
   return {
-    speed: getRank("speed"),
-    strength: getRank("strength"),
-    power: getRank("power"),
-    agility: getRank("agility"),
-    explosive: getRank("explosive")
-  };
+  speed: getRank("speed"),
+  strength: getRank("strength"),
+  power: getRank("power"),
+  explosive: getRank("explosive")
+};
 }
 
 function norm(val) {
@@ -191,32 +200,24 @@ function updateComparison() {
 });
   }
 
-  let totals = {
-    speed: 0,
-    strength: 0,
-    power: 0,
-    agility: 0,
-    explosive: 0
-  };
+  let totals = { speed:0, strength:0, power:0, explosive:0 };
 
   group.forEach(r => {
     const m = extractMetrics(r);
     totals.speed += m.speed;
     totals.strength += m.strength;
     totals.power += m.power;
-    totals.agility += m.agility;
     totals.explosive += m.explosive;
   });
 
   const count = group.length || 1;
 
   const avg = {
-    speed: totals.speed / count,
-    strength: totals.strength / count,
-    power: totals.power / count,
-    agility: totals.agility / count,
-    explosive: totals.explosive / count
-  };
+  speed: totals.speed / count,
+  strength: totals.strength / count,
+  power: totals.power / count,
+  explosive: totals.explosive / count
+};
 
   renderRadarChart(player, avg);
   renderRankings(player);
@@ -253,7 +254,6 @@ function renderRankings(playerMetrics) {
     ${card("Speed", ranks.speed)}
     ${card("Strength", ranks.strength)}
     ${card("Power", ranks.power)}
-    ${card("Agility", ranks.agility)}
     ${card("Explosive", ranks.explosive)}
   `;
 }
@@ -271,29 +271,27 @@ function renderRadarChart(player, avg) {
   window.radarChart = new Chart(ctx, {
     type: "radar",
     data: {
-      labels: ["Speed", "Strength", "Power", "Agility", "Explosive"],
+      labels: ["Speed", "Strength", "Power", "Explosive"],
       datasets: [
         {
           label: "Athlete",
           data: [
-            norm(player.speed),
-            norm(player.strength),
-            norm(player.power),
-            norm(player.agility),
-            norm(player.explosive)
-          ],
+  norm(player.speed),
+  norm(player.strength),
+  norm(player.power),
+  norm(player.explosive)
+],
           backgroundColor: "rgba(59,130,246,0.4)",
           borderColor: "#3b82f6"
         },
         {
           label: "Comparison",
           data: [
-            norm(avg.speed),
-            norm(avg.strength),
-            norm(avg.power),
-            norm(avg.agility),
-            norm(avg.explosive)
-          ],
+  norm(player.speed),
+  norm(player.strength),
+  norm(player.power),
+  norm(player.explosive)
+],
           backgroundColor: "rgba(255,255,255,0.15)",
           borderColor: "#aaa"
         }
