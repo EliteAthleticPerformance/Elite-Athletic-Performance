@@ -178,7 +178,7 @@ Papa.parse(CSV_URL + "&t=" + Date.now(), {
     CURRENT_ATHLETE = athlete;
 
     
-    const scoreVal = cleanNum(CURRENT_ATHLETE[31]);
+    const scoreVal = cleanNum(CURRENT_ATHLETE[30]);
 
 
 
@@ -193,7 +193,7 @@ function updateComparison() {
 const player = extractMetrics(CURRENT_ATHLETE);
 const dominant = getDominantTrait(player);
 
-const scoreVal = cleanNum(CURRENT_ATHLETE[31]);
+const scoreVal = cleanNum(CURRENT_ATHLETE[30]);
 
 document.getElementById("score").innerHTML = `
   <span style="font-size:18px;">Score: ${scoreVal}</span>
