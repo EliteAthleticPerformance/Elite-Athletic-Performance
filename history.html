@@ -84,6 +84,36 @@ function extractMetrics(row) {
   };
 }
 
+function calculateRankings(playerMetrics) {
+
+  const allMetrics = ALL_ROWS.map(r => extractMetrics(r));
+
+  function getRank(metric) {
+    const values = allMetrics.map(m => m[metric]).sort((a,b) => b - a);
+
+    const playerVal = playerMetrics[metric];
+
+    const rank = values.findIndex(v => playerVal >= v) + 1;
+    const total = values.length;
+
+    const percentile = Math.round((1 - (rank - 1) / total) * 100);
+
+    return {
+      rank,
+      total,
+      percentile
+    };
+  }
+
+  return {
+    speed: getRank("speed"),
+    strength: getRank("strength"),
+    power: getRank("power"),
+    agility: getRank("agility"),
+    explosive: getRank("explosive")
+  };
+}
+
 function norm(val) {
   return Math.min(val / 5, 100);
 }
@@ -177,6 +207,43 @@ function updateComparison() {
   };
 
   renderRadarChart(player, avg);
+  renderRankings(player);
+}
+
+function getTier(p) {
+  if (p >= 90) return "elite";
+  if (p >= 75) return "strong";
+  if (p >= 50) return "average";
+  return "developing";
+}
+
+function renderRankings(playerMetrics) {
+
+  const ranks = calculateRankings(playerMetrics);
+
+  const container = document.getElementById("metrics");
+
+  function card(label, data) {
+    return `
+      <div class="card">
+        <h3>${label}</h3>
+        <p>#${data.rank} / ${data.total}</p>
+        <p style="color:#3b82f6; font-weight:600;">
+          <span class="tier-${getTier(data.percentile)}">
+  Top ${data.percentile}%
+</span>
+        </p>
+      </div>
+    `;
+  }
+
+  container.innerHTML = `
+    ${card("Speed", ranks.speed)}
+    ${card("Strength", ranks.strength)}
+    ${card("Power", ranks.power)}
+    ${card("Agility", ranks.agility)}
+    ${card("Explosive", ranks.explosive)}
+  `;
 }
 
 /* ================= CHART ================= */
