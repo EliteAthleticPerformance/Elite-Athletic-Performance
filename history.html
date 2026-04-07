@@ -216,17 +216,24 @@ function updateComparison() {
 
   let totals = { speed:0, strength:0, power:0, explosive:0 };
 
-  group.forEach(r => {
-    const m = extractMetrics(r);
-    totals.speed += m.speed;
-    totals.strength += m.strength;
-    totals.power += m.power;
-    totals.explosive += m.explosive;
-  });
+group.forEach(r => {
+  const m = extractMetrics(r);
+  totals.speed += m.speed;
+  totals.strength += m.strength;
+  totals.power += m.power;
+  totals.explosive += m.explosive;
+});
 
-  if (group.length === 0) group = [CURRENT_ATHLETE];
 
-  const avg = {
+// ✅ FIX — handle empty group FIRST
+if (group.length === 0) {
+  group = [CURRENT_ATHLETE];
+}
+
+// ✅ FIX HERE
+const count = group.length || 1;
+
+const avg = {
   speed: totals.speed / count,
   strength: totals.strength / count,
   power: totals.power / count,
