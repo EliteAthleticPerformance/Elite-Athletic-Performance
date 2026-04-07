@@ -31,25 +31,24 @@
 
 </main>
 
+
+
 <script>
 
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv";
 
-
-// ✅ GET NAME FROM URL
+// ---------- GET NAME ----------
 const params = new URLSearchParams(window.location.search);
-const selectedName = (params.get("name") || "").trim();
+const selectedName = (params.get("name") || "").trim().toLowerCase();
 
-document.getElementById("name").textContent = selectedName;
+document.getElementById("name").textContent = decodeURIComponent(params.get("name") || "");
 
-/* ---------- CLEAN NUMBER FUNCTION ---------- */
-
+// ---------- CLEAN ----------
 function cleanNum(val) {
   return Number((val || "").replace(/\r/g, "").trim()) || 0;
 }
 
-/* ---------- LOAD DATA ---------- */
-
+// ---------- LOAD ----------
 Papa.parse(CSV_URL + "&t=" + Date.now(), {
   download: true,
   skipEmptyLines: true,
@@ -59,143 +58,169 @@ Papa.parse(CSV_URL + "&t=" + Date.now(), {
     const rows = results.data;
 
     let athlete = null;
+    const others = [];
 
-    // ✅ FIND MATCH
     rows.forEach(row => {
       const name = (row[0] || "").trim().toLowerCase();
-      const target = selectedName.toLowerCase();
 
-      if (name === target) {
+      if (!name) return;
+
+      if (name === selectedName) {
         athlete = row;
+      } else {
+        others.push(row);
       }
     });
-
-    console.log("MATCH FOUND:", athlete);
 
     if (!athlete) {
       document.getElementById("score").textContent = "No data found";
       return;
     }
 
-    /* ---------- MAP DATA ---------- */
+    // ---------- EXTRACT FUNCTION ----------
+    function extractMetrics(row) {
+      const bench = cleanNum(row[6]);
+      const squat = cleanNum(row[8]);
+      const clean = cleanNum(row[10]);
+      const vertical = cleanNum(row[12]);
+      const broad = cleanNum(row[14]);
+      const medBall = cleanNum(row[16]);
+      const agilityRaw = cleanNum(row[18]);
+      const situps = cleanNum(row[20]);
+      const dash10 = cleanNum(row[22]);
+      const dash40 = cleanNum(row[24]);
 
-    const bench = cleanNum(athlete[6]);
-    const squat = cleanNum(athlete[8]);
-    const clean = cleanNum(athlete[10]);
-    const vertical = cleanNum(athlete[12]);
-    const broad = cleanNum(athlete[14]);
-    const medBall = cleanNum(athlete[16]);
-    const agilityRaw = cleanNum(athlete[18]);
-    const situps = cleanNum(athlete[20]);
-    const dash10 = cleanNum(athlete[22]);
-    const dash40 = cleanNum(athlete[24]);
-    const score = cleanNum(athlete[30]);
-
-    /* ---------- BUILD METRICS ---------- */
-
-    const strength = bench + squat;
-    const power = clean + vertical;
-    const explosiveness = broad + medBall;
-    const agility = agilityRaw + situps;
-    const speed = dash10 + dash40;
-
-    /* ---------- PERFORMANCE TIER ---------- */
-
-    let tier = "Needs Work";
-    let color = "#6b7280";
-
-    if (score >= 900) {
-      tier = "🔥 Elite";
-      color = "#f97316";
-    } else if (score >= 800) {
-      tier = "💪 Strong";
-      color = "#22c55e";
-    } else if (score >= 700) {
-      tier = "⚡ Developing";
-      color = "#eab308";
+      return {
+        strength: bench + squat,
+        power: clean + vertical,
+        explosive: broad + medBall,
+        agility: agilityRaw + situps,
+        speed: dash10 + dash40
+      };
     }
 
-    document.getElementById("score").innerHTML = `
-      <span style="font-size:18px;">Score: ${score}</span><br>
-      <span style="color:${color}; font-weight:600;">${tier}</span>
-    `;
+    // ---------- ATHLETE ----------
+    const athleteMetrics = extractMetrics(athlete);
 
-    /* ---------- NORMALIZE ---------- */
+    const score = cleanNum(athlete[30]);
 
+    // ---------- TEAM AVERAGE ----------
+    let totals = {
+      speed: 0,
+      strength: 0,
+      power: 0,
+      agility: 0,
+      explosive: 0
+    };
+
+    others.forEach(o => {
+      const m = extractMetrics(o);
+      totals.speed += m.speed;
+      totals.strength += m.strength;
+      totals.power += m.power;
+      totals.agility += m.agility;
+      totals.explosive += m.explosive;
+    });
+
+    const count = others.length || 1;
+
+    const avg = {
+      speed: totals.speed / count,
+      strength: totals.strength / count,
+      power: totals.power / count,
+      agility: totals.agility / count,
+      explosive: totals.explosive / count
+    };
+
+    // ---------- NORMALIZE ----------
     function norm(val) {
       return Math.min(val / 5, 100);
     }
 
+    // ---------- UI ----------
+    document.getElementById("score").innerHTML = `
+      <span style="font-size:18px;">Score: ${score}</span>
+    `;
+
     renderRadarChart(
-      norm(speed),
-      norm(strength),
-      norm(power),
-      norm(agility),
-      norm(explosiveness)
+      athleteMetrics,
+      avg
     );
 
-    /* ---------- METRIC CARDS ---------- */
-
-    document.getElementById("metrics").innerHTML = `
-      <div class="card">Speed<br><strong>${Math.round(speed)}</strong></div>
-      <div class="card">Strength<br><strong>${Math.round(strength)}</strong></div>
-      <div class="card">Power<br><strong>${Math.round(power)}</strong></div>
-      <div class="card">Agility<br><strong>${Math.round(agility)}</strong></div>
-      <div class="card">Explosive<br><strong>${Math.round(explosiveness)}</strong></div>
-    `;
   }
 });
 
-/* ---------- RADAR CHART ---------- */
-
-function renderRadarChart(speed, strength, power, agility, explosiveness) {
+// ---------- CHART ----------
+function renderRadarChart(player, avg) {
 
   const ctx = document.getElementById("radarChart");
-  const gradient = ctx.getContext("2d").createLinearGradient(0, 0, 0, 400);
 
-  gradient.addColorStop(0, "rgba(59,130,246,0.6)");
-  gradient.addColorStop(1, "rgba(59,130,246,0.05)");
+  if (window.radarChart) {
+    window.radarChart.destroy();
+  }
 
-  new Chart(ctx, {
+  window.radarChart = new Chart(ctx, {
     type: "radar",
     data: {
       labels: ["Speed", "Strength", "Power", "Agility", "Explosive"],
-      datasets: [{
-        data: [speed, strength, power, agility, explosiveness],
-        backgroundColor: gradient,
-        borderColor: "#3b82f6",
-        borderWidth: 2,
-        pointBackgroundColor: "#3b82f6",
-        pointRadius: 4
-      }]
+      datasets: [
+        {
+          label: "Athlete",
+          data: [
+            norm(player.speed),
+            norm(player.strength),
+            norm(player.power),
+            norm(player.agility),
+            norm(player.explosive)
+          ],
+          backgroundColor: "rgba(59,130,246,0.4)",
+          borderColor: "#3b82f6",
+          borderWidth: 2
+        },
+        {
+          label: "Team Avg",
+          data: [
+            norm(avg.speed),
+            norm(avg.strength),
+            norm(avg.power),
+            norm(avg.agility),
+            norm(avg.explosive)
+          ],
+          backgroundColor: "rgba(255,255,255,0.15)",
+          borderColor: "#aaa",
+          borderWidth: 2
+        }
+      ]
     },
     options: {
       responsive: true,
       plugins: {
-        legend: { display: false }
+        legend: {
+          labels: {
+            color: "#ccc"
+          }
+        }
       },
       scales: {
         r: {
           beginAtZero: true,
           suggestedMax: 100,
           ticks: { display: false },
-          grid: {
-            color: "rgba(255,255,255,0.08)"
-          },
-          angleLines: {
-            color: "rgba(255,255,255,0.1)"
-          },
+          grid: { color: "rgba(255,255,255,0.08)" },
+          angleLines: { color: "rgba(255,255,255,0.1)" },
           pointLabels: {
             color: "#aaa",
-            font: {
-              size: 13,
-              weight: "600"
-            }
+            font: { size: 13, weight: "600" }
           }
         }
       }
     }
   });
+}
+
+// ---------- NORMALIZE ----------
+function norm(val) {
+  return Math.min(val / 5, 100);
 }
 
 </script>
