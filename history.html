@@ -22,6 +22,12 @@
   <h1 id="name"></h1>
   <p id="score" style="margin-bottom:20px;"></p>
 
+  <div class="compare-toggle">
+  <button onclick="setCompareMode('team')" class="active" id="btn-team">Team</button>
+  <button onclick="setCompareMode('top5')" id="btn-top5">Top 5</button>
+  <button onclick="setCompareMode('weight')" id="btn-weight">Weight Group</button>
+</div>
+
   <div style="max-width: 500px; margin: auto;">
     <canvas id="radarChart"></canvas>
   </div>
@@ -36,6 +42,21 @@
 <script>
 
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv";
+
+let compareMode = "team";
+let ALL_ROWS = [];
+let CURRENT_ATHLETE = null;
+
+function setCompareMode(mode) {
+  compareMode = mode;
+
+  document.querySelectorAll(".compare-toggle button")
+    .forEach(btn => btn.classList.remove("active"));
+
+  document.getElementById(`btn-${mode}`).classList.add("active");
+
+  updateComparison();
+}
 
 // ---------- GET NAME ----------
 const params = new URLSearchParams(window.location.search);
@@ -77,6 +98,9 @@ Papa.parse(CSV_URL + "&t=" + Date.now(), {
       return;
     }
 
+    ALL_ROWS = rows;
+CURRENT_ATHLETE = athlete;
+
     // ---------- EXTRACT FUNCTION ----------
     function extractMetrics(row) {
       const bench = cleanNum(row[6]);
@@ -105,47 +129,21 @@ Papa.parse(CSV_URL + "&t=" + Date.now(), {
     const score = cleanNum(athlete[30]);
 
     // ---------- TEAM AVERAGE ----------
-    let totals = {
-      speed: 0,
-      strength: 0,
-      power: 0,
-      agility: 0,
-      explosive: 0
-    };
+    
+ALL_ROWS = rows;
+CURRENT_ATHLETE = athlete;
 
-    others.forEach(o => {
-      const m = extractMetrics(o);
-      totals.speed += m.speed;
-      totals.strength += m.strength;
-      totals.power += m.power;
-      totals.agility += m.agility;
-      totals.explosive += m.explosive;
-    });
+updateComparison();
+   
 
-    const count = others.length || 1;
-
-    const avg = {
-      speed: totals.speed / count,
-      strength: totals.strength / count,
-      power: totals.power / count,
-      agility: totals.agility / count,
-      explosive: totals.explosive / count
-    };
-
-    // ---------- NORMALIZE ----------
-    function norm(val) {
-      return Math.min(val / 5, 100);
-    }
+    
 
     // ---------- UI ----------
     document.getElementById("score").innerHTML = `
       <span style="font-size:18px;">Score: ${score}</span>
     `;
 
-    renderRadarChart(
-      athleteMetrics,
-      avg
-    );
+    
 
   }
 });

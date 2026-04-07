@@ -429,6 +429,34 @@ input:focus, select:focus {
   font-size: 16px;
 }
 
+.compare-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.compare-toggle button {
+  background: #111;
+  border: 1px solid #333;
+  color: #aaa;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.compare-toggle button:hover {
+  color: white;
+  border-color: #666;
+}
+
+.compare-toggle button.active {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
 /* ===== 13. MOBILE ===== */
 @media (max-width: 768px) {
 
