@@ -1,536 +1,232 @@
-/* ===== HEADER V3 ===== */
-
-.header-center {
-  text-align: center;
-}
-
-#headerMotto {
-  font-weight: 900;
-  letter-spacing: 2px;
-  line-height: 1.1;
-}
-
-/* Small button */
-.btn-small {
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.2);
-  color: white;
-  padding: 6px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-right: 10px;
-  transition: all 0.2s ease;
-}
-
-.btn-small:hover {
-  border-color: #0066FF;
-  box-shadow: 0 0 10px rgba(0,102,255,0.5);
-}
-
-/* Dropdown */
-.dropdown {
-  position: absolute;
-  top: 60px;
-  right: 15px;
-  background: #111;
-  border-radius: 12px;
-  padding: 10px;
-  display: none;
-  flex-direction: column;
-  min-width: 180px;
-  border: 1px solid rgba(255,255,255,0.1);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-  z-index: 1000;
-}
-
-.dropdown a {
-  padding: 10px;
-  text-decoration: none;
-  color: white;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-}
-
-.dropdown a:hover {
-  background: rgba(0,102,255,0.2);
-}
-
-/* Divider */
-.nav-divider {
-  height: 1px;
-  background: rgba(255,255,255,0.1);
-  margin: 8px 0;
-}
-
-/* Show menu */
-.dropdown.show {
-  display: flex;
-}
-
-
-
 /* ========================================
-   🔥 V3 ELITE ATHLETIC PERFORMANCE UI
-   ======================================== */
+🔥 ELITE ATHLETIC PERFORMANCE UI (CLEAN)
+======================================== */
 
 /* ===== 1. VARIABLES ===== */
 :root {
-  --bg: #000;
-  --card: #1a1a1a;
-  --card-light: #242424;
-  --text: #ffffff;
-  --muted: #aaa;
-  --border: rgba(255,255,255,0.08);
+--bg: #000;
+--card: #1a1a1a;
+--card-light: #242424;
+--text: #ffffff;
+--muted: #aaa;
+--border: rgba(255,255,255,0.08);
 
-  --primary: #0066FF;
-  --accent: #6c5ce7;
+--primary: #0066FF;
+--accent: #6c5ce7;
 
-  --radius: 14px;
-  --transition: 0.25s ease;
+--radius: 14px;
+--transition: 0.25s ease;
 }
 
 /* ===== 2. GLOBAL ===== */
-* {
-  box-sizing: border-box;
-}
+
+* { box-sizing: border-box; }
 
 html, body {
-  margin: 0;
-  padding: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Arial Black', sans-serif;
+margin: 0;
+padding: 0;
+background: var(--bg);
+color: var(--text);
+font-family: 'Arial Black', sans-serif;
 }
 
 h1, h2, h3 {
-  letter-spacing: 1px;
-  margin: 0;
+margin: 0;
+letter-spacing: 1px;
 }
 
 /* ===== 3. LAYOUT ===== */
 main {
-  max-width: 1200px;
-  margin: auto;
-  padding: 20px;
+max-width: 1100px;
+margin: auto;
+padding: 20px;
 }
 
 .section {
-  margin: 40px auto;
+margin: 40px auto;
+text-align: center;
 }
 
 /* ===== 4. HEADER ===== */
 #schoolHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 15px 25px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 15px 25px;
 
-  background: linear-gradient(90deg,#000,#111,#aaa,#111,#000);
-  border-top: 4px solid white;
-  border-bottom: 6px solid white;
+background: linear-gradient(90deg,#000,#111,#aaa,#111,#000);
+border-top: 4px solid white;
+border-bottom: 6px solid white;
 }
 
 #teamLogo {
-  height: 60px;
-  filter:
-    drop-shadow(0 0 6px #fff)
-    drop-shadow(0 0 14px var(--primary));
+height: 60px;
+filter:
+drop-shadow(0 0 6px #fff)
+drop-shadow(0 0 14px var(--primary));
 }
 
 #headerMotto {
-  font-weight: 900;
-  letter-spacing: 3px;
-  text-shadow: 0 0 12px rgba(0,102,255,0.7);
+font-weight: 900;
+letter-spacing: 3px;
+text-shadow: 0 0 12px rgba(0,102,255,0.7);
 }
 
 /* ===== 5. CARD SYSTEM ===== */
 .card {
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: 20px;
-  border: 1px solid var(--border);
-  transition: var(--transition);
+background: linear-gradient(145deg, #111, #1a1a1a);
+border-radius: var(--radius);
+padding: 20px;
+margin-bottom: 18px;
+border: 1px solid var(--border);
+transition: var(--transition);
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  background: var(--card-light);
-  box-shadow: 0 15px 40px rgba(0,102,255,0.25);
-  border-color: var(--primary);
+transform: translateY(-4px);
 }
 
-/* ===== 6. GRID SYSTEM ===== */
+/* ===== 6. GRID ===== */
 .grid {
-  display: grid;
-  gap: 20px;
+display: grid;
+gap: 20px;
 }
 
-.grid-2 { grid-template-columns: repeat(2, 1fr); }
-.grid-3 { grid-template-columns: repeat(3, 1fr); }
-.grid-auto { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.grid-auto {
+grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
 
-/* ===== 7. BUTTON ===== */
+/* ===== 7. BUTTONS ===== */
 .btn {
-  display: inline-block;
-  background: linear-gradient(135deg, var(--accent), var(--primary));
-  padding: 12px 20px;
-  border-radius: 10px;
-  color: white;
-  text-decoration: none;
-  font-weight: 600;
-  transition: var(--transition);
+background: linear-gradient(135deg, var(--accent), var(--primary));
+padding: 12px 20px;
+border-radius: 10px;
+color: white;
+text-decoration: none;
+font-weight: 600;
+transition: var(--transition);
 }
 
 .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0,102,255,0.4);
+transform: translateY(-2px);
+box-shadow: 0 10px 25px rgba(0,102,255,0.4);
 }
 
-/* ===== 8. TABLE ===== */
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #111;
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-.table th {
-  background: #0a0a0a;
-  padding: 14px;
-  font-size: 1rem;
-}
-
-.table td {
-  padding: 14px;
-  text-align: center;
-}
-
-.table tr:nth-child(even) {
-  background: #1a1a1a;
-}
-
-.table tr:hover {
-  background: #222;
-}
-
-/* ===== 9. LEADERBOARD ===== */
-.leaderboard-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-}
-
-.leaderboard-title {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.rank-1 { color: gold; font-weight: bold; }
-.rank-2 { color: #c0c0c0; font-weight: bold; }
-.rank-3 { color: #cd7f32; font-weight: bold; }
-
-/* ===== LEADERBOARD ELITE ===== */
-
-.table tr:first-child td {
-  font-size: 1.1rem;
-  font-weight: bold;
-}
-
-.rank-1 {
-  color: gold;
-  text-shadow: 0 0 10px rgba(255,215,0,0.8);
-}
-
-.rank-2 {
-  color: #c0c0c0;
-}
-
-.rank-3 {
-  color: #cd7f32;
-}
-
-/* Hover glow */
-.table tr:hover {
-  background: rgba(0,102,255,0.1);
-  transform: scale(1.01);
-}
-
-/* Smooth feel */
-.table tr {
-  transition: all 0.2s ease;
-}
-
-/* ===== 10. ATHLETE STATS ===== */
-.athlete-stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
-
-.stat-box {
-  background: #111;
-  padding: 18px;
-  border-radius: var(--radius);
-  text-align: center;
-  border: 1px solid var(--border);
-}
-
-.stat-box h3 {
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.stat-box p {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-/* ===== CARD BASE ===== */
-
-.card {
-  background: linear-gradient(145deg, #111, #1a1a1a);
-  border-radius: 16px;
-  padding: 18px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  border: 1px solid rgba(255,255,255,0.05);
-  position: relative;
-  overflow: hidden;
-}
-
-/* Hover effect */
-.card:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-}
-
-/* ===== HEADER ===== */
-
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-/* Avatar */
-.avatar {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #4f46e5, #9333ea);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  color: white;
-}
-
-/* Name */
-.card h3 {
-  margin: 0;
-  font-size: 1.1rem;
-}
-
-/* Score */
-.score {
-  margin: 4px 0 0;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-/* ===== FOOTER ===== */
-
-.card-footer {
-  margin-top: 14px;
-}
-
-/* ===== TAGS ===== */
-
-.tag {
-  display: inline-block;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-/* Elite glow */
-.card.elite {
-  border: 1px solid rgba(255, 120, 0, 0.5);
-  box-shadow: 0 0 15px rgba(255, 120, 0, 0.2);
-}
-
-.tag.elite {
-  background: rgba(255,120,0,0.15);
-  color: #ff7a00;
-}
-
-/* Strong */
-.tag.strong {
-  background: rgba(255,200,0,0.15);
-  color: #facc15;
-}
-
-/* Developing */
-.tag.developing {
-  background: rgba(0,200,255,0.15);
-  color: #22d3ee;
-}
-
-/* Needs Work */
-.tag.needs {
-  background: rgba(150,150,150,0.15);
-  color: #9ca3af;
-}
-
-/* ===== 11. FORM ===== */
-.form-grid {
-  display: grid;
-  gap: 15px;
-}
-
-.form-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
-.form-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
-.form-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
-
-input, select {
-  width: 100%;
-  padding: 14px;
-  border-radius: 10px;
-  border: 1px solid #333;
-  background: #111;
-  color: white;
-}
-
-input:focus, select:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 10px rgba(108,92,231,0.4);
-}
-
-.save-btn {
-  width: 100%;
-  padding: 16px;
-  border-radius: 12px;
-  background: var(--accent);
-  border: none;
-  color: white;
-  font-size: 18px;
-}
-
-/* ===== 12. SEARCH ===== */
-.search {
-  display: block;
-  margin: 0 auto 30px;
-  width: 100%;
-  max-width: 500px;
-  text-align: center;
-  font-size: 16px;
-}
-
+/* ===== 8. COMPARE TOGGLE ===== */
 .compare-toggle {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin: 20px 0;
+display: flex;
+justify-content: center;
+gap: 10px;
+margin: 20px 0;
 }
 
 .compare-toggle button {
-  background: #111;
-  border: 1px solid #333;
-  color: #aaa;
-  padding: 8px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.compare-toggle button:hover {
-  color: white;
-  border-color: #666;
+background: #111;
+border: 1px solid #333;
+color: #aaa;
+padding: 8px 14px;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s ease;
 }
 
 .compare-toggle button.active {
-  background: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
+background: #3b82f6;
+color: white;
+border-color: #3b82f6;
 }
 
-.tier-elite { color: #22c55e; }      /* green */
-.tier-strong { color: #3b82f6; }     /* blue */
-.tier-average { color: #f59e0b; }    /* yellow */
-.tier-developing { color: #ef4444; } /* red */
+/* ===== 9. TEXT TIERS ===== */
+.tier-text-elite { color: #22c55e; }
+.tier-text-strong { color: #3b82f6; }
+.tier-text-average { color: #f59e0b; }
+.tier-text-developing { color: #ef4444; }
 
-.card {
-  background: linear-gradient(145deg, #111, #1a1a1a);
-  border-radius: 14px;
-  padding: 20px;
-  transition: all 0.3s ease;
-}
+/* ===== 10. CARD TIERS ===== */
 
 /* 🔥 ELITE */
-.tier-elite {
-  border: 1px solid #f97316;
-  box-shadow: 0 0 18px rgba(249,115,22,0.5);
+.card.tier-elite {
+border: 1px solid #f97316;
+box-shadow: 0 0 10px rgba(249,115,22,0.3);
 }
 
 /* 🟢 STRONG */
-.tier-strong {
-  border: 1px solid #22c55e;
-  box-shadow: 0 0 10px rgba(34,197,94,0.4);
+.card.tier-strong {
+border: 1px solid #22c55e;
 }
 
 /* 🟡 AVERAGE */
-.tier-average {
-  border: 1px solid #eab308;
+.card.tier-average {
+border: 1px solid #eab308;
 }
 
 /* 🔵 DEVELOPING */
-.tier-developing {
-  border: 1px solid #3b82f6;
+.card.tier-developing {
+border: 1px solid #3b82f6;
 }
-.card:hover {
-  transform: translateY(-4px) scale(1.01);
+
+/* ===== 11. METRIC TEXT ===== */
+.rank {
+color: var(--muted);
+margin: 6px 0;
 }
 
 .percentile {
-  font-weight: 600;
+font-weight: 600;
 }
 
-.rank {
-  color: #aaa;
-  margin: 6px 0;
+/* ===== 12. TABLE ===== */
+.table {
+width: 100%;
+border-collapse: collapse;
+background: #111;
+border-radius: var(--radius);
+overflow: hidden;
 }
 
-.card {
-  transition: all 0.25s ease;
+.table th {
+background: #0a0a0a;
+padding: 14px;
 }
 
-.card:hover {
-  transform: translateY(-4px);
+.table td {
+padding: 14px;
+text-align: center;
 }
 
-/* ===== 13. MOBILE ===== */
+.table tr:nth-child(even) {
+background: #1a1a1a;
+}
+
+.table tr:hover {
+background: rgba(0,102,255,0.1);
+}
+
+/* ===== 13. FORM ===== */
+input, select {
+width: 100%;
+padding: 14px;
+border-radius: 10px;
+border: 1px solid #333;
+background: #111;
+color: white;
+}
+
+input:focus, select:focus {
+outline: none;
+border-color: var(--accent);
+}
+
+/* ===== 14. MOBILE ===== */
 @media (max-width: 768px) {
 
-  .grid-2,
-  .grid-3,
-  .leaderboard-grid {
-    grid-template-columns: 1fr;
-  }
+.grid-auto {
+grid-template-columns: 1fr;
+}
 
-  .athlete-stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  #schoolHeader {
-    flex-direction: column;
-    text-align: center;
-    gap: 10px;
-  }
-
-  #headerMotto {
-    font-size: clamp(26px, 5vw, 50px);
-  }
+#schoolHeader {
+flex-direction: column;
+text-align: center;
+gap: 10px;
+}
 }
