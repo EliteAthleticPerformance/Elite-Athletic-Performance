@@ -86,7 +86,12 @@ function extractMetrics(row) {
 
 function calculateRankings(playerMetrics) {
 
-  const allMetrics = ALL_ROWS.map(r => extractMetrics(r));
+  const validRows = ALL_ROWS.filter(r => {
+  const name = (r[0] || "").trim();
+  return name !== "";
+});
+
+const allMetrics = validRows.map(r => extractMetrics(r));
 
   function getRank(metric) {
     const values = allMetrics.map(m => m[metric]).sort((a,b) => b - a);
@@ -161,11 +166,15 @@ function updateComparison() {
   let group = [];
 
   if (compareMode === "team") {
-    group = ALL_ROWS.filter(r => r !== CURRENT_ATHLETE);
+    group = ALL_ROWS.filter(r => {
+  const name = (r[0] || "").trim();
+  return name !== "" && r !== CURRENT_ATHLETE;
+});
   }
 
   if (compareMode === "top5") {
-    group = [...ALL_ROWS]
+    group = ALL_ROWS
+  .filter(r => (r[0] || "").trim() !== "")
       .sort((a, b) => cleanNum(b[30]) - cleanNum(a[30]))
       .slice(0, 5);
   }
@@ -174,9 +183,12 @@ function updateComparison() {
     const weight = cleanNum(CURRENT_ATHLETE[5]);
 
     group = ALL_ROWS.filter(r => {
-      const w = cleanNum(r[5]);
-      return Math.abs(w - weight) <= 10 && r !== CURRENT_ATHLETE;
-    });
+  const name = (r[0] || "").trim();
+  if (!name) return false;
+
+  const w = cleanNum(r[5]);
+  return Math.abs(w - weight) <= 10 && r !== CURRENT_ATHLETE;
+});
   }
 
   let totals = {
