@@ -188,7 +188,12 @@ const dominant = getDominantTrait(player);
 
 const scoreVal = cleanNum(CURRENT_ATHLETE[30]);
 
-document.getElementById("score").innerHTML = <span style="font-size:18px;">Score: ${scoreVal}</span> <div style="margin-top:8px; color:#3b82f6; font-weight:600;"> Dominant: ${dominant.toUpperCase()} </div> ;
+document.getElementById("score").innerHTML = `
+  <span style="font-size:18px;">Score: ${scoreVal}</span>
+  <div style="margin-top:8px; color:#3b82f6; font-weight:600;">
+    Dominant: ${dominant.toUpperCase()}
+  </div>
+`;
 
 let group = [];
 
@@ -326,7 +331,12 @@ return `
 
 }
 
-container.innerHTML = ${card("Speed", ranks.speed)} ${card("Strength", ranks.strength)} ${card("Power", ranks.power)} ${card("Explosive", ranks.explosive)} ;
+container.innerHTML = `
+  ${card("Speed", ranks.speed)}
+  ${card("Strength", ranks.strength)}
+  ${card("Power", ranks.power)}
+  ${card("Explosive", ranks.explosive)}
+`;
 }
 
 /* ================= HELPERS ================= */
