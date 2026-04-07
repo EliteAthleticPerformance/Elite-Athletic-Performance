@@ -275,16 +275,20 @@ function renderRankings(playerMetrics) {
   const container = document.getElementById("metrics");
 
   function card(label, data) {
-    return `
-      <div class="card tier-${getTier(data.percentile)}">
-        <h3>${label}</h3>
-        <p>#${data.rank} / ${data.total}</p>
-        <p class="tier-${getTier(data.percentile)}">
-  Top ${data.percentile}%
-</p>
-      </div>
-    `;
-  }
+  return `
+    <div class="card tier-${getTier(data.percentile)}">
+      <h3 class="tier-${getTier(data.percentile)}">${label}</h3>
+
+      <p class="rank">
+        #${data.rank} / ${data.total}
+      </p>
+
+      <p class="tier-${getTier(data.percentile)} percentile">
+        Top ${data.percentile}%
+      </p>
+    </div>
+  `;
+}
 
   container.innerHTML = `
     ${card("Speed", ranks.speed)}

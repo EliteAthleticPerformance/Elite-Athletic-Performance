@@ -462,6 +462,55 @@ input:focus, select:focus {
 .tier-average { color: #f59e0b; }    /* yellow */
 .tier-developing { color: #ef4444; } /* red */
 
+.card {
+  background: linear-gradient(145deg, #111, #1a1a1a);
+  border-radius: 14px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+/* 🔥 ELITE */
+.tier-elite {
+  border: 1px solid #f97316;
+  box-shadow: 0 0 18px rgba(249,115,22,0.5);
+}
+
+/* 🟢 STRONG */
+.tier-strong {
+  border: 1px solid #22c55e;
+  box-shadow: 0 0 10px rgba(34,197,94,0.4);
+}
+
+/* 🟡 AVERAGE */
+.tier-average {
+  border: 1px solid #eab308;
+}
+
+/* 🔵 DEVELOPING */
+.tier-developing {
+  border: 1px solid #3b82f6;
+}
+.card:hover {
+  transform: translateY(-4px) scale(1.01);
+}
+
+.percentile {
+  font-weight: 600;
+}
+
+.rank {
+  color: #aaa;
+  margin: 6px 0;
+}
+
+.card {
+  transition: all 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
 /* ===== 13. MOBILE ===== */
 @media (max-width: 768px) {
 
