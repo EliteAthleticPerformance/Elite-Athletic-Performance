@@ -399,6 +399,68 @@ border-color: var(--accent);
   color: white;
 }
 
+/* ===== ALPHABET BAR ===== */
+.alphabet-bar {
+  position: sticky;
+  top: 70px;
+  z-index: 10;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(8px);
+  padding: 10px 8px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.letter {
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  color: #aaa;
+  transition: all 0.2s ease;
+}
+
+.letter:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.1);
+}
+
+.letter.active {
+  background: #3b82f6;
+  color: white;
+  font-weight: 600;
+}
+
+/* ===== LETTER GROUP HEADERS ===== */
+.group-header {
+  grid-column: 1 / -1;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 20px 0 10px;
+  color: #3b82f6;
+}
+
+/* ===== FADE ANIMATION ===== */
+.fade-in {
+  animation: fadeIn 0.35s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ===== 14. MOBILE ===== */
 @media (max-width: 768px) {
 

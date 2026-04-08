@@ -1,6 +1,7 @@
 <script>
 
 let athletes = [];
+let currentLetter = "ALL";
 
 /* ---------- HELPERS ---------- */
 
@@ -111,24 +112,31 @@ function renderAlphabet() {
 
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
+  const counts = {};
+
+  athletes.forEach(a => {
+    const last = (a.name.split(",")[0] || "").trim().toUpperCase()[0];
+    if (!counts[last]) counts[last] = 0;
+    counts[last]++;
+  });
+
   bar.innerHTML = `
-    <span class="letter active" onclick="showAll()">ALL</span>
-    ${letters.map(letter => `
-      <span class="letter" onclick="filterByLetter('${letter}')">
-        ${letter}
-      </span>
-    `).join("")}
+    <span class="letter active" onclick="showAll()">ALL (${athletes.length})</span>
   `;
+
+  letters.forEach(letter => {
+    const count = counts[letter] || 0;
+
+    bar.innerHTML += `
+      <span class="letter" onclick="filterByLetter('${letter}')">
+        ${letter}${count ? ` (${count})` : ""}
+      </span>
+    `;
+  });
 }
 
-function filterByLetter(letter) {
-  setActiveLetter(letter);
-
-  const filtered = athletes.filter(a =>
-    a.name.toUpperCase().startsWith(letter)
-  );
-
-  render(filtered);
+  renderAlphabet();   // 👈 FIRST
+render(athletes);   // 👈 SECOND
 }
 
 function showAll() {
