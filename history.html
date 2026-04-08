@@ -165,12 +165,14 @@ Papa.parse(CSV_URL, {
 
     ALL_ROWS = rows;
 
-    
+    const bestRow = getBestRow(rows, selectedName);
 
-    if (!athlete) {
-      document.getElementById("score").textContent = "No data found";
-      return;
-    }
+if (!bestRow) {
+  document.getElementById("score").textContent = "No data found";
+  return;
+}
+
+CURRENT_ATHLETE = bestRow;
 
     
 
