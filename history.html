@@ -165,16 +165,29 @@ Papa.parse(CSV_URL, {
 
     ALL_ROWS = rows;
 
-    const athlete = rows.find(r =>
-      (r[0] || "").trim().toLowerCase() === selectedName
-    );
+    
 
     if (!athlete) {
       document.getElementById("score").textContent = "No data found";
       return;
     }
 
-    CURRENT_ATHLETE = athlete;
+    
+
+    function getBestRow(rows, athleteName) {
+  const athleteRows = rows.filter(r =>
+    (r[0] || "").toLowerCase().trim() === athleteName
+  );
+
+  if (!athleteRows.length) return null;
+
+  return athleteRows.reduce((best, current) => {
+    const bestScore = cleanNum(best[31]);     // total score column
+    const currentScore = cleanNum(current[31]);
+
+    return currentScore > bestScore ? current : best;
+  });
+}
 
     updateComparison(); // 🔥 initial render
   }
