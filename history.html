@@ -159,23 +159,21 @@ Papa.parse(CSV_URL, {
   download: true,
   header: false,
   complete: function(results) {
+
     const rows = results.data;
-    // use rows instead of manual split
-  }
-});
+
+    ALL_ROWS = rows;
+
+    const athlete = rows.find(r =>
+      (r[0] || "").trim().toLowerCase() === selectedName
+    );
 
     if (!athlete) {
       document.getElementById("score").textContent = "No data found";
       return;
     }
 
-    ALL_ROWS = rows;
     CURRENT_ATHLETE = athlete;
-
-    
-    const scoreVal = cleanNum(CURRENT_ATHLETE[30]);
-
-
 
     updateComparison(); // 🔥 initial render
   }
