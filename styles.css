@@ -371,6 +371,34 @@ border-color: var(--accent);
   width: auto;
 }
 
+.alphabet-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.letter {
+  padding: 5px 9px;
+  border-radius: 6px;
+  background: #111;
+  border: 1px solid rgba(255,255,255,0.1);
+  cursor: pointer;
+  font-size: 12px;
+  transition: 0.2s;
+}
+
+.letter:hover {
+  background: #2563eb;
+  color: #fff;
+}
+
+.letter.active {
+  background: #3b82f6;
+  color: white;
+}
+
 /* ===== 14. MOBILE ===== */
 @media (max-width: 768px) {
 
