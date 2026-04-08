@@ -86,6 +86,9 @@ async function loadHeader() {
     return;
   }
 
+  // Prevent duplicate loads
+  if (container.innerHTML.trim() !== "") return;
+
   try {
     const res = await fetch("components/header.html");
 
@@ -111,6 +114,9 @@ function initHeaderUI() {
   setupMenu();
   setupResize();
 }
+
+// Ensure it runs at the right time
+document.addEventListener("DOMContentLoaded", loadHeader);
 
 /* ========================================
    📏 RESPONSIVE TITLE SCALING
