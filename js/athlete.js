@@ -12,9 +12,9 @@ function clean(val) {
 
 function getTag(score) {
   score = Number(score);
-  if (score >= 850) return ["elite", "🔥 Elite"];
-  if (score >= 700) return ["strong", "💪 Strong"];
-  if (score >= 550) return ["developing", "⚡ Developing"];
+  if (score >= 800) return ["elite", "🔥 Elite"];
+  if (score >= 650) return ["strong", "💪 Strong"];
+  if (score >= 500) return ["developing", "⚡ Developing"];
   return ["needs", "📈 Needs Work"];
 }
 
