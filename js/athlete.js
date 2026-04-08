@@ -50,9 +50,9 @@ Papa.parse(CSV_URL + "&t=" + Date.now(), {
 
     athletes.sort((a, b) => b.score - a.score);
 
+    // ✅ CORRECT ORDER
+    renderAlphabet();
     render(athletes);
-    renderAlphabet(); // 🔥 NEW
-
   }
 });
 
@@ -135,11 +135,21 @@ function renderAlphabet() {
   });
 }
 
-  renderAlphabet();   // 👈 FIRST
-render(athletes);   // 👈 SECOND
+/* ✅ THIS WAS MISSING */
+function filterByLetter(letter) {
+  currentLetter = letter;
+  setActiveLetter(letter);
+
+  const filtered = athletes.filter(a => {
+    const last = a.name.split(",")[0].trim().toUpperCase();
+    return last.startsWith(letter);
+  });
+
+  render(filtered);
 }
 
 function showAll() {
+  currentLetter = "ALL";
   setActiveLetter("ALL");
   render(athletes);
 }
@@ -149,7 +159,7 @@ function showAll() {
 function setActiveLetter(letter) {
   document.querySelectorAll(".letter").forEach(el => {
     el.classList.remove("active");
-    if (el.textContent === letter) {
+    if (el.textContent.startsWith(letter)) {
       el.classList.add("active");
     }
   });
