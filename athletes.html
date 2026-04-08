@@ -107,20 +107,13 @@ function render(list) {
   list.forEach(a => {
     const [tagClass, tagText] = getTag(a.score);
 
-    // 🔥 Get initials
-    const initials = a.name
-      .split(",")[0]
-      .trim()
-      .split(" ")
-      .map(n => n[0])
-      .join("")
-      .toUpperCase();
+    
 
     grid.innerHTML += `
       <div class="card ${tagClass}" onclick="goToAthlete('${a.name}')">
 
         <div class="card-header">
-          <div class="avatar">${initials}</div>
+          
 
           <div>
             <h3>${clean(a.name)}</h3>

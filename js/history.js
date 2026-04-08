@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function loadData() {
   try {
-    const res = await fetch(SHEET_URL + "?t=" + Date.now());
+    const res = await fetch(CSV_URL + "&t=" + Date.now());
     const text = await res.text();
 
     rawData = parseCSV(text);
