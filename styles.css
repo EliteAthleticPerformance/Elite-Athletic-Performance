@@ -72,19 +72,111 @@ letter-spacing: 3px;
 text-shadow: 0 0 12px rgba(0,102,255,0.7);
 }
 
+/* ========================================
+   HEADER LAYOUT
+======================================== */
+
+.header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  padding: 12px 24px;
+  background: linear-gradient(90deg, #000, #444, #000);
+  border-bottom: 2px solid #fff;
+  position: relative;
+}
+
+/* LEFT */
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 60px;
+  object-fit: contain;
+}
+
+/* CENTER */
+.header-center {
+  text-align: center;
+  color: white;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.subtitle {
+  font-size: 14px;
+  opacity: 0.8;
+  letter-spacing: 3px;
+}
+
+/* RIGHT */
 .header-right {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 10px;
+  position: relative;
 }
 
-.nav-links {
+/* BUTTONS */
+.enter-btn,
+.logout-btn {
+  background: #111;
+  color: white;
+  border: 1px solid #444;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.enter-btn:hover {
+  background: #2563eb;
+}
+
+.logout-btn:hover {
+  background: #ef4444;
+}
+
+/* MENU TOGGLE */
+.menu-toggle {
+  font-size: 20px;
+  cursor: pointer;
+  padding: 6px 10px;
+}
+
+/* DROPDOWN */
+.dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 8px;
+  display: none;
+  flex-direction: column;
+  min-width: 180px;
+  z-index: 1000;
+}
+
+.dropdown a {
+  padding: 10px;
+  color: white;
+  text-decoration: none;
+  border-bottom: 1px solid #222;
+}
+
+.dropdown a:hover {
+  background: #2563eb;
+}
+
+/* SHOW MENU */
+.dropdown.show {
   display: flex;
-  gap: 16px;
-}
-
-.header-right a:hover {
-  color: #ffffff;
 }
 
 

@@ -1,30 +1,32 @@
 <div id="schoolHeader" class="header">
 
-  <!-- LEFT -->
+  <!-- LEFT: LOGO -->
   <div class="header-left">
-    <img src="images/wildcat-logo.png" class="logo" />
-    <div class="brand">
-      <div class="title">Wildcats</div>
-      <div class="subtitle">Athletic Performance</div>
-    </div>
+    <img src="../images/wildcat-logo.png" class="logo" />
   </div>
 
-  <!-- CENTER NAV -->
-  <nav class="nav-links" id="mainNav">
-    <a href="index.html">🏠 Home</a>
-    <a href="timer.html">⏱ Timer</a>
-    <a href="athletes.html">👥 Athletes</a>
-    <a href="testing.html">📋 Testing</a>
-    <a href="leaderboard.html">🏆 Leaderboard</a>
-  </nav>
+  <!-- CENTER: TITLE -->
+  <div class="header-center">
+    <div class="title">Wildcats</div>
+    <div class="subtitle">Athletic Performance</div>
+  </div>
 
-  <!-- RIGHT -->
+  <!-- RIGHT: MENU -->
   <div class="header-right">
-    <button class="enter-btn" onclick="goToEnterTest()">➕ Enter Test</button>
+
+    <button class="enter-btn" onclick="goToEnterTest()">+ Enter Test</button>
     <button class="logout-btn" onclick="logout()">Logout</button>
 
-    <!-- MOBILE MENU -->
     <div id="menuToggle" class="menu-toggle">☰</div>
+
+    <div id="dropdownMenu" class="dropdown">
+      <a href="index.html">🏠 Home</a>
+      <a href="timer.html">⏱ Timer</a>
+      <a href="athletes.html">👥 Athletes</a>
+      <a href="testing.html">📋 Testing</a>
+      <a href="leaderboard.html">🏆 Leaderboard</a>
+    </div>
+
   </div>
 
 </div>

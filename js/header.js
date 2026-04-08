@@ -156,19 +156,17 @@ function scaleHeaderText() {
 function setupMenu() {
 
   const toggle = document.getElementById("menuToggle");
-  const nav = document.getElementById("mainNav");
+  const dropdown = document.getElementById("dropdownMenu");
 
-  if (!toggle || !nav) return;
+  if (!toggle || !dropdown) return;
 
   toggle.addEventListener("click", (e) => {
     e.stopPropagation();
-    nav.classList.toggle("show");
+    dropdown.classList.toggle("show");
   });
 
-  document.addEventListener("click", (e) => {
-    if (!nav.contains(e.target) && !toggle.contains(e.target)) {
-      nav.classList.remove("show");
-    }
+  document.addEventListener("click", () => {
+    dropdown.classList.remove("show");
   });
 }
 
