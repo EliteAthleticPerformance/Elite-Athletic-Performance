@@ -1,57 +1,30 @@
-<div id="schoolHeader">
+<div id="schoolHeader" class="header">
 
   <!-- LEFT -->
   <div class="header-left">
-    <img id="teamLogo" src="images/wildcat-logo.png" alt="Wildcats Logo">
-  </div>
-
-  <!-- CENTER -->
-  <div class="header-center">
-    <div id="headerMotto">
-      Wildcats<br>
-      <span style="font-size: 0.8em; color: #aaa;">
-        Athletic Performance
-      </span>
+    <img src="logo.png" class="logo" />
+    <div class="brand">
+      <div class="title">Wildcats</div>
+      <div class="subtitle">Athletic Performance</div>
     </div>
   </div>
 
-  <!-- RIGHT -->
-  <div class="header-right">
-  <div class="nav-links">
+  <!-- CENTER NAV -->
+  <nav class="nav-links" id="mainNav">
     <a href="index.html">🏠 Home</a>
     <a href="timer.html">⏱ Timer</a>
     <a href="athletes.html">👥 Athletes</a>
     <a href="testing.html">📋 Testing</a>
     <a href="leaderboard.html">🏆 Leaderboard</a>
-    <a href="#" onclick="goToEnterTest()">➕ Enter Test</a>
-  </div>
+  </nav>
 
-  <button onclick="logout()">Logout</button>
-</div>
+  <!-- RIGHT -->
+  <div class="header-right">
+    <button class="enter-btn" onclick="goToEnterTest()">➕ Enter Test</button>
+    <button class="logout-btn" onclick="logout()">Logout</button>
 
-    <!-- COACH BUTTON -->
-    <button class="btn-small" onclick="logout()" id="logoutBtn">
-      Logout
-    </button>
-
-    <!-- MENU TOGGLE -->
-    <div id="menuToggle">☰</div>
-
-    <!-- NAV DROPDOWN -->
-    <nav id="mainNav" class="dropdown">
-
-      <a href="index.html">🏠 Home</a>
-      <a href="timer.html">⏱ Timer</a>
-      <a href="athletes.html">👥 Athletes</a>
-      <a href="testing.html">📋 Testing</a>
-      <a href="leaderboard.html">🏆 Leaderboard</a>
-
-      <div class="nav-divider"></div>
-
-      <a href="#" onclick="goToEnterTest()">➕ Enter Test</a>
-
-    </nav>
-
+    <!-- MOBILE MENU -->
+    <div id="menuToggle" class="menu-toggle">☰</div>
   </div>
 
 </div>
