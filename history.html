@@ -128,7 +128,10 @@ function calculateRankings(playerMetrics) {
 const allMetrics = validRows.map(r => extractMetrics(r));
 
   function getRank(metric) {
-    const values = allMetrics.map(m => m[metric]).sort((a,b) => b - a);
+    const values = allMetrics
+  .map(m => m[metric])
+  .filter(v => v > 0)
+  .sort((a, b) => b - a);
 
     const playerVal = playerMetrics[metric];
 
@@ -171,8 +174,8 @@ function getBestRow(rows, athleteName) {
   if (!athleteRows.length) return null;
 
   return athleteRows.reduce((best, current) => {
-    const bestScore = cleanNum(best[31]);
-    const currentScore = cleanNum(current[31]);
+    const bestScore = cleanNum(best[30]);
+    const currentScore = cleanNum(current[30]);
 
     return currentScore > bestScore ? current : best;
   });
@@ -228,7 +231,19 @@ function updateComparison() {
 const player = extractMetrics(CURRENT_ATHLETE);
 const dominant = getDominantTrait(player);
 
-const scoreVal = cleanNum(CURRENT_ATHLETE[30]);
+const normalize = str =>
+  (str || "").toLowerCase().replace(/\s+/g, " ").trim();
+
+const target = normalize(selectedName);
+
+const scoreVal = Math.max(
+  ...ALL_ROWS
+    .filter(r => normalize(r[0]) === target)
+    .map(r => cleanNum(r[30]))
+);
+    
+
+console.log("MAX SCORE:", scoreVal);
 
 document.getElementById("score").innerHTML = `
   <span style="font-size:18px;">Score: ${scoreVal}</span>
