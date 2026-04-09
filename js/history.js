@@ -135,6 +135,17 @@ function setupSearch() {
   });
 }
 
+
+function extractMetrics(row) {
+  return {
+    speed: row.score || 0,   // temp until we map full sheet
+    strength: row.total || 0,
+    power: row.total || 0,
+    explosive: row.score || 0
+  };
+}
+
+
 /* ========================================
    RENDER
    ======================================== */
@@ -177,10 +188,16 @@ function render(data) {
     const card = document.createElement("div");
     card.className = "card history-card";
 
-    card.innerHTML = `
-      <h2>${name}</h2>
+    const best = history[0]; // most recent (already sorted)
 
-      <canvas id="${chartId}" height="120"></canvas>
+const metrics = extractMetrics(best);
+
+card.innerHTML = `
+  <h2>${name}</h2>
+
+  ${renderRankings(metrics)}   <!-- 🔥 NEW ELITE CARDS -->
+
+  <canvas id="${chartId}" height="120"></canvas>
 
       <div class="table-wrapper">
         <table class="table">
@@ -206,6 +223,39 @@ function render(data) {
 
     renderChart(chartId, history);
   });
+}
+
+function renderRankings(player) {
+
+  function getColor(val) {
+    if (val >= 85) return "elite";
+    if (val >= 70) return "strong";
+    if (val >= 50) return "developing";
+    return "weak";
+  }
+
+  function card(label, value) {
+    const level = getColor(value);
+
+    return `
+      <div class="metric-card ${level}">
+        <div class="metric-label">${label}</div>
+        <div class="metric-value">${value}</div>
+        <div class="metric-bar">
+          <div class="metric-fill" style="width:${value}%"></div>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="metrics-grid">
+      ${card("Speed", player.speed)}
+      ${card("Strength", player.strength)}
+      ${card("Power", player.power)}
+      ${card("Explosive", player.explosive)}
+    </div>
+  `;
 }
 
 /* ========================================

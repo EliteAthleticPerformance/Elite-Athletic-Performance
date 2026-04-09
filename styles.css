@@ -525,6 +525,69 @@ border-color: var(--accent);
   font-size: 14px;
 }
 
+/* ===== METRICS GRID (ELITE) ===== */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin: 20px 0 10px;
+}
+
+/* ===== CARD ===== */
+.metric-card {
+  padding: 18px 14px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #0a0a0a, #1a1a1a);
+  border: 1px solid rgba(255,255,255,0.08);
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+/* ===== LABEL ===== */
+.metric-label {
+  font-size: 13px;
+  opacity: 0.7;
+  margin-bottom: 6px;
+}
+
+/* ===== VALUE ===== */
+.metric-value {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+/* ===== BAR ===== */
+.metric-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.metric-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.4s ease;
+}
+
+/* ===== COLORS ===== */
+.metric-card.elite .metric-fill {
+  background: #4caf50;
+}
+
+.metric-card.strong .metric-fill {
+  background: #2196f3;
+}
+
+.metric-card.developing .metric-fill {
+  background: #ff9800;
+}
+
+.metric-card.weak .metric-fill {
+  background: #f44336;
+}
+
 /* ===== 14. MOBILE ===== */
 @media (max-width: 768px) {
 
@@ -537,4 +600,10 @@ flex-direction: column;
 text-align: center;
 gap: 10px;
 }
+}
+
+@media (max-width: 768px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
