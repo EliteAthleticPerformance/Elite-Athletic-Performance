@@ -149,9 +149,7 @@ function buildAthlete(cols, getIndex) {
   return athlete;
 }
 
-function getColumnMax(data, key) {
-  return Math.max(...data.map(a => a[key] || 0));
-}
+
 
 /* ========================================
    RENDER TABLE
@@ -189,14 +187,13 @@ function renderTable(data) {
       <td class="${a.squat === max.squat ? 'pr' : ''}">${format(a.squat)}</td>
       <td class="${a.clean === max.clean ? 'pr' : ''}">${format(a.clean)}</td>
 
-      <td class="${a.vertical === max.vertical ? 'pr' : ''}">${format(a.vertical)}</td>
-      <td class="${a.broad === max.broad ? 'pr' : ''}">${a.broad || "-"}</td>
-      <td class="${a.med === max.med ? 'pr' : ''}">${a.med || "-"}</td>
-
-      <td class="${a.agility === max.agility ? 'pr' : ''}">${a.agility || "-"}</td>
-      <td class="${a.situps === max.situps ? 'pr' : ''}">${format(a.situps)}</td>
-      <td class="${a.ten === max.ten ? 'pr' : ''}">${a.ten || "-"}</td>
-      <td class="${a.forty === max.forty ? 'pr' : ''}">${a.forty || "-"}</td>
+      <td class="${Number(a.vertical) === max.vertical ? 'pr' : ''}">
+<td class="${Number(a.broad) === max.broad ? 'pr' : ''}">
+<td class="${Number(a.med) === max.med ? 'pr' : ''}">
+<td class="${Number(a.agility) === max.agility ? 'pr' : ''}">
+<td class="${Number(a.situps) === max.situps ? 'pr'  :  ''}">
+<td class="${Number(a.ten) === max.ten ? 'pr' : ''}">
+<td class="${Number(a.forty) === max.forty ? 'pr' : ''}">
     `;
 
     tbody.appendChild(tr);
