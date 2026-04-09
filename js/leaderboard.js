@@ -190,9 +190,7 @@ function buildLeaderboardData(data) {
 
   data.forEach(a => {
 
-    if (a.name.includes("Tyson")) {
-  console.log("TYSON DATA:", a);
-}
+   
     if (!map[a.name]) {
       map[a.name] = {
         name: a.name,
@@ -271,7 +269,7 @@ function createRow(a, index, type) {
     <td class="${medal(index)}">${index + 1}</td>
     <td>${a.name}</td>
     <td>${safe(a[type])}</td>
-    <td>${a.dateRaw || "-"}</td>
+    <td>${type === "lift" ? a.liftDate : a.scoreDate}</td>
   `;
 
   const detail = document.createElement("tr");
