@@ -913,8 +913,18 @@ th.sort-desc::after {
 /* ===== 14. MOBILE ===== */
 @media (max-width: 768px) {
 
-.grid-auto {
-grid-template-columns: 1fr;
+  .letter-filters {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 🔥 perfect mobile layout */
+    gap: 8px;
+  }
+
+  .letter-btn {
+    width: 100%;
+    text-align: center;
+    padding: 8px 0;
+    font-size: 13px;
+  }
 }
 
 #schoolHeader {
@@ -922,7 +932,7 @@ flex-direction: column;
 text-align: center;
 gap: 10px;
 }
-}
+
 
 @media (max-width: 768px) {
   .metrics-grid {
@@ -933,5 +943,71 @@ gap: 10px;
 @media (max-width: 768px) {
   .metrics-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+
+  .header {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .header-left,
+  .header-right {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .header-center {
+    order: -1; /* moves title above buttons */
+    text-align: center;
+  }
+
+  .enter-btn,
+  .logout-btn {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .menu-toggle {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .card {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .card h3 {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .search {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  main {
+    padding: 10px;
+  }
+
+  .section {
+    margin-bottom: 20px;
   }
 }
