@@ -149,6 +149,10 @@ function buildAthlete(cols, getIndex) {
   return athlete;
 }
 
+function getColumnMax(data, key) {
+  return Math.max(...data.map(a => a[key] || 0));
+}
+
 /* ========================================
    RENDER TABLE
    ======================================== */
@@ -156,6 +160,19 @@ function buildAthlete(cols, getIndex) {
 function renderTable(data) {
   const tbody = document.querySelector("#testingTable tbody");
   tbody.innerHTML = "";
+
+  const max = {
+  bench: getColumnMax(data, "bench"),
+  squat: getColumnMax(data, "squat"),
+  clean: getColumnMax(data, "clean"),
+  vertical: getColumnMax(data, "vertical"),
+  broad: getColumnMax(data, "broad"),
+  med: getColumnMax(data, "med"),
+  agility: getColumnMax(data, "agility"),
+  situps: getColumnMax(data, "situps"),
+  ten: getColumnMax(data, "ten"),
+  forty: getColumnMax(data, "forty")
+};
 
   data.forEach(a => {
     const tr = document.createElement("tr");
@@ -220,8 +237,20 @@ function sortTable(colIndex) {
   });
 
   currentSort = { col: colIndex, dir: asc ? "asc" : "desc" };
-
+  updateSortIndicators(colIndex, asc);
   renderTable(tableData);
+}
+
+function updateSortIndicators(colIndex, asc) {
+  const headers = document.querySelectorAll("#testingTable th");
+
+  headers.forEach((th, i) => {
+    th.classList.remove("sort-asc", "sort-desc");
+
+    if (i === colIndex) {
+      th.classList.add(asc ? "sort-asc" : "sort-desc");
+    }
+  });
 }
 
 /* ========================================

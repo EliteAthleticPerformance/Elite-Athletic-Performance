@@ -639,6 +639,22 @@ border-color: var(--accent);
   transform: translateY(-4px) scale(1.03);
 }
 
+.table thead th {
+  position: sticky;
+  top: 0;
+  background: #111;
+  z-index: 10;
+  cursor: pointer;
+}
+
+th.sort-asc::after {
+  content: " ↑";
+}
+
+th.sort-desc::after {
+  content: " ↓";
+}
+
 /* ===== 14. MOBILE ===== */
 @media (max-width: 768px) {
 
