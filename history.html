@@ -219,14 +219,7 @@ function renderRadarChart(player, avg) {
   window.radarChart.destroy();
 }
 
-  function renderRadarChart(player, avg) {
-
-  const ctx = document.getElementById("radarChart");
-
-  // ✅ SAFE DESTROY (FIXES YOUR ERROR)
-  if (window.radarChart && typeof window.radarChart.destroy === "function") {
-    window.radarChart.destroy();
-  }
+  
 
   window.radarChart = new Chart(ctx, {
     type: "radar",
