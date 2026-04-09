@@ -323,9 +323,9 @@ function createRow(a, index, type) {
   tr.innerHTML = `
   <td class="${medal(index)}">${index + 1}</td>
   <td>
-    ${a.name}
-    <div class="tier ${tier.class}">${tier.label}</div>
-  </td>
+  ${a.name}
+  ${type === "score" ? `<div class="tier ${tier.class}">${tier.label}</div>` : ""}
+</td>
   <td>${safe(a[type])}</td>
   <td>${formatDate(type === "lift" ? a.liftDate : a.scoreDate)}</td>
 `;
