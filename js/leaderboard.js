@@ -122,7 +122,7 @@ function processData(rows) {
     sit: idx("Sit-Ups"),
 
     score: idx("Total Athletic Performance"),
-    lift: idx("3 Lift Projected")
+    lift: toNumber(row[i.lift]) || (bench + squat + clean)
   };
 
   const parsed = rows.slice(1).map(row => {
