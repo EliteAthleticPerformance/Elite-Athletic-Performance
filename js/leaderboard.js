@@ -252,6 +252,31 @@ function renderTable(data, tableId, type) {
   });
 }
 
+function renderPodium(data) {
+  const container = document.getElementById("podium");
+  if (!container) return;
+
+  const top3 = [...data]
+    .filter(a => a.lift > 0)
+    .sort((a, b) => b.lift - a.lift)
+    .slice(0, 3);
+
+  if (!top3.length) {
+    container.innerHTML = "";
+    return;
+  }
+
+  const medals = ["🥇", "🥈", "🥉"];
+
+  container.innerHTML = top3.map((a, i) => `
+    <div class="podium-card podium-${i + 1}">
+      <div class="podium-rank">${medals[i]}</div>
+      <div class="podium-name">${a.name}</div>
+      <div class="podium-score">${a.lift}</div>
+    </div>
+  `).join("");
+}
+
 // ===============================
 // CREATE ROW
 // ===============================
