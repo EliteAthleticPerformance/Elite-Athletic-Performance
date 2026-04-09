@@ -726,6 +726,7 @@ th.sort-desc::after {
   gap: 30px;
   max-width: 1200px;                /* 👈 keeps layout centered */
   margin: 0 auto;
+}
 
 .leaderboard-card {
   width: 100%;
