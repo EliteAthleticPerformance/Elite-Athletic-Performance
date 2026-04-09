@@ -89,19 +89,14 @@ async function loadData() {
   }
 }
 
-// ===============================
-// PROCESS DATA
-// ===============================
 function processData(rows) {
 
   const headers = rows[0];
-  
-  
 
   const idx = (name) =>
-  headers.findIndex(h =>
-    h.toLowerCase().includes(name.toLowerCase())
-  );
+    headers.findIndex(h =>
+      h.toLowerCase().includes(name.toLowerCase())
+    );
 
   const i = {
     name: idx("Student-Athlete"),
@@ -123,43 +118,43 @@ function processData(rows) {
 
     score: idx("Total Athletic Performance"),
     lift: idx("3 Lift Projected Max Total")
+  }; // ✅ 🔥 THIS LINE WAS MISSING
 
   const parsed = rows.slice(1).map(row => {
 
-  const bench = toNumber(row[i.bench]);
-  const squat = toNumber(row[i.squat]);
-  const clean = toNumber(row[i.clean]);
+    const bench = toNumber(row[i.bench]);
+    const squat = toNumber(row[i.squat]);
+    const clean = toNumber(row[i.clean]);
 
-  return {
-    name: row[i.name],
-    dateRaw: row[i.date],
-    date: new Date(row[i.date]),
+    return {
+      name: row[i.name],
+      dateRaw: row[i.date],
+      date: new Date(row[i.date]),
 
-    bench,
-    squat,
-    clean,
+      bench,
+      squat,
+      clean,
 
-    vertical: toNumber(row[i.vertical]),
-    broad: toNumber(row[i.broad]),
-    med: toNumber(row[i.med]),
+      vertical: toNumber(row[i.vertical]),
+      broad: toNumber(row[i.broad]),
+      med: toNumber(row[i.med]),
 
-    pro: toNumber(row[i.pro]),
-    ten: toNumber(row[i.ten]),
-    forty: toNumber(row[i.forty]),
+      pro: toNumber(row[i.pro]),
+      ten: toNumber(row[i.ten]),
+      forty: toNumber(row[i.forty]),
 
-    sit: toNumber(row[i.sit]),
+      sit: toNumber(row[i.sit]),
 
-    score: toNumber(row[i.score]),
+      score: toNumber(row[i.score]),
 
-    // 🔥 CORRECT
-    lift: toNumber(row[i.lift]) || (bench + squat + clean)
-  };
+      lift: toNumber(row[i.lift]) || (bench + squat + clean)
+    };
 
-}).filter(a =>
-  a.name &&
-  typeof a.name === "string" &&
-  a.name.includes(",") // ensures "Last, First" format
-);
+  }).filter(a =>
+    a.name &&
+    typeof a.name === "string" &&
+    a.name.includes(",")
+  );
 
   // GROUP
   grouped = {};
