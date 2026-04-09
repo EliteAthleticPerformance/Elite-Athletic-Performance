@@ -127,23 +127,34 @@ function processData(rows) {
       dateRaw: row[i.date],
       date: new Date(row[i.date]),
 
-      bench: toNumber(row[i.bench]),
-      squat: toNumber(row[i.squat]),
-      clean: toNumber(row[i.clean]),
+      const bench = toNumber(row[i.bench]);
+const squat = toNumber(row[i.squat]);
+const clean = toNumber(row[i.clean]);
 
-      vertical: toNumber(row[i.vertical]),
-      broad: toNumber(row[i.broad]),
-      med: toNumber(row[i.med]),
+return {
+  name: row[i.name],
+  dateRaw: row[i.date],
+  date: new Date(row[i.date]),
 
-      pro: toNumber(row[i.pro]),
-      ten: toNumber(row[i.ten]),
-      forty: toNumber(row[i.forty]),
+  bench,
+  squat,
+  clean,
 
-      sit: toNumber(row[i.sit]),
+  vertical: toNumber(row[i.vertical]),
+  broad: toNumber(row[i.broad]),
+  med: toNumber(row[i.med]),
 
-      score: toNumber(row[i.score]),
-      lift: toNumber(row[i.lift])
-    };
+  pro: toNumber(row[i.pro]),
+  ten: toNumber(row[i.ten]),
+  forty: toNumber(row[i.forty]),
+
+  sit: toNumber(row[i.sit]),
+
+  score: toNumber(row[i.score]),
+
+  // 🔥 FIXED (THIS IS THE KEY)
+  lift: bench + squat + clean
+};
 
   }).filter(a => a.name && !a.name.includes("{"));
 
@@ -231,7 +242,9 @@ function renderTable(data, tableId, type) {
 
   tbody.innerHTML = "";
 
-  const sorted = [...data].sort((a, b) => b[type] - a[type]);
+  const sorted = [...data]
+  .filter(a => a[type] > 0)
+  .sort((a, b) => b[type] - a[type]);
 
   sorted.forEach((a, i) => {
     const tr = createRow(a, i, type);
