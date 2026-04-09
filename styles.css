@@ -655,6 +655,12 @@ th.sort-desc::after {
   content: " ↓";
 }
 
+.pr {
+  color: #00ffc3;
+  font-weight: 800;
+  text-shadow: 0 0 10px rgba(0,255,200,0.8);
+}
+
 /* ===== 14. MOBILE ===== */
 @media (max-width: 768px) {
 

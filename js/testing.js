@@ -162,17 +162,17 @@ function renderTable(data) {
   tbody.innerHTML = "";
 
   const max = {
-  bench: getColumnMax(data, "bench"),
-  squat: getColumnMax(data, "squat"),
-  clean: getColumnMax(data, "clean"),
-  vertical: getColumnMax(data, "vertical"),
-  broad: getColumnMax(data, "broad"),
-  med: getColumnMax(data, "med"),
-  agility: getColumnMax(data, "agility"),
-  situps: getColumnMax(data, "situps"),
-  ten: getColumnMax(data, "ten"),
-  forty: getColumnMax(data, "forty")
-};
+    bench: getColumnMax(data, "bench"),
+    squat: getColumnMax(data, "squat"),
+    clean: getColumnMax(data, "clean"),
+    vertical: getColumnMax(data, "vertical"),
+    broad: getColumnMax(data, "broad"),
+    med: getColumnMax(data, "med"),
+    agility: getColumnMax(data, "agility"),
+    situps: getColumnMax(data, "situps"),
+    ten: getColumnMax(data, "ten"),
+    forty: getColumnMax(data, "forty")
+  };
 
   data.forEach(a => {
     const tr = document.createElement("tr");
@@ -185,18 +185,18 @@ function renderTable(data) {
       <td>${format(a.weight)}</td>
       <td>${a.group}</td>
 
-      <td>${format(a.bench)}</td>
-      <td>${format(a.squat)}</td>
-      <td>${format(a.clean)}</td>
+      <td class="${a.bench === max.bench ? 'pr' : ''}">${format(a.bench)}</td>
+      <td class="${a.squat === max.squat ? 'pr' : ''}">${format(a.squat)}</td>
+      <td class="${a.clean === max.clean ? 'pr' : ''}">${format(a.clean)}</td>
 
-      <td>${format(a.vertical)}</td>
-      <td>${a.broad || "-"}</td>
-      <td>${a.med || "-"}</td>
+      <td class="${a.vertical === max.vertical ? 'pr' : ''}">${format(a.vertical)}</td>
+      <td class="${a.broad === max.broad ? 'pr' : ''}">${a.broad || "-"}</td>
+      <td class="${a.med === max.med ? 'pr' : ''}">${a.med || "-"}</td>
 
-      <td>${a.agility || "-"}</td>
-      <td>${format(a.situps)}</td>
-      <td>${a.ten || "-"}</td>
-      <td>${a.forty || "-"}</td>
+      <td class="${a.agility === max.agility ? 'pr' : ''}">${a.agility || "-"}</td>
+      <td class="${a.situps === max.situps ? 'pr' : ''}">${format(a.situps)}</td>
+      <td class="${a.ten === max.ten ? 'pr' : ''}">${a.ten || "-"}</td>
+      <td class="${a.forty === max.forty ? 'pr' : ''}">${a.forty || "-"}</td>
     `;
 
     tbody.appendChild(tr);
