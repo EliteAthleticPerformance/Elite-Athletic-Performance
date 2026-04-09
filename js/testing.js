@@ -243,10 +243,10 @@ function renderTable(data) {
   <td class="${a.broad === prs.broad ? 'pr' : ''}">${formatDecimal(a.broad)}</td>
   <td class="${a.med === prs.med ? 'pr' : ''}">${formatDecimal(a.med)}</td>
 
-  <td class="${a.agility === prs.agility ? 'pr' : ''}">${formatTime(a.agility)}</td>
+  <td class="${a.agility === prs.agility ? 'pr' : ''}">${formatDecimal(a.agility)}</td>
   <td class="${a.situps === prs.situps ? 'pr' : ''}">${format(a.situps)}</td>
-  <td class="${a.ten === prs.ten ? 'pr' : ''}">${formatTime(a.ten)}</td>
-  <td class="${a.forty === prs.forty ? 'pr' : ''}">${formatTime(a.forty)}</td>
+  <td class="${a.ten === prs.ten ? 'pr' : ''}">${formatDecimal(a.ten)}</td>
+  <td class="${a.forty === prs.forty ? 'pr' : ''}">${formatDecimal(a.forty)}</td>
 `;
 
     tbody.appendChild(tr);
