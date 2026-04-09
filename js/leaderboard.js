@@ -228,6 +228,8 @@ function render() {
     a.name.toLowerCase().includes(search)
   );
 
+  console.log("PODIUM DATA:", filtered);
+  renderPodium(filtered);
   renderTable(filtered, "liftTable", "lift");
 renderTable(filtered, "scoreTable", "score");
 }
