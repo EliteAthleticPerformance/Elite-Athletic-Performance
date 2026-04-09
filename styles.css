@@ -723,14 +723,18 @@ th.sort-desc::after {
 .leaderboard-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  padding: 20px;
+  gap: 30px;
+
+  max-width: 1200px;   /* 🔥 controls overall width */
+  margin: 40px auto;   /* 🔥 centers it */
+
+  padding: 0 20px;
 }
 
 .leaderboard-card {
   background: #111;
-  border-radius: 14px;
-  padding: 16px;
+  border-radius: 16px;
+  padding: 24px;   /* ⬅ bigger padding */
 }
 
 .leaderboard-card h2 {
@@ -745,9 +749,33 @@ th.sort-desc::after {
 
 .leaderboard-table th,
 .leaderboard-table td {
-  padding: 8px;
-  text-align: left;
-  font-size: 13px;
+  padding: 12px 14px;   /* ⬅ bigger spacing */
+  font-size: 15px;      /* ⬅ bigger text */
+}
+
+.leaderboard-table th {
+  opacity: 0.7;
+  font-weight: 600;
+}
+
+.leaderboard-table td {
+  font-weight: 500;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;   /* 🔥 cleaner alignment */
+}
+
+.leaderboard-card h2 {
+  font-size: 18px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.leaderboard-table tr {
+  border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
 /* MOBILE STACK */
