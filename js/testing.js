@@ -13,6 +13,11 @@ const format = (val) => {
   return Math.round(val);
 };
 
+const formatDecimal = (val) => {
+  if (!val || val === 0) return "-";
+  return Number(val).toFixed(2);
+};
+
 const cleanNumber = (val) => {
   if (!val) return 0;
   val = val.replace(/"/g, "").trim();
@@ -235,13 +240,13 @@ function renderTable(data) {
   <td class="${a.clean === prs.clean ? 'pr' : ''}">${format(a.clean)}</td>
 
   <td class="${a.vertical === prs.vertical ? 'pr' : ''}">${format(a.vertical)}</td>
-  <td class="${a.broad === prs.broad ? 'pr' : ''}">${format(a.broad)}</td>
-  <td class="${a.med === prs.med ? 'pr' : ''}">${format(a.med)}</td>
+  <td class="${a.broad === prs.broad ? 'pr' : ''}">${formatDecimal(a.broad)}</td>
+  <td class="${a.med === prs.med ? 'pr' : ''}">${formatDecimal(a.med)}</td>
 
-  <td class="${a.agility === prs.agility ? 'pr' : ''}">${format(a.agility)}</td>
+  <td class="${a.agility === prs.agility ? 'pr' : ''}">${formatTime(a.agility)}</td>
   <td class="${a.situps === prs.situps ? 'pr' : ''}">${format(a.situps)}</td>
-  <td class="${a.ten === prs.ten ? 'pr' : ''}">${format(a.ten)}</td>
-  <td class="${a.forty === prs.forty ? 'pr' : ''}">${format(a.forty)}</td>
+  <td class="${a.ten === prs.ten ? 'pr' : ''}">${formatTime(a.ten)}</td>
+  <td class="${a.forty === prs.forty ? 'pr' : ''}">${formatTime(a.forty)}</td>
 `;
 
     tbody.appendChild(tr);
