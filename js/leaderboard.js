@@ -228,8 +228,8 @@ function render() {
     a.name.toLowerCase().includes(search)
   );
 
-  renderTable(filtered, "totalTable", "lift");
-  renderTable(filtered, "leaderboardTable", "score");
+  renderTable(filtered, "liftTable", "lift");
+renderTable(filtered, "scoreTable", "score");
 }
 
 // ===============================
