@@ -95,6 +95,8 @@ async function loadData() {
 function processData(rows) {
 
   const headers = rows[0];
+  
+  
 
   const idx = (name) => headers.findIndex(h => h.includes(name));
 
@@ -185,6 +187,10 @@ function buildLeaderboardData(data) {
   const map = {};
 
   data.forEach(a => {
+
+    if (a.name.includes("Tyson")) {
+  console.log("TYSON DATA:", a);
+}
     if (!map[a.name]) {
       map[a.name] = {
         name: a.name,
