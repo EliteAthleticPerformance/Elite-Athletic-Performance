@@ -276,7 +276,7 @@ function renderPodium(data) {
       <div class="podium-name">${a.name}</div>
       <div class="podium-score">${Math.round(a.score)}</div>
       <div style="font-size:12px; opacity:0.6;">Performance</div>
-    
+    </div>
   `).join("");
 }
 
