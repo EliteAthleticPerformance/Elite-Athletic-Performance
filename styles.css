@@ -713,6 +713,49 @@ th.sort-desc::after {
   }
 }
 
+.page-title {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+}
+
+.leaderboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+}
+
+.leaderboard-card {
+  background: #111;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.leaderboard-card h2 {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 8px;
+  text-align: left;
+  font-size: 13px;
+}
+
+/* MOBILE STACK */
+@media (max-width: 768px) {
+  .leaderboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* ===== 14. MOBILE ===== */
 @media (max-width: 768px) {
