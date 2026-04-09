@@ -229,7 +229,7 @@ function render() {
   );
 
   console.log("PODIUM DATA:", filtered);
-  renderPodium(filtered);
+  renderPodium(leaderboardData);
   renderTable(filtered, "liftTable", "lift");
 renderTable(filtered, "scoreTable", "score");
 }
@@ -259,8 +259,8 @@ function renderPodium(data) {
   if (!container) return;
 
   const top3 = [...data]
-    .filter(a => a.lift > 0)
-    .sort((a, b) => b.lift - a.lift)
+    .filter(a => a.score > 0)                 // 🔥 use score
+    .sort((a, b) => b.score - a.score)        // 🔥 sort by score
     .slice(0, 3);
 
   if (!top3.length) {
@@ -274,8 +274,9 @@ function renderPodium(data) {
     <div class="podium-card podium-${i + 1}">
       <div class="podium-rank">${medals[i]}</div>
       <div class="podium-name">${a.name}</div>
-      <div class="podium-score">${a.lift}</div>
-    </div>
+      <div class="podium-score">${Math.round(a.score)}</div>
+      <div style="font-size:12px; opacity:0.6;">Performance</div>
+    
   `).join("");
 }
 
