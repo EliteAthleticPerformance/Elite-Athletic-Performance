@@ -98,7 +98,10 @@ function processData(rows) {
   
   
 
-  const idx = (name) => headers.findIndex(h => h.includes(name));
+  const idx = (name) =>
+  headers.findIndex(h =>
+    h.toLowerCase().includes(name.toLowerCase())
+  );
 
   const i = {
     name: idx("Student-Athlete"),
@@ -124,41 +127,36 @@ function processData(rows) {
 
   const parsed = rows.slice(1).map(row => {
 
-    return {
-      name: row[i.name],
-      dateRaw: row[i.date],
-      date: new Date(row[i.date]),
+  const bench = toNumber(row[i.bench]);
+  const squat = toNumber(row[i.squat]);
+  const clean = toNumber(row[i.clean]);
 
-      const bench = toNumber(row[i.bench]);
-const squat = toNumber(row[i.squat]);
-const clean = toNumber(row[i.clean]);
+  return {
+    name: row[i.name],
+    dateRaw: row[i.date],
+    date: new Date(row[i.date]),
 
-return {
-  name: row[i.name],
-  dateRaw: row[i.date],
-  date: new Date(row[i.date]),
+    bench,
+    squat,
+    clean,
 
-  bench,
-  squat,
-  clean,
+    vertical: toNumber(row[i.vertical]),
+    broad: toNumber(row[i.broad]),
+    med: toNumber(row[i.med]),
 
-  vertical: toNumber(row[i.vertical]),
-  broad: toNumber(row[i.broad]),
-  med: toNumber(row[i.med]),
+    pro: toNumber(row[i.pro]),
+    ten: toNumber(row[i.ten]),
+    forty: toNumber(row[i.forty]),
 
-  pro: toNumber(row[i.pro]),
-  ten: toNumber(row[i.ten]),
-  forty: toNumber(row[i.forty]),
+    sit: toNumber(row[i.sit]),
 
-  sit: toNumber(row[i.sit]),
+    score: toNumber(row[i.score]),
 
-  score: toNumber(row[i.score]),
+    // 🔥 CORRECT
+    lift: bench + squat + clean
+  };
 
-  // 🔥 FIXED (THIS IS THE KEY)
-  lift: bench + squat + clean
-};
-
-  }).filter(a => a.name && !a.name.includes("{"));
+}).filter(a => a.name && !a.name.includes("{"));
 
   // GROUP
   grouped = {};
