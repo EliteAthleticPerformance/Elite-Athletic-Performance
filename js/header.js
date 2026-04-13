@@ -109,7 +109,7 @@ async function loadHeader() {
   }
 
   // Prevent duplicate loads
-  if (container.innerHTML.trim() !== "") return;
+  if (container.innerHTML.trim() !== "") return; 
 
   try {
     const res = await fetch("/Wildcats-Athletic-Performance/components/header.html");
