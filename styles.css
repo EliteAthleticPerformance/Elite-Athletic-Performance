@@ -215,6 +215,61 @@ transform: translateY(-2px);
 box-shadow: 0 10px 25px rgba(0,102,255,0.4);
 }
 
+/* ===================== ELITE HEADERS ===================== */
+
+.elite-header {
+    font-family:'Orbitron', sans-serif;
+
+    font-weight:900;
+    letter-spacing:5px;
+
+    transform:scaleX(1.06);
+
+    color:#ffffff;
+
+    text-align:center;
+
+    text-shadow:
+        0 2px 2px rgba(0,0,0,0.9),
+        0 4px 8px rgba(0,0,0,0.8),
+        0 0 10px rgba(0,102,255,0.9),
+        0 0 20px rgba(0,102,255,0.8),
+        0 0 35px rgba(0,102,255,0.7),
+        0 0 55px rgba(0,102,255,0.6);
+
+    background:linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #dce6ff 40%,
+        #ffffff 100%
+    );
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    -webkit-text-stroke:1px rgba(0,0,0,0.6);
+
+    animation: eliteGlow 2.5s ease-in-out infinite alternate;
+
+    white-space:nowrap;
+}
+
+@keyframes eliteGlow {
+    from {
+        text-shadow:
+            0 2px 2px rgba(0,0,0,0.9),
+            0 0 10px rgba(0,102,255,0.7),
+            0 0 20px rgba(0,102,255,0.6);
+    }
+    to {
+        text-shadow:
+            0 2px 4px rgba(0,0,0,1),
+            0 0 20px rgba(0,102,255,1),
+            0 0 40px rgba(0,102,255,0.9),
+            0 0 70px rgba(0,102,255,0.8);
+    }
+}
+
 /* ===== 5. GRID ===== */
 .grid {
 display: grid;
