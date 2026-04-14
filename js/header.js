@@ -4,7 +4,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   loadHeader();
-updateStats();
+  updateStats();
 });
 
 /* ========================================
@@ -81,17 +81,7 @@ window.logout = function () {
    🧱 HEADER LOAD
    ======================================== */
 
-  function getBasePath() {
-  const path = window.location.pathname;
-
-  if (window.location.hostname.includes("github.io")) {
-    return "/" + path.split("/")[1] + "/";
-  }
-
-  return "/";
-}
-
-async function loadHeader() {
+  async function loadHeader() {
   const container = document.getElementById("header-placeholder");
   if (!container) return;
 
