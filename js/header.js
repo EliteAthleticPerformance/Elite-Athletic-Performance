@@ -114,9 +114,9 @@ function initHeaderUI() {
 
   // ✅ Move title logic here
   const pageTitleEl = document.getElementById("pageTitle");
-  if (pageTitleEl && window.pageTitle) {
-    pageTitleEl.textContent = window.pageTitle;
-  }
+if (pageTitleEl) {
+  pageTitleEl.textContent = "Elite Athletic Performance";
+}
 }
 
 function highlightActiveLink() {
