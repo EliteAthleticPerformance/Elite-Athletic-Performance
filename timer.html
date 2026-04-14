@@ -61,19 +61,20 @@ body {
     flex-direction:column;
 }
 
-/* ===================== HEADER ===================== */
-
 #schoolHeader {
     display:flex;
     align-items:center;
     justify-content:flex-start;
+
+    flex-wrap:nowrap;
     padding:18px 40px;
-    flex-wrap:nowrap; /* 🔥 prevents dropping */
+
+    height:100px;
 }
 
 #totalTime {
     flex:0;
-    font-size:3.2vh;   /* 🔥 was 1.5 (too tiny) */
+    font-size:3.2vh;
     font-weight:700;
     margin-right:12px;
 }
@@ -84,26 +85,20 @@ body {
     font-size:clamp(22px, 3.8vh, 42px);
 
     white-space:nowrap;
-
-    padding-right:70px; /* 🔥 reserves space for logo */
+    padding-right:55px;
 }
 
 #teamLogo {
-    flex:0 0 auto;   /* 🔥 prevents ANY stretching */
-
+    flex:0 0 auto;
     height:50px;
-    width:auto;      /* 🔥 keeps natural ratio */
+    width:auto;
 
-    max-width:60px;  /* 🔥 safety cap */
-
-    display:block;   /* 🔥 removes flex weirdness */
-
-    margin-left:10px;
+    display:block;
+    align-self:center;
 }
 
-#schoolHeader span,
-#schoolHeader img {
-    display;  
+#schoolHeader span {
+    display:flex;
     align-items:center;
 }
       
