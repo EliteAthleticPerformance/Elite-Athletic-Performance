@@ -5,12 +5,42 @@
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<title>Harrisonville Wildcats | 4 Quadrant Training Timer</title>
+      <title>Harrisonville Wildcats | 4 Quadrant Training Timer</title>
 
 <style>
 :root {
     --royal:#505152;
     --silver:#B0B7BE;
+}
+
+.workMode {
+    border-color:#32CD32 !important;
+    background:radial-gradient(circle at center,#32CD32 0%,#0a2 60%,#000 100%);
+    box-shadow:0 0 20px #32CD32, 0 0 50px #32CD32, 0 0 80px #32CD32;
+}
+
+.rotateMode {
+    border-color:#FFD700 !important;
+    background:radial-gradient(circle at center,#FFD700 0%,#b8860b 60%,#000 100%);
+    box-shadow:0 0 20px #FFD700, 0 0 50px #FFD700, 0 0 80px #FFD700;
+}
+
+.breakMode {
+    border-color:#FF0000 !important;
+    background:radial-gradient(circle at center,#FF1A1A 0%,#8B0000 60%,#000 100%);
+    box-shadow:0 0 30px #FF0000, 0 0 70px #FF0000, 0 0 120px #FF0000;
+}
+
+.dressMode {
+    border-color:#00E5FF !important;
+    background:radial-gradient(circle at center,#00E5FF 0%,#008B9A 60%,#000 100%);
+    box-shadow:0 0 25px #00E5FF, 0 0 60px #00E5FF, 0 0 110px #00E5FF;
+}
+
+.stretchMode {
+    border-color:#FF8C00 !important;
+    background:radial-gradient(circle at center,#FFA500 0%,#CC7000 60%,#000 100%);
+    box-shadow:0 0 25px #FFA500, 0 0 60px #FF8C00, 0 0 110px #FF8C00;
 }
 
 /* ===================== BASE ===================== */
@@ -31,21 +61,19 @@ body {
     flex-direction:column;
 }
 
-/* ===================== HEADER ===================== */
-
 #schoolHeader {
     display:flex;
     align-items:center;
     justify-content:flex-start;
 
     flex-wrap:nowrap;
-    overflow:hidden;
-
     padding:18px 40px;
+
     height:100px;
+
+    overflow:hidden; /* 🔥 prevents drop/wrap */
 }
 
-/* TIMER */
 #totalTime {
     flex:0;
     font-size:2.6vh;
@@ -53,7 +81,6 @@ body {
     margin-right:12px;
 }
 
-/* TITLE */
 #headerMotto {
     flex:1;
     text-align:right;
@@ -62,40 +89,31 @@ body {
 
     white-space:nowrap;
     overflow:hidden;
-    min-width:0;
+    min-width:0; /* 🔥 CRITICAL */
 
     padding-right:55px;
-
-    font-weight:900;
-    letter-spacing:2px;
-    color:#f5f9ff;
-
-    text-shadow:
-        0 2px 6px rgba(0,102,255,0.45);
 }
 
-/* LOGO */
 #teamLogo {
     flex:0 0 auto;
+
     height:48px;
     width:auto;
 
     display:block;
+
     margin-left:8px;
 
     transform:translateY(-2px);
-
-    position:relative;
-    z-index:2;
 }
 
-/* ALIGN TEXT VERTICALLY */
 #schoolHeader span {
     display:flex;
     align-items:center;
 }
+      
+/* Watermark */
 
-/* WATERMARK */
 #schoolHeader::before {
     content:"STRENGTH - SPEED - AGILITY               STRENGTH - SPEED - AGILITY";
     position:absolute;
@@ -111,7 +129,8 @@ body {
     z-index:0;
 }
 
-/* SHIMMER */
+/* Shimmer */
+
 #schoolHeader::after {
     content:"";
     position:absolute;
@@ -135,11 +154,131 @@ body {
     100% { left:150%; }
 }
 
+/* ===================== CENTER PULSE ===================== */
+
+@keyframes centerPulse {
+    0% {
+        transform:translate(-50%, -50%) scale(1);
+        filter:brightness(1);
+    }
+    50% {
+        transform:translate(-50%, -50%) scale(1.06);
+        filter:brightness(1.25);
+    }
+    100% {
+        transform:translate(-50%, -50%) scale(1);
+        filter:brightness(1);
+    }
+}
+
+#schoolHeader span {
+    font-size:9vh;
+    font-weight:900;
+    letter-spacing:2px;
+}
+
+/* ===================== 3D CHAMPIONSHIP TEXT ===================== */
+
+#headerMotto {
+    font-size:9vh;
+    font-weight:900;
+    letter-spacing:2px;
+    position:relative;
+    color:#f5f9ff;
+    text-shadow:
+        0 1px 0 #111,
+        0 2px 0 #111,
+        0 3px 0 #111,
+        0 4px 0 #111,
+        0 5px 0 #111,
+        0 6px 8px rgba(0,102,255,0.45);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+}
+
+/* ===================== LOGO BASE ===================== */
+
+#teamLogo {
+    position:relative;
+    z-index:2;
+    animation:none;
+    transition:filter 0.25s ease;
+}
+
+.logoDefault {
+    filter:
+        drop-shadow(0 0 6px #ffffff)
+        drop-shadow(0 0 16px #0066FF);
+}
+
+.logoWork {
+    filter:
+        drop-shadow(0 0 10px #32CD32)
+        drop-shadow(0 0 28px #32CD32)
+        drop-shadow(0 0 50px #32CD32);
+}
+
+.logoRotate {
+    filter:
+        drop-shadow(0 0 10px #FFD700)
+        drop-shadow(0 0 28px #FFD700)
+        drop-shadow(0 0 50px #FFD700);
+}
+
+.logoBreak {
+    filter:
+        drop-shadow(0 0 12px #FF1A1A)
+        drop-shadow(0 0 32px #FF0000)
+        drop-shadow(0 0 60px #FF0000);
+}
+
+@keyframes logoPulse {
+    0% { transform:scale(1); }
+    50% { transform:scale(1.12); }
+    100% { transform:scale(1); }
+}
+
+/* ===================== TOOLBAR ===================== */
+
+#toolbar {
+    display:flex;
+    gap:15px;
+    padding:15px;
+    justify-content:center;
+    align-items:center;
+    background:#111;
+    border-bottom:4px solid var(--silver);
+}
+
+#toolbar input {
+    width:50px;
+    text-align:center;
+    font-weight:bold;
+    border-radius:4px;
+    border:2px solid var(--silver);
+    background:#000;
+    color:#fff;
+}
+
+#toolbar button {
+    padding:10px 20px;
+    font-weight:bold;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    background:#0066FF;
+    color:#fff;
+}
+
+#toolbar button:hover {
+    background:#0044AA;
+}
+
 /* ===================== GRID ===================== */
 
 #display {
     position:absolute;
-    top:200px;
+    top:200px; /* 🔥 sweet spot */
     bottom:0;
     left:0;
     right:0;
@@ -161,8 +300,14 @@ body {
     padding:6px;
 }
 
-.quad-title { font-size:3.5vh; }
-.quad-text  { font-size:6.5vh; font-weight:900; }
+.quad-title { 
+    font-size:3.5vh; /* 🔥 down from ~3.5 */
+}
+
+.quad-text  { 
+    font-size:6.5vh; /* 🔥 down from ~6.5 */
+    font-weight:900;
+}
 
 .q1{background:#000;color:#fff;border:8px solid var(--silver);}
 .q2{background:#fff;color:#000;border:8px solid var(--silver);}
@@ -182,59 +327,105 @@ body {
     border-radius:50%;
     background:radial-gradient(circle at center,#111 0%,#000 70%);
     display:flex;
+    flex-direction:column;
     justify-content:center;
     align-items:center;
+    transition:all 0.3s ease;
+
+    /* ⭐ NEW */
+    animation:centerPulse 1.6s ease-in-out infinite;
 }
 
 #clock {
     font-size:clamp(48px, 8vmin, 140px);
     font-weight:900;
+    letter-spacing:2px;
+    font-variant-numeric:tabular-nums;
+}
+
+#phase {
+    font-size:clamp(14px, 2.2vmin, 36px);
+    font-weight:900;
+    text-align:center;
+    margin-top:0.5vh;
+    white-space:pre-line;
+}
+
+.smallPhase { font-size:1.4vh !important; }
+
+/* ===================== ANIMATIONS ===================== */
+
+@keyframes scrollWatermark {
+    0%   { transform:translateY(-50%) translateX(100%); }
+    100% { transform:translateY(-50%) translateX(-100%); }
 }
 </style>
 </head>
 
 <body>
 
-<!-- ✅ HEADER (FIXED) -->
 <div id="schoolHeader">
     <span id="totalTime">00:00</span>
 
+    
     <span id="headerMotto">Elite Athletic Performance</span>
-
-    <img id="teamLogo"
-         src="../Elite-Athletic-Performance/images/wildcat-logo.png"
-         alt="Wildcats Logo"
-         onerror="this.src='/Elite-Athletic-Performance/images/wildcat-logo.png'" />
 </div>
 
-<!-- GRID -->
+      <img id="teamLogo" src="../Elite-Athletic-Performance/images/wildcat-logo.png" height="80"
+  class="logo"
+  alt="Wildcats Logo"
+  onerror="this.src='/Elite-Athletic-Performance/images/wildcat-logo.png'" 
+/>
+
+<div id="toolbar" style="display:none;">
+    WORK:
+    <input type="number" id="workTime" value="10" min="1" onchange="syncTime()">
+
+    REST:
+    <input type="number" id="restTime" value="10" min="1" onchange="syncTime()">
+
+    <button onclick="startTimer()" id="startBtn">START</button>
+
+    SET:
+    <input type="number" id="of" value="3" min="1">
+</div>
+
 <div id="display">
 
-    <div class="quad q1">
+    <div class="quad q1" id="q1">
         <div class="quad-title">Core Lift</div>
         <div class="quad-text">Squats</div>
+        <div class="quad-text">Reps: 10</div>
+        <div class="quad-text">Percentage: 65</div>
     </div>
 
-    <div class="quad q2">
+    <div class="quad q2" id="q2">
         <div class="quad-title">Aux Lift</div>
         <div class="quad-text">Aux Lift</div>
+        <div class="quad-text">Reps: 10</div>
     </div>
 
-    <div class="quad q3">
+    <div class="quad q3" id="q3">
         <div class="quad-title">REST</div>
+        <div class="quad-text">Spot</div>
     </div>
 
-    <div class="quad q4">
-        <div class="quad-title">Movement</div>
+    <div class="quad q4" id="q4">
+        <div class="quad-title">Movement / Stability Skill</div>
+        <div class="quad-text">Movement</div>
+        <div class="quad-text">Reps/Time:</div>
     </div>
 
     <div id="center">
         <div id="clock">30</div>
+        <div id="phase">WORK</div>
     </div>
 
 </div>
 
 <script>
+
+  
 
       /* ===================== STATE ===================== */
 
