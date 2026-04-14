@@ -82,11 +82,9 @@ body {
 #headerMotto {
     text-align:center;
     justify-self:center;
-
     font-size:clamp(32px, 5vh, 60px);
     font-weight:900;
     letter-spacing:3px;
-
     color:#ffffff;
 
     /* 🔥 MULTI-LAYER GLOW */
@@ -107,15 +105,12 @@ body {
     );
     -webkit-background-clip:text;
     -webkit-text-fill-color:transparent;
-
+      -webkit-text-stroke: 1px rgba(0,0,0,0.6);
+    animation: eliteGlow 2.5s ease-in-out infinite alternate;
     white-space:nowrap;
 }
 
-      #headerMotto {
-    animation: eliteGlow 2.5s ease-in-out infinite alternate;
-}
-
-@keyframes eliteGlow {
+      @keyframes eliteGlow {
     from {
         text-shadow:
             0 2px 2px rgba(0,0,0,0.9),
@@ -131,7 +126,7 @@ body {
     }
 }
 
-      -webkit-text-stroke: 1px rgba(0,0,0,0.6);
+      
 
 #teamLogo {
     height:55px;
