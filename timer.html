@@ -87,20 +87,28 @@ body {
     margin-right:8px; /* 🔥 tighter */
 }
 
-#teamLogo {
+#totalTime {
     flex:0;
-    height:70px;
-    margin-left:6px;   /* 🔥 small gap from time */
-    margin-right:18px; /* 🔥 space before title */
+    font-size:5.5vh;
+    font-weight:900;
+    margin-right:15px;
 }
 
 #headerMotto {
     flex:1;
-    text-align:right; /* 🔥 THIS is the key */
+    text-align:right; /* 🔥 pushes title toward logo */
     font-size:5.5vh;
-    z-index:2;
+}
 
-    padding-right:20px; /* optional spacing from edge */
+#teamLogo {
+    flex:0;
+    height:90px;
+    width:auto;
+    object-fit:contain;
+
+    margin-left:15px; /* 🔥 space from title */
+
+    z-index:2;
 }
 
       #schoolHeader {
@@ -368,14 +376,15 @@ body {
 <div id="schoolHeader">
     <span id="totalTime">00:00</span>
 
-    <img id="teamLogo" src="../Elite-Athletic-Performance/images/wildcat-logo.png" height="80"
+    
+    <span id="headerMotto">Elite Athletic Performance</span>
+</div>
+
+      <img id="teamLogo" src="../Elite-Athletic-Performance/images/wildcat-logo.png" height="80"
   class="logo"
   alt="Wildcats Logo"
   onerror="this.src='/Elite-Athletic-Performance/images/wildcat-logo.png'" 
 />
-
-    <span id="headerMotto">Elite Athletic Performance</span>
-</div>
 
 <div id="toolbar" style="display:none;">
     WORK:
