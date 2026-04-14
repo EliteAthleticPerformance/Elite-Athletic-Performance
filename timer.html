@@ -81,6 +81,7 @@ body {
 
 #headerMotto {
     text-align:center;
+    justify-self:center; /* 🔥 THIS is the missing piece */
 
     font-size:clamp(26px, 4vh, 48px);
     font-weight:900;
@@ -103,10 +104,15 @@ body {
     width:auto;
 }
 
-#schoolHeader span {
-    display:flex;
-    align-items:center;
+      #totalTime {
+    justify-self:start;
 }
+
+#teamLogo {
+    justify-self:end;
+}
+
+
       
 /* Watermark */
 
