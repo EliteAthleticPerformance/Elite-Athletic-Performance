@@ -64,13 +64,13 @@ body {
 /* ===================== HEADER ===================== */
 
 #schoolHeader {
+    position:relative;
     display:flex;
     align-items:center;
     justify-content:flex-start; /* 🔥 important change */
-
     flex-wrap:nowrap; /* 🔥 prevents dropping */
     overflow:hidden;  /* 🔥 prevents spill */
-
+    
     padding:18px 40px;
 }
 
@@ -86,28 +86,26 @@ body {
     flex:1;
     text-align:right;
 
-    white-space:nowrap; /* 🔥 critical */
+    padding-right:100px; /* 🔥 space for logo */
+
+    white-space:nowrap;
     overflow:hidden;
 
-    font-size:5.5vh;
+    font-size:4.5vh;
 }
 
 #teamLogo {
-    flex:0;
+    position:absolute; /* 🔥 removes from flex */
 
-    height:100px;
+    right:30px;        /* adjust spacing from right */
+    top:50%;
+    transform:translateY(-50%);
+
+    height:100px;       /* 🔥 reduce from 100 (was too big) */
     width:auto;
-
     object-fit:contain;
 
-    margin-left:15px;
-
-    align-self:center; /* 🔥 ensures vertical alignment */
-
-    position:relative; /* 🔥 keeps it in header layer */
-    top:0;
-
-    z-index:2;
+    z-index:3;
 }
 
 #schoolHeader span,
