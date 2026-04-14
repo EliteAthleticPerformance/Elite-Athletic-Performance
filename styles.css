@@ -217,6 +217,10 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
 
 /* ===================== ELITE HEADERS ===================== */
 
+.elite-lg {
+    font-size:clamp(32px, 5vh, 60px);
+}
+
 .elite-header {
     font-family:'Orbitron', sans-serif;
 
