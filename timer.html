@@ -74,7 +74,7 @@ body {
 
 #totalTime {
     flex:0;
-    font-size:3.2vh;
+    font-size:2.6vh;
     font-weight:700;
     margin-right:12px;
 }
@@ -90,11 +90,15 @@ body {
 
 #teamLogo {
     flex:0 0 auto;
-    height:50px;
+
+    height:48px;  /* slightly smaller for balance */
     width:auto;
 
     display:block;
-    align-self:center;
+
+    margin-left:8px;
+
+    transform:translateY(-2px); /* 🔥 tiny lift to align with text */
 }
 
 #schoolHeader span {
