@@ -66,43 +66,51 @@ body {
 #schoolHeader {
     display:flex;
     align-items:center;
-    justify-content:space-between;
+    justify-content:flex-start; /* 🔥 important change */
 
-    flex-wrap:nowrap; /* 🔥 THIS FIXES IT */
+    flex-wrap:nowrap; /* 🔥 prevents dropping */
+    overflow:hidden;  /* 🔥 prevents spill */
+
+    padding:18px 40px;
 }
 
 #totalTime {
     flex:0;
-    font-size:5.5vh;
-    font-weight:900;
-    margin-right:8px; /* 🔥 tighter */
+    font-size:4.5vh;
+    font-weight:800;  
+    margin-right:15px;
 }
+     
 
 #headerMotto {
     flex:1;
     text-align:right;
-    font-size:5.5vh;
 
-    white-space:nowrap; /* 🔥 prevents wrapping */
+    white-space:nowrap; /* 🔥 critical */
     overflow:hidden;
+
+    font-size:5.5vh;
 }
 
 #teamLogo {
     flex:0;
-    height:90px;
+
+    height:100px;
     width:auto;
+
     object-fit:contain;
 
-    margin-left:15px; /* 🔥 space from title */
+    margin-left:15px;
+
+    align-self:center; /* 🔥 ensures vertical alignment */
+
+    position:relative; /* 🔥 keeps it in header layer */
+    top:0;
 
     z-index:2;
 }
 
-      #schoolHeader {
-    padding:18px 40px; /* 🔥 horizontal balance */
-}
-
-      #schoolHeader span,
+#schoolHeader span,
 #schoolHeader img {
     display:flex;
     align-items:center;
