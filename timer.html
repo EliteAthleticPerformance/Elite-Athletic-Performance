@@ -64,48 +64,40 @@ body {
 /* ===================== HEADER ===================== */
 
 #schoolHeader {
-    position:relative;
     display:flex;
     align-items:center;
-    justify-content:flex-start; /* 🔥 important change */
-    flex-wrap:nowrap; /* 🔥 prevents dropping */
-    overflow:hidden;  /* 🔥 prevents spill */
-    
-    padding:18px 40px;
+    justify-content:flex-start;
+
+    flex-wrap:nowrap;  /* ✅ keep */
 }
 
 #totalTime {
     flex:0;
     font-size:4.5vh;
-    font-weight:800;  
-    margin-right:15px;
+    font-weight:800;
+    margin-right:12px;
 }
-     
 
 #headerMotto {
     flex:1;
     text-align:right;
 
-    padding-right:100px; /* 🔥 space for logo */
-
     white-space:nowrap;
-    overflow:hidden;
 
     font-size:4.5vh;
 }
 
 #teamLogo {
-    position:absolute; /* 🔥 removes from flex */
+    flex:0;
 
-    right:30px;        /* adjust spacing from right */
-    top:50%;
-    transform:translateY(-50%);
-
-    height:100px;       /* 🔥 reduce from 100 (was too big) */
+    height:85px;   /* 🔥 smaller = prevents overflow */
     width:auto;
+
     object-fit:contain;
 
-    z-index:3;
+    margin-left:12px; /* 🔥 sits just after title */
+
+    z-index:2;
 }
 
 #schoolHeader span,
