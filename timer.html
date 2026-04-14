@@ -70,7 +70,7 @@ body {
     align-items:center;
     justify-content:space-between;
 
-    padding:30px 40px; /* 🔥 bigger */
+    padding:18px 30px; /* 🔥 reduced */
 
     background:linear-gradient(90deg,#000,#111,#aaa,#111,#000);
     border-top:4px solid #fff;
@@ -83,21 +83,21 @@ body {
 #totalTime {
     flex:1;
     text-align:left;
-    font-size:6.5vh;
+    font-size:5.5vh; /* 🔥 smaller */
     font-weight:900;
     z-index:2;
 }
 
 #teamLogo {
     flex:0;
-    height:85px; /* 🔥 balanced (not too big) */
+    height:70px; /* 🔥 reduced */
     z-index:2;
 }
 
 #headerMotto {
     flex:1;
     text-align:right;
-    font-size:6.5vh;
+    font-size:5.5vh; /* 🔥 smaller */
     z-index:2;
 }
       
@@ -286,11 +286,17 @@ body {
     justify-content:center;
     align-items:center;
     text-align:center;
-    padding:10px;
+    padding:6px;
 }
 
-.quad-title { font-size:3.5vh; }
-.quad-text  { font-size:6.5vh; font-weight:900; }
+.quad-title { 
+    font-size:2.6vh; /* 🔥 down from ~3.5 */
+}
+
+.quad-text  { 
+    font-size:5.2vh; /* 🔥 down from ~6.5 */
+    font-weight:900;
+}
 
 .q1{background:#000;color:#fff;border:8px solid var(--silver);}
 .q2{background:#fff;color:#000;border:8px solid var(--silver);}
