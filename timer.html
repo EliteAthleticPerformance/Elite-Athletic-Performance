@@ -62,16 +62,14 @@ body {
 }
 
 #schoolHeader {
-    display:flex;
+    display:grid;
+    grid-template-columns: auto 1fr auto; /* timer | title | logo */
     align-items:center;
-    justify-content:flex-start;
 
-    flex-wrap:nowrap;
     padding:18px 40px;
-
     height:100px;
 
-    overflow:hidden; /* 🔥 prevents drop/wrap */
+    position:relative;
 }
 
 #totalTime {
