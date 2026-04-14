@@ -1,21 +1,4 @@
 /* ========================================
-   🔥 ELITE V3 HEADER SYSTEM
-   ======================================== */
-
-const STORAGE_KEY = "athleteScores";
-const SESSION_KEY = "coachAccess";
-const COACH_PASSWORD = "coach123";
-
-const links = document.querySelectorAll("#dropdownMenu a");
-
-links.forEach(link => {
-  if (window.location.href.includes(link.getAttribute("href"))) {
-    link.style.color = "gold";
-    link.style.fontWeight = "700";
-  }
-});
-
-/* ========================================
    INIT
    ======================================== */
 
@@ -99,8 +82,17 @@ window.logout = function () {
    🧱 HEADER LOAD
    ======================================== */
 
-async function loadHeader() {
+  function getBasePath() {
+  const path = window.location.pathname;
 
+  if (window.location.hostname.includes("github.io")) {
+    return "/" + path.split("/")[1] + "/";
+  }
+
+  return "/";
+}
+
+async function loadHeader() {
   const container = document.getElementById("header-placeholder");
 
   if (!container) {
@@ -108,17 +100,31 @@ async function loadHeader() {
     return;
   }
 
-  // Prevent duplicate loads
-  if (container.innerHTML.trim() !== "") return; 
+  if (container.innerHTML.trim() !== "") return;
 
   try {
-    const res = await fetch("/Wildcats-Athletic-Performance/components/header.html");
+    const base = getBasePath();
+
+    const res = await fetch(base + "components/header.html");
 
     if (!res.ok) throw new Error("Header fetch failed");
 
     const html = await res.text();
 
     container.innerHTML = html;
+
+    // 🔥 Fix paths automatically
+    const fixPaths = (selector, attr) => {
+      container.querySelectorAll(selector).forEach(el => {
+        const val = el.getAttribute(attr);
+        if (val && !val.startsWith("http") && !val.startsWith("/")) {
+          el.setAttribute(attr, base + val);
+        }
+      });
+    };
+
+    fixPaths("img", "src");
+    fixPaths("a", "href");
 
     initHeaderUI();
 
@@ -135,12 +141,24 @@ function initHeaderUI() {
   scaleHeaderText();
   setupMenu();
   setupResize();
+  highlightActiveLink();
+
+  // ✅ Move title logic here
+  const pageTitleEl = document.getElementById("pageTitle");
+  if (pageTitleEl && window.pageTitle) {
+    pageTitleEl.textContent = window.pageTitle;
+  }
 }
 
-const pageTitleEl = document.getElementById("pageTitle");
+function highlightActiveLink() {
+  const links = document.querySelectorAll("#dropdownMenu a");
 
-if (pageTitleEl && window.pageTitle) {
-  pageTitleEl.textContent = window.pageTitle;
+  links.forEach(link => {
+    if (window.location.href.includes(link.getAttribute("href"))) {
+      link.style.color = "gold";
+      link.style.fontWeight = "700";
+    }
+  });
 }
 
 /* ========================================
