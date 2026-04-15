@@ -213,7 +213,9 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
 }
 
 .header-left {
-    flex:0 0 auto;
+    width: 140px;   /* 🔥 match right side space */
+    display: flex;
+    align-items: center;
 }
 
 .header-center {
@@ -241,12 +243,11 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
 }
 
 .header-right {
-    flex:0 0 auto;
-    display:flex;
-    align-items:center;
-    gap:10px;
-
-    margin-left:auto; /* 🔥 THIS pushes it all the way right */
+    width: 140px;   /* 🔥 same as left */
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
 }
 
 .elite-lg {
