@@ -65,14 +65,14 @@ text-align: center;
 }
 
 .school-name {
-    font-size: 1.3rem;
-    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 6px;
 
-    letter-spacing: 3px;
+    background: rgba(0,0,0,0.35);
 
-    color: #60a5fa;
+    backdrop-filter: blur(4px);
 
-    text-shadow: 0 0 10px rgba(0,102,255,0.6);
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
 /* Buttons */
