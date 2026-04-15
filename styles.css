@@ -155,13 +155,15 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
 /* ===================== ELITE HEADERS ===================== */
 
 #schoolHeader {
-    position:relative; /* 🔥 REQUIRED for absolute centering */
+    position:relative;
     display:flex;
     align-items:center;
-    justify-content:space-between; /* 🔥 THIS is key */
+    justify-content:space-between;
 
     padding:18px 40px;
     height:100px;
+
+    overflow:hidden; /* 🔥 keeps effects inside header */
 }
 
 .header-left {
@@ -242,6 +244,68 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
 
  .title {
     max-width:100%;
+}
+
+#schoolHeader::before {
+    content:"STRENGTH - SPEED - AGILITY   STRENGTH - SPEED - AGILITY   STRENGTH - SPEED - AGILITY";
+    
+    position:absolute;
+    top:50%;
+    left:0;
+    transform:translateY(-50%);
+
+    white-space:nowrap;
+
+    font-size:120px;
+    font-weight:900;
+    letter-spacing:8px;
+
+    color:rgba(255,255,255,0.03);
+
+    animation:scrollWatermark 25s linear infinite;
+
+    pointer-events:none;
+    z-index:0;
+}
+
+#schoolHeader::after {
+    content:"";
+    position:absolute;
+
+    top:0;
+    left:-50%;
+    width:50%;
+    height:100%;
+
+    background:linear-gradient(
+        120deg,
+        rgba(0,102,255,0.2),
+        rgba(255,255,255,0.1),
+        rgba(0,102,255,0.2)
+    );
+
+    transform:skewX(-25deg);
+
+    animation:shimmer 3s infinite;
+
+    z-index:1;
+}
+
+@keyframes scrollWatermark {
+    0%   { transform:translate(0%, -50%); }
+    100% { transform:translate(-50%, -50%); }
+}
+
+@keyframes shimmer {
+    0%   { left:-50%; }
+    100% { left:150%; }
+}
+
+.header-left,
+.header-center,
+.header-right {
+    position:relative;
+    z-index:2;
 }
 
 /* ===== 5. GRID ===== */
