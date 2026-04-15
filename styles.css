@@ -65,7 +65,7 @@ text-align: center;
 }
 
 /* Buttons */
-.enter-btn,
+
 .logout-btn {
   background: transparent;
   border: 1px solid rgba(255,255,255,0.2);
@@ -76,10 +76,7 @@ text-align: center;
   transition: all 0.2s ease;
 }
 
-.enter-btn:hover {
-  background: #2563eb;
-  border-color: #2563eb;
-}
+
 
 .logout-btn:hover {
   background: #444;
@@ -252,7 +249,7 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
 }
 
 #schoolHeader::before {
-    content:"STRENGTH - SPEED - AGILITY - STRENGTH - SPEED - AGILITY - STRENGTH - SPEED - AGILITY";
+    content:"STRENGTH - SPEED - AGILITY - POWER - EXPLOSION - ENDURANCE";
     
     position:absolute;
     top:50%;
@@ -346,9 +343,9 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
         rgba(20,20,20,0.95),
         rgba(40,40,40,0.9)
     );
-    min-height: 300px;
+    min-height: 500px;
     border-radius: 16px;
-    padding: 36px 28px;
+    padding: 48px 48px;
 
     text-decoration: none;
     color: white;
@@ -361,9 +358,9 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
    }
 
 transform: scale(1.03);
-max-width: 800px;
+max-width: 1000px;
 .card h2 {
-    font-size: 1.9rem;
+    font-size: 2.3rem;
 }
 
 .card:hover {
@@ -375,7 +372,7 @@ max-width: 800px;
 
 /* MINI CARDS (STATS) */
 .card-mini {
-    padding: 38px;
+    padding: 48px;
     border-radius: 12px;
 
     background: linear-gradient(
@@ -396,13 +393,13 @@ max-width: 800px;
 }
 
 .card-mini h3 {
-    font-size: 1.3rem;
+    font-size: 2.3rem;
     opacity: 0.7;
     margin-bottom: 6px;
 }
 
 .card-mini p {
-    font-size: 2.6rem;
+    font-size: 2.3rem;
     font-weight: 700;
 }
 
