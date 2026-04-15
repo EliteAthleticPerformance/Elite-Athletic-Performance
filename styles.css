@@ -96,18 +96,23 @@ text-align: center;
 
 /* Dropdown */
 .dropdown {
-  position: absolute;
-  top: 60px;
-  right: 20px; 
+    position: absolute;
 
-  background: #111;
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 8px;
+    top: 100%;          /* 🔥 key fix — starts BELOW header */
+    right: 20px;
 
-  display: none;
-  flex-direction: column;
+    margin-top: 10px;   /* 🔥 adds spacing below header */
 
-  min-width: 180px;
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+
+    display: none;
+    flex-direction: column;
+
+    min-width: 180px;
+
+    z-index: 999;       /* 🔥 ensure it sits above everything */
 }
 
 .dropdown a {
