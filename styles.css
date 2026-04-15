@@ -323,7 +323,7 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
 .grid-2 {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 32px; /* 🔥 was 16px → now more breathing room */
+    gap: 48px; /* 🔥 was 16px → now more breathing room */
     max-width: 600px;
     margin: 0 auto;
 }
