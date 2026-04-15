@@ -73,6 +73,22 @@ text-align: center;
     backdrop-filter: blur(4px);
 
     border: 1px solid rgba(255,255,255,0.1);
+
+   font-size: 1.5rem;          /* 🔥 slightly bigger */
+    font-weight: 800;
+
+    letter-spacing: 4px;
+
+    text-transform: uppercase;
+
+    color: #93c5fd;             /* 🔥 brighter blue */
+
+    margin-bottom: 8px;
+
+    text-shadow:
+        0 0 6px rgba(147,197,253,0.8),
+        0 0 12px rgba(59,130,246,0.7),
+        0 0 20px rgba(0,102,255,0.6);
 }
 
 /* Buttons */
