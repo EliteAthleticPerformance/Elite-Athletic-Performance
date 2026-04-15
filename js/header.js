@@ -118,7 +118,7 @@ function initHeaderUI() {
 
   // 🔥 TEMP VALUES (until we wire Google Sheets)
   if (schoolNameEl) {
-    schoolNameEl.textContent = "Harrisonville Wildcats";
+    schoolNameEl.textContent = "TEST SCHOOL";
   }
 
   if (pageTitleEl) {
