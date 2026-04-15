@@ -64,6 +64,17 @@ text-align: center;
   transition: transform 0.2s ease;
 }
 
+.school-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+
+    letter-spacing: 3px;
+
+    color: #60a5fa;
+
+    text-shadow: 0 0 10px rgba(0,102,255,0.6);
+}
+
 /* Buttons */
 
 .logout-btn {
