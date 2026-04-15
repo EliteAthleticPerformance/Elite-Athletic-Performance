@@ -361,7 +361,8 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
 transform: scale(1.03);
 max-width: 1000px;
 .card h2 {
-    font-size: 2.3rem;
+    font-size: 2.6rem;
+   font-weight: 800;
 }
 
 .card:hover {
@@ -454,6 +455,7 @@ max-width: 1000px;
     align-items: center;      /* 🔥 horizontal centering */
 
     text-align: center;       /* 🔥 ensures text aligns nicely */
+   height: 100%; /* 🔥 ensures full centering */
 }
 
 animation: cardFadeUp 0.7s cubic-bezier(.2,.8,.2,1) forwards;
@@ -465,7 +467,7 @@ animation: cardFadeUp 0.7s cubic-bezier(.2,.8,.2,1) forwards;
 #combineTesting
 #athleteProfiles
 #Leaderboard {
-    font-size: 2.4rem;
+    font-size: 3.4rem;
     font-weight: 900;
 }
 
