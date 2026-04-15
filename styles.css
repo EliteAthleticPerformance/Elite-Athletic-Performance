@@ -374,6 +374,7 @@ max-width: 1000px;
 
 .card-icon {
     font-size: 34px;
+   margin-bottom: 14px;
 
     filter: drop-shadow(0 0 10px rgba(0,102,255,0.5));
 
@@ -456,6 +457,8 @@ max-width: 1000px;
 
     text-align: center;       /* 🔥 ensures text aligns nicely */
    height: 100%; /* 🔥 ensures full centering */
+
+    margin-bottom: 10px;
 }
 
 animation: cardFadeUp 0.7s cubic-bezier(.2,.8,.2,1) forwards;
@@ -463,10 +466,10 @@ animation: cardFadeUp 0.7s cubic-bezier(.2,.8,.2,1) forwards;
 /* BIG STAT NUMBERS */
 #totalAthletes,
 #totalTests, 
-#trainingTimer
-#combineTesting
-#athleteProfiles
-#Leaderboard {
+#trainingTimer,
+#combineTesting,
+#athleteProfiles,
+   #Leaderboard,{
     font-size: 3.4rem;
     font-weight: 900;
 }
