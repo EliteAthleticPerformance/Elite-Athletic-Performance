@@ -97,11 +97,9 @@ text-align: center;
 /* Dropdown */
 .dropdown {
     position: absolute;
-
-    top: 100%;          /* 🔥 key fix — starts BELOW header */
+    top: 100%;
     right: 20px;
-
-    margin-top: 10px;   /* 🔥 adds spacing below header */
+    margin-top: 10px;
 
     background: #111;
     border: 1px solid rgba(255,255,255,0.1);
@@ -109,27 +107,22 @@ text-align: center;
 
     display: none;
     flex-direction: column;
-
     min-width: 180px;
 
-    z-index: 999;       /* 🔥 ensure it sits above everything */
-}
+    z-index: 999;
 
-.dropdown a {
-  padding: 10px;
-  color: white;
-  text-decoration: none;
-}
-
-.dropdown a:hover {
-  background: #222;
-}
-
-.dropdown {
     opacity: 0;
     transform: translateY(-10px);
     pointer-events: none;
     transition: all 0.2s ease;
+}
+
+.dropdown.show {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
 
 /* Animation */
 @keyframes fadeSlideDown {
