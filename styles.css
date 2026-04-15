@@ -323,16 +323,14 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
     grid-template-columns: repeat(2, 1fr);
     gap: 48px;
 
-    max-width: 750px; /* 🔥 was 600px */
+    max-width: 750px;
     margin: 0 auto;
 }
 
 .grid-auto {
     display: grid;
-    grid-template-columns: repeat(4, max-content); /* 🔥 key change */
-
-    justify-content: center; /* 🔥 centers the row */
-
+    grid-template-columns: repeat(4, max-content);
+    justify-content: center;
     gap: 20px;
     margin: 0 auto;
 }
@@ -344,9 +342,10 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
         rgba(20,20,20,0.95),
         rgba(40,40,40,0.9)
     );
+
     min-height: 450px;
     border-radius: 16px;
-    padding: 48px 48px;
+    padding: 48px;
 
     text-decoration: none;
     color: white;
@@ -356,15 +355,19 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
         0 0 15px rgba(0,102,255,0.15);
 
     transition: all 0.25s ease;
-   }
-
-transform: scale(1.03);
-max-width: 1000px;
-.card h2 {
-    font-size: 2.6rem;
-   font-weight: 800;
 }
 
+.card h2 {
+    font-size: 2.6rem;
+    font-weight: 800;
+}
+
+.card p {
+    font-size: 1.1rem;
+    opacity: 0.8;
+}
+
+/* Hover effect */
 .card:hover {
     transform: translateY(-6px) scale(1.08);
     box-shadow:
@@ -372,13 +375,14 @@ max-width: 1000px;
         0 0 25px rgba(0,102,255,0.3);
 }
 
+/* ICON */
 .card-icon {
     font-size: 34px;
-   margin-bottom: 14px;
-
+    margin-bottom: 14px;
     filter: drop-shadow(0 0 10px rgba(0,102,255,0.5));
+}
 
-/* MINI CARDS (STATS) */
+/* ===== MINI CARDS (STATS) ===== */
 .card-mini {
     padding: 48px;
     border-radius: 12px;
@@ -391,8 +395,6 @@ max-width: 1000px;
 
     border: 1px solid var(--border);
 
-    
-
     box-shadow:
         0 10px 30px rgba(0,0,0,0.6),
         0 0 15px rgba(0,102,255,0.15);
@@ -401,23 +403,38 @@ max-width: 1000px;
 }
 
 .card-mini h3 {
-    font-size: 2.6rem;
+    font-size: 1.6rem;
     opacity: 0.7;
-    margin-bottom: 6px;
+    margin-bottom: 10px;
 }
 
 .card-mini p {
-    font-size: 2.6rem;
-    font-weight: 700;
+    font-size: 3rem;
+    font-weight: 900;
 }
 
+/* Hover for mini cards */
+.card-mini:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow:
+        0 15px 40px rgba(0,0,0,0.8),
+        0 0 25px rgba(0,102,255,0.25);
+}
+
+/* ===== CENTER CONTENT ===== */
 .card,
 .card-mini {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
     opacity: 0;
-    animation: cardFadeUp 0.6s ease forwards;
+    animation: cardFadeUp 0.7s cubic-bezier(.2,.8,.2,1) forwards;
 }
 
-/* STAGGERED ANIMATION */
+/* ===== STAGGERED ANIMATION ===== */
 .card:nth-child(1) { animation-delay: 0.1s; }
 .card:nth-child(2) { animation-delay: 0.2s; }
 .card:nth-child(3) { animation-delay: 0.3s; }
@@ -426,6 +443,7 @@ max-width: 1000px;
 .card-mini:nth-child(1) { animation-delay: 0.1s; }
 .card-mini:nth-child(2) { animation-delay: 0.2s; }
 
+/* ===== ANIMATION ===== */
 @keyframes cardFadeUp {
     0% {
         opacity: 0;
@@ -440,36 +458,9 @@ max-width: 1000px;
     }
 }
 
-.card-mini:hover {
-    transform: translateY(-4px) scale(1.05);
-    box-shadow:
-        0 15px 40px rgba(0,0,0,0.8),
-        0 0 25px rgba(0,102,255,0.25);
-}
-
-.card,
-.card-mini {
-    display: flex;
-    flex-direction: column;
-
-    justify-content: center;  /* 🔥 vertical centering */
-    align-items: center;      /* 🔥 horizontal centering */
-
-    text-align: center;       /* 🔥 ensures text aligns nicely */
-   height: 100%; /* 🔥 ensures full centering */
-
-    margin-bottom: 10px;
-}
-
-animation: cardFadeUp 0.7s cubic-bezier(.2,.8,.2,1) forwards;
-
-/* BIG STAT NUMBERS */
+/* ===== BIG STAT NUMBERS ===== */
 #totalAthletes,
-#totalTests, 
-#trainingTimer,
-#combineTesting,
-#athleteProfiles,
-   #Leaderboard,{
+#totalTests {
     font-size: 3.4rem;
     font-weight: 900;
 }
