@@ -51,7 +51,7 @@ text-align: center;
 ======================================== */
 
 .logo {
-  height: 75px; /* 🔥 was 48px → slightly bigger */
+  height: 100px; /* 🔥 was 48px → slightly bigger */
   width: auto;
   object-fit: contain;
 }
