@@ -44,6 +44,8 @@
     <canvas id="radarChart"></canvas>
   </div>
 
+  <div id="insights" class="insights-box"></div>
+
   <div id="metrics" class="grid" style="margin-top:30px;"></div>
 
 </main>
@@ -225,7 +227,8 @@ if (!group.length) group = [CURRENT_ATHLETE];
   const avg = calculateAverage(group);
 
   renderRadarChart(player, avg);
-  renderRankings(player);
+renderRankings(player);
+generateInsights(player, avg);
 }
 
 /* ================= AVERAGES ================= */
@@ -372,6 +375,53 @@ function renderRankings(player) {
   `;
 
   animateMetrics(); // 🔥 trigger animation
+}
+
+  function generateInsights(player, avg) {
+
+  const container = document.getElementById("insights");
+
+  if (!container) return;
+
+  const insights = [];
+
+  function compare(label, playerVal, avgVal) {
+    const diff = playerVal - avgVal;
+
+    if (diff > 10) {
+      insights.push(`🟢 ${label} is a major strength (+${diff})`);
+    } else if (diff > 3) {
+      insights.push(`🟢 ${label} is above average (+${diff})`);
+    } else if (diff < -10) {
+      insights.push(`🔴 ${label} needs improvement (${diff})`);
+    } else if (diff < -3) {
+      insights.push(`🟡 ${label} is slightly below average (${diff})`);
+    }
+  }
+
+  compare("Speed", player.speed, avg.speed);
+  compare("Strength", player.strength, avg.strength);
+  compare("Power", player.power, avg.power);
+  compare("Explosive", player.explosive, avg.explosive);
+
+  // 🔥 dominant trait
+  const dominant = Object.entries(player)
+    .sort((a, b) => b[1] - a[1])[0][0];
+
+  insights.unshift(`🔥 Dominant trait: ${dominant.toUpperCase()}`);
+
+  // 📉 weakest trait
+  const weakest = Object.entries(player)
+    .sort((a, b) => a[1] - b[1])[0][0];
+
+  insights.push(`📉 Biggest opportunity: ${weakest.toUpperCase()}`);
+
+  container.innerHTML = `
+    <div class="insights-title">Performance Insights</div>
+    <ul>
+      ${insights.map(i => `<li>${i}</li>`).join("")}
+    </ul>
+  `;
 }
 
 function animateMetrics() {
