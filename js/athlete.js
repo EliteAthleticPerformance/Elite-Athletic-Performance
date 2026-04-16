@@ -16,7 +16,7 @@ Papa.parse(CSV_URL + "&t=" + Date.now(), {
 
     data.slice(1).forEach(row => {
       const name = (row[0] || "").replace(/"/g, "").trim();
-      const score = Number(row[row.length - 1]) || 0;
+      const score = Number(row[row.length - 1]);
 
       if (!name) return;
 
@@ -51,8 +51,7 @@ function getTag(score) {
 
 function render(list) {
   const grid = document.getElementById("athleteGrid");
-if (!grid) return;
-grid.innerHTML = "";
+  grid.innerHTML = "";
 
   const fragment = document.createDocumentFragment();
 
@@ -153,14 +152,3 @@ function filterAthletes() {
 function goToAthlete(name) {
   window.location.href = `history.html?name=${encodeURIComponent(name)}`;
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-
-  const name = new URLSearchParams(window.location.search).get("name");
-  const link = document.getElementById("compareLink");
-
-  if (link && name) {
-    link.href = `history.html?name=${encodeURIComponent(name)}`;
-  }
-
-});
