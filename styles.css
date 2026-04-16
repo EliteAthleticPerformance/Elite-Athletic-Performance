@@ -624,7 +624,7 @@ input:focus {
 HISTORY / COMPARISON
 ======================================== */
 body {
-  font-size: 28px; /* 🔥 bump everything up */
+  font-size: 20px; /* 🔥 bump everything up */
 }
 
 .score {
