@@ -520,16 +520,14 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
   border-collapse: collapse;
   background: #111;
   border-radius: var(--radius);
-  overflow: hidden;
+  overflow: visible;
   table-layout: auto;
 }
 
 /* ===== FREEZE HEADER ROW ===== */
 .table thead th {
-  position: sticky;
   top: 0;
   z-index: 10;
-
   background: #050505; /* must be solid */
 }
 
@@ -542,13 +540,6 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
 
   max-height: 600px;   /* 🔥 REQUIRED */
   overflow-y: auto;    /* 🔥 REQUIRED */
-}
-
-.table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: #050505; /* final value */
 }
 
 /* ===== TABLE FONT SIZE ===== */
