@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,9 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Athlete Profile | Wildcats Performance</title>
-<script>
-  window.pageTitle = "Athlete Profile";
-</script>
+
 <link rel="stylesheet" href="styles.css">
 
 <!-- 🔥 CHART.JS -->
@@ -19,27 +18,17 @@
 
 <!-- ===== HEADER ===== -->
 <div id="header-placeholder"></div>
+<script src="js/header.js"></script>
 
 <!-- ===== MAIN ===== -->
 <main>
 
-<!-- ===== PERFORMANCE SUMMARY ===== -->
-<section class="section" style="text-align:center;">
-
-  <h1 id="athleteName">Athlete</h1>
-
-  <h2 class="score" id="scoreDisplay">Score: --</h2>
-  <p class="dominant" id="dominantDisplay">Dominant: --</p>
-
-  <p id="rank" style="color: var(--muted);"></p>
-  <p id="percentile" style="color: var(--muted);"></p>
-
-  <!-- 🔥 ADD IT RIGHT HERE -->
-  <div style="margin-top: 20px;">
-    <a id="compareLink" class="btn">📊 View Comparison</a>
-  </div>
-
-</section>
+  <!-- TITLE -->
+  <section class="section" style="text-align:center;">
+    <h1 id="athleteName">Athlete</h1>
+    <p id="rank" style="color: var(--muted);"></p>
+    <p id="percentile" style="color: var(--muted);"></p>
+  </section>
 
   <!-- ===== STATS ===== -->
   <section class="section">
@@ -168,8 +157,7 @@
 </main>
 
 <!-- ===== SCRIPT ===== -->
-  <script src="js/header.js"></script>
-<script src="js/athlete.js" defer></script>
+<script src="js/athlete.js"></script>
 
 </body>
 </html>
