@@ -36,9 +36,10 @@ letter-spacing: 1px;
 
 /* ===== 3. LAYOUT ===== */
 main {
-max-width: 1100px;
-margin: auto;
-padding: 20px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 .section {
@@ -513,11 +514,19 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
 
 /* ===== 7. TABLE ===== */
 .table {
-width: 100%;
-border-collapse: collapse;
-background: #111;
-border-radius: var(--radius);
-overflow: hidden;
+  width: 100%;
+  min-width: 100%;        /* ✅ ensures it stretches */
+  border-collapse: collapse;
+  background: #111;
+  border-radius: var(--radius);
+  overflow: hidden;
+  table-layout: auto;     /* ✅ important for full width */
+}
+
+/* ===== TABLE WRAPPER FIX ===== */
+.table-wrapper {
+  width: 100%;
+  max-width: 100%;
 }
 
 .table th,
