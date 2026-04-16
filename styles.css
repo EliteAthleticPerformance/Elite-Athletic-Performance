@@ -863,7 +863,7 @@ body {
     opacity: 0;
   }
   60% {
-    transform: translateY(-10px); /* slight bounce */
+    transform: translateY(-10px);
     opacity: 1;
   }
   100% {
