@@ -300,14 +300,11 @@ function renderPodium(data) {
   </div>
 `;
 
-  const items = container.querySelectorAll(".podium-item");
-
-items.forEach(el => el.classList.remove("show"));
-
-setTimeout(() => {
-  items.forEach(el => el.classList.add("show"));
-}, 50);
-}
+  setTimeout(() => {
+  container.querySelectorAll(".podium-item").forEach(el => {
+    el.classList.add("show");
+  });
+}, 100);
 
 // ===============================
 // CREATE ROW
