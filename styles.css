@@ -611,6 +611,99 @@ input:focus {
 }
 
 /* ========================================
+HISTORY / COMPARISON
+======================================== */
+
+.metrics-grid {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 20px;
+  flex-wrap: nowrap; /* 🔥 forces one row */
+  margin-top: 20px;
+}
+
+.metric-card {
+  min-width: 140px;
+  max-width: 160px;
+  flex: 1;
+}
+
+.metrics-row {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  flex-wrap: wrap;
+}
+
+.metrics-row span {
+  white-space: nowrap;
+}
+
+.metric-label,
+.metric-value {
+  white-space: nowrap;
+  text-align: center;
+}
+
+#metrics {
+  overflow-x: auto;
+}
+
+/* ===== METRIC CARD GLOW ===== */
+
+.metric-card {
+  transition: all 0.3s ease;
+}
+
+/* 🔵 ELITE (Blue Glow) */
+.metric-card.elite {
+  border: 1px solid #3b82f6;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.6);
+}
+
+/* 🟢 STRONG (Green Glow) */
+.metric-card.strong {
+  border: 1px solid #22c55e;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+}
+
+/* 🟡 DEVELOPING (Yellow Glow) */
+.metric-card.developing {
+  border: 1px solid #eab308;
+  box-shadow: 0 0 8px rgba(234, 179, 8, 0.5);
+}
+
+/* 🔴 WEAK (Red Glow) */
+.metric-card.weak {
+  border: 1px solid #ef4444;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+}
+
+.metric-card:hover {
+  transform: translateY(-4px) scale(1.03);
+}
+
+.metric-card.elite .metric-fill {
+  background: #3b82f6;
+}
+
+.metric-card.strong .metric-fill {
+  background: #22c55e;
+}
+
+.metric-card.developing .metric-fill {
+  background: #eab308;
+}
+
+.metric-card.weak .metric-fill {
+  background: #ef4444;
+}
+
+/* ========================================
 MOBILE (RESPONSIVE)
 ======================================== */
 
