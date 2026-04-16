@@ -629,20 +629,6 @@ HISTORY / COMPARISON
   flex: 1;
 }
 
-.metrics-row {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  margin-top: 20px;
-  font-size: 16px;
-  font-weight: 600;
-  flex-wrap: wrap;
-}
-
-.metrics-row span {
-  white-space: nowrap;
-}
-
 .metric-label,
 .metric-value {
   white-space: nowrap;
