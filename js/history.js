@@ -1,5 +1,5 @@
 /* ========================================
-   🔥 ELITE V3 HISTORY ENGINE
+   🔥 ELITE V3 HISTORY ENGINEhttps://github.com/EliteAthleticPerformance/Elite-Athletic-Performance/blob/main/js/history.js
    ======================================== */
 
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv";
@@ -10,6 +10,14 @@ const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl6
 
 let rawData = [];
 let processedData = [];
+let comparisonMode = "team"; // default
+
+function setComparison(type) {
+  comparisonMode = type;
+
+  // re-render page
+  render(processedData);
+}
 
 /* ========================================
    INIT
@@ -191,6 +199,8 @@ function render(data) {
     const best = history[0]; // current test
 let comparison = null;
 
+     
+
 // 🔥 NEW LOGIC
 if (comparisonMode === "last") {
   if (history.length > 1) {
@@ -282,20 +292,19 @@ function renderRankings(player) {
 /* ========================================
    CHART
    ======================================== */
-let comparisonMode = "team"; // default
-
-
-
 function renderChart(id, current, comparison) {
 
   if (typeof Chart === "undefined") return;
 
   const ctx = document.getElementById(id).getContext("2d");
+   if (window[id] && typeof window[id].destroy === "function") {
+  window[id].destroy();
+}
 
   const currentMetrics = extractMetrics(current);
   const compMetrics = comparison ? extractMetrics(comparison) : null;
 
-  new Chart(ctx, {
+ window[id] = new Chart(ctx, {
     type: "radar",
     data: {
       labels: ["Speed", "Strength", "Power", "Explosive"],
