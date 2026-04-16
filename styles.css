@@ -420,7 +420,7 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
 }
 
 .card p {
-    font-size: 1.1rem;
+    font-size: 1.5rem;
     opacity: 0.8;
 }
 
@@ -434,7 +434,7 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
 
 /* ICON */
 .card-icon {
-    font-size: 34px;
+    font-size: 48px;
     margin-bottom: 14px;
     filter: drop-shadow(0 0 10px rgba(0,102,255,0.5));
 }
