@@ -886,6 +886,20 @@ body {
   }
 }
 
+.leaderboard-grid {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+  justify-content: center;
+  flex-wrap: nowrap; /* 🔥 THIS is the key */
+}
+
+.leaderboard-card {
+  flex: 1;
+  max-width: 50%; /* 🔥 forces side-by-side */
+  min-width: 0;
+}
+
 /* ========================================
 MOBILE (RESPONSIVE)
 ======================================== */
@@ -910,4 +924,10 @@ MOBILE (RESPONSIVE)
     main {
         padding: 10px;
     }
+}
+
+@media (max-width: 900px) {
+  .leaderboard-grid {
+    grid-template-columns: 1fr;
+  }
 }
