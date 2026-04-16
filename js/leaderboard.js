@@ -230,8 +230,8 @@ function render() {
   );
 
   console.log("PODIUM DATA:", filtered);
-  const source = filtered.length >= 3 ? filtered : leaderboardData;
-if (!podiumBuilt || groupedChanged) {
+  
+if (!podiumBuilt) {
   renderPodium(leaderboardData);
   podiumBuilt = true;
 }
