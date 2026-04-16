@@ -624,7 +624,7 @@ input:focus {
 HISTORY / COMPARISON
 ======================================== */
 body {
-  font-size: 28px; /* 🔥 bump everything up */
+  font-size: 20px; /* 🔥 bump everything up */
 }
 
 .score {
@@ -639,41 +639,7 @@ body {
 
 .compare-buttons button {
   font-size: 24px;
-  padding: 20px 24px;
-}
-
-options: {
-  plugins: {
-    legend: {
-      labels: {
-        font: {
-          size: 40
-        }
-      }
-    }
-  },
-  scales: {
-    r: {
-      pointLabels: {
-        font: {
-          size: 40
-        }
-      },
-      ticks: {
-        font: {
-          size: 32
-        }
-      }
-    }
-  }
-}
-
-legend: {
-  labels: {
-    font: {
-      size: 40
-    }
-  }
+  padding: 16px 20px;
 }
 
 .metrics-grid {
