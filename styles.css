@@ -640,12 +640,16 @@ body {
 .compare-toggle button {
   font-size: 18px;
   padding: 10px 16px;
+  margin: 4px;
   border-radius: 8px;
   border: 1px solid #444;
   background: #111;
   color: white;
   cursor: pointer;
-  transition: all 0.2s ease;
+}
+
+.compare-toggle button.active {
+  background: #2563eb;
 }
 
 .compare-toggle button:hover {
