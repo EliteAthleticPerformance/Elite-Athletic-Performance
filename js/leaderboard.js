@@ -8,6 +8,7 @@
 // ===============================
 let grouped = {};
 let athletes = [];
+ let podiumBuilt = false;
 
 // ===============================
 // INIT
@@ -268,9 +269,7 @@ function renderPodium(data) {
     .sort((a, b) => b.score - a.score)
     .slice(0, 3);
 
-  let podiumBuilt = false;
-  
-  if (top3.length < 3) {
+   if (top3.length < 3) {
   return; // 🔥 DO NOT CLEAR THE PODIUM
 }
 
