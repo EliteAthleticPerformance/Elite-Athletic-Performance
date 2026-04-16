@@ -388,13 +388,13 @@ function renderRankings(player) {
   function compare(label, playerVal, avgVal) {
     const diff = playerVal - avgVal;
 
-    if (diff > 10) {
+    if (diff > 15) {
       insights.push(`🟢 ${label} is a major strength (+${diff})`);
-    } else if (diff > 3) {
+    } else if (diff > 5) {
       insights.push(`🟢 ${label} is above average (+${diff})`);
-    } else if (diff < -10) {
+    } else if (diff < -15) {
       insights.push(`🔴 ${label} needs improvement (${diff})`);
-    } else if (diff < -3) {
+    } else if (diff < -5) {
       insights.push(`🟡 ${label} is slightly below average (${diff})`);
     }
   }
