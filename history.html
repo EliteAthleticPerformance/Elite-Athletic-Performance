@@ -164,53 +164,46 @@ function updateComparison() {
 
   let group = [];
 
-  if (compareMode === "last") {
-  if (history.length > 1) {
-    comparison = history[1]; // previous test
+if (compareMode === "last") {
+
+  const athleteRows = ALL_ROWS
+    .filter(r => r[0].trim() === selectedName)
+    .sort((a, b) => new Date(b[1]) - new Date(a[1]));
+
+  if (athleteRows.length > 1) {
+    group = [athleteRows[1]];
+  } else {
+    group = [CURRENT_ATHLETE];
   }
 }
 
-  if (compareMode === "team") {
-    group = ALL_ROWS.filter(r => r !== CURRENT_ATHLETE);
-  }
+if (compareMode === "team") {
+  group = ALL_ROWS.filter(r => r !== CURRENT_ATHLETE);
+}
 
-  if (compareMode === "top5") {
-    group = ALL_ROWS
-      .sort((a, b) => cleanNum(b[34]) - cleanNum(a[34]))
-      .slice(0, 5);
-  }
+if (compareMode === "top5") {
+  group = ALL_ROWS
+    .sort((a, b) => cleanNum(b[34]) - cleanNum(a[34]))
+    .slice(0, 5);
+}
 
-  if (compareMode === "weight") {
-    const weight = cleanNum(CURRENT_ATHLETE[5]);
+if (compareMode === "weight") {
+  const weight = cleanNum(CURRENT_ATHLETE[5]);
 
-    if (compareMode === "grade") {
+  group = ALL_ROWS.filter(r => {
+    return Math.abs(cleanNum(r[5]) - weight) <= 15;
+  });
+}
 
-  const sameGrade = processedData.filter(a =>
-    a.grade === best.grade && a.name !== best.name
+if (compareMode === "grade") {
+  const grade = CURRENT_ATHLETE[3];
+
+  group = ALL_ROWS.filter(r =>
+    r[3] === grade && r !== CURRENT_ATHLETE
   );
-
-  if (sameGrade.length > 0) {
-    const avgScore = Math.round(
-      sameGrade.reduce((sum, a) => sum + a.score, 0) / sameGrade.length
-    );
-
-    const avgTotal = Math.round(
-      sameGrade.reduce((sum, a) => sum + a.total, 0) / sameGrade.length
-    );
-
-    comparison = {
-      score: avgScore,
-      total: avgTotal
-    };
-  }
 }
 
-    group = ALL_ROWS.filter(r => {
-      return Math.abs(cleanNum(r[5]) - weight) <= 10;
-    });
-  }
-
-  if (!group.length) group = [CURRENT_ATHLETE];
+if (!group.length) group = [CURRENT_ATHLETE];
 
   const avg = calculateAverage(group);
 
