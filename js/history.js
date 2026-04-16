@@ -188,9 +188,30 @@ function render(data) {
     const card = document.createElement("div");
     card.className = "card history-card";
 
-    const best = history[0]; // most recent (already sorted)
+    const best = history[0]; // current test
+let comparison = null;
+
+// 🔥 NEW LOGIC
+if (comparisonMode === "last") {
+  if (history.length > 1) {
+    comparison = history[1]; // previous test
+  }
+}
+
+if (comparisonMode === "team") {
+  // simple average example
+  const avgScore = Math.round(
+    history.reduce((sum, h) => sum + h.score, 0) / history.length
+  );
+
+  comparison = {
+    score: avgScore,
+    total: avgScore
+  };
+}
 
 const metrics = extractMetrics(best);
+const comparisonMetrics = comparison ? extractMetrics(comparison) : null;
 
 card.innerHTML = `
   <h2>${name}</h2>
@@ -221,7 +242,7 @@ card.innerHTML = `
 
     container.appendChild(card);
 
-    renderChart(chartId, history);
+   renderChart(chartId, best, comparison);
   });
 }
 
@@ -261,58 +282,72 @@ function renderRankings(player) {
 /* ========================================
    CHART
    ======================================== */
+let comparisonMode = "team"; // default
 
-function renderChart(id, history) {
+
+
+function renderChart(id, current, comparison) {
 
   if (typeof Chart === "undefined") return;
 
   const ctx = document.getElementById(id).getContext("2d");
 
+  const currentMetrics = extractMetrics(current);
+  const compMetrics = comparison ? extractMetrics(comparison) : null;
+
   new Chart(ctx, {
-    type: "line",
+    type: "radar",
     data: {
-      labels: history.map(a => a.date).reverse(),
+      labels: ["Speed", "Strength", "Power", "Explosive"],
       datasets: [
         {
-          label: "Total",
-          data: history.map(a => a.total).reverse(),
-          tension: 0.3
+          label: "Athlete",
+          data: [
+            currentMetrics.speed,
+            currentMetrics.strength,
+            currentMetrics.power,
+            currentMetrics.explosive
+          ],
+          backgroundColor: "rgba(59,130,246,0.4)",
+          borderColor: "#3b82f6"
         },
-        {
-          label: "Score",
-          data: history.map(a => a.score).reverse(),
-          tension: 0.3
-        }
+        ...(compMetrics ? [{
+          label: "Comparison",
+          data: [
+            compMetrics.speed,
+            compMetrics.strength,
+            compMetrics.power,
+            compMetrics.explosive
+          ],
+          backgroundColor: "rgba(255,99,132,0.3)",
+          borderColor: "#ff6384"
+        }] : [])
       ]
     },
     options: {
-  plugins: {
-    legend: {
-      labels: {
-        color: "#ffffff",
-        font: {
-          size: 32   // 🔥 increase legend text (Athlete / Comparison)
-        }
-      }
-    }
-  },
-  scales: {
-    r: {
-      pointLabels: {
-        color: "#ffffff",
-        font: {
-          size: 32   // 🔥 Speed / Strength / Power labels
+      plugins: {
+        legend: {
+          labels: {
+            color: "#fff",
+            font: { size: 18 }
+          }
         }
       },
-      ticks: {
-        color: "#aaa",
-        backdropColor: "transparent",
-        font: {
-          size: 32   // 🔥 numbers (20, 40, 60, etc.)
+      scales: {
+        r: {
+          pointLabels: {
+            color: "#fff",
+            font: { size: 18 }
+          },
+          ticks: {
+            color: "#aaa",
+            backdropColor: "transparent",
+            font: { size: 14 }
+          }
         }
       }
     }
-  }
+  });
 }
 
 /* ========================================
