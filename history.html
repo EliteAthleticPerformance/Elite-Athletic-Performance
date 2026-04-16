@@ -70,8 +70,15 @@ function cleanNum(val) {
 function extractMetrics(row) {
 
   if (!row || row.length < 34) {
-    return { speed: 0, strength: 0, power: 0, explosive: 0 };
-  }
+  return { speed: 0, strength: 0, power: 0, explosive: 0 };
+}
+
+// 🔥 ADD THIS CHECK
+if (
+  !row[30] && !row[31] && !row[32] && !row[33]
+) {
+  return { speed: 0, strength: 0, power: 0, explosive: 0 };
+}
 
   return {
     speed: cleanNum(row[30]),
@@ -170,7 +177,10 @@ if (compareMode === "last") {
 
   const athleteRows = ALL_ROWS
     .filter(r => normalize(r[0]) === normalize(selectedName))
-    .sort((a, b) => new Date(b[1]) - new Date(a[1]));
+    const athleteRows = ALL_ROWS
+  .filter(r => normalize(r[0]) === normalize(selectedName))
+  .filter(r => r[1]) // must have date
+  .sort((a, b) => new Date(b[1] || 0) - new Date(a[1] || 0));
 
   if (athleteRows.length > 1) {
     group = [athleteRows[1]];
@@ -221,20 +231,13 @@ function calculateAverage(group) {
   let count = group.length;
 
   group.forEach(r => {
-    const m = extractMetrics(r);
-    totals.speed += m.speed;
-    totals.strength += m.strength;
-    totals.power += m.power;
-    totals.explosive += m.explosive;
-  });
 
-  return {
-    speed: Math.round(totals.speed / count),
-    strength: Math.round(totals.strength / count),
-    power: Math.round(totals.power / count),
-    explosive: Math.round(totals.explosive / count)
-  };
-}
+  const m = extractMetrics(r);
+
+  // 🔥 SKIP BAD ROWS
+  if (m.speed === 0 && m.strength === 0 && m.power === 0 && m.explosive === 0) {
+    return;
+  }
 
 /* ================= RADAR ================= */
 
