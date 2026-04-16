@@ -229,7 +229,8 @@ function render() {
   );
 
   console.log("PODIUM DATA:", filtered);
-  renderPodium(filtered.length ? filtered : leaderboardData);
+  const source = filtered.length >= 3 ? filtered : leaderboardData;
+renderPodium(source);
   renderTable(filtered, "liftTable", "lift");
 renderTable(filtered, "scoreTable", "score");
 }
