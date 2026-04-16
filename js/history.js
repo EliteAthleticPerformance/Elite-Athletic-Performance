@@ -15,7 +15,14 @@ let comparisonMode = "team"; // default
 function setComparison(type) {
   comparisonMode = type;
 
-  // re-render page
+  // 🔥 highlight active button
+  document.querySelectorAll(".compare-toggle button")
+    .forEach(btn => btn.classList.remove("active"));
+
+  const activeBtn = document.getElementById(`btn-${type}`);
+  if (activeBtn) activeBtn.classList.add("active");
+
+  // re-render
   render(processedData);
 }
 
