@@ -608,14 +608,7 @@ background: #1a1a1a;
   box-shadow: 0 0 0 1px rgba(255,255,255,0.05);
 }
 
-/* ===== STICKY TABLE HEADER ===== */
-.table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 5;
 
-  background: #050505; /* 🔥 must have background */
-}
 
 /* ===== 8. FORM ===== */
 input, select {
