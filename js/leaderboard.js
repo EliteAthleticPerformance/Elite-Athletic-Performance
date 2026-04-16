@@ -230,7 +230,10 @@ function render() {
 
   console.log("PODIUM DATA:", filtered);
   const source = filtered.length >= 3 ? filtered : leaderboardData;
-renderPodium(source);
+if (!podiumBuilt || groupedChanged) {
+  renderPodium(leaderboardData);
+  podiumBuilt = true;
+}
   renderTable(filtered, "liftTable", "lift");
 renderTable(filtered, "scoreTable", "score");
 }
@@ -265,6 +268,8 @@ function renderPodium(data) {
     .sort((a, b) => b.score - a.score)
     .slice(0, 3);
 
+  let podiumBuilt = false;
+  
   if (top3.length < 3) {
   return; // 🔥 DO NOT CLEAR THE PODIUM
 }
