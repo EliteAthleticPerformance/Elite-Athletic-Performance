@@ -166,10 +166,10 @@ function updateComparison() {
 
 if (compareMode === "last") {
 
-  const athleteRows = ALL_ROWS
-    const normalize = str => (str || "").toLowerCase().trim();
+  const normalize = str => (str || "").toLowerCase().trim();
 
-.filter(r => normalize(r[0]) === normalize(selectedName))
+  const athleteRows = ALL_ROWS
+    .filter(r => normalize(r[0]) === normalize(selectedName))
     .sort((a, b) => new Date(b[1]) - new Date(a[1]));
 
   if (athleteRows.length > 1) {
