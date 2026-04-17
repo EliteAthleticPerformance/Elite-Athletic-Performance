@@ -75,10 +75,9 @@ function processDataFromJSON(data) {
     };
 
   }).filter(a =>
-    a.name &&
-    typeof a.name === "string" &&
-    a.name.includes(",")
-  );
+  a.name &&
+  typeof a.name === "string"
+);
 
   // GROUP
   grouped = {};
