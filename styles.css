@@ -97,7 +97,7 @@ text-align: center;
 
 .logout-btn {
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid var(--primaryLight);
   color: white;
   padding: 6px 12px;
   border-radius: 6px;
@@ -197,7 +197,7 @@ cursor: pointer;
 
 .btn:hover {
 transform: translateY(-2px);
-box-shadow: 0 10px 25px rgba(0,102,255,0.4);
+box-shadow: 0 10px 25px var(--primaryLight)
 }
 
 /* ===================== ELITE HEADERS ===================== */
@@ -414,7 +414,7 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
 
     box-shadow:
         0 10px 30px rgba(0,0,0,0.6),
-        0 0 15px rgba(0,102,255,0.15);
+        0 0 15px var(--primaryLight);
 
     transition: all 0.25s ease;
 }
@@ -434,14 +434,14 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
     transform: translateY(-6px) scale(1.08);
     box-shadow:
         0 15px 40px rgba(0,0,0,0.8),
-        0 0 25px rgba(0,102,255,0.3);
+        0 0 25px var(--primaryLight);
 }
 
 /* ICON */
 .card-icon {
     font-size: 48px;
     margin-bottom: 14px;
-    filter: drop-shadow(0 0 10px rgba(0,102,255,0.5));
+    filter: drop-shadow(0 0 10px var(--primaryLight));
 }
 
 /* ===== MINI CARDS (STATS) ===== */
@@ -469,7 +469,7 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
     transform: translateY(-4px) scale(1.05);
     box-shadow:
         0 15px 40px rgba(0,0,0,0.8),
-        0 0 25px rgba(0,102,255,0.25);
+        0 0 25px var(--primaryLight);
 }
 
 /* ===== CENTER CONTENT ===== */
@@ -558,7 +558,7 @@ text-align: center;
 
 th.sort-asc::after {
   content: " ▲";
-  color: #60a5fa;
+  var(--primaryLight)
 }
 
 th.sort-desc::after {
