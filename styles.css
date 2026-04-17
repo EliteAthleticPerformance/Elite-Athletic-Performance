@@ -228,15 +228,19 @@ box-shadow: 0 10px 25px rgba(0,102,255,0.4);
 }
 
 .school-name {
-    font-size: 1.3rem;
-    font-weight: 700;
-    letter-spacing: 3px;
+  color: var(--primary);
+  text-shadow:
+    0 0 6px var(--primary),
+    0 0 12px var(--primaryLight),
+    0 0 20px var(--primaryLight);
+}
 
-    color: #60a5fa;
-
-    text-shadow: 0 0 10px rgba(0,102,255,0.6);
-
-    margin-bottom: 6px;   /* 🔥 ADD THIS */
+.glow-title {
+  color: var(--primary);
+  text-shadow:
+    0 0 6px var(--primary),
+    0 0 12px var(--primaryLight),
+    0 0 18px var(--secondaryLight);
 }
 
 .header-right {
