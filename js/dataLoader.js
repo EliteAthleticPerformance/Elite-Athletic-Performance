@@ -42,8 +42,8 @@ async function loadAthleteData() {
   situps: Number(row["Sit-Ups"]) || 0,
 
   score: Number(row["Total Athletic Performance"]) || 0
-}));
-  .filter(row => row.name);
+}))
+.filter(row => row.name);
 
   console.log("✅ DATA READY:", APP_DATA.length);
 
