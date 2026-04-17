@@ -886,6 +886,10 @@ body {
   }
 }
 
+.podium-wrapper {
+  margin-bottom: 60px;
+}
+
 .leaderboard-grid {
   display: flex;
   gap: 20px;
@@ -910,6 +914,40 @@ body {
 .leaderboard-table {
   width: 100%;
   min-width: 600px; /* 🔥 prevents squishing */
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 12px 14px; /* 🔥 bigger spacing */
+}
+
+.leaderboard-table {
+  border-collapse: separate;
+  border-spacing: 0 10px; /* 🔥 vertical gap between rows */
+}
+
+.leaderboard-table tbody tr {
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+}
+
+.leaderboard-grid {
+  gap: 40px; /* 🔥 increase from 20px */
+}
+
+.leaderboard-card h2 {
+  margin-bottom: 15px;
+}
+
+.leaderboard-table tbody tr {
+  transition: all 0.25s ease;
+}
+
+.leaderboard-table tbody tr:hover {
+  background: rgba(59,130,246,0.08); /* soft blue glow */
+  transform: scale(1.01);             /* slight lift */
+  box-shadow: 0 0 12px rgba(59,130,246,0.25);
+  cursor: pointer;
 }
 
 /* ========================================
