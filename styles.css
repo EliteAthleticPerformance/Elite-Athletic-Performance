@@ -956,6 +956,22 @@ body {
   cursor: pointer;
 }
 
+.leaderboard-grid {
+  gap: 50px; /* ⬆️ increase spacing between tables */
+}
+
+.leaderboard-card {
+  padding: 15px;
+}
+
+.leaderboard-grid {
+  padding: 0 20px;
+}
+
+.leaderboard-card {
+  max-width: 600px;
+}
+
 /* ========================================
 MOBILE (RESPONSIVE)
 ======================================== */
