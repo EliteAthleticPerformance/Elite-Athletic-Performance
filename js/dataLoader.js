@@ -24,10 +24,10 @@ async function loadAthleteData() {
   const raw = await loadCSV(url);
 
   APP_DATA = raw.map(row => ({
-    ...row,
-    name: row.name?.trim(),
-    date: row.date?.trim()
-  }));
+  ...row,
+  name: row["Student-Athlete"]?.trim(),
+  date: row["Test Date"]?.trim()
+}));
 
   console.log("✅ DATA READY:", APP_DATA.length);
 
