@@ -43,14 +43,13 @@ function initHeaderUI() {
   const schoolNameEl = document.getElementById("schoolName");
   const pageTitleEl = document.getElementById("pageTitle");
 
-  if (schoolNameEl) {
-    schoolNameEl.textContent = "Harrisonville Wildcats";
-  }
-
-  if (pageTitleEl) {
+    if (pageTitleEl) {
     pageTitleEl.textContent = "Elite Athletic Performance";
-  }
 }
+   document.dispatchEvent(new Event("headerLoaded"));
+}
+
+
 
 /* ========================================
    🔗 ACTIVE LINK HIGHLIGHT
