@@ -957,11 +957,11 @@ body {
 }
 
 .leaderboard-grid {
-  gap: 50px; /* ⬆️ increase spacing between tables */
+  gap: 75px; /* ⬆️ increase spacing between tables */
 }
 
 .leaderboard-card {
-  padding: 15px;
+  padding: 10px;
 }
 
 .leaderboard-grid {
@@ -969,7 +969,7 @@ body {
 }
 
 .leaderboard-card {
-  max-width: 600px;
+  max-width: 500px;
 }
 
 /* ========================================
