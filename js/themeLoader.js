@@ -28,7 +28,9 @@ console.log("Theme Row:", themeRow);
   return;
 }
 
+  setTimeout(() => {
   applyBranding(schoolRow, themeRow);
+}, 100);
 }
 
 function applyBranding(school, theme) {
