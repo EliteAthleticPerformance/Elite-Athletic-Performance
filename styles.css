@@ -816,20 +816,26 @@ body {
   background: linear-gradient(to top, #78350f, #f59e0b);
 }
 
-/* Text */
+/* 🏆 Medal (icon) */
 .podium-rank {
-  font-size: 28px;
+  font-size: 36px; /* ⬆️ was ~28px */
+  margin-bottom: 8px;
 }
 
+/* 👤 Name */
 .podium-name {
-  font-size: 15px;
-  font-weight: bold;
-  margin-top: 8px;
+  font-size: 18px;   /* ⬆️ was ~15px */
+  font-weight: 700;
+  margin-top: 10px;
+  line-height: 1.2;
 }
 
+/* 🔢 Score */
 .podium-score {
-  font-size: 20px;
+  font-size: 26px;   /* ⬆️ was ~20px */
+  font-weight: 800;
   color: #60a5fa;
+  margin-top: 6px;
 }
 
 /* ===== PODIUM ANIMATION ===== */
