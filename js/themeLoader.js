@@ -1,4 +1,4 @@
-```js
+
 // ===============================
 // UTIL
 // ===============================
@@ -11,20 +11,7 @@ function formatSchoolName(name) {
 }
 
 // ===============================
-// WAIT FOR HEADER (FUTURE-PROOF)
-// ===============================
-function waitForHeaderAndApply(schoolRow, themeRow) {
-  const el = document.querySelector(".school-name");
-
-  if (el) {
-    applyBranding(schoolRow, themeRow);
-  } else {
-    setTimeout(() => waitForHeaderAndApply(schoolRow, themeRow), 50);
-  }
-}
-
-// ===============================
-// LOAD THEME
+// LOAD THEME (EVENT-DRIVEN)
 // ===============================
 async function loadTheme() {
   const school = normalize(decodeURIComponent(getSchoolFromURL()));
@@ -51,8 +38,8 @@ async function loadTheme() {
     return;
   }
 
-  // 🔥 FUTURE-PROOF APPLICATION
-  waitForHeaderAndApply(schoolRow, themeRow);
+  // 🔥 APPLY BRANDING (header already loaded)
+  applyBranding(schoolRow, themeRow);
 }
 
 // ===============================
@@ -62,21 +49,23 @@ function applyBranding(school, theme) {
 
   const root = document.documentElement;
 
-  // 🔥 CSS VARIABLES
   root.style.setProperty("--primary", theme.primary);
   root.style.setProperty("--primary-light", theme.primaryLight);
   root.style.setProperty("--primary-dark", theme.primaryDark);
   root.style.setProperty("--secondary", theme.secondary);
   root.style.setProperty("--bg", theme.background);
 
-  // 🔥 LOGO
   const logo = document.querySelector(".logo");
   if (logo) logo.src = school.logo;
 
-  // 🔥 SCHOOL NAME (ALL INSTANCES)
   const titles = document.querySelectorAll(".school-name");
   titles.forEach(el => {
     el.textContent = formatSchoolName(school.name);
   });
 }
-```
+
+// ===============================
+// EVENT LISTENER (RUN ON HEADER READY)
+// ===============================
+document.addEventListener("headerLoaded", loadTheme);
+
