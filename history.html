@@ -142,7 +142,9 @@ Papa.parse(CSV_URL, {
 function getBestRow(rows, athleteName) {
 
   const normalize = str =>
-    (str || "").toLowerCase().trim();
+  (str || "")
+    .toLowerCase()
+    .replace(/[^a-z]/g, "");
 
   const target = normalize(athleteName);
 
