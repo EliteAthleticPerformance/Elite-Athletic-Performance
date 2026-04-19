@@ -113,11 +113,11 @@ body {
     height:100%;
 
     background:linear-gradient(
-        120deg,
-        rgba(0,102,255,0.2),
-        rgba(255,255,255,0.1),
-        rgba(0,102,255,0.2),
-        );
+    120deg,
+    var(--primary),
+    rgba(255,255,255,0.1),
+    var(--primary)
+);
 
     transform:skewX(-25deg);
 
@@ -159,9 +159,9 @@ body {
     color:#ffffff;
 
     text-shadow:
-        0 0 6px rgba(0,102,255,0.8),
-        0 0 12px rgba(0,102,255,0.6),
-        0 0 20px rgba(0,102,255,0.4);
+        0 0 6px var(--primary),
+    0 0 12px var(--primaryLight),
+    0 0 20px var(--primaryLight);
 }
 
 #headerMotto {
@@ -200,15 +200,15 @@ text-shadow:
     from {
         text-shadow:
             0 2px 2px rgba(0,0,0,0.9),
-            0 0 10px rgba(0,102,255,0.7),
-            0 0 20px rgba(0,102,255,0.6);
+            0 0 10px var(--primary),
+            0 0 20px var(--primaryLight);
     }
     to { 
         text-shadow:
             0 2px 4px rgba(0,0,0,1),
-            0 0 20px rgba(0,102,255,1),
-            0 0 40px rgba(0,102,255,0.9),
-            0 0 70px rgba(0,102,255,0.8);
+            0 0 20px var(--primary),
+            0 0 40px var(--primaryLight),
+            0 0 70px var(--secondaryLight);
     }
 }
 
@@ -266,7 +266,7 @@ text-shadow:
 .logoDefault {
     filter:
         drop-shadow(0 0 6px #ffffff)
-        drop-shadow(0 0 16px #0066FF);
+        drop-shadow(0 0 16px var(--primary));
 }
 
 .logoWork {
@@ -324,7 +324,7 @@ text-shadow:
     border:none;
     border-radius:6px;
     cursor:pointer;
-    background:#0066FF;
+    background: var(--primary);
     color:#fff;
 }
 
