@@ -349,23 +349,28 @@ function renderRadarChart(player, avg) {
       labels: ["Speed", "Strength", "Power", "Explosive"],
       datasets: [
   {
-    label: selectedName, // 🔥 current athlete name
+    label: selectedName,
     data: [
       player.speed,
       player.strength,
       player.power,
       player.explosive
     ],
+    borderColor: "#3b82f6",
+    backgroundColor: "rgba(59,130,246,0.35)",
     borderWidth: 5
   },
   {
-    label: comparisonName, // 🔥 dynamic comparison name
+    label: comparisonName,
     data: [
       avg.speed,
       avg.strength,
       avg.power,
       avg.explosive
-    ]
+    ],
+    borderColor: "#ec4899",
+    backgroundColor: "rgba(236,72,153,0.25)",
+    borderWidth: 3
   }
 ]
     },
