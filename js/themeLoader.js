@@ -87,7 +87,9 @@ function applyBranding(school, theme) {
   root.style.setProperty("--background", theme.background);
 
   const logo = document.getElementById("schoolLogo");
-if (logo) logo.src = school.logo;
+if (logo && school.logo) {
+  logo.src = school.logo;
+}
 
   const titles = document.querySelectorAll(".school-name");
   titles.forEach(el => {
@@ -95,31 +97,8 @@ if (logo) logo.src = school.logo;
   });
 }
 
-function applyStoredTheme() {
-    const primary = localStorage.getItem("primary");
-    const primaryLight = localStorage.getItem("primaryLight");
-    const primaryDark = localStorage.getItem("primaryDark");
-    const secondary = localStorage.getItem("secondary");
-    const secondaryLight = localStorage.getItem("secondaryLight");
-
-    if (primary) {
-        document.documentElement.style.setProperty('--primary', primary);
-        document.documentElement.style.setProperty('--primaryLight', primaryLight || primary);
-        document.documentElement.style.setProperty('--primaryDark', primaryDark || primary);
-        document.documentElement.style.setProperty('--secondary', secondary || primary);
-        document.documentElement.style.setProperty('--secondaryLight', secondaryLight || primary);
-    }
-}
-
-// 🔥 RUN IT
-applyStoredTheme();
 
 // ===============================
 // EVENT LISTENER (RUN ON HEADER READY)
 // ===============================
-document.addEventListener("headerLoaded", loadTheme);
-
-// 🔥 FALLBACK (in case event already fired)
-if (document.readyState === "complete" || document.readyState === "interactive") {
-  setTimeout(loadTheme, 50);
-}
+window.addEventListener("DOMContentLoaded", loadTheme);
