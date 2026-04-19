@@ -139,7 +139,7 @@ body {
 }
 
       #schoolHeader span,
-#teamLogo {
+#schoolLogo {
     position:relative;
     z-index:2;
 }
@@ -212,7 +212,7 @@ body {
 
       
 
-#teamLogo {
+#schoolLogo {
     height:75px;
     width:auto;
 }
@@ -221,7 +221,7 @@ body {
     justify-self:start;
 }
 
-#teamLogo {
+#schoolLogo {
     justify-self:end;
 }
 
@@ -254,7 +254,7 @@ body {
 
 /* ===================== LOGO BASE ===================== */
 
-#teamLogo {
+#schoolLogo {
     position:relative;
     z-index:2;
     animation:none;
@@ -1500,7 +1500,8 @@ function updateClock() {
 ====================================================== */
 function updatePhaseDisplay() {
 
-    const logo = document.getElementById("teamLogo");
+    const logo = document.getElementById("schoolLogo");
+if (!logo) return;
     const center = document.getElementById("center");
 
     // 🔥 CLEAR ALL CENTER MODES FIRST (CRITICAL)
