@@ -957,7 +957,7 @@ KEY (IDENTIFIER)
 
 /* Color coding */
 .key-labels .elite   { color: #22c55e; }  /* Green */
-.key-labels .strong  { color: #f97316; }  /* Orange */
+.key-labels .above  { color: #f97316; }  /* Orange */
 .key-labels .average { color: #facc15; }  /* Yellow */
 .key-labels .needs   { color: #ef4444; }  /* Red */
 
