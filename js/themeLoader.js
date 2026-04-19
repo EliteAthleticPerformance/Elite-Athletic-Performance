@@ -77,6 +77,25 @@ function applyBranding(school, theme) {
   });
 }
 
+function applyStoredTheme() {
+    const primary = localStorage.getItem("primary");
+    const primaryLight = localStorage.getItem("primaryLight");
+    const primaryDark = localStorage.getItem("primaryDark");
+    const secondary = localStorage.getItem("secondary");
+    const secondaryLight = localStorage.getItem("secondaryLight");
+
+    if (primary) {
+        document.documentElement.style.setProperty('--primary', primary);
+        document.documentElement.style.setProperty('--primaryLight', primaryLight || primary);
+        document.documentElement.style.setProperty('--primaryDark', primaryDark || primary);
+        document.documentElement.style.setProperty('--secondary', secondary || primary);
+        document.documentElement.style.setProperty('--secondaryLight', secondaryLight || primary);
+    }
+}
+
+// 🔥 RUN IT
+applyStoredTheme();
+
 // ===============================
 // EVENT LISTENER (RUN ON HEADER READY)
 // ===============================
