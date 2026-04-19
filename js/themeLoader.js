@@ -68,8 +68,8 @@ function applyBranding(school, theme) {
   root.style.setProperty("--secondaryLight", theme.secondaryLight);
   root.style.setProperty("--background", theme.background);
 
-  const logo = document.querySelector(".logo");
-  if (logo) logo.src = school.logo;
+  const logo = document.getElementById("schoolLogo");
+if (logo) logo.src = school.logo;
 
   const titles = document.querySelectorAll(".school-name");
   titles.forEach(el => {
