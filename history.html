@@ -31,14 +31,19 @@
   <h1 id="name"></h1>
   <p id="score" style="margin-bottom:20px;"></p>
    Compare To:
-  <div class="compare-toggle">
-    <button onclick="setCompareMode('last')" id="btn-last">Most Recent Test</button>
-    <button onclick="setCompareMode('team')" class="active" id="btn-team">Team</button>
-    <button onclick="setCompareMode('top5')" id="btn-top5">Top 5</button>
-    <button onclick="setCompareMode('weight')" id="btn-weight">Weight Group</button>
-    <button onclick="setCompareMode('grade')" id="btn-grade">Grade</button>
+<div class="compare-toggle">
+  <button onclick="setCompareMode('last')" id="btn-last">Most Recent Test</button>
+  <button onclick="setCompareMode('team')" class="active" id="btn-team">Team</button>
+  <button onclick="setCompareMode('top5')" id="btn-top5">Top 5</button>
+  <button onclick="setCompareMode('weight')" id="btn-weight">Weight Group</button>
+  <button onclick="setCompareMode('grade')" id="btn-grade">Grade</button>
+  <button onclick="setCompareMode('individual')" id="btn-individual">Individual</button>
+</div>
+
+<select id="athleteSelect" style="display:none; margin-top:10px;"></select>
     
   </div>
+  
 
   <div style="max-width: 750px; margin: auto;">
     <canvas id="radarChart"></canvas>
@@ -158,6 +163,15 @@ function setCompareMode(mode) {
     .forEach(btn => btn.classList.remove("active"));
 
   document.getElementById(`btn-${mode}`).classList.add("active");
+
+  const dropdown = document.getElementById("athleteSelect");
+
+  if (mode === "individual") {
+    dropdown.style.display = "block";
+    populateAthleteDropdown();
+  } else {
+    dropdown.style.display = "none";
+  }
 
   updateComparison();
 }
