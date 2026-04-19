@@ -999,10 +999,29 @@ text-shadow:
   padding: 20px;
 }
 
-.key-content span.elite   { color: #22c55e; font-weight: 700; }
-.key-content span.strong  { color: #3b82f6; font-weight: 700; }
-.key-content span.average { color: #facc15; font-weight: 700; }
-.key-content span.needs   { color: #ef4444; font-weight: 700; }
+.key-content span {
+  font-weight: 700;
+}
+
+/* 🟢 Elite */
+.key-content span.elite {
+  color: #22c55e;
+}
+
+/* 🟠 Strong */
+.key-content span.strongg {
+  color: #f97316;
+}
+
+/* 🟡 Average */
+.key-content span.average {
+  color: #facc15;
+}
+
+/* 🔴 Needs Work */
+.key-content span.needs {
+  color: #ef4444;
+}
 
 /* ========================================
 MOBILE (RESPONSIVE)
