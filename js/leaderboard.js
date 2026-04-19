@@ -266,7 +266,7 @@ function getBadgeHTML(tier) {
     return `<span class="badge needs">Needs Work</span>`;
   }
 
-  return tier.label;
+  return "";
 }
 
 function createRow(a, index, type) {
@@ -279,7 +279,7 @@ function createRow(a, index, type) {
     <td class="${medal(index)}">${index + 1}</td>
     <td>
       ${a.name}
-      ${type === "score" ? `<div>${getBadgeHTML(tier)}</div>` : ""}
+      ${type === "score" && tier ? `<div style="margin-top:4px;">${getBadgeHTML(tier)}</div>` : ""}
     </td>
     <td>${safe(a[type])}</td>
     <td>${formatDate(type === "lift" ? a.liftDate : a.scoreDate)}</td>
