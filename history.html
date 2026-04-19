@@ -132,7 +132,7 @@ Papa.parse(CSV_URL, {
       document.getElementById("score").textContent = "No data found";
       return;
     }
-
+updateComparison();
   }
 });
 
@@ -201,6 +201,7 @@ if (mode === "individual") {
     dropdown.style.display = "none";
   }, 200); // matches CSS transition
 }
+  updateComparison();
 }
 
 /* ================= MAIN ENGINE ================= */
@@ -287,7 +288,6 @@ renderRankings(player);
 generateInsights(player, avg);
 }
 
-  updateComparison();
 
 /* ================= AVERAGES ================= */
 
