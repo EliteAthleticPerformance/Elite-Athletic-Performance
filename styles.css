@@ -925,7 +925,7 @@ text-shadow:
 
 .leaderboard-card {
   flex: 1;
-  max-width: 50%;
+  max-width: 100%;
   min-width: 0;
 
   overflow: hidden; /* 🔥 keeps content inside */
