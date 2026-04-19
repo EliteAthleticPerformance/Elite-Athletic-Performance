@@ -915,28 +915,34 @@ text-shadow:
   margin-bottom: 60px;
 }
 
-.key-content span {
+.key-labels {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.key-description {
+  font-size: 14px;
+  color: #ccc;
+  margin-top: 5px;
+}
+
+.key-labels span {
   font-weight: 700;
 }
 
-/* 🟢 Elite */
-.key-content span.elite {
-  color: #22c55e;
-}
+.key-labels .elite   { color: #22c55e; }
+.key-labels .strong  { color: #f97316; }
+.key-labels .average { color: #facc15; }
+.key-labels .needs   { color: #ef4444; }
 
-/* 🟠 Strong */
-.key-content span.strongg {
-  color: #f97316;
-}
-
-/* 🟡 Average */
-.key-content span.average {
-  color: #facc15;
-}
-
-/* 🔴 Needs Work */
-.key-content span.needs {
-  color: #ef4444;
+.key-labels span:not(:last-child)::after {
+  content: " /";
+  color: #666;
+  margin-left: 6px;
 }
 
 .leaderboard-grid {
