@@ -222,9 +222,6 @@ function updateComparison() {
 
   if (compareMode === "last") {
   comparisonName = "Previous Test";
-}
-if (compareMode === "last") {
-
   const normalize = str => (str || "").toLowerCase().trim();
 
   const athleteRows = ALL_ROWS
@@ -248,21 +245,17 @@ if (compareMode === "individual") {
   } else {
     const row = getBestRow(ALL_ROWS, selected);
     group = row ? [row] : [CURRENT_ATHLETE];
-    comparisonName = selected; // 🔥 THIS is key
+    comparisonName = selected;
   }
 }
 
   if (compareMode === "team") {
   comparisonName = "Team Avg";
-}
-if (compareMode === "team") {
   group = ALL_ROWS.filter(r => r !== CURRENT_ATHLETE);
 }
 
   if (compareMode === "top5") {
   comparisonName = "Top 5 Avg";
-}
-if (compareMode === "top5") {
   group = [...ALL_ROWS] // clone first
   .sort((a, b) => cleanNum(b[34]) - cleanNum(a[34]))
   .slice(0, 5);
@@ -270,10 +263,7 @@ if (compareMode === "top5") {
 
   if (compareMode === "weight") {
   comparisonName = "Weight Group";
-}
-if (compareMode === "weight") {
   const weight = cleanNum(CURRENT_ATHLETE[5]);
-
   group = ALL_ROWS.filter(r => {
     return Math.abs(cleanNum(r[5]) - weight) <= 15;
   });
@@ -281,10 +271,7 @@ if (compareMode === "weight") {
 
   if (compareMode === "grade") {
   comparisonName = "Grade Group";
-}
-if (compareMode === "grade") {
   const grade = CURRENT_ATHLETE[3];
-
   group = ALL_ROWS.filter(r =>
     r[3] === grade && r !== CURRENT_ATHLETE
   );
@@ -298,6 +285,8 @@ if (!group.length) group = [CURRENT_ATHLETE];
 renderRankings(player);
 generateInsights(player, avg);
 }
+
+  updateComparison();
 
 /* ================= AVERAGES ================= */
 
