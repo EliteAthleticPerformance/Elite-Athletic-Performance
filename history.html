@@ -105,6 +105,14 @@ if (
   };
 }
 
+  console.log("DEBUG →", {
+  name: row[0],
+  speed: row[30],
+  strength: row[31],
+  power: row[32],
+  explosive: row[33]
+});
+
 function getDominantTrait(metrics) {
   return Object.entries(metrics)
     .sort((a, b) => b[1] - a[1])[0][0];
