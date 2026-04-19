@@ -242,10 +242,31 @@ function getPerformanceTier(score, lift) {
   const pct = score / lift;
 
   if (pct >= 0.89) return { label: "Elite", class: "tier-elite" };
-  if (pct >= 0.79) return { label: "Strong", class: "tier-strong" };
+  if (pct >= 0.79) return { label: "Above Average", class: "tier-above" };
   if (pct >= 0.69) return { label: "Average", class: "tier-average" };
 
   return { label: "Needs Work", class: "tier-needs" };
+}
+
+function getBadgeHTML(tier) {
+  if (!tier || !tier.label) return "";
+
+  const label = tier.label.toLowerCase();
+
+  if (label.includes("elite")) {
+    return `<span class="badge elite">Elite</span>`;
+  }
+  if (label.includes("above")) {
+    return `<span class="badge above">Above Average</span>`;
+  }
+  if (label.includes("average")) {
+    return `<span class="badge average">Average</span>`;
+  }
+  if (label.includes("needs")) {
+    return `<span class="badge needs">Needs Work</span>`;
+  }
+
+  return tier.label;
 }
 
 function createRow(a, index, type) {
@@ -258,7 +279,7 @@ function createRow(a, index, type) {
     <td class="${medal(index)}">${index + 1}</td>
     <td>
       ${a.name}
-      ${type === "score" ? `<div class="tier ${tier.class}">${tier.label}</div>` : ""}
+      ${type === "score" ? `<div>${getBadgeHTML(tier)}</div>` : ""}
     </td>
     <td>${safe(a[type])}</td>
     <td>${formatDate(type === "lift" ? a.liftDate : a.scoreDate)}</td>
