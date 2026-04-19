@@ -54,8 +54,14 @@ async function loadCSV(url) {
 // ===============================
 // LOAD THEME (EVENT-DRIVEN)
 // ===============================
+
+let themeLoaded = false;
+
 async function loadTheme() {
-  const school = normalize(decodeURIComponent(getSchoolFromURL()));
+  if (themeLoaded) return;
+  themeLoaded = true;
+
+  const school = normalize(getSchoolFromURL());
 
   const schoolDBUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRXJVxlKWqu-JbdJp9S0_lNzbetCfbhXGSgny11mq7uKYUJh-PdB0zQGonz56iA0tjJtJrMu2EF2Xoa/pub?gid=0&single=true&output=csv";
   const themeUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRXJVxlKWqu-JbdJp9S0_lNzbetCfbhXGSgny11mq7uKYUJh-PdB0zQGonz56iA0tjJtJrMu2EF2Xoa/pub?gid=2096720635&single=true&output=csv";
@@ -63,26 +69,11 @@ async function loadTheme() {
   const schools = await loadCSV(schoolDBUrl);
   const themes = await loadCSV(themeUrl);
 
-  console.log("Looking for:", school);
-console.log("School list:", schools.map(s => normalize(s.school)));
-
   const schoolRow = schools.find(s => normalize(s.school) === school);
   const themeRow = themes.find(t => normalize(t.school) === school);
 
-  console.log("School:", school);
-  console.log("School Row:", schoolRow);
-  console.log("Theme Row:", themeRow);
+  if (!schoolRow || !themeRow) return;
 
-  if (!schoolRow || !themeRow) {
-    console.warn("Theme or school not found", {
-      requested: school,
-      schoolRow,
-      themeRow
-    });
-    return;
-  }
-
-  // 🔥 APPLY BRANDING (header already loaded)
   applyBranding(schoolRow, themeRow);
 }
 
@@ -116,4 +107,6 @@ if (logo && school.logo) {
 // ===============================
 // EVENT LISTENER (RUN ON HEADER READY)
 // ===============================
+document.addEventListener("headerLoaded", loadTheme);
+
 window.addEventListener("DOMContentLoaded", loadTheme);
