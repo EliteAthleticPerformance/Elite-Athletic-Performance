@@ -241,11 +241,10 @@ function getPerformanceTier(score, lift) {
 
   const pct = score / lift;
 
-  if (pct >= 0.89) return { label: "Elite", class: "tier-elite" };
-  if (pct >= 0.79) return { label: "Above Average", class: "tier-above" };
-  if (pct >= 0.69) return { label: "Average", class: "tier-average" };
-
-  return { label: "Needs Work", class: "tier-needs" };
+  if (pct >= 0.90) return { label: "Elite", class: "tier-elite" };
+  if (pct >= 0.80) return { label: "Above Average", class: "tier-above" };
+  if (pct >= 0.70) return { label: "Average", class: "tier-average" };
+  if (pct < 0.69)  return { label: "Needs Work", class: "tier-needs" };
 }
 
 function getBadgeHTML(tier) {
