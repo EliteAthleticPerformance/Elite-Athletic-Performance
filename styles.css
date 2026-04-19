@@ -1080,6 +1080,12 @@ BADGE STYLES (FOR TABLE)
   white-space: nowrap;
 }
 
+.badge.incomplete {
+  background: rgba(156,163,175,0.15); /* gray */
+  color: #9ca3af;
+  border: 1px solid #9ca3af;
+}
+
 /* ========================================
 MOBILE (RESPONSIVE)
 ======================================== */
