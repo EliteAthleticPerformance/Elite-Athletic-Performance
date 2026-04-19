@@ -421,8 +421,7 @@ body {
     
     <span id="headerMotto">Elite Athletic Performance</span>
 
-    document.getElementById("schoolLogo").classList.add("logoDefault"); 
-      
+    <img id="schoolLogo" class="logoDefault">
 </div>
 
 <div id="toolbar" style="display:none;">
@@ -1853,7 +1852,7 @@ window.addEventListener("keydown", (e) => {
     }
 });
 
-document.getElementById("teamLogo").classList.add("logoDefault");
+document.getElementById("schoolLogo")?.classList.add("logoDefault");
 
 /* ======================================================
    INITIAL PAGE LOAD
