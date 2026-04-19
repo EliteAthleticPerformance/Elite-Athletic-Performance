@@ -229,6 +229,7 @@ function updateComparison() {
 
   if (compareMode === "last") {
   comparisonName = "Previous Test";
+
   const normalize = str => (str || "").toLowerCase().trim();
 
   const athleteRows = ALL_ROWS
@@ -236,11 +237,18 @@ function updateComparison() {
     .filter(r => r[1]) // must have date
     .sort((a, b) => new Date(b[1] || 0) - new Date(a[1] || 0));
 
-  if (athleteRows.length > 1) {
-    group = [athleteRows[1]];
-  } else {
-    group = [CURRENT_ATHLETE];
+  // 🔥 find FIRST valid previous test
+  let previous = null;
+
+  for (let i = 1; i < athleteRows.length; i++) {
+    const m = extractMetrics(athleteRows[i]);
+    if (isValidMetrics(m)) {
+      previous = athleteRows[i];
+      break;
+    }
   }
+
+  group = previous ? [previous] : [CURRENT_ATHLETE];
 }
 
 if (compareMode === "individual") {
