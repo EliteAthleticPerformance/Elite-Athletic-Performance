@@ -237,7 +237,9 @@ function formatDate(date) {
 }
 
 function getPerformanceTier(score, lift) {
-  if (!score || !lift) return "";
+  if (!score || !lift) {
+  return { label: "Incomplete", class: "tier-incomplete" };
+}
 
   const pct = score / lift;
 
@@ -251,7 +253,9 @@ function getBadgeHTML(tier) {
   if (!tier || !tier.label) return "";
 
   const label = tier.label.toLowerCase();
-
+  if (label.includes("incomplete")) {
+  return `<span class="badge incomplete">Incomplete</span>`;
+}
   if (label.includes("elite")) {
     return `<span class="badge elite">Elite</span>`;
   }
