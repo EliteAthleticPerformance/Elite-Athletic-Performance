@@ -269,14 +269,38 @@ if (compareMode === "individual") {
   group = ALL_ROWS.filter(r => r !== CURRENT_ATHLETE);
 }
 
-  if (compareMode === "top5") {
+ if (compareMode === "top5") {
   comparisonName = "Top 5 Avg";
 
-  const validRows = ALL_ROWS.filter(r => {
+  const normalize = str =>
+    (str || "").toLowerCase().trim();
+
+  // 🔥 Step 1: group by athlete name
+  const athleteMap = {};
+
+  ALL_ROWS.forEach(r => {
+    const name = normalize(r[0]);
+    if (!name) return;
+
+    if (!athleteMap[name]) {
+      athleteMap[name] = [];
+    }
+
+    athleteMap[name].push(r);
+  });
+
+  // 🔥 Step 2: get BEST row per athlete
+  const bestRows = Object.values(athleteMap).map(rows =>
+    getBestRow(rows)
+  );
+
+  // 🔥 Step 3: filter valid
+  const validRows = bestRows.filter(r => {
     const m = extractMetrics(r);
     return isValidMetrics(m);
   });
 
+  // 🔥 Step 4: sort + take top 5
   group = validRows
     .sort((a, b) => cleanNum(b[34]) - cleanNum(a[34]))
     .slice(0, 5);
