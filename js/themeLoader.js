@@ -105,8 +105,12 @@ if (logo && school.logo) {
 
 
 // ===============================
-// EVENT LISTENER (RUN ON HEADER READY)
+// SAFE INIT (handles all cases)
 // ===============================
 document.addEventListener("headerLoaded", loadTheme);
 
+// Fallback if headerLoaded already fired
+setTimeout(loadTheme, 50);
+
+// Also run for pages without header
 window.addEventListener("DOMContentLoaded", loadTheme);
