@@ -84,12 +84,7 @@ function cleanNum(val) {
 }
 
   function isValidMetrics(m) {
-  return (
-    m.speed > 0 &&
-    m.strength > 0 &&
-    m.power > 0 &&
-    m.explosive > 0
-  );
+  return !(m.speed === 0 && m.strength === 0 && m.power === 0 && m.explosive === 0);
 }
 
   if (!row[30] && !row[31] && !row[32] && !row[33]) {
