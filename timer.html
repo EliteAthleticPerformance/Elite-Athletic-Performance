@@ -1873,7 +1873,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
     loadWorkout();
 
-    // auto detect if class already started
     setTimeout(autoDetectActiveClass, 2000);
 
     // 🔥 APPLY THEME
@@ -1881,16 +1880,16 @@ window.addEventListener("DOMContentLoaded", () => {
         loadTheme();
     }
 
-       // 🔥 ADD THIS RIGHT HERE
+    // ✅ RIGHT HERE (THIS IS THE CORRECT SPOT)
     const logo = document.getElementById("schoolLogo");
 
     if (logo) {
         setTimeout(() => {
-            const currentLogo = document.querySelector(".logo");
-            if (currentLogo) {
-                logo.src = currentLogo.src;
+            const themeLogo = localStorage.getItem("schoolLogo");
+            if (themeLogo) {
+                logo.src = themeLogo;
             }
-        }, 150);
+        }, 100);
     }
 
 });
