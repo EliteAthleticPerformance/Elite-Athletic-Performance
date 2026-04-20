@@ -355,3 +355,8 @@ function goToAthlete(name) {
   window.location.href = `history.html?name=${encodeURIComponent(name)}`;
 }
 
+window.addEventListener("dataUpdated", () => {
+  console.log("🔄 Leaderboard updating...");
+  init(); // or your render function
+});
+
