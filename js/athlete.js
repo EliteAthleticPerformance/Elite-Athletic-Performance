@@ -1,163 +1,186 @@
 let athletes = [];
 let currentLetter = "ALL";
 
-/* ---------- LOAD DATA ---------- */
+/* ========================================
+INIT (🔥 USE GLOBAL DATA LOADER)
+======================================== */
 
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv";
-
-Papa.parse(CSV_URL + "&t=" + Date.now(), {
-  download: true,
-  header: false,
-  skipEmptyLines: true,
-  complete: function(results) {
-
-    const data = results.data;
-    const map = {};
-
-    data.slice(1).forEach(row => {
-      const name = (row[0] || "").replace(/"/g, "").trim();
-      const score = Number(row[row.length - 1]);
-
-      if (!name) return;
-
-      if (!map[name] || score > map[name]) {
-        map[name] = score;
-      }
-    });
-
-    athletes = Object.keys(map).map(name => ({
-      name,
-      score: map[name]
-    }));
-
-    athletes.sort((a, b) => b.score - a.score);
-
-    renderAlphabet();
-    render(athletes);
-  }
+document.addEventListener("DOMContentLoaded", async () => {
+const data = await loadAthleteData();
+processData(data);
 });
 
-/* ---------- HELPERS ---------- */
+/* ========================================
+PROCESS DATA (GROUP BY ATHLETE)
+======================================== */
+
+function processData(data) {
+const map = {};
+
+data.forEach(row => {
+if (!row.name) return;
+
+```
+if (!map[row.name] || row.score > map[row.name].score) {
+  map[row.name] = row;
+}
+```
+
+});
+
+athletes = Object.values(map);
+
+// sort highest score first
+athletes.sort((a, b) => b.score - a.score);
+
+renderAlphabet();
+render(athletes);
+}
+
+/* ========================================
+TAG SYSTEM
+======================================== */
 
 function getTag(score) {
-  score = Number(score);
-  if (score >= 800) return ["elite", "🔥 Elite"];
-  if (score >= 650) return ["strong", "💪 Strong"];
-  if (score >= 500) return ["developing", "⚡ Developing"];
-  return ["needs", "📈 Needs Work"];
+score = Number(score);
+
+if (score >= 800) return ["elite", "🔥 Elite"];
+if (score >= 650) return ["strong", "💪 Strong"];
+if (score >= 500) return ["developing", "⚡ Developing"];
+return ["needs", "📈 Needs Work"];
 }
 
-/* ---------- RENDER GRID ---------- */
+/* ========================================
+RENDER GRID
+======================================== */
 
 function render(list) {
-  const grid = document.getElementById("athleteGrid");
-  grid.innerHTML = "";
+const grid = document.getElementById("athleteGrid");
+if (!grid) return;
 
-  const fragment = document.createDocumentFragment();
+grid.innerHTML = "";
 
-  list.forEach(a => {
-    const [tagClass, tagText] = getTag(a.score);
+const fragment = document.createDocumentFragment();
 
-    const card = document.createElement("div");
-    card.className = `card athlete-card ${tagClass}`;
+list.forEach(a => {
+const [tagClass, tagText] = getTag(a.score);
 
-    card.onclick = () => goToAthlete(a.name);
+```
+const card = document.createElement("div");
+card.className = `card athlete-card ${tagClass}`;
 
-    card.innerHTML = `
-      <h3>${a.name}</h3>
-      <p class="score">Score: ${a.score}</p>
-      <div class="tag ${tagClass}">${tagText}</div>
-    `;
+card.onclick = () => goToAthlete(a.name);
 
-    fragment.appendChild(card);
-  });
+card.innerHTML = `
+  <h3>${a.name}</h3>
+  <p class="score">Score: ${a.score}</p>
+  <div class="tag ${tagClass}">${tagText}</div>
+`;
 
-  grid.appendChild(fragment);
+fragment.appendChild(card);
+```
+
+});
+
+grid.appendChild(fragment);
 }
 
-/* ---------- A-Z BAR ---------- */
+/* ========================================
+A-Z BAR
+======================================== */
 
 function renderAlphabet() {
-  const bar = document.getElementById("alphabetBar");
-  if (!bar) return;
+const bar = document.getElementById("alphabetBar");
+if (!bar) return;
 
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-  const counts = {};
+const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+const counts = {};
 
-  athletes.forEach(a => {
-    const last = a.name.split(",")[0].trim().toUpperCase()[0];
-    counts[last] = (counts[last] || 0) + 1;
-  });
+athletes.forEach(a => {
+const last = a.name.split(",")[0].trim().toUpperCase()[0];
+counts[last] = (counts[last] || 0) + 1;
+});
 
-  bar.innerHTML = `
-    <span class="letter active" onclick="showAll()">ALL (${athletes.length})</span>
+bar.innerHTML = `     <span class="letter active" onclick="showAll()">ALL (${athletes.length})</span>
   `;
 
-  letters.forEach(letter => {
-    const count = counts[letter] || 0;
+letters.forEach(letter => {
+const count = counts[letter] || 0;
 
-    bar.innerHTML += `
-      <span class="letter" onclick="filterByLetter('${letter}')">
-        ${letter}${count ? ` (${count})` : ""}
-      </span>
-    `;
-  });
+```
+bar.innerHTML += `
+  <span class="letter" onclick="filterByLetter('${letter}')">
+    ${letter}${count ? ` (${count})` : ""}
+  </span>
+`;
+```
+
+});
 }
 
-/* ---------- FILTER ---------- */
+/* ========================================
+FILTERING
+======================================== */
 
 function filterByLetter(letter) {
-  currentLetter = letter;
-  setActiveLetter(letter);
+currentLetter = letter;
+setActiveLetter(letter);
 
-  const filtered = athletes.filter(a => {
-    const last = a.name.split(",")[0].trim().toUpperCase();
-    return last.startsWith(letter);
-  });
+const filtered = athletes.filter(a => {
+const last = a.name.split(",")[0].trim().toUpperCase();
+return last.startsWith(letter);
+});
 
-  render(filtered);
+render(filtered);
 }
 
 function showAll() {
-  currentLetter = "ALL";
-  setActiveLetter("ALL");
-  render(athletes);
+currentLetter = "ALL";
+setActiveLetter("ALL");
+render(athletes);
 }
 
-/* ---------- ACTIVE UI ---------- */
+/* ========================================
+ACTIVE UI
+======================================== */
 
 function setActiveLetter(letter) {
-  document.querySelectorAll(".letter").forEach(el => {
-    el.classList.remove("active");
-    if (el.textContent.startsWith(letter)) {
-      el.classList.add("active");
-    }
-  });
+document.querySelectorAll(".letter").forEach(el => {
+el.classList.remove("active");
+if (el.textContent.startsWith(letter)) {
+el.classList.add("active");
+}
+});
 }
 
-/* ---------- SEARCH ---------- */
+/* ========================================
+SEARCH
+======================================== */
 
 function filterAthletes() {
-  const term = document.getElementById("search").value.toLowerCase();
+const term = document.getElementById("search").value.toLowerCase();
 
-  const filtered = athletes.filter(a =>
-    a.name.toLowerCase().includes(term)
-  );
+const filtered = athletes.filter(a =>
+a.name.toLowerCase().includes(term)
+);
 
-  render(filtered);
+render(filtered);
 }
 
-/* ---------- NAV ---------- */
+/* ========================================
+NAVIGATION
+======================================== */
 
 function goToAthlete(name) {
-  window.location.href = `history.html?name=${encodeURIComponent(name)}`;
+window.location.href = `history.html?name=${encodeURIComponent(name)}`;
 }
 
-window.addEventListener("dataUpdated", (e) => {
-  const newEntry = e.detail;
+/* ========================================
+🔥 LIVE UPDATE SUPPORT
+======================================== */
 
-  if (newEntry.name === currentAthleteName) {
-    console.log("🔄 Athlete page updating...");
-    renderAthlete(); // your existing function
-  }
+window.addEventListener("dataUpdated", () => {
+console.log("🔄 Athletes page updating...");
+
+processData(APP_DATA);
 });
