@@ -1,5 +1,5 @@
 // ===============================
-// GLOBAL THEME + LOGO + FAVICON
+// GLOBAL THEME + LOGO + FAVICON 
 // ===============================
 
 // 🔍 GET SCHOOL
