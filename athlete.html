@@ -6,60 +6,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- 🔥 INSTANT THEME + LOGO (NO FLICKER) -->
+<!-- 🔖 FAVICON (AUTO-CONTROLLED BY themeLoader.js) -->
 
-  <link id="dynamicFavicon" rel="icon" type="image/png" href="images/roosters-logo.png">
-
- <script>
-(function () {
-  const params = new URLSearchParams(window.location.search);
-  const school = params.get("school") || sessionStorage.getItem("school") || "harrisonville";
-
-  sessionStorage.setItem("school", school);
-
-  const root = document.documentElement;
-
-  // 🎨 THEME
-  const theme = JSON.parse(sessionStorage.getItem("theme-" + school));
-  if (theme) {
-    root.style.setProperty("--primary", theme.primary);
-    root.style.setProperty("--primaryLight", theme.primaryLight);
-    root.style.setProperty("--primaryDark", theme.primaryDark);
-    root.style.setProperty("--secondary", theme.secondary);
-    root.style.setProperty("--secondaryLight", theme.secondaryLight);
-    root.style.setProperty("--background", theme.background);
-  }
-
-  // 🖼️ LOGO (BULLETPROOF)
-  // 🖼️ LOGO (BULLETPROOF)
-const logo = sessionStorage.getItem("logo-" + school);
-
-if (logo) {
-  const applyLogo = () => {
-    const el = document.getElementById("schoolLogo");
-    if (!el) return false;
-
-    el.src = logo;
-
-    el.onload = () => {
-      el.classList.add("loaded");
-    };
-
-    return true;
-  };
-
-  if (!applyLogo()) {
-    document.addEventListener("headerLoaded", applyLogo);
-  }
-
-  // 🔥 ADD THIS RIGHT HERE
-  const favicon = document.getElementById("dynamicFavicon");
-  if (favicon) {
-    favicon.href = logo;
-  }
-}
-})();
-</script>
+<link id="dynamicFavicon" rel="icon" type="image/png" href="images/roosters-logo.png">
 
 <title>Athlete Profile | Performance System</title>
 
@@ -93,10 +42,9 @@ if (logo) {
   <!-- ===== STATS ===== -->
 
   <section class="section">
+    <div class="athlete-stats">
 
-
-<div class="athlete-stats">
-
+```
   <div class="stat-box"><h3>Bench</h3><p id="bench">-</p></div>
   <div class="stat-box"><h3>Squat</h3><p id="squat">-</p></div>
   <div class="stat-box"><h3>Clean</h3><p id="clean">-</p></div>
@@ -111,7 +59,7 @@ if (logo) {
   <div class="stat-box"><h3>40 Yard</h3><p id="forty">-</p></div>
 
 </div>
-
+```
 
   </section>
 
@@ -136,16 +84,13 @@ if (logo) {
   <!-- ===== HISTORY TABLE ===== -->
 
   <section class="section">
+    <div class="card">
 
-
-<div class="card">
-
+```
   <h2 style="text-align:center; margin-bottom:15px;">Testing History</h2>
 
   <div class="table-wrapper">
-
     <table id="historyTable" class="table">
-
       <thead>
         <tr>
           <th>Date</th>
@@ -163,17 +108,14 @@ if (logo) {
           <th>Performance</th>
         </tr>
       </thead>
-
       <tbody>
         <!-- JS FILLS -->
       </tbody>
-
     </table>
-
   </div>
 
 </div>
-
+```
 
   </section>
 
