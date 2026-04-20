@@ -8,7 +8,9 @@
 
 <!-- 🔥 INSTANT THEME + LOGO (NO FLICKER) -->
 
-<script>
+  <link id="dynamicFavicon" rel="icon" type="image/png" href="images/roosters-logo.png">
+
+ <script>
 (function () {
   const params = new URLSearchParams(window.location.search);
   const school = params.get("school") || sessionStorage.getItem("school") || "harrisonville";
@@ -29,7 +31,8 @@
   }
 
   // 🖼️ LOGO (BULLETPROOF)
-  const logo = sessionStorage.getItem("logo-" + school);
+  // 🖼️ LOGO (BULLETPROOF)
+const logo = sessionStorage.getItem("logo-" + school);
 
 if (logo) {
   const applyLogo = () => {
@@ -45,10 +48,14 @@ if (logo) {
     return true;
   };
 
-  // Try immediately (handles already-loaded header)
   if (!applyLogo()) {
-    // Fallback if header loads later
     document.addEventListener("headerLoaded", applyLogo);
+  }
+
+  // 🔥 ADD THIS RIGHT HERE
+  const favicon = document.getElementById("dynamicFavicon");
+  if (favicon) {
+    favicon.href = logo;
   }
 }
 })();
