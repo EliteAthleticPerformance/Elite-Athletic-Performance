@@ -134,7 +134,8 @@ sessionStorage.setItem(
 
 // 🔥 CACHE LOGO (ADD THIS HERE)
 if (school && school.logo) {
-  sessionStorage.setItem("logo-" + schoolKey, school.logo);
+  const versionedLogo = school.logo + "?v=" + Date.now();
+  sessionStorage.setItem("logo-" + schoolKey, versionedLogo);
 }
 
 // 🔥 APPLY LOGO TO DOM
