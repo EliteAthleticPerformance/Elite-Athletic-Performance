@@ -116,6 +116,14 @@ async function loadTheme() {
 // ===============================
 function applyBranding(school, theme) {
 
+  // 🔥 SET FAVICON
+const favicon = document.getElementById("dynamicFavicon");
+if (favicon && school.logo) {
+  favicon.href = school.logo;
+}
+
+  favicon.href = school.logo + "?v=" + Date.now();
+
   const root = document.documentElement;
 
   // 🎨 APPLY CSS VARIABLES
