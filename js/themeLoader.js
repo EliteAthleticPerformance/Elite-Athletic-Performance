@@ -142,7 +142,13 @@ if (school && school.logo) {
   sessionStorage.setItem("logo-" + schoolKey, versionedLogo);
 
   if (logo) {
-    logo.src = versionedLogo;
+    logo.classList.remove("loaded"); // reset
+
+logo.onload = () => {
+  logo.classList.add("loaded"); // fade in when ready
+};
+
+logo.src = versionedLogo;
   }
 
 } else if (logo) {
