@@ -47,7 +47,32 @@ async function loadAthleteData() {
   row["Score"]
 ) || 0
 }))
-.filter(row => row.name);
+.filter(row => {
+  if (!row.name) return false;
+
+  const rowString = JSON.stringify(row);
+
+  return (
+    !rowString.includes("#REF") &&
+    !rowString.includes("NaN") &&
+    !rowString.includes("Invalid") &&
+
+    // 🔥 require at least ONE real performance metric
+    (
+      row.bench > 0 ||
+      row.squat > 0 ||
+      row.clean > 0 ||
+      row.vertical > 0 ||
+      row.broad > 0 ||
+      row.med > 0 ||
+      row.agility > 0 ||
+      row.ten > 0 ||
+      row.forty > 0 ||
+      row.situps > 0 ||
+      row.score > 0
+    )
+  );
+});
 
   console.log("✅ DATA READY:", APP_DATA.length);
 
