@@ -136,8 +136,12 @@ if (school && school.logo) {
 
 // 🔥 APPLY LOGO TO DOM
 const logo = document.getElementById("schoolLogo");
-if (logo && school.logo) {
-  logo.src = school.logo;
+if (logo) {
+  if (school.logo) {
+    logo.src = school.logo + "?v=" + Date.now(); // cache-buster
+  } else {
+    logo.src = "images/roosters-logo.png"; // fallback
+  }
 }
 
   // PODIUM TITLE
