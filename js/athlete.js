@@ -1,58 +1,56 @@
 let athletes = [];
 let currentLetter = "ALL";
 
-/* ===============================
-   INIT (🔥 USE GLOBAL DATA LOADER)
-=============================== */
-async function initAthletes() {
-  const data = await loadAthleteData();
+/* ---------- LOAD DATA ---------- */
 
-  const map = {};
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv";
 
-  data.forEach(row => {
-    const name = row.name;
-    const score = Number(row.score) || 0;
+Papa.parse(CSV_URL + "&t=" + Date.now(), {
+  download: true,
+  header: false,
+  skipEmptyLines: true,
+  complete: function(results) {
 
-    if (!name) return;
+    const data = results.data;
+    const map = {};
 
-    // keep highest score per athlete
-    if (!map[name] || score > map[name]) {
-      map[name] = score;
-    }
-  });
+    data.slice(1).forEach(row => {
+      const name = (row[0] || "").replace(/"/g, "").trim();
+      const score = Number(row[row.length - 1]);
 
-  athletes = Object.keys(map).map(name => ({
-    name,
-    score: map[name]
-  }));
+      if (!name) return;
 
-  athletes.sort((a, b) => b.score - a.score);
+      if (!map[name] || score > map[name]) {
+        map[name] = score;
+      }
+    });
 
-  renderAlphabet();
-  render(athletes);
-}
+    athletes = Object.keys(map).map(name => ({
+      name,
+      score: map[name]
+    }));
 
-document.addEventListener("DOMContentLoaded", initAthletes);
+    athletes.sort((a, b) => b.score - a.score);
 
-/* ===============================
-   TAG LOGIC
-=============================== */
+    renderAlphabet();
+    render(athletes);
+  }
+});
+
+/* ---------- HELPERS ---------- */
+
 function getTag(score) {
   score = Number(score);
-
   if (score >= 800) return ["elite", "🔥 Elite"];
   if (score >= 650) return ["strong", "💪 Strong"];
   if (score >= 500) return ["developing", "⚡ Developing"];
   return ["needs", "📈 Needs Work"];
 }
 
-/* ===============================
-   RENDER GRID
-=============================== */
+/* ---------- RENDER GRID ---------- */
+
 function render(list) {
   const grid = document.getElementById("athleteGrid");
-  if (!grid) return;
-
   grid.innerHTML = "";
 
   const fragment = document.createDocumentFragment();
@@ -65,10 +63,11 @@ function render(list) {
 
     card.onclick = () => goToAthlete(a.name);
 
-    card.innerHTML =
-      "<h3>" + a.name + "</h3>" +
-      "<p class='score'>Score: " + a.score + "</p>" +
-      "<div class='tag " + tagClass + "'>" + tagText + "</div>";
+    card.innerHTML = `
+      <h3>${a.name}</h3>
+      <p class="score">Score: ${a.score}</p>
+      <div class="tag ${tagClass}">${tagText}</div>
+    `;
 
     fragment.appendChild(card);
   });
@@ -76,9 +75,8 @@ function render(list) {
   grid.appendChild(fragment);
 }
 
-/* ===============================
-   A-Z BAR
-=============================== */
+/* ---------- A-Z BAR ---------- */
+
 function renderAlphabet() {
   const bar = document.getElementById("alphabetBar");
   if (!bar) return;
@@ -91,22 +89,23 @@ function renderAlphabet() {
     counts[last] = (counts[last] || 0) + 1;
   });
 
-  bar.innerHTML =
-    `<span class="letter active" onclick="showAll()">ALL (${athletes.length})</span>`;
+  bar.innerHTML = `
+    <span class="letter active" onclick="showAll()">ALL (${athletes.length})</span>
+  `;
 
   letters.forEach(letter => {
     const count = counts[letter] || 0;
 
-    bar.innerHTML +=
-      `<span class="letter" onclick="filterByLetter('${letter}')">
+    bar.innerHTML += `
+      <span class="letter" onclick="filterByLetter('${letter}')">
         ${letter}${count ? ` (${count})` : ""}
-      </span>`;
+      </span>
+    `;
   });
 }
 
-/* ===============================
-   FILTERING
-=============================== */
+/* ---------- FILTER ---------- */
+
 function filterByLetter(letter) {
   currentLetter = letter;
   setActiveLetter(letter);
@@ -125,22 +124,19 @@ function showAll() {
   render(athletes);
 }
 
-/* ===============================
-   ACTIVE STATE
-=============================== */
+/* ---------- ACTIVE UI ---------- */
+
 function setActiveLetter(letter) {
   document.querySelectorAll(".letter").forEach(el => {
     el.classList.remove("active");
-
     if (el.textContent.startsWith(letter)) {
       el.classList.add("active");
     }
   });
 }
 
-/* ===============================
-   SEARCH
-=============================== */
+/* ---------- SEARCH ---------- */
+
 function filterAthletes() {
   const term = document.getElementById("search").value.toLowerCase();
 
@@ -151,16 +147,8 @@ function filterAthletes() {
   render(filtered);
 }
 
-/* ===============================
-   NAVIGATION
-=============================== */
+/* ---------- NAV ---------- */
+
 function goToAthlete(name) {
   window.location.href = `history.html?name=${encodeURIComponent(name)}`;
 }
-
-/* ===============================
-   LIVE UPDATE (🔥 REAL-TIME)
-=============================== */
-window.addEventListener("dataUpdated", () => {
-  initAthletes(); // reload + re-render
-});
