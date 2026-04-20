@@ -62,18 +62,27 @@ if (!validateEntry(entry)) return;
 try {
 await sendToGoogle(entry);
 
-```
+  // 🔥 INSTANT UI UPDATE
+if (window.APP_DATA) {
+  APP_DATA.push(entry);
+}
+
+window.dispatchEvent(new CustomEvent("dataUpdated", {
+  detail: entry
+}));
+
+
 console.log("📤 Submitted:", entry);
 showMessage("✅ Saved to Google Sheets!", "success");
-```
+
 
 } catch (err) {
 console.warn("⚠️ Cloud save failed, using offline:", err);
 
-```
+
 saveOffline(entry);
 showMessage("⚠️ Offline — saved locally", "warning");
-```
+
 
 }
 
@@ -96,7 +105,7 @@ grade: getValue("grade"),
 weight,
 weightClass: getWeightClass(weight),
 
-```
+
 bench: toNumber(getValue("bench")),
 squat: toNumber(getValue("squat")),
 clean: toNumber(getValue("clean")),
@@ -109,7 +118,7 @@ agility: toNumber(getValue("agility")),
 ten: toNumber(getValue("ten")),
 forty: toNumber(getValue("forty")),
 situps: toNumber(getValue("situps"))
-```
+
 
 };
 
@@ -230,13 +239,13 @@ document.addEventListener("keydown", (e) => {
 if (e.key === "Enter") {
 const active = document.activeElement;
 
-```
+
   if (active && ["INPUT", "SELECT"].includes(active.tagName)) {
     e.preventDefault();
     saveAthlete();
   }
 }
-```
+
 
 });
 }
