@@ -156,9 +156,7 @@ Papa.parse(CSV_URL, {
 
   return (
     (r[0] || "").trim() !== "" &&
-    !rowString.includes("#REF") &&
-    !rowString.includes("NaN") &&
-    !rowString.includes("Invalid")
+    !rowString.match(/#REF|NaN|Invalid Date/)
   );
 });
 
