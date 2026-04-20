@@ -1,68 +1,35 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script>
-(function () {
-  const params = new URLSearchParams(window.location.search);
-  const school = params.get("school") || sessionStorage.getItem("school") || "harrisonville";
+<!-- 🔖 FAVICON (controlled by themeLoader.js) -->
 
-  sessionStorage.setItem("school", school);
+<link id="dynamicFavicon" rel="icon" type="image/png" href="images/roosters-logo.png">
 
-  const theme = JSON.parse(sessionStorage.getItem("theme-" + school));
-
-  if (theme) {
-    const root = document.documentElement;
-
-    root.style.setProperty("--primary", theme.primary);
-    root.style.setProperty("--primaryLight", theme.primaryLight);
-    root.style.setProperty("--primaryDark", theme.primaryDark);
-    root.style.setProperty("--secondary", theme.secondary);
-    root.style.setProperty("--secondaryLight", theme.secondaryLight);
-    root.style.setProperty("--background", theme.background);
-  }
-})();
-</script>
-
-  <script>
-(function () {
-  const params = new URLSearchParams(window.location.search);
-  const school = params.get("school") || sessionStorage.getItem("school") || "harrisonville";
-
-  sessionStorage.setItem("school", school);
-
-  const logo = sessionStorage.getItem("logo-" + school);
-
-  if (logo) {
-    const img = new Image();
-    img.src = logo;
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const el = document.getElementById("schoolLogo");
-      if (el) el.src = logo;
-    });
-  }
-})();
-</script>
-  
-<title>Athlete Profile</title>
-
-<script>
-window.pageTitle = "Performance Comparison";
-</script>
+<title>Performance Comparison</title>
 
 <link rel="stylesheet" href="styles.css">
 
+<!-- Chart.js -->
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- PapaParse -->
+
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
 </head>
 
 <body>
 
+<!-- HEADER -->
+
 <div id="header-placeholder"></div>
+<script src="js/header.js"></script>
 
 <main class="section" style="text-align:center;">
 
@@ -70,6 +37,7 @@ window.pageTitle = "Performance Comparison";
 <p id="score" style="margin-bottom:20px;"></p>
 
 Compare To:
+
 <div class="compare-toggle">
   <button onclick="setCompareMode('last')" id="btn-last">Most Recent Test</button>
   <button onclick="setCompareMode('team')" class="active" id="btn-team">Team</button>
@@ -91,7 +59,7 @@ Compare To:
 
 /* ================= CONFIG ================= */
 
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv";
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv&t=" + Date.now();
 
 /* ================= GLOBAL ================= */
 
@@ -149,16 +117,16 @@ Papa.parse(CSV_URL, {
     const rows = results.data || [];
 
     ALL_ROWS = rows.filter(r => {
-  if (!Array.isArray(r)) return false;
-  if (r.length <= 34) return false;
+      if (!Array.isArray(r)) return false;
+      if (r.length <= 34) return false;
 
-  const rowString = r.join("");
+      const rowString = r.join("");
 
-  return (
-    (r[0] || "").trim() !== "" &&
-    !rowString.match(/#REF|NaN|Invalid Date/)
-  );
-});
+      return (
+        (r[0] || "").trim() !== "" &&
+        !rowString.match(/#REF|NaN|Invalid Date/)
+      );
+    });
 
     CURRENT_ATHLETE = getBestRow(
       ALL_ROWS.filter(r => r[0] === selectedName)
@@ -194,7 +162,7 @@ function getBestRow(rows) {
   return best;
 }
 
-/* ================= 🔥 GLOBAL FIX ================= */
+/* ================= GROUP HELPERS ================= */
 
 function getAllBestRows() {
   const normalize = str => (str || "").toLowerCase().trim();
@@ -249,11 +217,10 @@ function updateComparison() {
     const athleteRows = ALL_ROWS
       .filter(r => r[0] === selectedName)
       .sort((a, b) => {
-  const dA = new Date(a[1]);
-  const dB = new Date(b[1]);
-
-  return (isNaN(dB) ? 0 : dB) - (isNaN(dA) ? 0 : dA);
-});
+        const dA = new Date(a[1]);
+        const dB = new Date(b[1]);
+        return (isNaN(dB) ? 0 : dB) - (isNaN(dA) ? 0 : dA);
+      });
 
     let previous = null;
 
@@ -302,7 +269,6 @@ function updateComparison() {
   const avg = calculateAverage(group);
 
   renderRadarChart(player, avg);
-  
   generateInsights(player, avg);
 }
 
@@ -342,8 +308,8 @@ function renderRadarChart(player, avg) {
   const ctx = document.getElementById("radarChart");
 
   if (window.radarChart && typeof window.radarChart.destroy === "function") {
-  window.radarChart.destroy();
-}
+    window.radarChart.destroy();
+  }
 
   window.radarChart = new Chart(ctx, {
     type: "radar",
@@ -422,9 +388,11 @@ function generateInsights(player, avg) {
 
 </script>
 
+<!-- GLOBAL SYSTEM -->
+
 <script src="./js/themeLoader.js"></script>
+
 <script src="js/dataLoader.js"></script>
-<script src="js/header.js"></script>
 
 </body>
 </html>
