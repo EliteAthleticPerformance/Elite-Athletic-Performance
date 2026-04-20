@@ -20,11 +20,11 @@ const map = {};
 data.forEach(row => {
 if (!row.name) return;
 
-```
+
 if (!map[row.name] || row.score > map[row.name].score) {
   map[row.name] = row;
 }
-```
+
 
 });
 
@@ -65,7 +65,7 @@ const fragment = document.createDocumentFragment();
 list.forEach(a => {
 const [tagClass, tagText] = getTag(a.score);
 
-```
+
 const card = document.createElement("div");
 card.className = `card athlete-card ${tagClass}`;
 
@@ -78,7 +78,7 @@ card.innerHTML = `
 `;
 
 fragment.appendChild(card);
-```
+
 
 });
 
@@ -107,13 +107,13 @@ bar.innerHTML = `     <span class="letter active" onclick="showAll()">ALL (${ath
 letters.forEach(letter => {
 const count = counts[letter] || 0;
 
-```
+
 bar.innerHTML += `
   <span class="letter" onclick="filterByLetter('${letter}')">
     ${letter}${count ? ` (${count})` : ""}
   </span>
 `;
-```
+
 
 });
 }
