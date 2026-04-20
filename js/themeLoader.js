@@ -84,7 +84,7 @@ function applyBranding(school, theme) {
 
   const root = document.documentElement;
 
-  // 🎨 MATCH CSS VARIABLE NAMES EXACTLY
+  // 🎨 APPLY CSS VARIABLES
   root.style.setProperty("--primary", theme.primary);
   root.style.setProperty("--primaryLight", theme.primaryLight);
   root.style.setProperty("--primaryDark", theme.primaryDark);
@@ -92,17 +92,33 @@ function applyBranding(school, theme) {
   root.style.setProperty("--secondaryLight", theme.secondaryLight);
   root.style.setProperty("--background", theme.background);
 
+  // 🔥 ADD THIS BLOCK RIGHT HERE
+  const schoolKey = normalize(getSchoolFromURL());
+  sessionStorage.setItem(
+    "theme-" + schoolKey,
+    JSON.stringify({
+      primary: theme.primary,
+      primaryLight: theme.primaryLight,
+      primaryDark: theme.primaryDark,
+      secondary: theme.secondary,
+      secondaryLight: theme.secondaryLight,
+      background: theme.background
+    })
+  );
+
+  // LOGO
   const logo = document.getElementById("schoolLogo");
-if (logo && school.logo) {
-  logo.src = school.logo;
-}
+  if (logo && school.logo) {
+    logo.src = school.logo;
+  }
 
+  // PODIUM TITLE
   const podiumTitle = document.getElementById("podiumTitle");
+  if (podiumTitle && school.name) {
+    podiumTitle.textContent = `🏆 ${school.name} Top 3 Athletes`;
+  }
 
-if (podiumTitle && school.name) {
-  podiumTitle.textContent = `🏆 ${school.name} Top 3 Athletes`;
-}
-
+  // HEADER TITLE
   const titles = document.querySelectorAll(".school-name");
   titles.forEach(el => {
     el.textContent = formatSchoolName(school.name);
