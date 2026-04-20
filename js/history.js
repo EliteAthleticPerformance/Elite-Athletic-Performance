@@ -1,5 +1,5 @@
 /* ========================================
-   🔥 ELITE V3 HISTORY ENGINE
+   🔥 ELITE V3 HISTORY ENGINE (PRODUCTION)
    ======================================== */
 
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv";
@@ -31,16 +31,18 @@ async function loadData() {
     rawData = parseCSV(text);
     processedData = processData(rawData);
 
+    console.log("✅ HISTORY READY:", processedData.slice(0, 5));
+
     setupSearch();
 
   } catch (err) {
-    console.error("History load error:", err);
+    console.error("❌ History load error:", err);
     showError("Failed to load data");
   }
 }
 
 /* ========================================
-   CSV PARSER (SAFE)
+   CSV PARSER (ROBUST)
    ======================================== */
 
 function parseCSV(text) {
@@ -75,30 +77,66 @@ function parseCSV(text) {
 }
 
 /* ========================================
-   DATA PROCESSING
+   HEADER HELPERS (🔥 KEY FIX)
+   ======================================== */
+
+function findIndex(headers, keywords) {
+  const lower = headers.map(h => h.toLowerCase());
+
+  for (let key of keywords) {
+    const idx = lower.findIndex(h => h.includes(key));
+    if (idx !== -1) return idx;
+  }
+
+  return -1;
+}
+
+/* ========================================
+   DATA PROCESSING (FIXED SCORING)
    ======================================== */
 
 function processData(rows) {
 
   const headers = rows.shift().map(h => h.trim());
 
-  const getIndex = (name) =>
-    headers.findIndex(h => h.toLowerCase().includes(name.toLowerCase()));
+  // 🔥 Smart column detection
+  const idx = {
+    name: findIndex(headers, ["student", "athlete", "name"]),
+    date: findIndex(headers, ["date"]),
+    grade: findIndex(headers, ["grade"]),
+    weight: findIndex(headers, ["weight"]),
+    group: findIndex(headers, ["group"]),
+    total: findIndex(headers, ["3 lift", "total"]),
+    score: findIndex(headers, [
+      "total athletic performance",
+      "performance",
+      "points",
+      "score"
+    ])
+  };
+
+  console.log("🧪 COLUMN MAP:", idx);
 
   return rows.map(cols => {
 
-    const name = clean(cols[getIndex("student")]);
+    const name = clean(cols[idx.name]);
     if (!name) return null;
+
+    const total = toNumber(cols[idx.total]);
+    const score = toNumber(cols[idx.score]);
 
     return {
       name,
-      date: formatDate(cols[getIndex("date")]),
-      grade: clean(cols[getIndex("grade")]),
-      weight: clean(cols[getIndex("actual weight")]),
-      group: clean(cols[getIndex("weight group")]),
+      date: formatDate(cols[idx.date]),
+      grade: clean(cols[idx.grade]),
+      weight: clean(cols[idx.weight]),
+      group: clean(cols[idx.group]),
 
-      total: toNumber(cols[getIndex("3 lift")]),
-      score: toNumber(cols[getIndex("performance")])
+      total,
+      score,
+
+      // 🔥 unified alias
+      overall: score
     };
 
   }).filter(Boolean);
@@ -136,16 +174,20 @@ function setupSearch() {
 }
 
 /* ========================================
-   METRICS (TEMP)
+   METRICS (IMPROVED BASE)
    ======================================== */
 
 function extractMetrics(row) {
   return {
-    speed: row.score || 0,
-    strength: row.total || 0,
-    power: row.total || 0,
-    explosive: row.score || 0
+    speed: clamp(row.score, 0, 100),
+    strength: clamp(row.total / 10, 0, 100),
+    power: clamp(row.total / 10, 0, 100),
+    explosive: clamp(row.score, 0, 100)
   };
+}
+
+function clamp(val, min, max) {
+  return Math.max(min, Math.min(max, val));
 }
 
 /* ========================================
@@ -164,8 +206,8 @@ function render(data) {
     const history = grouped[name]
       .sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    const bestTotal = Math.max(...history.map(a => a.total));
-    const bestScore = Math.max(...history.map(a => a.score));
+    const bestTotal = Math.max(...history.map(a => a.total || 0));
+    const bestScore = Math.max(...history.map(a => a.score || 0));
 
     const chartId = `chart-${sanitize(name)}`;
 
@@ -187,22 +229,22 @@ function render(data) {
       `;
     }).join("");
 
-    const card = document.createElement("div");
-    card.className = "card history-card";
-
     const best = history[0];
     const metrics = extractMetrics(best);
 
+    const card = document.createElement("div");
+    card.className = "card history-card";
+
     card.innerHTML = `
-  <h2>${name}</h2>
+      <h2>${name}</h2>
 
-  <button class="compare-btn" onclick="goToCompare('${encodeURIComponent(name)}')">
-    Compare This Athlete
-  </button>
+      <button class="compare-btn" onclick="goToCompare('${encodeURIComponent(name)}')">
+        Compare This Athlete
+      </button>
 
-  ${renderRankings(metrics)}
+      ${renderRankings(metrics)}
 
-  <canvas id="${chartId}" height="120"></canvas>
+      <canvas id="${chartId}" height="120"></canvas>
 
       <div class="table-wrapper">
         <table class="table">
@@ -249,7 +291,7 @@ function renderRankings(player) {
     return `
       <div class="metric-card ${level}">
         <div class="metric-label">${label}</div>
-        <div class="metric-value">${value}</div>
+        <div class="metric-value">${Math.round(value)}</div>
         <div class="metric-bar">
           <div class="metric-fill" style="width:${value}%"></div>
         </div>
@@ -325,7 +367,7 @@ function toNumber(val) {
 function formatDate(raw) {
   if (!raw) return "-";
   const d = new Date(raw);
-  return isNaN(d) ? "-" : `${d.toLocaleDateString()}`;
+  return isNaN(d) ? "-" : d.toLocaleDateString();
 }
 
 function normalize(str) {
