@@ -451,3 +451,7 @@ function setActiveLetter(letter) {
     }
   });
 }
+
+window.addEventListener("dataUpdated", () => {
+  renderTable(APP_DATA);
+});
