@@ -92,25 +92,30 @@ function applyBranding(school, theme) {
   root.style.setProperty("--secondaryLight", theme.secondaryLight);
   root.style.setProperty("--background", theme.background);
 
-  // 🔥 ADD THIS BLOCK RIGHT HERE
-  const schoolKey = normalize(getSchoolFromURL());
-  sessionStorage.setItem(
-    "theme-" + schoolKey,
-    JSON.stringify({
-      primary: theme.primary,
-      primaryLight: theme.primaryLight,
-      primaryDark: theme.primaryDark,
-      secondary: theme.secondary,
-      secondaryLight: theme.secondaryLight,
-      background: theme.background
-    })
-  );
+  // 🔥 CACHE THEME
+const schoolKey = normalize(getSchoolFromURL());
+sessionStorage.setItem(
+  "theme-" + schoolKey,
+  JSON.stringify({
+    primary: theme.primary,
+    primaryLight: theme.primaryLight,
+    primaryDark: theme.primaryDark,
+    secondary: theme.secondary,
+    secondaryLight: theme.secondaryLight,
+    background: theme.background
+  })
+);
 
-  // LOGO
-  const logo = document.getElementById("schoolLogo");
-  if (logo && school.logo) {
-    logo.src = school.logo;
-  }
+// 🔥 CACHE LOGO (ADD THIS HERE)
+if (school && school.logo) {
+  sessionStorage.setItem("logo-" + schoolKey, school.logo);
+}
+
+// 🔥 APPLY LOGO TO DOM
+const logo = document.getElementById("schoolLogo");
+if (logo && school.logo) {
+  logo.src = school.logo;
+}
 
   // PODIUM TITLE
   const podiumTitle = document.getElementById("podiumTitle");
