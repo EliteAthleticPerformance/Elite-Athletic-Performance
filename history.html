@@ -250,7 +250,12 @@ function updateComparison() {
 
     const athleteRows = ALL_ROWS
       .filter(r => r[0] === selectedName)
-      .sort((a, b) => new Date(b[1] || 0) - new Date(a[1] || 0));
+      .sort((a, b) => {
+  const dA = new Date(a[1]);
+  const dB = new Date(b[1]);
+
+  return (isNaN(dB) ? 0 : dB) - (isNaN(dA) ? 0 : dA);
+});
 
     let previous = null;
 
