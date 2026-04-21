@@ -20,14 +20,17 @@ Papa.parse(CSV_URL + "&t=" + Date.now(), {
 
     data.forEach(row => {
       const name = (row["Student-Athlete"] || "").trim();
-
-      const score = Number(
-        row["Total Athletic Performance Points"] ??
-        row["Total Athletic Performance"] ??
-        row["Score"]
-      ) || 0;
-
       if (!name) return;
+
+      // 🔥 FIX: dynamic score detection (handles broken headers)
+      const scoreKey = Object.keys(row).find(k =>
+        k.toLowerCase().includes("athletic")
+      );
+
+      const score = Number(row[scoreKey]) || 0;
+
+      // DEBUG (remove later if you want)
+      // console.log("SCORE KEY:", scoreKey, "VALUE:", row[scoreKey]);
 
       if (!map[name] || score > map[name]) {
         map[name] = score;
