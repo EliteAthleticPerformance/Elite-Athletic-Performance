@@ -1,8 +1,9 @@
 /* ========================================
-   🔥 ELITE V3 ENTER ENGINE
+   🔥 ELITE V3 ENTER ENGINE (PRODUCTION)
    ======================================== */
 
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv";
+// 🔥 REQUIRED: Add your Google Apps Script URL here
+const SCRIPT_URL = ""; // ← paste your URL here when ready
 
 /* ========================================
    INIT
@@ -57,21 +58,36 @@ function getWeightClass(weight) {
 
 async function saveAthlete() {
 
+  const btn = document.querySelector(".save-btn");
+  if (btn) btn.disabled = true;
+
   const entry = buildEntry();
 
-  if (!validateEntry(entry)) return;
+  if (!validateEntry(entry)) {
+    if (btn) btn.disabled = false;
+    return;
+  }
 
   try {
-    await sendToGoogle(entry);
+
+    if (!SCRIPT_URL) throw new Error("No script URL");
+
+    const res = await sendToGoogle(entry);
+
+    if (!res.ok) throw new Error("Network response failed");
+
     showMessage("✅ Saved to Google Sheets!", "success");
 
   } catch (err) {
-    console.warn("Cloud save failed, using offline:", err);
+    console.warn("⚠️ Cloud save failed, using offline:", err);
+
     saveOffline(entry);
     showMessage("⚠️ Offline — saved locally", "warning");
   }
 
   clearForm();
+
+  if (btn) btn.disabled = false;
 }
 
 /* ========================================
@@ -94,7 +110,7 @@ function buildEntry() {
 
     vertical: toNumber(getValue("vertical")),
     broad: toNumber(getValue("broad")),
-    medball: toNumber(getValue("medball")),
+    med: toNumber(getValue("medball")), // 🔥 unified naming
 
     agility: toNumber(getValue("agility")),
     ten: toNumber(getValue("ten")),
@@ -104,7 +120,15 @@ function buildEntry() {
 
   // Derived metrics
   entry.total = entry.bench + entry.squat + entry.clean;
-  entry.score = 0; // calculated in Sheets
+
+  // 🔥 Optional: calculate score locally (faster UI consistency)
+  entry.score =
+    entry.bench +
+    entry.squat +
+    entry.clean +
+    entry.vertical +
+    entry.broad +
+    entry.med;
 
   return entry;
 }
@@ -141,17 +165,25 @@ async function sendToGoogle(entry) {
   return fetch(SCRIPT_URL, {
     method: "POST",
     body: JSON.stringify(entry),
-    headers: { "Content-Type": "application/json" }
+    headers: {
+      "Content-Type": "application/json"
+    }
   });
 }
 
 /* ========================================
-   OFFLINE SAVE (SMARTER)
+   OFFLINE SAVE
    ======================================== */
 
 function saveOffline(entry) {
 
-  let data = JSON.parse(localStorage.getItem("athleteScores")) || [];
+  let data = [];
+
+  try {
+    data = JSON.parse(localStorage.getItem("athleteScores")) || [];
+  } catch {
+    data = [];
+  }
 
   data.push(entry);
 
