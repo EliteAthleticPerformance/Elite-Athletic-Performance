@@ -5,7 +5,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- 🔖 FAVICON (handled by themeLoader.js) -->
 <link id="dynamicFavicon" rel="icon" type="image/png" href="images/roosters-logo.png">
 
 <title>Elite Athletic Performance System</title>
@@ -38,18 +37,8 @@
 
   <section class="section" style="text-align:center;">
     
-    <!-- ✅ FIXED BUTTON -->
-    <button 
-      type="button" 
-      class="btn" 
-      onclick="goToEnterTest()">
-      ➕ Enter Test
-    </button>
-
-    <!-- 🔥 Fallback if JS fails (optional but smart) -->
-    <noscript>
-      <a href="enter.html" class="btn">➕ Enter Test</a>
-    </noscript>
+    <!-- ✅ SAFE NAV LINK (NO REFRESH ISSUE EVER) -->
+    <a id="enterBtn" class="btn">➕ Enter Test</a>
 
   </section>
 
@@ -114,9 +103,31 @@
 <!-- ===== SCRIPTS ===== -->
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-
 <script src="./js/themeLoader.js"></script>
 <script src="js/dataLoader.js"></script>
+
+<!-- ===== FORCE ENTER LINK WITH SCHOOL ===== -->
+<script>
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  let school = params.get("school");
+
+  // fallback to stored school
+  if (!school) {
+    school = localStorage.getItem("school");
+  }
+
+  const btn = document.getElementById("enterBtn");
+
+  if (!btn) return;
+
+  // 🔥 FORCE URL FORMAT
+  btn.href = school
+    ? `enter.html?school=${school}`
+    : "enter.html";
+
+})();
+</script>
 
 <!-- ===== LIVE STATS ===== -->
 <script>
@@ -124,10 +135,8 @@
   try {
     const data = await loadAthleteData();
 
-    // total tests
     document.getElementById("totalTests").textContent = data.length;
 
-    // unique athletes
     const unique = new Set(data.map(d => d.name));
     document.getElementById("totalAthletes").textContent = unique.size;
 
