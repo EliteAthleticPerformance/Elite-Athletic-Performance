@@ -1,6 +1,10 @@
 // ===============================
-// GLOBAL DATA LOADER (CSV → JSON)
+// 🔥 ELITE V3 DATA LOADER (PRODUCTION)
 // ===============================
+
+/* ========================================
+   CSV LOADER
+======================================== */
 
 async function loadCSV(url) {
   const response = await fetch(url);
@@ -15,93 +19,104 @@ async function loadCSV(url) {
   return parsed.data;
 }
 
-// ===============================
-// CENTRALIZED DATA ACCESS
-// ===============================
+/* ========================================
+   GLOBAL STATE
+======================================== */
 
 let APP_DATA = [];
+
+/* ========================================
+   MAIN DATA LOAD
+======================================== */
 
 async function loadAthleteData() {
   const url =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv&t=" +
-    Date.now(); // 🔥 cache buster
+    Date.now();
 
-  // ✅ FIXED: correct function call
   const raw = await loadCSV(url);
 
-  // 🔍 DEBUG: inspect your actual column names
   console.log("🧪 RAW SAMPLE:", raw[0]);
 
   APP_DATA = raw
     .map(row => {
+
+      // 🔥 BULLETPROOF SCORE DETECTION
+      const scoreKey = Object.keys(row).find(k =>
+        k && k.toLowerCase().includes("athletic")
+      );
+
       const athlete = {
-        name: (row["Student-Athlete"] || "").trim(),
-        date: (row["Test Date"] || "").trim(),
+        name: clean(row["Student-Athlete"]),
+        date: clean(row["Test Date"]),
 
-        bench: Number(row["Bench Press"]) || 0,
-        squat: Number(row["Squat"]) || 0,
-        clean: Number(row["Hang Clean"]) || 0,
+        bench: num(row["Bench Press"]),
+        squat: num(row["Squat"]),
+        clean: num(row["Hang Clean"]),
 
-        vertical: Number(row["Vertical Jump"]) || 0,
-        broad: Number(row["Broad Jump"]) || 0,
-        med: Number(row["Med Ball Toss"]) || 0,
+        vertical: num(row["Vertical Jump"]),
+        broad: num(row["Broad Jump"]),
+        med: num(row["Med Ball Toss"]),
 
-        agility: Number(row["Pro Agility"]) || 0,
-        ten: Number(row["10 yd"]) || 0,
-        forty: Number(row["40 yd"]) || 0,
+        agility: num(row["Pro Agility"]),
+        ten: num(row["10 yd"]),
+        forty: num(row["40 yd"]),
 
-        situps: Number(row["Sit-Ups"]) || 0,
+        situps: num(row["Sit-Ups"]),
 
-        // ✅ SCORE (from sheet)
-        score: Number(
-          row["Total Athletic Performance Points"] ??
-          row["Total Athletic Performance"] ??
-          row["Score"]
-        ) || 0
+        // ✅ SAFE SCORE
+        score: num(row[scoreKey])
       };
 
-      // 🧠 OPTIONAL: create a true "overall" alias
+      // unified alias
       athlete.overall = athlete.score;
 
       return athlete;
     })
 
-    // ===============================
-    // DATA CLEANING FILTER
-    // ===============================
+    /* ========================================
+       DATA CLEANING
+    ======================================== */
     .filter(row => {
       if (!row.name) return false;
 
-      const rowString = JSON.stringify(row);
+      const hasData =
+        row.bench > 0 ||
+        row.squat > 0 ||
+        row.clean > 0 ||
+        row.vertical > 0 ||
+        row.broad > 0 ||
+        row.med > 0 ||
+        row.agility > 0 ||
+        row.ten > 0 ||
+        row.forty > 0 ||
+        row.situps > 0 ||
+        row.score > 0;
 
-      return (
-        !rowString.includes("#REF") &&
-        !rowString.includes("NaN") &&
-        !rowString.includes("Invalid") &&
-        (
-          row.bench > 0 ||
-          row.squat > 0 ||
-          row.clean > 0 ||
-          row.vertical > 0 ||
-          row.broad > 0 ||
-          row.med > 0 ||
-          row.agility > 0 ||
-          row.ten > 0 ||
-          row.forty > 0 ||
-          row.situps > 0 ||
-          row.score > 0
-        )
-      );
+      return hasData;
     });
 
-  // ===============================
-  // FINAL DEBUG OUTPUT
-  // ===============================
   console.log("✅ DATA READY:", APP_DATA.length);
 
-  APP_DATA.forEach(a => {
+  // 🔍 DEBUG (remove later if you want)
+  APP_DATA.slice(0, 10).forEach(a => {
     console.log("📊", a.name, "Score:", a.score, "Overall:", a.overall);
   });
 
   return APP_DATA;
+}
+
+/* ========================================
+   HELPERS
+======================================== */
+
+function num(val) {
+  if (val === null || val === undefined) return 0;
+  const n = parseFloat(String(val).replace(/[^0-9.\-]/g, ""));
+  return isNaN(n) ? 0 : n;
+}
+
+function clean(val) {
+  if (!val) return "";
+  return String(val).trim();
 }
