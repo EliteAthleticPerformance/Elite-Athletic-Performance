@@ -1,9 +1,5 @@
 /* ========================================
-   🔥 ELITE V3 HEADER ENGINE (PRODUCTION)
-======================================== */
-
-/* ========================================
-   INIT
+   🔥 ELITE V4 HEADER ENGINE (PRODUCTION HARDENED)
 ======================================== */
 
 document.addEventListener("DOMContentLoaded", loadHeader);
@@ -23,7 +19,6 @@ async function loadHeader() {
     const html = await res.text();
     container.innerHTML = html;
 
-    // ✅ Initialize AFTER DOM inject (no setTimeout needed)
     initHeaderUI();
 
   } catch (err) {
@@ -32,7 +27,7 @@ async function loadHeader() {
 }
 
 /* ========================================
-   🎯 HEADER UI INIT
+   🎯 INIT
 ======================================== */
 
 function initHeaderUI() {
@@ -41,49 +36,58 @@ function initHeaderUI() {
   injectSchoolIntoLinks();
   setPageTitle();
 
-  // 🔥 notify other systems (themeLoader)
   document.dispatchEvent(new Event("headerLoaded"));
 }
 
 /* ========================================
-   🏫 SCHOOL HANDLING
+   🏫 SCHOOL HANDLING (FIXED)
 ======================================== */
 
 function getSchoolParam() {
   const params = new URLSearchParams(window.location.search);
-  return params.get("school") || localStorage.getItem("school") || "";
+
+  let school = params.get("school");
+
+  if (school) {
+    sessionStorage.setItem("school", school);
+  } else {
+    school = sessionStorage.getItem("school");
+  }
+
+  return school || "";
 }
+
+/* ========================================
+   🔗 LINK INJECTION (SAFE)
+======================================== */
 
 function injectSchoolIntoLinks() {
   const school = getSchoolParam();
   if (!school) return;
 
-  localStorage.setItem("school", school);
-
   document.querySelectorAll("#dropdownMenu a").forEach(link => {
-    let href = link.getAttribute("href");
-    if (!href) return;
+    const href = link.getAttribute("href");
+    if (!href || href.startsWith("http")) return; // skip external
 
-    // remove existing school param
-    href = href.split("?")[0];
+    const url = new URL(href, window.location.origin);
 
-    link.setAttribute("href", `${href}?school=${school}`);
+    url.searchParams.set("school", school);
+
+    link.setAttribute("href", url.pathname + url.search);
   });
 }
 
 /* ========================================
-   🏷️ PAGE TITLE
+   🏷️ TITLE
 ======================================== */
 
 function setPageTitle() {
-  const pageTitleEl = document.getElementById("pageTitle");
-  if (pageTitleEl) {
-    pageTitleEl.textContent = "Elite Athletic Performance";
-  }
+  const el = document.getElementById("pageTitle");
+  if (el) el.textContent = "Elite Athletic Performance";
 }
 
 /* ========================================
-   🔗 ACTIVE LINK HIGHLIGHT
+   🔗 ACTIVE LINK
 ======================================== */
 
 function highlightActiveLink() {
@@ -94,9 +98,9 @@ function highlightActiveLink() {
     const href = link.getAttribute("href");
     if (!href) return;
 
-    const cleanHref = href.split("?")[0];
+    const clean = href.split("?")[0];
 
-    if (cleanHref === current) {
+    if (clean === current) {
       link.style.color = "var(--primary)";
       link.style.fontWeight = "700";
     }
@@ -104,16 +108,20 @@ function highlightActiveLink() {
 }
 
 /* ========================================
-   ☰ MENU
+   ☰ MENU (SAFE)
 ======================================== */
 
+let menuInitialized = false;
+
 function setupMenu() {
+  if (menuInitialized) return;
+  menuInitialized = true;
+
   const toggle = document.getElementById("menuToggle");
   const dropdown = document.getElementById("dropdownMenu");
 
   if (!toggle || !dropdown) return;
 
-  // prevent duplicate listeners
   toggle.onclick = (e) => {
     e.stopPropagation();
     dropdown.classList.toggle("show");
@@ -127,35 +135,18 @@ function setupMenu() {
 }
 
 /* ========================================
-   🚀 NAVIGATION HELPERS (FIXES YOUR ERROR)
+   🚀 NAVIGATION HELPERS
 ======================================== */
 
-// 🔥 THIS fixes: goToEnterTest is not defined
-function goToEnterTest() {
+function goToPage(page) {
   const school = getSchoolParam();
+
   window.location.href = school
-    ? `enter.html?school=${school}`
-    : "enter.html";
+    ? `${page}?school=${school}`
+    : page;
 }
 
-// Optional helpers (future-proof navigation)
-function goToLeaderboard() {
-  const school = getSchoolParam();
-  window.location.href = school
-    ? `leaderboard.html?school=${school}`
-    : "leaderboard.html";
-}
-
-function goToTesting() {
-  const school = getSchoolParam();
-  window.location.href = school
-    ? `testing.html?school=${school}`
-    : "testing.html";
-}
-
-function goToAthletes() {
-  const school = getSchoolParam();
-  window.location.href = school
-    ? `athletes.html?school=${school}`
-    : "athletes.html";
-}
+function goToEnterTest() { goToPage("enter.html"); }
+function goToLeaderboard() { goToPage("leaderboard.html"); }
+function goToTesting() { goToPage("testing.html"); }
+function goToAthletes() { goToPage("athletes.html"); }
