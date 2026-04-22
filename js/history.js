@@ -1,317 +1,142 @@
-/* ========================================
-   🔥 ELITE V3 HISTORY ENGINE (PRODUCTION)
-   ======================================== */
+// ========================================
+// 🔥 ELITE HISTORY ENGINE (API VERSION)
+// ========================================
 
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS81ri1sMtpBVl605PVV_Te2WdA3hVohdXIb1Lc22CrUJSdzXUzGa-0Z0THGtlSa9WVaa77owi-_BAR/pub?output=csv";
-
-/* ========================================
-   STATE
-   ======================================== */
-
-let rawData = [];
-let processedData = [];
+let DATA = [];
 
 /* ========================================
    INIT
-   ======================================== */
+======================================== */
 
-document.addEventListener("DOMContentLoaded", () => {
-  loadData();
-});
+document.addEventListener("DOMContentLoaded", init);
 
-/* ========================================
-   FETCH DATA
-   ======================================== */
-
-async function loadData() {
+async function init() {
   try {
-    const res = await fetch(CSV_URL + "&t=" + Date.now());
-    const text = await res.text();
+    DATA = await loadAthleteData();
 
-    rawData = parseCSV(text);
-    processedData = processData(rawData);
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get("name");
 
-    console.log("✅ HISTORY READY:", processedData.slice(0, 5));
-
-    setupSearch();
+    if (name) {
+      renderAthlete(name);
+    } else {
+      renderAll();
+    }
 
   } catch (err) {
-    console.error("❌ History load error:", err);
+    console.error("❌ Load error:", err);
     showError("Failed to load data");
   }
 }
 
 /* ========================================
-   CSV PARSER (ROBUST)
-   ======================================== */
+   SINGLE ATHLETE VIEW
+======================================== */
 
-function parseCSV(text) {
-  const rows = [];
-  let current = "";
-  let insideQuotes = false;
-  let row = [];
-
-  for (let char of text) {
-    if (char === '"') insideQuotes = !insideQuotes;
-    else if (char === "," && !insideQuotes) {
-      row.push(current);
-      current = "";
-    }
-    else if (char === "\n" && !insideQuotes) {
-      row.push(current);
-      rows.push(row);
-      row = [];
-      current = "";
-    }
-    else {
-      current += char;
-    }
-  }
-
-  if (current) {
-    row.push(current);
-    rows.push(row);
-  }
-
-  return rows;
-}
-
-/* ========================================
-   HEADER HELPERS (🔥 KEY FIX)
-   ======================================== */
-
-function findIndex(headers, keywords) {
-  const lower = headers.map(h => h.toLowerCase());
-
-  for (let key of keywords) {
-    const idx = lower.findIndex(h => h.includes(key));
-    if (idx !== -1) return idx;
-  }
-
-  return -1;
-}
-
-/* ========================================
-   DATA PROCESSING (FIXED SCORING)
-   ======================================== */
-
-function processData(rows) {
-
-  const headers = rows.shift().map(h => h.trim());
-
-  // 🔥 Smart column detection
-  const idx = {
-    name: findIndex(headers, ["student", "athlete", "name"]),
-    date: findIndex(headers, ["date"]),
-    grade: findIndex(headers, ["grade"]),
-    weight: findIndex(headers, ["weight"]),
-    group: findIndex(headers, ["group"]),
-    total: findIndex(headers, ["3 lift", "total"]),
-    score: findIndex(headers, [
-      "total athletic performance",
-      "performance",
-      "points",
-      "score"
-    ])
-  };
-
-  console.log("🧪 COLUMN MAP:", idx);
-
-  return rows.map(cols => {
-
-    const name = clean(cols[idx.name]);
-    if (!name) return null;
-
-    const total = toNumber(cols[idx.total]);
-    const score = toNumber(cols[idx.score]);
-
-    return {
-      name,
-      date: formatDate(cols[idx.date]),
-      grade: clean(cols[idx.grade]),
-      weight: clean(cols[idx.weight]),
-      group: clean(cols[idx.group]),
-
-      total,
-      score,
-
-      // 🔥 unified alias
-      overall: score
-    };
-
-  }).filter(Boolean);
-}
-
-/* ========================================
-   SEARCH SYSTEM
-   ======================================== */
-
-function setupSearch() {
-
-  const input = document.getElementById("searchAthlete");
-  if (!input) return;
-
-  let timeout;
-
-  input.addEventListener("input", () => {
-
-    clearTimeout(timeout);
-
-    timeout = setTimeout(() => {
-
-      const term = normalize(input.value);
-      if (!term) return clearResults();
-
-      const matches = processedData.filter(a =>
-        normalize(a.name).includes(term)
-      );
-
-      render(matches);
-
-    }, 200);
-
-  });
-}
-
-/* ========================================
-   METRICS (IMPROVED BASE)
-   ======================================== */
-
-function extractMetrics(row) {
-  return {
-    speed: clamp(row.score, 0, 100),
-    strength: clamp(row.total / 10, 0, 100),
-    power: clamp(row.total / 10, 0, 100),
-    explosive: clamp(row.score, 0, 100)
-  };
-}
-
-function clamp(val, min, max) {
-  return Math.max(min, Math.min(max, val));
-}
-
-/* ========================================
-   RENDER
-   ======================================== */
-
-function render(data) {
+function renderAthlete(name) {
 
   const container = document.getElementById("historyContainer");
-  container.innerHTML = "";
+  if (!container) return;
 
-  const grouped = groupByName(data);
+  const history = DATA
+    .filter(a => a.name === name)
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-  Object.keys(grouped).forEach(name => {
+  if (!history.length) {
+    container.innerHTML = `<p>No data found for ${name}</p>`;
+    return;
+  }
 
-    const history = grouped[name]
-      .sort((a, b) => new Date(b.date) - new Date(a.date));
+  const rows = history.map(h => `
+    <tr>
+      <td>${h.date}</td>
+      <td>${h.bench}</td>
+      <td>${h.squat}</td>
+      <td>${h.clean}</td>
+      <td>${avg(h.bench, h.squat, h.clean)}</td>
+      <td>${h.vertical}</td>
+      <td>${h.broad}</td>
+      <td>${h.med}</td>
+      <td>${h.agility}</td>
+      <td>${h.situps}</td>
+      <td>${h.ten}</td>
+      <td>${h.forty}</td>
+      <td>${h.score}</td>
+    </tr>
+  `).join("");
 
-    const bestTotal = Math.max(...history.map(a => a.total || 0));
-    const bestScore = Math.max(...history.map(a => a.score || 0));
-
-    const chartId = `chart-${sanitize(name)}`;
-
-    const rowsHTML = history.map(h => {
-
-      const isTotalPR = h.total === bestTotal;
-      const isScorePR = h.score === bestScore;
-
-      return `
-        <tr class="${isTotalPR ? "pr-row" : ""}">
-          <td>${h.name}</td>
-          <td>${h.date}</td>
-          <td>${h.grade}</td>
-          <td>${h.weight}</td>
-          <td>${h.group}</td>
-          <td>${h.total || "—"} ${isTotalPR ? "🏆" : ""}</td>
-          <td>${h.score || "—"} ${isScorePR ? "🔥" : ""}</td>
-        </tr>
-      `;
-    }).join("");
-
-    const best = history[0];
-    const metrics = extractMetrics(best);
-
-    const card = document.createElement("div");
-    card.className = "card history-card";
-
-    card.innerHTML = `
+  container.innerHTML = `
+    <div class="card">
       <h2>${name}</h2>
-
-      <button class="compare-btn" onclick="goToCompare('${encodeURIComponent(name)}')">
-        Compare This Athlete
-      </button>
-
-      ${renderRankings(metrics)}
-
-      <canvas id="${chartId}" height="120"></canvas>
 
       <div class="table-wrapper">
         <table class="table">
           <thead>
             <tr>
-              <th>Athlete</th>
               <th>Date</th>
-              <th>Grade</th>
-              <th>Weight</th>
-              <th>Group</th>
-              <th>Total</th>
+              <th>Bench</th>
+              <th>Squat</th>
+              <th>Clean</th>
+              <th>Strength Avg</th>
+              <th>Vert</th>
+              <th>Broad</th>
+              <th>Med</th>
+              <th>Agility</th>
+              <th>Sit</th>
+              <th>10yd</th>
+              <th>40yd</th>
               <th>Score</th>
             </tr>
           </thead>
           <tbody>
-            ${rowsHTML}
+            ${rows}
           </tbody>
         </table>
       </div>
+
+      <canvas id="progressChart" height="120"></canvas>
+    </div>
+  `;
+
+  renderChart("progressChart", history);
+}
+
+/* ========================================
+   ALL ATHLETES VIEW
+======================================== */
+
+function renderAll() {
+
+  const container = document.getElementById("historyContainer");
+  if (!container) return;
+
+  const grouped = groupByName(DATA);
+
+  container.innerHTML = "";
+
+  Object.keys(grouped).forEach(name => {
+    const history = grouped[name];
+
+    const latest = history.sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+      <h3>${name}</h3>
+      <p>Score: ${latest.score}</p>
+      <button onclick="goToAthlete('${encodeURIComponent(name)}')">
+        View History
+      </button>
     `;
 
     container.appendChild(card);
-
-    renderChart(chartId, history);
   });
 }
 
 /* ========================================
-   RANKING CARDS
-   ======================================== */
-
-function renderRankings(player) {
-
-  function getColor(val) {
-    if (val >= 85) return "elite";
-    if (val >= 70) return "strong";
-    if (val >= 50) return "developing";
-    return "weak";
-  }
-
-  function card(label, value) {
-    const level = getColor(value);
-
-    return `
-      <div class="metric-card ${level}">
-        <div class="metric-label">${label}</div>
-        <div class="metric-value">${Math.round(value)}</div>
-        <div class="metric-bar">
-          <div class="metric-fill" style="width:${value}%"></div>
-        </div>
-      </div>
-    `;
-  }
-
-  return `
-    <div class="metrics-grid">
-      ${card("Speed", player.speed)}
-      ${card("Strength", player.strength)}
-      ${card("Power", player.power)}
-      ${card("Explosive", player.explosive)}
-    </div>
-  `;
-}
-
-/* ========================================
    CHART
-   ======================================== */
+======================================== */
 
 function renderChart(id, history) {
 
@@ -322,16 +147,11 @@ function renderChart(id, history) {
   new Chart(ctx, {
     type: "line",
     data: {
-      labels: history.map(a => a.date).reverse(),
+      labels: history.map(a => a.date),
       datasets: [
         {
-          label: "Total",
-          data: history.map(a => a.total).reverse(),
-          tension: 0.3
-        },
-        {
           label: "Score",
-          data: history.map(a => a.score).reverse(),
+          data: history.map(a => a.score),
           tension: 0.3
         }
       ]
@@ -340,8 +160,14 @@ function renderChart(id, history) {
 }
 
 /* ========================================
-   UTILITIES
-   ======================================== */
+   HELPERS
+======================================== */
+
+function avg(a,b,c){
+  const vals=[a,b,c].filter(v=>v>0);
+  if(!vals.length) return "-";
+  return Math.round(vals.reduce((x,y)=>x+y,0)/vals.length);
+}
 
 function groupByName(data) {
   return data.reduce((acc, a) => {
@@ -351,41 +177,18 @@ function groupByName(data) {
   }, {});
 }
 
-function sanitize(str) {
-  return str.replace(/[^a-z0-9]/gi, "");
-}
+function goToAthlete(name) {
+  const params = new URLSearchParams(window.location.search);
+  const school = params.get("school");
 
-function clean(val) {
-  if (!val || val === "NaN") return "";
-  return String(val).trim();
-}
-
-function toNumber(val) {
-  return parseFloat(String(val).replace(/[^0-9.\-]/g, "")) || 0;
-}
-
-function formatDate(raw) {
-  if (!raw) return "-";
-  const d = new Date(raw);
-  return isNaN(d) ? "-" : d.toLocaleDateString();
-}
-
-function normalize(str) {
-  return (str || "")
-    .toLowerCase()
-    .replace(/[^a-z]/g, "");
-}
-
-function clearResults() {
-  const container = document.getElementById("historyContainer");
-  container.innerHTML = "";
-}
-
-function goToCompare(name) {
-  window.location.href = `history.html?name=${name}`;
+  window.location.href = school
+    ? `athlete.html?name=${name}&school=${school}`
+    : `athlete.html?name=${name}`;
 }
 
 function showError(msg) {
   const container = document.getElementById("historyContainer");
-  container.innerHTML = `<p>${msg}</p>`;
+  if (container) {
+    container.innerHTML = `<p>${msg}</p>`;
+  }
 }
