@@ -1,5 +1,5 @@
 // ===============================
-// 🔥 ELITE V4 THEME + DATA ENGINE
+// 🔥 ELITE V5 THEME + DATA ENGINE (PRODUCTION)
 // ===============================
 
 /* ========================================
@@ -33,35 +33,36 @@ function normalize(str) {
 }
 
 /* ========================================
-   SAFE JSON PARSE
+   CLEAN OBJECT KEYS (🔥 FIXES CSV ISSUES)
 ======================================== */
 
-function safeJSONParse(val) {
-  try {
-    return JSON.parse(val);
-  } catch {
-    return null;
+function cleanRow(row) {
+  const cleaned = {};
+  for (let key in row) {
+    cleaned[key.trim()] = (row[key] || "").trim();
   }
+  return cleaned;
 }
 
 /* ========================================
-   APPLY CACHED THEME (INSTANT)
+   APPLY CACHED THEME (INSTANT LOAD)
 ======================================== */
 
 (function applyCachedTheme() {
   const school = normalize(getSchool());
-  const cached = safeJSONParse(sessionStorage.getItem("theme-" + school));
+  const cached = sessionStorage.getItem("theme-" + school);
 
   if (!cached) return;
 
+  const theme = JSON.parse(cached);
   const root = document.documentElement;
 
-  root.style.setProperty("--primary", cached.primary || "#000");
-  root.style.setProperty("--primaryLight", cached.primaryLight || "#333");
-  root.style.setProperty("--primaryDark", cached.primaryDark || "#000");
-  root.style.setProperty("--secondary", cached.secondary || "#666");
-  root.style.setProperty("--secondaryLight", cached.secondaryLight || "#999");
-  root.style.setProperty("--background", cached.background || "#111");
+  root.style.setProperty("--primary", theme.primary || "#000");
+  root.style.setProperty("--primaryLight", theme.primaryLight || "#333");
+  root.style.setProperty("--primaryDark", theme.primaryDark || "#000");
+  root.style.setProperty("--secondary", theme.secondary || "#666");
+  root.style.setProperty("--secondaryLight", theme.secondaryLight || "#999");
+  root.style.setProperty("--background", theme.background || "#111");
 })();
 
 /* ========================================
@@ -107,7 +108,7 @@ function parseCSV(text) {
     headers.forEach((h, i) => {
       obj[h] = (row[i] || "").trim();
     });
-    return obj;
+    return cleanRow(obj); // 🔥 CLEAN HEADERS
   });
 }
 
@@ -122,10 +123,10 @@ async function loadCSV(url) {
 }
 
 /* ========================================
-   GLOBAL CONFIG CACHE
+   GLOBAL CONFIG (🔥 FIXED SCOPE)
 ======================================== */
 
-let SCHOOL_CONFIG = null;
+window.SCHOOL_CONFIG = null;
 
 /* ========================================
    LOAD THEME + SCHOOL CONFIG
@@ -159,17 +160,19 @@ async function loadTheme() {
       return;
     }
 
-    // 🔥 STORE FULL CONFIG (THIS IS NEW)
-    SCHOOL_CONFIG = {
+    // 🔥 GLOBAL CONFIG (FIXED)
+    window.SCHOOL_CONFIG = {
       key: schoolKey,
       name: schoolRow.name || "",
       logo: schoolRow.logo || "",
-      dataURL: schoolRow.dataURL || "", // 🔥 THIS DRIVES EVERYTHING
-      submitURL: schoolRow.submitURL || "", 
+      dataURL: schoolRow.dataURL || "",
+      submitURL: schoolRow.submitURL || "",
       theme: themeRow || {}
     };
 
-    applyBranding(SCHOOL_CONFIG);
+    console.log("🏫 SCHOOL CONFIG LOADED:", window.SCHOOL_CONFIG);
+
+    applyBranding(window.SCHOOL_CONFIG);
 
   } catch (err) {
     console.error("❌ Theme load error:", err);
@@ -220,22 +223,21 @@ function applyBranding(config) {
 }
 
 /* ========================================
-   🔥 LOAD ATHLETE DATA (NEW)
+   WAIT FOR CONFIG (USED BY PAGES)
 ======================================== */
 
-async function loadSchoolData() {
-  if (!SCHOOL_CONFIG || !SCHOOL_CONFIG.dataURL) {
-    console.warn("⚠️ No dataURL for this school");
-    return [];
+async function waitForConfig() {
+  let tries = 0;
+
+  while (
+    (!window.SCHOOL_CONFIG || !window.SCHOOL_CONFIG.submitURL) &&
+    tries < 100
+  ) {
+    await new Promise(r => setTimeout(r, 50));
+    tries++;
   }
 
-  try {
-    const data = await loadCSV(SCHOOL_CONFIG.dataURL);
-    return data;
-  } catch (err) {
-    console.error("❌ Data load failed:", err);
-    return [];
-  }
+  console.log("✅ CONFIG READY:", window.SCHOOL_CONFIG);
 }
 
 /* ========================================
