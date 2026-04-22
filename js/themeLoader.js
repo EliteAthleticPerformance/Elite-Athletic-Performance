@@ -159,11 +159,11 @@ function applyBranding(config) {
 ======================================== */
 
 async function waitForConfig() {
-  let tries = 0;
+  let attempts = 0;
 
-  while (!window.SCHOOL_CONFIG && tries < 100) {
+  while (!window.SCHOOL_CONFIG && attempts < 100) {
     await new Promise(r => setTimeout(r, 50));
-    tries++;
+    attempts++;
   }
 
   if (!window.SCHOOL_CONFIG) {
