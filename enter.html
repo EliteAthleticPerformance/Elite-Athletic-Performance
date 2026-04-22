@@ -35,6 +35,10 @@
 
 <body>
 
+<!-- 🔥 HIDDEN FORM (CORS FIX) -->
+<form id="hiddenForm" method="POST" target="hiddenFrame" style="display:none;"></form>
+<iframe name="hiddenFrame" style="display:none;"></iframe>
+
 <div id="header-placeholder"></div>
 <script src="js/header.js"></script>
 
@@ -166,12 +170,12 @@ async function waitForConfig() {
   }
 }
 
-/* SUBMIT */
+/* SUBMIT VIA FORM (NO CORS) */
 async function submitForm() {
 
   await waitForConfig();
 
-  if (!window.SCHOOL_CONFIG || !SCHOOL_CONFIG.submitURL) {
+  if (!window.SCHOOL_CONFIG || !window.SCHOOL_CONFIG.submitURL) {
     alert("❌ No submit URL configured");
     return;
   }
@@ -194,29 +198,30 @@ async function submitForm() {
     forty: document.getElementById("forty").value
   };
 
-  console.log("🚀 Submitting to:", SCHOOL_CONFIG.submitURL);
-  console.log("📦 Payload:", payload);
+  console.log("🚀 Submitting via form to:", SCHOOL_CONFIG.submitURL);
 
-  try {
-    await fetch(SCHOOL_CONFIG.submitURL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
+  const form = document.getElementById("hiddenForm");
 
-    document.getElementById("formMessage").innerHTML =
-      "<span style='color:lime;'>✅ Saved</span>";
+  form.innerHTML = "";
+  form.action = SCHOOL_CONFIG.submitURL;
 
-    document.querySelectorAll("input, select").forEach(el => el.value = "");
+  Object.keys(payload).forEach(key => {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = key;
+    input.value = payload[key];
+    form.appendChild(input);
+  });
 
-  } catch (err) {
-    console.error(err);
-    document.getElementById("formMessage").innerHTML =
-      "<span style='color:red;'>❌ Failed</span>";
-  }
+  form.submit();
+
+  document.getElementById("formMessage").innerHTML =
+    "<span style='color:lime;'>✅ Saved</span>";
+
+  document.querySelectorAll("input, select").forEach(el => el.value = "");
 }
 
-/* 🔥 FIXED BUTTON HANDLER */
+/* BUTTON HANDLER */
 document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("submitBtn").addEventListener("click", submitForm);
 });
