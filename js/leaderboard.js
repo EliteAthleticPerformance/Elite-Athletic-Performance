@@ -12,11 +12,11 @@ document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
   try {
-    const data = await loadAthleteData(); // from dataLoader.js
-
-    console.log("🧪 SAMPLE ROW:", data[0]);
+    const data = await loadAthleteData();
 
     processDataFromJSON(data);
+
+    render(); // 🔥 render immediately
 
     const search = document.getElementById("leaderboardSearch");
     if (search) search.addEventListener("input", render);
@@ -51,7 +51,7 @@ function parseDateSafe(val) {
 }
 
 // ===============================
-// PROCESS DATA (FROM JSON)
+// PROCESS DATA
 // ===============================
 function processDataFromJSON(data) {
 
@@ -86,29 +86,26 @@ function processDataFromJSON(data) {
       lift: bench + squat + clean
     };
 
-  }).filter(a => a.name && typeof a.name === "string");
+  }).filter(a => a.name);
 
-  // GROUP BY ATHLETE
+  // GROUP
   grouped = {};
-
   parsed.forEach(a => {
     if (!grouped[a.name]) grouped[a.name] = [];
     grouped[a.name].push(a);
   });
 
-  // SORT each athlete by date (latest first)
+  // SORT each athlete
   Object.values(grouped).forEach(arr => {
     arr.sort((a, b) => (b.date || 0) - (a.date || 0));
   });
 
-  // TAKE LATEST SNAPSHOT
+  // LATEST snapshot
   athletes = Object.keys(grouped).map(name => grouped[name][0]);
-
-  render();
 }
 
 // ===============================
-// BUILD LEADERBOARD DATA
+// BUILD LEADERBOARD
 // ===============================
 function buildLeaderboardData(data) {
   const map = {};
@@ -120,8 +117,8 @@ function buildLeaderboardData(data) {
         name: a.name,
         lift: 0,
         score: 0,
-        liftDate: "",
-        scoreDate: ""
+        liftDate: null,
+        scoreDate: null
       };
     }
 
@@ -155,12 +152,10 @@ function render() {
     a.name.toLowerCase().includes(search)
   );
 
-  // BUILD PODIUM ONCE
+  // 🔥 CLEAN PODIUM BUILD
   if (!podiumBuilt) {
-    setTimeout(() => {
-      renderPodium(leaderboardData);
-      podiumBuilt = true;
-    }, 50);
+    renderPodium(leaderboardData);
+    podiumBuilt = true;
   }
 
   renderTable(filtered, "liftTable", "lift");
@@ -168,7 +163,7 @@ function render() {
 }
 
 // ===============================
-// TABLE RENDER
+// TABLE
 // ===============================
 function renderTable(data, tableId, type) {
 
@@ -207,31 +202,19 @@ function renderPodium(data) {
     <div class="podium">
 
       <div class="podium-item second" onclick="goToAthlete('${second.name}')">
-        <div class="podium-rank">🥈</div>
-        <div class="podium-name">${second.name}</div>
-        <div class="podium-score">${Math.round(second.score)}</div>
+        🥈 ${second.name}<br>${Math.round(second.score)}
       </div>
 
       <div class="podium-item first" onclick="goToAthlete('${first.name}')">
-        <div class="podium-rank">🥇</div>
-        <div class="podium-name">${first.name}</div>
-        <div class="podium-score">${Math.round(first.score)}</div>
+        🥇 ${first.name}<br>${Math.round(first.score)}
       </div>
 
       <div class="podium-item third" onclick="goToAthlete('${third.name}')">
-        <div class="podium-rank">🥉</div>
-        <div class="podium-name">${third.name}</div>
-        <div class="podium-score">${Math.round(third.score)}</div>
+        🥉 ${third.name}<br>${Math.round(third.score)}
       </div>
 
     </div>
   `;
-
-  setTimeout(() => {
-    container.querySelectorAll(".podium-item").forEach(el => {
-      el.classList.add("show");
-    });
-  }, 100);
 }
 
 // ===============================
@@ -239,122 +222,31 @@ function renderPodium(data) {
 // ===============================
 function formatDate(date) {
   if (!date) return "-";
-
-  const d = new Date(date);
-  if (isNaN(d)) return "-";
-
-  const month = d.toLocaleString("en-US", { month: "short" });
-  const year = d.getFullYear();
-
-  return `${year} ${month}`;
-}
-
-function getPerformanceTier(score, lift) {
-
-  if (!score || !lift) {
-    return { label: "Incomplete", class: "tier-incomplete" };
-  }
-
-  const pct = score / lift;
-
-  if (pct >= 0.90) return { label: "Elite", class: "tier-elite" };
-  if (pct >= 0.80) return { label: "Above Average", class: "tier-above" };
-  if (pct >= 0.70) return { label: "Average", class: "tier-average" };
-  return { label: "Needs Work", class: "tier-needs" };
-}
-
-function getBadgeHTML(tier) {
-
-  if (!tier || !tier.label) return "";
-
-  const map = {
-    "Elite": "elite",
-    "Above Average": "above",
-    "Average": "average",
-    "Needs Work": "needs",
-    "Incomplete": "incomplete"
-  };
-
-  const cls = map[tier.label] || "";
-
-  return `<span class="badge ${cls}">${tier.label}</span>`;
+  return new Date(date).toLocaleDateString();
 }
 
 function createRow(a, index, type) {
-
-  const tier = getPerformanceTier(a.score, a.lift);
 
   const tr = document.createElement("tr");
 
   tr.innerHTML = `
     <td class="${medal(index)}">${index + 1}</td>
-    <td>
-      ${a.name}
-      ${type === "score" ? `<div style="margin-top:4px;">${getBadgeHTML(tier)}</div>` : ""}
-    </td>
+    <td>${a.name}</td>
     <td>${safe(a[type])}</td>
     <td>${formatDate(type === "lift" ? a.liftDate : a.scoreDate)}</td>
   `;
 
-  const detail = document.createElement("tr");
-  detail.style.display = "none";
-
-  const td = document.createElement("td");
-  td.colSpan = 4;
-  detail.appendChild(td);
-
-  tr.onclick = () => {
-
-    detail.style.display =
-      detail.style.display === "table-row" ? "none" : "table-row";
-
-    const latest = grouped[a.name][0];
-    const prev = grouped[a.name][1];
-
-    const diff = (x, y, reverse = false) => {
-      if (!x || !y) return "";
-      const d = reverse ? (y - x) : (x - y);
-
-      if (d > 0) return `<span style="color:#4caf50">(+${d.toFixed(1)})</span>`;
-      if (d < 0) return `<span style="color:red">(${d.toFixed(1)})</span>`;
-      return "";
-    };
-
-    td.innerHTML = `
-      <div style="padding:10px">
-
-      <strong>🏋️ Strength</strong><br>
-      Bench: ${safe(latest.bench)} ${prev ? diff(latest.bench, prev.bench) : ""}<br>
-      Squat: ${safe(latest.squat)} ${prev ? diff(latest.squat, prev.squat) : ""}<br>
-      Clean: ${safe(latest.clean)} ${prev ? diff(latest.clean, prev.clean) : ""}<br><br>
-
-      <strong>🏃 Performance</strong><br>
-      Vertical: ${safe(latest.vertical)} ${prev ? diff(latest.vertical, prev.vertical) : ""}<br>
-      Broad: ${safe(latest.broad)} ${prev ? diff(latest.broad, prev.broad) : ""}<br>
-      Med Ball: ${safe(latest.med)} ${prev ? diff(latest.med, prev.med) : ""}<br><br>
-
-      <strong>⚡ Speed</strong><br>
-      10 yd: ${safe(latest.ten)} ${prev ? diff(latest.ten, prev.ten, true) : ""}<br>
-      40 yd: ${safe(latest.forty)} ${prev ? diff(latest.forty, prev.forty, true) : ""}<br>
-      Pro Agility: ${safe(latest.pro)} ${prev ? diff(latest.pro, prev.pro, true) : ""}<br><br>
-
-      <strong>💪 Conditioning</strong><br>
-      Sit Ups: ${safe(latest.sit)} ${prev ? diff(latest.sit, prev.sit) : ""}
-
-      </div>
-    `;
-  };
-
-  const frag = document.createDocumentFragment();
-  frag.appendChild(tr);
-  frag.appendChild(detail);
-
-  return frag;
+  return tr;
 }
 
 // ===============================
-// NAVIGATION
+// NAVIGATION (🔥 FIXED)
 // ===============================
 function goToAthlete(name) {
-  window.location.href = `history.html?name=${encodeURIComponent(name)}`;
+  const params = new URLSearchParams(window.location.search);
+  const school = params.get("school");
+
+  window.location.href = school
+    ? `athlete.html?name=${encodeURIComponent(name)}&school=${school}`
+    : `athlete.html?name=${encodeURIComponent(name)}`;
 }
