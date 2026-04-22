@@ -30,8 +30,8 @@ window.APP_READY = new Promise(async (resolve, reject) => {
         name: "Pleasant Hill Roosters",
         logo: "https://eliteathleticperformance.github.io/Elite-Athletic-Performance/images/roosters-logo.png",
 
-        dataURL: "https://script.google.com/macros/s/AKfycbwF-FBeEgi...REPLACE_WITH_YOURS.../exec",
-        submitURL: "https://script.google.com/macros/s/AKfycbz88iVIyoy...REPLACE_WITH_YOURS.../exec"
+        dataURL: "https://script.google.com/macros/s/AKfycbxyBta6YQTkJsfd1uInNAsv1DJofq22D365FgGSUa6ZTLXCaYu29KAuJp1_vgH56zfk/exec",
+        submitURL: "https://script.google.com/macros/s/AKfycbxyBta6YQTkJsfd1uInNAsv1DJofq22D365FgGSUa6ZTLXCaYu29KAuJp1_vgH56zfk/exec"
       }
 
       // 👉 ADD MORE SCHOOLS HERE
