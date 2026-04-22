@@ -92,14 +92,15 @@
 <script src="js/themeLoader.js"></script>
 <script src="js/dataLoader.js"></script>
 
-<!-- ===== FORCE ENTER LINK WITH SCHOOL ===== -->
+<!-- ===== ENTER BUTTON LINK (SAFE + CONSISTENT) ===== -->
 <script>
 (function () {
   const params = new URLSearchParams(window.location.search);
   let school = params.get("school");
 
+  // ✅ consistent with themeLoader/header
   if (!school) {
-    school = localStorage.getItem("school");
+    school = sessionStorage.getItem("school");
   }
 
   const btn = document.getElementById("enterBtn");
@@ -112,26 +113,36 @@
 })();
 </script>
 
-<!-- ===== LIVE STATS ===== -->
+<!-- ===== LIVE STATS (SAFE + BULLETPROOF) ===== -->
 <script>
 (async function () {
   try {
+
+    if (typeof loadAthleteData !== "function") {
+      throw new Error("dataLoader not ready");
+    }
+
     const data = await loadAthleteData();
 
-    // total tests
-    document.getElementById("totalTests").textContent = data.length;
+    // ✅ total tests
+    document.getElementById("totalTests").textContent =
+      Array.isArray(data) ? data.length : 0;
 
-    // unique athletes (FIXED FIELD NAME)
-    const validNames = data
-  .map(d => d.name)
-  .filter(n => n && n.trim() !== "");
+    // ✅ unique athletes (clean + safe)
+    const validNames = (data || [])
+      .map(d => d.name)
+      .filter(n => n && n.trim() !== "");
 
-const unique = new Set(validNames);
+    const unique = new Set(validNames);
 
-document.getElementById("totalAthletes").textContent = unique.size;
+    document.getElementById("totalAthletes").textContent = unique.size;
 
   } catch (err) {
     console.warn("Stats load failed:", err);
+
+    // fallback UI
+    document.getElementById("totalTests").textContent = "0";
+    document.getElementById("totalAthletes").textContent = "0";
   }
 })();
 </script>
