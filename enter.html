@@ -35,11 +35,13 @@
 
 <body>
 
+<!-- HEADER -->
 <div id="header-placeholder"></div>
 <script src="js/header.js"></script>
 
 <main>
 
+<!-- TITLE -->
 <section class="section" style="text-align:center;">
   <h1>🏋️ Enter Athlete Test</h1>
   <p style="color: var(--muted)">Record performance data</p>
@@ -54,7 +56,7 @@
 <div class="form-section">
   <h2>ATHLETE INFO</h2>
   <div class="form-grid cols-4">
-    <input id="name" placeholder="Last, First Name">
+    <input id="name" placeholder="Last, First (ex: Maxwell, Brent)">
     <input id="date" type="date">
 
     <select id="hour">
@@ -78,8 +80,8 @@
 <div class="form-section">
   <h2>STRENGTH</h2>
   <div class="form-grid cols-3">
-    <input id="bench" type="number">
-    <input id="squat" type="number">
+    <input id="bench" type="number" placeholder="Bench">
+    <input id="squat" type="number" placeholder="Squat">
     <select id="situps">
       <option value="">Sit Ups</option>
       <option>30</option><option>40</option>
@@ -117,7 +119,7 @@
 <div class="form-section">
   <h2>POWER</h2>
   <div class="form-grid cols-2">
-    <input id="clean" type="number">
+    <input id="clean" type="number" placeholder="Clean">
     <select id="medball">
       <option value="">Med Ball Toss</option>
       <option>10</option><option>12</option><option>14</option>
@@ -157,6 +159,16 @@
 <!-- LOAD CONFIG + LOGIC -->
 <script src="js/themeLoader.js"></script>
 <script src="js/enter.js"></script>
+
+<!-- 🔥 AUTO-FILL TODAY'S DATE -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const dateInput = document.getElementById("date");
+  if (dateInput && !dateInput.value) {
+    dateInput.value = new Date().toISOString().split("T")[0];
+  }
+});
+</script>
 
 </body>
 </html>
