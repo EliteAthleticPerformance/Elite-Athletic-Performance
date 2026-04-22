@@ -1,5 +1,5 @@
 // ===============================
-// 🔥 ELITE V7 DATA LOADER (PRODUCTION HARDENED)
+// 🔥 ELITE V8 DATA LOADER (APP_READY LOCKED)
 // ===============================
 
 let APP_DATA = [];
@@ -11,11 +11,12 @@ let APP_DATA = [];
 async function loadAthleteData() {
   try {
 
-    // ✅ WAIT for config FIRST
-    const config = await waitForConfig();
+    // ✅ GUARANTEED CONFIG (NEW SYSTEM)
+    const config = await window.APP_READY;
 
     if (!config || !config.dataURL) {
-      throw new Error("Missing SCHOOL_CONFIG or dataURL");
+      console.warn("⚠️ Missing config dataURL");
+      return [];
     }
 
     const url = config.dataURL + "?t=" + Date.now(); // cache bust
@@ -23,6 +24,11 @@ async function loadAthleteData() {
     console.log("📡 Loading data from:", url);
 
     const res = await fetch(url);
+
+    if (!res.ok) {
+      throw new Error("Network response failed");
+    }
+
     const data = await res.json();
 
     if (!data || !data.length) {
@@ -32,62 +38,57 @@ async function loadAthleteData() {
 
     console.log("🧪 RAW SAMPLE:", data[0]);
 
-    // ✅ SAFE HEADER MAP (bulletproof)
+    // ========================================
+    // 🔥 SAFE HEADER MAP (BULLETPROOF)
+    // ========================================
+
     const firstValidRow = data.find(r => Object.keys(r).length > 0);
     const keyMap = buildKeyMap(firstValidRow || {});
 
     APP_DATA = data
-      .map(row => ({
+      .map(row => {
 
-        // ===============================
-        // 🧍 BASIC INFO
-        // ===============================
-        name: clean(row[keyMap.studentathlete]).replace(/\s+/g, " "),
-        date: clean(row[keyMap.testdate]),
+        const athlete = {
 
-        hour: clean(row[keyMap.hour]),
-        grade: clean(row[keyMap.grade]),
-        weight: num(row[keyMap.actualweight]),
-        weightClass: clean(row[keyMap.weightgroup]),
+          // 🧍 BASIC INFO
+          name: clean(row[keyMap.studentathlete]).replace(/\s+/g, " "),
+          date: clean(row[keyMap.testdate]),
 
-        // ===============================
-        // 🏋️ STRENGTH
-        // ===============================
-        bench: num(row[keyMap.benchpress]),
-        squat: num(row[keyMap.squat]),
-        clean: num(row[keyMap.hangclean]),
+          hour: clean(row[keyMap.hour]),
+          grade: clean(row[keyMap.grade]),
+          weight: num(row[keyMap.actualweight]),
+          weightClass: clean(row[keyMap.weightgroup]),
 
-        // ===============================
-        // ⚡ EXPLOSIVE / POWER
-        // ===============================
-        vertical: num(row[keyMap.verticaljump]),
-        broad: num(row[keyMap.broadjump]),
-        med: num(row[keyMap.medballtoss]),
+          // 🏋️ STRENGTH
+          bench: num(row[keyMap.benchpress]),
+          squat: num(row[keyMap.squat]),
+          clean: num(row[keyMap.hangclean]),
 
-        // ===============================
-        // 🏃 SPEED / AGILITY
-        // ===============================
-        agility: num(row[keyMap.proagility]),
-        ten: num(row[keyMap["10yddash"]]),
-        forty: num(row[keyMap["40yddash"]]),
+          // ⚡ EXPLOSIVE
+          vertical: num(row[keyMap.verticaljump]),
+          broad: num(row[keyMap.broadjump]),
+          med: num(row[keyMap.medballtoss]),
 
-        // ===============================
-        // 🔁 CORE
-        // ===============================
-        situps: num(row[keyMap.situps]),
+          // 🏃 SPEED
+          agility: num(row[keyMap.proagility]),
+          ten: num(row[keyMap["10yddash"]]),
+          forty: num(row[keyMap["40yddash"]]),
 
-        // ===============================
+          // 🔁 CORE
+          situps: num(row[keyMap.situps])
+        };
+
+        // ========================================
         // 📊 SCORE (SMART FALLBACK)
-        // ===============================
-        score:
+        // ========================================
+
+        athlete.score =
           num(row[keyMap.totalathleticperformancepoints]) ||
           num(row[keyMap["3liftprojectedmaxtotal"]]) ||
-          (
-            num(row[keyMap.benchpress]) +
-            num(row[keyMap.squat]) +
-            num(row[keyMap.hangclean])
-          )
-      }))
+          (athlete.bench + athlete.squat + athlete.clean);
+
+        return athlete;
+      })
 
       // ========================================
       // ✅ CLEAN DATA
@@ -127,7 +128,7 @@ async function loadAthleteData() {
 function normalizeKey(str) {
   return String(str)
     .toLowerCase()
-    .replace(/[^a-z0-9]/g, ""); // remove spaces, symbols, line breaks
+    .replace(/[^a-z0-9]/g, "");
 }
 
 function buildKeyMap(sampleRow) {
