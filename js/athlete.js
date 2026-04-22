@@ -9,7 +9,7 @@ let currentLetter = "ALL";
    INIT
 ======================================== */
 
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener("headerLoaded", init);
 
 async function init() {
   try {
