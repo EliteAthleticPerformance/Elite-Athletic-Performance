@@ -146,7 +146,7 @@ function focusFirstInput() {
 
 function setupEnterSubmit() {
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && document.activeElement.tagName !== "BUTTON") {
       const active = document.activeElement;
 
       if (active && ["INPUT", "SELECT"].includes(active.tagName)) {
