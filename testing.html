@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head> 
@@ -7,8 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- 🔖 FAVICON (handled by themeLoader.js) -->
-
-<link id="dynamicFavicon" rel="icon" type="image/png" href="images/roosters-logo.png">
+<link id="dynamicFavicon" rel="icon" type="image/png">
 
 <title>Combine Testing</title>
 
@@ -19,85 +17,76 @@
 <body>
 
 <!-- ===== HEADER ===== -->
-
 <div id="header-placeholder"></div>
 <script src="js/header.js"></script>
 
 <!-- ===== MAIN ===== -->
-
 <main>
 
   <!-- PAGE TITLE -->
-
   <section class="section">
     <h1 class="leaderboard-title">📋 Combine Testing Results</h1>
   </section>
 
   <!-- A-Z FILTER -->
-
   <section class="section" style="text-align:center;">
     <div id="alphabetBar" class="alphabet-bar"></div>
   </section>
 
   <!-- SEARCH -->
-
   <section class="section">
     <input 
       type="text" 
       id="searchInput" 
       class="search"
       placeholder="Search athlete name..."
+      onkeyup="filterTable()"
     >
   </section>
 
-  <!-- TABLE CARD -->
-
+  <!-- TABLE -->
   <section class="section">
 
+    <div class="card">
+      <div class="table-wrapper">
 
-<div class="card">
+        <table id="testingTable" class="table">
 
-  <div class="table-wrapper">
+          <thead>
+            <tr>
+              <th onclick="sortTable(0)">Athlete</th>
+              <th onclick="sortTable(1)">Date</th>
+              <th onclick="sortTable(2)">Hr</th>
+              <th onclick="sortTable(3)">Gr</th>
+              <th onclick="sortTable(4)">Wt</th>
+              <th onclick="sortTable(5)">Group</th>
 
-    <table id="testingTable" class="table">
+              <th onclick="sortTable(6)">Bench</th>
+              <th onclick="sortTable(7)">Squat</th>
+              <th onclick="sortTable(8)">Clean</th>
 
-      <thead>
-        <tr>
-          <th onclick="sortTable(0)">Athlete</th>
-          <th onclick="sortTable(1)">Date</th>
-          <th onclick="sortTable(2)">Hr</th>
-          <th onclick="sortTable(3)">Gr</th>
-          <th onclick="sortTable(4)">Wt</th>
-          <th onclick="sortTable(5)">Group</th>
+              <th onclick="sortTable(9)">Vert</th>
+              <th onclick="sortTable(10)">Broad</th>
+              <th onclick="sortTable(11)">Med</th>
 
-          <th onclick="sortTable(6)">Bench</th>
-          <th onclick="sortTable(7)">Squat</th>
-          <th onclick="sortTable(8)">Clean</th>
+              <th onclick="sortTable(12)">Agility</th>
+              <th onclick="sortTable(13)">Sit-Ups</th>
+              <th onclick="sortTable(14)">10yd</th>
+              <th onclick="sortTable(15)">40yd</th>
+            </tr>
+          </thead>
 
-          <th onclick="sortTable(9)">Vert</th>
-          <th onclick="sortTable(10)">Broad</th>
-          <th onclick="sortTable(11)">Med</th>
+          <tbody>
+            <!-- JS injects rows -->
+          </tbody>
 
-          <th onclick="sortTable(12)">Agility</th>
-          <th onclick="sortTable(13)">Sit-Ups</th>
-          <th onclick="sortTable(14)">10yd</th>
-          <th onclick="sortTable(15)">40yd</th>
-        </tr>
-      </thead>
+        </table>
 
-      <tbody>
-        <!-- JS injects rows -->
-      </tbody>
+      </div>
+    </div>
 
-    </table>
-
-  </div>
-
-</div>
-
-<!-- MOBILE CARDS (moved OUTSIDE table ✅) -->
-<div id="mobileCards" class="mobile-cards"></div>
-
+    <!-- MOBILE CARDS -->
+    <div id="mobileCards" class="mobile-cards"></div>
 
   </section>
 
@@ -105,13 +94,25 @@
 
 <!-- ===== SCRIPTS ===== -->
 
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-
 <script src="./js/themeLoader.js"></script>
-
 <script src="js/dataLoader.js"></script>
-
 <script src="js/testing.js"></script>
+
+<!-- ===== SCHOOL PARAM SAFETY ===== -->
+<script>
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  let school = params.get("school");
+
+  if (!school) {
+    school = localStorage.getItem("school");
+  }
+
+  if (school) {
+    localStorage.setItem("school", school);
+  }
+})();
+</script>
 
 </body>
 </html>
