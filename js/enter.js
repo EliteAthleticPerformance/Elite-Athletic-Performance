@@ -1,5 +1,5 @@
 /* ========================================
-   🔥 ELITE V3 ENTER ENGINE (FINAL PROD)
+   🔥 ELITE ENTER ENGINE (FINAL CLEAN PROD)
    ======================================== */
 
 /* ========================================
@@ -30,30 +30,6 @@ function todayISO() {
 }
 
 /* ========================================
-   WAIT FOR SCHOOL CONFIG
-   ======================================== */
-
-function waitForConfig(timeout = 3000) {
-  return new Promise((resolve, reject) => {
-    const start = Date.now();
-
-    function check() {
-      if (window.SCHOOL_CONFIG) {
-        return resolve(window.SCHOOL_CONFIG);
-      }
-
-      if (Date.now() - start > timeout) {
-        return reject("SCHOOL_CONFIG not loaded");
-      }
-
-      requestAnimationFrame(check);
-    }
-
-    check();
-  });
-}
-
-/* ========================================
    ⚖️ WEIGHT CLASS SYSTEM
    ======================================== */
 
@@ -74,61 +50,14 @@ function getWeightClass(weight) {
 }
 
 /* ========================================
-   MAIN SAVE FUNCTION
-   ======================================== */
-
-async function saveAthlete() {
-
-  const btn = document.querySelector(".save-btn");
-  if (btn) btn.disabled = true;
-
-  try {
-    const config = await waitForConfig();
-
-    if (!config.submitURL) {
-      alert("❌ No submit URL configured");
-      throw new Error("Missing submitURL");
-    }
-
-    console.log("🚀 Submitting to:", config.submitURL);
-
-    const entry = buildEntry();
-
-    if (!validateEntry(entry)) {
-      if (btn) btn.disabled = false;
-      return;
-    }
-
-    const res = await sendToGoogle(entry, config.submitURL);
-
-    const text = await res.text();
-    console.log("✅ Response:", text);
-
-    showMessage("✅ Saved to Google Sheets!", "success");
-
-  } catch (err) {
-    console.warn("⚠️ Cloud save failed, using offline:", err);
-
-    const entry = buildEntry();
-    saveOffline(entry);
-
-    showMessage("⚠️ Offline — saved locally", "warning");
-  }
-
-  clearForm();
-
-  if (btn) btn.disabled = false;
-}
-
-/* ========================================
-   BUILD ENTRY
+   BUILD ENTRY (USED BY HTML)
    ======================================== */
 
 function buildEntry() {
 
   const weight = toNumber(getValue("weight"));
 
-  const entry = {
+  return {
     name: getValue("name"),
     date: getValue("date") || todayISO(),
     hour: getValue("hour"),
@@ -150,8 +79,6 @@ function buildEntry() {
 
     weightClass: getWeightClass(weight)
   };
-
-  return entry;
 }
 
 /* ========================================
@@ -174,54 +101,8 @@ function validateEntry(entry) {
 }
 
 /* ========================================
-   🚀 API CALL (CORS FIXED)
-   ======================================== */
-
-async function sendToGoogle(entry, url) {
-
-  const formData = new FormData();
-
-  Object.keys(entry).forEach(key => {
-    formData.append(key, entry[key]);
-  });
-
-  return fetch(url, {
-    method: "POST",
-    body: formData,
-    mode: "no-cors" // 🔥 critical
-  });
-}
-
-/* ========================================
-   OFFLINE SAVE
-   ======================================== */
-
-function saveOffline(entry) {
-
-  let data = [];
-
-  try {
-    data = JSON.parse(localStorage.getItem("athleteScores")) || [];
-  } catch {
-    data = [];
-  }
-
-  data.push(entry);
-
-  localStorage.setItem("athleteScores", JSON.stringify(data));
-}
-
-/* ========================================
    UI HELPERS
    ======================================== */
-
-function clearForm() {
-  document.querySelectorAll("input, select").forEach(el => {
-    el.value = "";
-  });
-
-  focusFirstInput();
-}
 
 function showMessage(msg, type) {
 
@@ -247,6 +128,14 @@ function showMessage(msg, type) {
   }, 3000);
 }
 
+function clearForm() {
+  document.querySelectorAll("input, select").forEach(el => {
+    el.value = "";
+  });
+
+  focusFirstInput();
+}
+
 /* ========================================
    UX BOOSTS
    ======================================== */
@@ -262,14 +151,17 @@ function setupEnterSubmit() {
 
       if (active && ["INPUT", "SELECT"].includes(active.tagName)) {
         e.preventDefault();
-        saveAthlete();
+        document.getElementById("submitBtn")?.click();
       }
     }
   });
 }
 
 /* ========================================
-   🔥 MAKE GLOBAL (CRITICAL)
+   GLOBAL ACCESS (HTML USES THESE)
    ======================================== */
 
-window.saveAthlete = saveAthlete;
+window.buildEntry = buildEntry;
+window.validateEntry = validateEntry;
+window.showMessage = showMessage;
+window.clearForm = clearForm;
