@@ -14,7 +14,7 @@
 <!-- 🔒 COACH ACCESS -->
 <script>
 (function () {
-  const PASSWORD = "Coach123"; // 🔥 CHANGE THIS
+  const PASSWORD = "Coach123";
 
   let access = sessionStorage.getItem("coachAccess");
 
@@ -46,7 +46,6 @@
 </section>
 
 <section class="section">
-
 <div class="card">
 
 <div id="formMessage" style="text-align:center; margin-bottom:10px;"></div>
@@ -157,6 +156,8 @@
 <script src="js/themeLoader.js"></script>
 
 <script>
+
+/* WAIT FOR CONFIG */
 async function waitForConfig() {
   let tries = 0;
   while (!window.SCHOOL_CONFIG && tries < 50) {
@@ -165,31 +166,36 @@ async function waitForConfig() {
   }
 }
 
+/* SUBMIT */
 async function submitForm() {
+
   await waitForConfig();
 
-  if (!SCHOOL_CONFIG.submitURL) {
-    alert("No submit URL configured");
+  if (!window.SCHOOL_CONFIG || !SCHOOL_CONFIG.submitURL) {
+    alert("❌ No submit URL configured");
     return;
   }
 
   const payload = {
-    name: name.value,
-    date: date.value,
-    hour: hour.value,
-    grade: grade.value,
-    weight: weight.value,
-    bench: bench.value,
-    squat: squat.value,
-    situps: situps.value,
-    vertical: vertical.value,
-    broad: broad.value,
-    agility: agility.value,
-    clean: clean.value,
-    medball: medball.value,
-    ten: ten.value,
-    forty: forty.value
+    name: document.getElementById("name").value,
+    date: document.getElementById("date").value,
+    hour: document.getElementById("hour").value,
+    grade: document.getElementById("grade").value,
+    weight: document.getElementById("weight").value,
+    bench: document.getElementById("bench").value,
+    squat: document.getElementById("squat").value,
+    situps: document.getElementById("situps").value,
+    vertical: document.getElementById("vertical").value,
+    broad: document.getElementById("broad").value,
+    agility: document.getElementById("agility").value,
+    clean: document.getElementById("clean").value,
+    medball: document.getElementById("medball").value,
+    ten: document.getElementById("ten").value,
+    forty: document.getElementById("forty").value
   };
+
+  console.log("🚀 Submitting to:", SCHOOL_CONFIG.submitURL);
+  console.log("📦 Payload:", payload);
 
   try {
     await fetch(SCHOOL_CONFIG.submitURL, {
@@ -198,17 +204,23 @@ async function submitForm() {
       body: JSON.stringify(payload)
     });
 
-    formMessage.innerHTML = "<span style='color:lime;'>✅ Saved</span>";
+    document.getElementById("formMessage").innerHTML =
+      "<span style='color:lime;'>✅ Saved</span>";
 
     document.querySelectorAll("input, select").forEach(el => el.value = "");
 
   } catch (err) {
     console.error(err);
-    formMessage.innerHTML = "<span style='color:red;'>❌ Failed</span>";
+    document.getElementById("formMessage").innerHTML =
+      "<span style='color:red;'>❌ Failed</span>";
   }
 }
 
-document.getElementById("submitBtn").addEventListener("click", submitForm);
+/* 🔥 FIXED BUTTON HANDLER */
+document.addEventListener("DOMContentLoaded", function () {
+  document.getElementById("submitBtn").addEventListener("click", submitForm);
+});
+
 </script>
 
 </body>
