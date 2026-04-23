@@ -170,4 +170,3 @@ function clean(val) {
   return String(val).trim();
 }
 
-console.log("ATHLETE DATA:", latest);
