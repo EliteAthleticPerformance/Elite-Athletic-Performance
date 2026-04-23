@@ -48,8 +48,8 @@ window.APP_READY = new Promise(async (resolve, reject) => {
         // 🔥 SAFE PATH
         logo: base + "images/roosters-logo.png",
 
-        dataURL: "https://script.google.com/macros/s/AKfycbyK0M1Go55DNwpKIH8uPhD3rF0nbnT6pycDe-GsJiyyKOO-EBqwYv-xCPKsxhnBEOM_/exec",
-        submitURL: "https://script.google.com/macros/s/AKfycbyK0M1Go55DNwpKIH8uPhD3rF0nbnT6pycDe-GsJiyyKOO-EBqwYv-xCPKsxhnBEOM_/exec"
+        dataURL: "https://script.google.com/macros/s/AKfycbzCovYvjG7pY1YELHU9mNLyZYV0SsSYLvU6loTg3TmmsunaXJfou_a826XC-j8BAb6b/exec",
+        submitURL: "https://script.google.com/macros/s/AKfycbzCovYvjG7pY1YELHU9mNLyZYV0SsSYLvU6loTg3TmmsunaXJfou_a826XC-j8BAb6b/exec"
       }
     };
 
