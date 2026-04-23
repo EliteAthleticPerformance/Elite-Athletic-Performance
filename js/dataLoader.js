@@ -1,5 +1,6 @@
-// 🔥 ELITE V7 DATA LOADER (PRODUCTION HARDENED)
-// ===============================
+// ========================================
+// 🔥 ELITE V8 DATA LOADER (CLEAN + STABLE)
+// ========================================
 
 let APP_DATA = [];
 
@@ -9,15 +10,14 @@ let APP_DATA = [];
 
 async function loadAthleteData() {
   try {
-
-    // ✅ WAIT for config FIRST
-    const config = await waitForConfig();
+    // ✅ Wait for config (NEW SYSTEM)
+    const config = await window.APP_READY;
 
     if (!config || !config.dataURL) {
       throw new Error("Missing SCHOOL_CONFIG or dataURL");
     }
 
-    const url = config.dataURL + "?t=" + Date.now(); // cache bust
+    const url = config.dataURL + "?t=" + Date.now();
 
     console.log("📡 Loading data from:", url);
 
@@ -31,78 +31,44 @@ async function loadAthleteData() {
 
     console.log("🧪 RAW SAMPLE:", data[0]);
 
-    // ✅ SAFE HEADER MAP (bulletproof)
-    const firstValidRow = data.find(r => Object.keys(r).length > 0);
-    const keyMap = buildKeyMap(firstValidRow || {});
+    // ========================================
+    // 🔥 NORMALIZE HEADERS (SAFE)
+    // ========================================
+
+    const keyMap = buildKeyMap(data[0]);
 
     APP_DATA = data
       .map(row => ({
 
-        // ===============================
-        // 🧍 BASIC INFO
-        // ===============================
-        name: clean(row["Student-Athlete"]),
-        date: clean(row["Test Date"]),
+        // 🧍 BASIC
         name: clean(row[keyMap.studentathlete]).replace(/\s+/g, " "),
         date: clean(row[keyMap.testdate]),
 
-        hour: clean(row["Hour"]),
-        grade: clean(row["Grade"]),
-        weight: num(row["Actual Weight"]),
-        weightClass: clean(row["Weight Group"]),
         hour: clean(row[keyMap.hour]),
         grade: clean(row[keyMap.grade]),
         weight: num(row[keyMap.actualweight]),
         weightClass: clean(row[keyMap.weightgroup]),
 
-        // ===============================
         // 🏋️ STRENGTH
-        // ===============================
-        bench: num(row["Bench Press"]),
-        squat: num(row["Squat"]),
-        clean: num(row["Hang Clean"]),
         bench: num(row[keyMap.benchpress]),
         squat: num(row[keyMap.squat]),
         clean: num(row[keyMap.hangclean]),
 
-        // ===============================
-        // ⚡ EXPLOSIVE / POWER
-        // ===============================
-        vertical: num(row["Vertical Jump"]),
-        broad: num(row["Broad Jump"]),
-        med: num(row["Med Ball Toss"]),
+        // ⚡ POWER
         vertical: num(row[keyMap.verticaljump]),
         broad: num(row[keyMap.broadjump]),
         med: num(row[keyMap.medballtoss]),
 
-        // ===============================
-        // 🏃 SPEED / AGILITY
-        // ===============================
-        agility: num(row["Pro Agility"]),
-        ten: num(row["10 Yd Dash"]),
-        forty: num(row["40 Yd Dash"]),
+        // 🏃 SPEED
         agility: num(row[keyMap.proagility]),
         ten: num(row[keyMap["10yddash"]]),
         forty: num(row[keyMap["40yddash"]]),
 
-        // ===============================
         // 🔁 CORE
-        // ===============================
-        situps: num(row["Sit-Ups"]),
         situps: num(row[keyMap.situps]),
 
-        // ===============================
-        // 📊 SCORE
         // 📊 SCORE (SMART FALLBACK)
-        // ===============================
         score:
-  num(row["Total Athletic Performance Points"]) ||
-  num(row["3 Lift Projected Max Total"]) ||
-  (
-    num(row["Bench Press"]) +
-    num(row["Squat"]) +
-    num(row["Hang Clean"])
-  )
           num(row[keyMap.totalathleticperformancepoints]) ||
           num(row[keyMap["3liftprojectedmaxtotal"]]) ||
           (
@@ -115,12 +81,9 @@ async function loadAthleteData() {
       // ========================================
       // ✅ CLEAN DATA
       // ========================================
-      .filter(a => {
-
-        if (!a.name) return false;
-
-        const hasData =
-        return (
+      .filter(a =>
+        a.name &&
+        (
           a.bench > 0 ||
           a.squat > 0 ||
           a.clean > 0 ||
@@ -131,12 +94,9 @@ async function loadAthleteData() {
           a.ten > 0 ||
           a.forty > 0 ||
           a.situps > 0 ||
-          a.score > 0;
-
-        return hasData;
           a.score > 0
-        );
-      });
+        )
+      );
 
     console.log("✅ DATA READY:", APP_DATA.length);
 
@@ -149,13 +109,13 @@ async function loadAthleteData() {
 }
 
 /* ========================================
-   🔥 KEY NORMALIZATION SYSTEM
+   🔥 KEY NORMALIZATION
 ======================================== */
 
 function normalizeKey(str) {
   return String(str)
     .toLowerCase()
-    .replace(/[^a-z0-9]/g, ""); // remove spaces, symbols, line breaks
+    .replace(/[^a-z0-9]/g, "");
 }
 
 function buildKeyMap(sampleRow) {
