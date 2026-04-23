@@ -96,22 +96,7 @@ async function loadAthleteData(forceRefresh = false) {
       // ========================================
       // ✅ CLEAN DATA
       // ========================================
-      .filter(a =>
-        a.name &&
-        (
-          a.bench > 0 ||
-          a.squat > 0 ||
-          a.clean > 0 ||
-          a.vertical > 0 ||
-          a.broad > 0 ||
-          a.med > 0 ||
-          a.agility > 0 ||
-          a.ten > 0 ||
-          a.forty > 0 ||
-          a.situps > 0 ||
-          a.score > 0
-        )
-      );
+      .filter(a => a.name)
 
     console.log("✅ DATA READY:", APP_DATA.length);
 
