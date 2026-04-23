@@ -140,6 +140,9 @@ async function submitToGoogle(entry, url) {
       body: new URLSearchParams(entry)
     });
 
+const text = await res.text();
+console.log("📨 RESPONSE BODY:", text);
+
     console.log("✅ RESPONSE STATUS:", res.status);
 
     if (res.ok) {
