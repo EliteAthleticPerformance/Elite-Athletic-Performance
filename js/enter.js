@@ -1,12 +1,12 @@
-/* ========================================
-   🔥 ELITE ENTER ENGINE (PRODUCTION HARDENED)
-   ======================================== */
+// ========================================
+// 🔥 ELITE ENTER ENGINE (FINAL PRODUCTION)
+// ========================================
 
 let isSubmitting = false;
 
 /* ========================================
    INIT
-   ======================================== */
+======================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
   focusFirstInput();
@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 /* ========================================
    HELPERS
-   ======================================== */
+======================================== */
 
 function getValue(id) {
   const el = document.getElementById(id);
@@ -31,16 +31,30 @@ function todayISO() {
   return new Date().toISOString().split("T")[0];
 }
 
+/* 🔥 FIXED NAME FORMAT */
 function normalizeName(name) {
-  return name
-    .trim()
-    .toLowerCase()
-    .replace(/\b\w/g, c => c.toUpperCase()); // Proper case
+  if (!name) return "";
+
+  // If already "Last, First" → keep it
+  if (name.includes(",")) {
+    const [last, first] = name.split(",");
+    return `${last.trim()}, ${first.trim()}`;
+  }
+
+  // Otherwise convert "First Last" → "Last, First"
+  const parts = name.trim().split(" ");
+  if (parts.length >= 2) {
+    const first = parts.slice(0, -1).join(" ");
+    const last = parts.slice(-1)[0];
+    return `${last}, ${first}`;
+  }
+
+  return name;
 }
 
 /* ========================================
-   ⚖️ WEIGHT CLASS SYSTEM
-   ======================================== */
+   ⚖️ WEIGHT CLASS
+======================================== */
 
 function getWeightClass(weight) {
   if (weight <= 120) return "100";
@@ -60,7 +74,7 @@ function getWeightClass(weight) {
 
 /* ========================================
    BUILD ENTRY
-   ======================================== */
+======================================== */
 
 function buildEntry() {
   const weight = toNumber(getValue("weight"));
@@ -91,7 +105,7 @@ function buildEntry() {
 
 /* ========================================
    VALIDATION
-   ======================================== */
+======================================== */
 
 function validateEntry(entry) {
   if (!entry.name) {
@@ -108,13 +122,11 @@ function validateEntry(entry) {
 }
 
 /* ========================================
-   🚀 SUBMIT
-   ======================================== */
+   SUBMIT
+======================================== */
 
 async function submitToGoogle(entry, url) {
   try {
-    console.log("🚀 Submitting to:", url);
-
     await fetch(url, {
       method: "POST",
       mode: "no-cors",
@@ -124,7 +136,12 @@ async function submitToGoogle(entry, url) {
       body: new URLSearchParams(entry)
     });
 
-    showMessage("✅ Saved to Google Sheets!", "success");
+    showMessage("✅ Saved successfully!", "success");
+
+    // 🔥 REFRESH DATA CACHE
+    if (typeof loadAthleteData === "function") {
+      loadAthleteData(true);
+    }
 
     setTimeout(() => {
       clearForm();
@@ -137,55 +154,66 @@ async function submitToGoogle(entry, url) {
 }
 
 /* ========================================
-   CONFIG
-   ======================================== */
+   CONFIG (SAFE)
+======================================== */
 
-function getSubmitURL() {
-  if (window.SCHOOL_CONFIG && window.SCHOOL_CONFIG.submitURL) {
+async function getSubmitURL() {
+  await window.APP_READY;
+
+  if (window.SCHOOL_CONFIG?.submitURL) {
     return window.SCHOOL_CONFIG.submitURL;
   }
 
-  console.error("❌ Missing submitURL");
   showMessage("Config error", "error");
   return null;
 }
 
 /* ========================================
-   🧠 MAIN SAVE FUNCTION
-   ======================================== */
+   MAIN SAVE
+======================================== */
 
 async function saveAthlete() {
 
-  if (isSubmitting) return; // 🔥 prevent spam
+  if (isSubmitting) return;
   isSubmitting = true;
 
   const btn = document.getElementById("submitBtn");
-  if (btn) btn.disabled = true;
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "Saving...";
+  }
 
   const entry = buildEntry();
 
   if (!validateEntry(entry)) {
-    isSubmitting = false;
-    if (btn) btn.disabled = false;
+    resetButton(btn);
     return;
   }
 
-  const submitURL = getSubmitURL();
+  const submitURL = await getSubmitURL();
+
   if (!submitURL) {
-    isSubmitting = false;
-    if (btn) btn.disabled = false;
+    resetButton(btn);
     return;
   }
 
   await submitToGoogle(entry, submitURL);
 
+  resetButton(btn);
+}
+
+function resetButton(btn) {
   isSubmitting = false;
-  if (btn) btn.disabled = false;
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = "💾 Save Test";
+  }
 }
 
 /* ========================================
    UI HELPERS
-   ======================================== */
+======================================== */
 
 function showMessage(msg, type) {
   let el = document.getElementById("formMessage");
@@ -212,7 +240,9 @@ function showMessage(msg, type) {
 
 function clearForm() {
   document.querySelectorAll("input, select").forEach(el => {
-    el.value = "";
+    if (el.id !== "date") {
+      el.value = "";
+    }
   });
 
   focusFirstInput();
@@ -220,7 +250,7 @@ function clearForm() {
 
 /* ========================================
    UX BOOSTS
-   ======================================== */
+======================================== */
 
 function focusFirstInput() {
   document.getElementById("name")?.focus();
@@ -240,7 +270,7 @@ function setupEnterSubmit() {
 }
 
 /* ========================================
-   GLOBAL ACCESS
-   ======================================== */
+   GLOBAL
+======================================== */
 
 window.saveAthlete = saveAthlete;
