@@ -405,10 +405,12 @@ box-shadow: 0 10px 25px var(--primaryLight)
 .grid-auto {
     display: grid;
 
-    /* 🔥 FIX: responsive card grid */
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    /* 🔥 KEY CHANGE */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 260px));
 
-    gap: 20px;
+    justify-content: center;   /* centers the whole grid */
+    gap: 24px;
+
     width: 100%;
 }
 
