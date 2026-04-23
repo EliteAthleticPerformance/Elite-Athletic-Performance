@@ -133,7 +133,7 @@ function applyHeaderBranding(config) {
     logo.onerror = () => {
       console.error("❌ LOGO FAILED:", config.logo);
 
-      logo.src = "images/default-logo.png";
+      logo.src = "/Elite-Athletic-Performance/images/default-logo.png";
       logo.style.opacity = "1";
     };
   }
