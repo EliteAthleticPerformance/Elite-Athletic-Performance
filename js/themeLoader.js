@@ -107,11 +107,23 @@ function applyBaseTheme(config) {
 function waitForHeader() {
   return new Promise(resolve => {
 
-    if (document.getElementById("schoolLogo")) {
-      return resolve();
-    }
+    let attempts = 0;
 
-    document.addEventListener("headerLoaded", resolve, { once: true });
+    const check = () => {
+      const logo = document.getElementById("schoolLogo");
+
+      if (logo) {
+        resolve();
+      } else if (attempts < 50) {
+        attempts++;
+        setTimeout(check, 50);
+      } else {
+        console.warn("⚠️ Header not detected, forcing branding anyway");
+        resolve();
+      }
+    };
+
+    check();
   });
 }
 
