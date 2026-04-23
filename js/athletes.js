@@ -78,19 +78,30 @@ function render(list) {
 
   grid.innerHTML = "";
 
+  const fragment = document.createDocumentFragment();
+
   list.forEach(a => {
+    const [tagClass, tagText] = getTag(a.score);
+
     const card = document.createElement("div");
-    card.className = "card athlete-card";
+    card.className = `athlete-card ${tagClass}`;
 
     card.onclick = () => goToAthlete(a.name);
 
     card.innerHTML = `
-      <h3>${a.name}</h3>
-      <p>Score: ${a.score}</p>
+      <div class="athlete-card-inner">
+        <h2 class="athlete-name">${a.name}</h2>
+        <div class="athlete-score">Score: ${a.score}</div>
+        <div class="athlete-tag ${tagClass}">
+          ${tagText}
+        </div>
+      </div>
     `;
 
-    grid.appendChild(card);
+    fragment.appendChild(card);
   });
+
+  grid.appendChild(fragment);
 }
 
 /* ========================================
