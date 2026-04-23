@@ -1,27 +1,30 @@
-/* ========================================
-   🔥 ELITE TESTING ENGINE (FINAL PROD)
-======================================== */
+// ========================================
+// 🔥 ELITE TESTING ENGINE (FINAL PRODUCTION)
+// ========================================
 
 let tableData = [];
 let currentLetter = "ALL";
+let currentSearch = "";
 
 /* ========================================
-   INIT
+   INIT (SYNCED)
 ======================================== */
 
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener("headerLoaded", init);
 
 async function init() {
   try {
+    await window.APP_READY;
+
     const data = await loadAthleteData();
 
     tableData = data;
 
     renderAlphabet();
-    renderTable(tableData);
+    applyFilters();
     setupSearch();
 
-    window.addEventListener("resize", () => renderTable(tableData));
+    window.addEventListener("resize", applyFilters);
 
   } catch (err) {
     console.error("❌ Load error:", err);
@@ -40,15 +43,40 @@ const formatDecimal = (val) =>
 
 function formatDate(date) {
   if (!date) return "-";
-
   const d = new Date(date);
-  if (isNaN(d)) return date;
+  return isNaN(d) ? date : d.toLocaleDateString();
+}
 
-  return d.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric"
-  });
+function formatName(name) {
+  if (!name.includes(",")) return name;
+  const [last, first] = name.split(",");
+  return `${first.trim()} ${last.trim()}`;
+}
+
+/* ========================================
+   FILTER SYSTEM (🔥 FIX)
+======================================== */
+
+function applyFilters() {
+
+  let filtered = tableData;
+
+  // LETTER
+  if (currentLetter !== "ALL") {
+    filtered = filtered.filter(a => {
+      const last = a.name.split(",")[0].trim().toUpperCase();
+      return last.startsWith(currentLetter);
+    });
+  }
+
+  // SEARCH
+  if (currentSearch) {
+    filtered = filtered.filter(a =>
+      a.name.toLowerCase().includes(currentSearch)
+    );
+  }
+
+  renderTable(filtered);
 }
 
 /* ========================================
@@ -87,7 +115,7 @@ function computeAthletePRs(data) {
 }
 
 /* ========================================
-   TABLE RENDER
+   TABLE
 ======================================== */
 
 function renderTable(data) {
@@ -106,14 +134,20 @@ function renderTable(data) {
   const tbody = document.querySelector("#testingTable tbody");
   tbody.innerHTML = "";
 
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="16">No data</td></tr>`;
+    return;
+  }
+
   const prMap = computeAthletePRs(data);
 
   data.forEach(a => {
     const prs = prMap[a.name];
+
     const tr = document.createElement("tr");
 
     tr.innerHTML = `
-      <td>${a.name}</td>
+      <td>${formatName(a.name)}</td>
       <td>${formatDate(a.date)}</td>
       <td>${a.hour || "-"}</td>
       <td>${a.grade || "-"}</td>
@@ -139,7 +173,7 @@ function renderTable(data) {
 }
 
 /* ========================================
-   MOBILE CARDS
+   MOBILE
 ======================================== */
 
 function renderMobileCards(data) {
@@ -158,10 +192,8 @@ function renderMobileCards(data) {
 
     card.innerHTML = `
       <div class="card-header">
-        <div class="name">${a.name}</div>
-        <div class="meta">
-          ${a.grade || "-"} | ${format(a.weight)} lbs
-        </div>
+        <div class="name">${formatName(a.name)}</div>
+        <div class="meta">${a.grade || "-"} | ${format(a.weight)} lbs</div>
       </div>
 
       <div class="card-grid">
@@ -193,18 +225,13 @@ function setupSearch() {
   if (!input) return;
 
   input.addEventListener("input", () => {
-    const term = input.value.toLowerCase();
-
-    const filtered = tableData.filter(a =>
-      a.name.toLowerCase().includes(term)
-    );
-
-    renderTable(filtered);
+    currentSearch = input.value.toLowerCase();
+    applyFilters();
   });
 }
 
 /* ========================================
-   A-Z FILTER
+   A-Z
 ======================================== */
 
 function renderAlphabet() {
@@ -235,19 +262,13 @@ function renderAlphabet() {
 function filterByLetter(letter) {
   currentLetter = letter;
   setActiveLetter(letter);
-
-  const filtered = tableData.filter(a => {
-    const last = a.name.split(",")[0].trim().toUpperCase();
-    return last.startsWith(letter);
-  });
-
-  renderTable(filtered);
+  applyFilters();
 }
 
 function showAll() {
   currentLetter = "ALL";
   setActiveLetter("ALL");
-  renderTable(tableData);
+  applyFilters();
 }
 
 function setActiveLetter(letter) {
