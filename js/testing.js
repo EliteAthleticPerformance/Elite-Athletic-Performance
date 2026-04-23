@@ -12,14 +12,11 @@ let currentSearch = "";
 
 (async function initTestingPage() {
   try {
-    // ✅ ALWAYS wait for config
     await window.APP_READY;
 
     console.log("✅ TESTING INIT START");
 
     const data = await loadAthleteData();
-
-    console.log("🔥 TESTING PAGE DATA:", data);
 
     if (!data || !data.length) {
       console.warn("⚠️ No data available");
@@ -59,17 +56,16 @@ function formatName(name) {
 }
 
 /* ========================================
-   FILTER SYSTEM (🔥 FIX)
+   FILTER SYSTEM (FIXED)
 ======================================== */
 
 function applyFilters() {
-
   let filtered = tableData;
 
   // LETTER
   if (currentLetter !== "ALL") {
     filtered = filtered.filter(a => {
-      const last = a.name.split(",")[0].trim().toUpperCase();
+      const last = (a.name.split(",")[0] || "").trim().toUpperCase();
       return last.startsWith(currentLetter);
     });
   }
@@ -77,11 +73,23 @@ function applyFilters() {
   // SEARCH
   if (currentSearch) {
     filtered = filtered.filter(a =>
-      a.name.toLowerCase().includes(currentSearch)
+      (a.name || "").toLowerCase().includes(currentSearch)
     );
   }
 
   renderTable(filtered);
+}
+
+/* ========================================
+   🔥 REQUIRED (FIX FOR YOUR ERROR)
+======================================== */
+
+function filterTable() {
+  const input = document.getElementById("searchInput");
+  if (!input) return;
+
+  currentSearch = input.value.toLowerCase();
+  applyFilters();
 }
 
 /* ========================================
@@ -137,6 +145,8 @@ function renderTable(data) {
   document.getElementById("mobileCards").innerHTML = "";
 
   const tbody = document.querySelector("#testingTable tbody");
+  if (!tbody) return;
+
   tbody.innerHTML = "";
 
   if (!data.length) {
@@ -218,20 +228,6 @@ function renderMobileCards(data) {
     `;
 
     container.appendChild(card);
-  });
-}
-
-/* ========================================
-   SEARCH
-======================================== */
-
-function setupSearch() {
-  const input = document.getElementById("searchInput");
-  if (!input) return;
-
-  input.addEventListener("input", () => {
-    currentSearch = input.value.toLowerCase();
-    applyFilters();
   });
 }
 
