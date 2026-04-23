@@ -587,6 +587,40 @@ box-shadow: 0 10px 25px var(--primaryLight)
   opacity: 0.85;
 }
 
+.athlete-stats {
+  display: grid;
+
+  /* 🔥 THIS is the key */
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+
+  gap: 12px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.stat-box {
+  background: linear-gradient(145deg, #1a1a1a, #111);
+  border-radius: 12px;
+
+  padding: 10px;
+  text-align: center;
+
+  box-shadow:
+    0 6px 15px rgba(0,0,0,0.6),
+    0 0 8px var(--primaryLight);
+}
+
+.stat-box h3 {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-bottom: 4px;
+}
+
+.stat-box p {
+  font-size: 18px;
+  font-weight: 800;
+}
+
 /* ===== 7. TABLE ===== */
 .table {
   width: 100%;
