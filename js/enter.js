@@ -10,12 +10,24 @@ let isSubmitting = false;
 ======================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
-  focusFirstInput();
-  setupEnterSubmit();
-const btn = document.getElementById("submitBtn");
-  if (btn) {
-    btn.addEventListener("click", saveAthlete);
+  console.log("ENTER.JS LOADED");
+
+  const btn = document.getElementById("submitBtn");
+
+  if (!btn) {
+    console.error("❌ submitBtn NOT FOUND");
+    return;
   }
+
+  btn.addEventListener("click", async () => {
+    console.log("🔥 SAVE BUTTON CLICKED");
+
+    try {
+      await saveAthlete();
+    } catch (err) {
+      console.error("❌ SAVE ERROR:", err);
+    }
+  });
 });
 
 /* ========================================
