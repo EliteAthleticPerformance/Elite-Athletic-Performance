@@ -1,12 +1,12 @@
 /* ========================================
-   🔥 ELITE ATHLETES (API VERSION)
+   🔥 ELITE ATHLETES (FINAL PRODUCTION VERSION)
 ======================================== */
 
 let athletes = [];
 let currentLetter = "ALL";
 
 /* ========================================
-   INIT
+   INIT (LOCKED LOAD ORDER)
 ======================================== */
 
 document.addEventListener("headerLoaded", init);
@@ -24,7 +24,7 @@ async function init() {
 
       const score = Number(a.score) || 0;
 
-      // keep best score per athlete
+      // ✅ keep best score per athlete
       if (!map[a.name] || score > map[a.name]) {
         map[a.name] = score;
       }
@@ -40,11 +40,39 @@ async function init() {
     console.log("✅ ATHLETES READY:", athletes);
 
     renderAlphabet();
-    render(athletes);
+    applyFilters(); // 🔥 ALWAYS use unified system
 
   } catch (err) {
     console.error("❌ Athlete load failed:", err);
   }
+}
+
+/* ========================================
+   🔥 UNIFIED FILTER SYSTEM (THE FIX)
+======================================== */
+
+function applyFilters() {
+  const input = document.getElementById("search");
+  const term = input ? input.value.toLowerCase().trim() : "";
+
+  let filtered = athletes;
+
+  // ✅ LETTER FILTER
+  if (currentLetter !== "ALL") {
+    filtered = filtered.filter(a => {
+      const last = a.name.split(",")[0].trim().toUpperCase();
+      return last.startsWith(currentLetter);
+    });
+  }
+
+  // ✅ SEARCH FILTER
+  if (term) {
+    filtered = filtered.filter(a =>
+      a.name.toLowerCase().includes(term)
+    );
+  }
+
+  render(filtered);
 }
 
 /* ========================================
@@ -126,19 +154,13 @@ function renderAlphabet() {
 function filterByLetter(letter) {
   currentLetter = letter;
   setActiveLetter(letter);
-
-  const filtered = athletes.filter(a => {
-    const last = a.name.split(",")[0].trim().toUpperCase();
-    return last.startsWith(letter);
-  });
-
-  render(filtered);
+  applyFilters(); // 🔥 unified
 }
 
 function showAll() {
   currentLetter = "ALL";
   setActiveLetter("ALL");
-  render(athletes);
+  applyFilters(); // 🔥 unified
 }
 
 /* ========================================
@@ -158,20 +180,11 @@ function setActiveLetter(letter) {
 }
 
 /* ========================================
-   SEARCH
+   SEARCH (CONNECTED TO HTML)
 ======================================== */
 
 function filterAthletes() {
-  const input = document.getElementById("search");
-  if (!input) return;
-
-  const term = input.value.toLowerCase();
-
-  const filtered = athletes.filter(a =>
-    a.name.toLowerCase().includes(term)
-  );
-
-  render(filtered);
+  applyFilters(); // 🔥 single source of truth
 }
 
 /* ========================================
