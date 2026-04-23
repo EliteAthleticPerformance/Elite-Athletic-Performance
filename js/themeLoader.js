@@ -1,9 +1,9 @@
 /* ========================================
-   🔥 ELITE V8 THEME + CONFIG LOADER (LOCKED + HEADER SAFE)
+   🔥 ELITE V9 THEME + CONFIG LOADER (FULLY HARDENED)
 ======================================== */
 
 /* ========================================
-   🌐 GLOBAL BOOT PROMISE (CRITICAL)
+   🌐 GLOBAL BOOT PROMISE
 ======================================== */
 
 window.APP_READY = new Promise(async (resolve, reject) => {
@@ -16,7 +16,6 @@ window.APP_READY = new Promise(async (resolve, reject) => {
       throw new Error("No school provided in URL or session");
     }
 
-    // persist school
     sessionStorage.setItem("school", school);
 
     /* ========================================
@@ -42,15 +41,14 @@ window.APP_READY = new Promise(async (resolve, reject) => {
       throw new Error("School config not found: " + school);
     }
 
-    // ✅ GLOBAL CONFIG
     window.SCHOOL_CONFIG = config;
 
     console.log("🏫 SCHOOL CONFIG LOADED:", config);
 
-    // ✅ APPLY BASE THEME (safe, no DOM dependency)
+    // ✅ Apply early-safe theme
     applyBaseTheme(config);
 
-    // ✅ WAIT FOR HEADER → THEN APPLY BRANDING
+    // ✅ Wait for header → then inject branding
     waitForHeader().then(() => {
       applyHeaderBranding(config);
     });
@@ -69,36 +67,35 @@ window.APP_READY = new Promise(async (resolve, reject) => {
 
 function applyBaseTheme(config) {
 
-  // 🔖 FAVICON (safe immediately)
   const favicon = document.getElementById("dynamicFavicon");
+
   if (favicon && config.logo) {
     favicon.href = config.logo;
   }
 
-  // 🧠 cache for later use
   sessionStorage.setItem("schoolName", config.name || "");
   sessionStorage.setItem("schoolLogo", config.logo || "");
 }
 
 /* ========================================
-   🧠 WAIT FOR HEADER (CRITICAL FIX)
+   ⏳ WAIT FOR HEADER
 ======================================== */
 
 function waitForHeader() {
   return new Promise(resolve => {
 
-    // If header already exists → resolve immediately
+    // Already exists
     if (document.getElementById("schoolLogo")) {
       return resolve();
     }
 
-    // Otherwise wait for header.js event
+    // Wait for header.js
     document.addEventListener("headerLoaded", resolve, { once: true });
   });
 }
 
 /* ========================================
-   🏫 APPLY HEADER BRANDING (SAFE)
+   🏫 APPLY HEADER BRANDING (FULLY HARDENED)
 ======================================== */
 
 function applyHeaderBranding(config) {
@@ -106,19 +103,46 @@ function applyHeaderBranding(config) {
   const logo = document.getElementById("schoolLogo");
   const name = document.getElementById("schoolName");
 
-  if (logo && config.logo) {
-    logo.src = config.logo;
-  }
-
+  // ✅ School name
   if (name && config.name) {
     name.textContent = config.name;
+  }
+
+  // ✅ Logo (bulletproof)
+  if (logo && config.logo) {
+
+    // Prevent duplicate re-application flicker
+    if (logo.src === config.logo) return;
+
+    // Reset state
+    logo.style.opacity = "0";
+
+    // Force reload
+    logo.src = "";
+    setTimeout(() => {
+      logo.src = config.logo;
+    }, 10);
+
+    // Success
+    logo.onload = () => {
+      logo.style.opacity = "1";
+      console.log("✅ LOGO LOADED");
+    };
+
+    // Failure fallback
+    logo.onerror = () => {
+      console.error("❌ LOGO FAILED:", config.logo);
+
+      logo.src = "images/default-logo.png";
+      logo.style.opacity = "1";
+    };
   }
 
   console.log("🎨 HEADER BRANDING APPLIED");
 }
 
 /* ========================================
-   🚨 GLOBAL FAIL SAFE UI
+   🚨 GLOBAL FAIL SAFE
 ======================================== */
 
 window.APP_READY.catch(() => {
