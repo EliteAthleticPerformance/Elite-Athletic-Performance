@@ -142,7 +142,11 @@ async function submitToGoogle(entry, url) {
 
     console.log("✅ RESPONSE STATUS:", res.status);
 
-    showMessage("✅ Saved successfully!", "success");
+    if (res.ok) {
+  showMessage("✅ Saved successfully!", "success");
+} else {
+  showMessage("❌ Save failed (server error)", "error");
+}
 
     // Refresh cached data
     if (typeof loadAthleteData === "function") {
