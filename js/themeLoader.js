@@ -1,11 +1,25 @@
 // ========================================
-// 🔥 ELITE V9 THEME + CONFIG ENGINE (LOCKED)
+// 🔥 ELITE V10 THEME + CONFIG ENGINE (FINAL)
 // ========================================
 
 window.SCHOOL_CONFIG = null;
 
 /* ========================================
-   🌐 GLOBAL APP READY (SINGLE SOURCE OF TRUTH)
+   🌐 BASE PATH (CRITICAL FIX)
+======================================== */
+
+function getBasePath() {
+  const path = window.location.pathname;
+
+  if (path.includes("/Elite-Athletic-Performance/")) {
+    return "/Elite-Athletic-Performance/";
+  }
+
+  return "/";
+}
+
+/* ========================================
+   🌐 GLOBAL APP READY
 ======================================== */
 
 window.APP_READY = new Promise(async (resolve, reject) => {
@@ -20,15 +34,19 @@ window.APP_READY = new Promise(async (resolve, reject) => {
     school = school.toLowerCase();
     sessionStorage.setItem("school", school);
 
+    const base = getBasePath();
+
     /* ========================================
-       🏫 CONFIG (FAST + RELIABLE)
+       🏫 CONFIG
     ======================================== */
 
     const SCHOOL_MAP = {
       pleasanthill: {
         key: "pleasanthill",
         name: "Pleasant Hill Roosters",
-        logo: "/Elite-Athletic-Performance/images/roosters-logo.png",
+
+        // 🔥 SAFE PATH
+        logo: base + "images/roosters-logo.png",
 
         dataURL: "https://script.google.com/macros/s/AKfycbxyBta6YQTkJsfd1uInNAsv1DJofq22D365FgGSUa6ZTLXCaYu29KAuJp1_vgH56zfk/exec",
         submitURL: "https://script.google.com/macros/s/AKfycbxyBta6YQTkJsfd1uInNAsv1DJofq22D365FgGSUa6ZTLXCaYu29KAuJp1_vgH56zfk/exec"
@@ -45,13 +63,12 @@ window.APP_READY = new Promise(async (resolve, reject) => {
 
     console.log("🏫 CONFIG LOADED:", config);
 
-    // ✅ Apply base (safe immediately)
+    // ✅ APPLY BASE
     applyBaseTheme(config);
 
-    // ✅ Wait for header → then apply logo + name
-    waitForHeader().then(() => {
-      applyHeaderBranding(config);
-    });
+    // ✅ GUARANTEED HEADER SYNC
+    await waitForHeader();
+    applyHeaderBranding(config);
 
     resolve(config);
 
@@ -62,11 +79,11 @@ window.APP_READY = new Promise(async (resolve, reject) => {
 });
 
 /* ========================================
-   🎨 BASE THEME (SAFE EARLY APPLY)
+   🎨 BASE THEME
 ======================================== */
 
 function applyBaseTheme(config) {
-  // favicon
+
   let favicon = document.getElementById("dynamicFavicon");
 
   if (!favicon) {
@@ -76,44 +93,55 @@ function applyBaseTheme(config) {
     document.head.appendChild(favicon);
   }
 
-  favicon.href = config.logo;
+  // 🔥 CACHE BUST
+  favicon.href = config.logo + "?v=" + Date.now();
 
-  // cache
   sessionStorage.setItem("schoolName", config.name);
   sessionStorage.setItem("schoolLogo", config.logo);
 }
 
 /* ========================================
-   🧠 WAIT FOR HEADER (NO RACE CONDITIONS)
+   🧠 WAIT FOR HEADER
 ======================================== */
 
 function waitForHeader() {
   return new Promise(resolve => {
+
     if (document.getElementById("schoolLogo")) {
-      resolve();
-    } else {
-      document.addEventListener("headerLoaded", resolve, { once: true });
+      return resolve();
     }
+
+    document.addEventListener("headerLoaded", resolve, { once: true });
   });
 }
 
 /* ========================================
-   🏫 APPLY HEADER BRANDING (SAFE)
+   🏫 APPLY HEADER BRANDING
 ======================================== */
 
 function applyHeaderBranding(config) {
+
   const logo = document.getElementById("schoolLogo");
   const name = document.getElementById("schoolName");
 
   if (logo) {
-    logo.src = config.logo;
 
-    // ✅ FIX: force visible
+    const logoURL = config.logo + "?v=" + Date.now();
+
+    logo.src = logoURL;
+
     logo.onload = () => {
       logo.classList.add("loaded");
     };
 
-    // fallback if cached
+    // 🔥 FALLBACK (CRITICAL FIX)
+    logo.onerror = () => {
+      console.warn("⚠️ Logo failed to load, using fallback");
+      logo.src = getBasePath() + "images/default-logo.png";
+      logo.classList.add("loaded");
+    };
+
+    // 🔥 HANDLE CACHE
     if (logo.complete) {
       logo.classList.add("loaded");
     }
