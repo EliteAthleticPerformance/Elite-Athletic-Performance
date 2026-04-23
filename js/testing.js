@@ -10,27 +10,32 @@ let currentSearch = "";
    INIT (SYNCED)
 ======================================== */
 
-document.addEventListener("headerLoaded", init);
-
-async function init() {
+document.addEventListener("headerLoaded", async () => {
   try {
-    await window.APP_READY;
+    // ✅ GUARANTEE config is ready
+    const config = await window.APP_READY;
 
+    console.log("✅ CONFIG READY:", config);
+
+    // ✅ LOAD DATA
     const data = await loadAthleteData();
-     console.log("🚨 TESTING DATA:", data);
+
+    console.log("🔥 TESTING PAGE DATA:", data);
+
+    if (!data || !data.length) {
+      console.warn("⚠️ No data returned to testing page");
+      return;
+    }
 
     tableData = data;
 
     renderAlphabet();
-    applyFilters();
-    setupSearch();
-
-    window.addEventListener("resize", applyFilters);
+    renderTable(tableData);
 
   } catch (err) {
-    console.error("❌ Load error:", err);
+    console.error("❌ Testing page failed:", err);
   }
-}
+});
 
 /* ========================================
    HELPERS
