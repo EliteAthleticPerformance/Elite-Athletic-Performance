@@ -1,4 +1,4 @@
-```javascript
+
 // ========================================
 // 🔥 ELITE ENTER ENGINE (PRODUCTION FINAL)
 // ========================================
@@ -286,4 +286,4 @@ function setupEnterSubmit() {
 ======================================== */
 
 window.saveAthlete = saveAthlete;
-```
+
