@@ -40,7 +40,7 @@ async function init() {
     console.log("✅ ATHLETES READY:", athletes);
 
     renderAlphabet();
-    applyFilters(); // 🔥 ALWAYS use unified system
+    applyFilters();
 
   } catch (err) {
     console.error("❌ Athlete load failed:", err);
@@ -48,7 +48,7 @@ async function init() {
 }
 
 /* ========================================
-   🔥 UNIFIED FILTER SYSTEM (THE FIX)
+   🔥 UNIFIED FILTER SYSTEM
 ======================================== */
 
 function applyFilters() {
@@ -57,7 +57,7 @@ function applyFilters() {
 
   let filtered = athletes;
 
-  // ✅ LETTER FILTER
+  // LETTER FILTER
   if (currentLetter !== "ALL") {
     filtered = filtered.filter(a => {
       const last = a.name.split(",")[0].trim().toUpperCase();
@@ -65,7 +65,7 @@ function applyFilters() {
     });
   }
 
-  // ✅ SEARCH FILTER
+  // SEARCH FILTER
   if (term) {
     filtered = filtered.filter(a =>
       a.name.toLowerCase().includes(term)
@@ -154,13 +154,13 @@ function renderAlphabet() {
 function filterByLetter(letter) {
   currentLetter = letter;
   setActiveLetter(letter);
-  applyFilters(); // 🔥 unified
+  applyFilters();
 }
 
 function showAll() {
   currentLetter = "ALL";
   setActiveLetter("ALL");
-  applyFilters(); // 🔥 unified
+  applyFilters();
 }
 
 /* ========================================
@@ -180,15 +180,15 @@ function setActiveLetter(letter) {
 }
 
 /* ========================================
-   SEARCH (CONNECTED TO HTML)
+   SEARCH
 ======================================== */
 
 function filterAthletes() {
-  applyFilters(); // 🔥 single source of truth
+  applyFilters();
 }
 
 /* ========================================
-   NAV
+   🚀 NAV (FIXED — THIS IS THE KEY)
 ======================================== */
 
 function goToAthlete(name) {
@@ -198,7 +198,8 @@ function goToAthlete(name) {
     ? "/Elite-Athletic-Performance/"
     : "/";
 
+  // ✅ FIX: route to athlete profile page (NOT history)
   window.location.href = school
-    ? `${base}history.html?name=${encodeURIComponent(name)}&school=${school}`
-    : `${base}history.html?name=${encodeURIComponent(name)}`;
+    ? `${base}athlete.html?name=${encodeURIComponent(name)}&school=${school}`
+    : `${base}athlete.html?name=${encodeURIComponent(name)}`;
 }
