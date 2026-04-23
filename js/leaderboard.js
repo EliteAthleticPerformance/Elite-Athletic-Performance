@@ -1,34 +1,40 @@
-// ===============================
-// GLOBAL STATE
-// ===============================
+// ========================================
+// 🔥 ELITE LEADERBOARD ENGINE (FINAL)
+// ========================================
+
 let grouped = {};
 let athletes = [];
-let podiumBuilt = false;
 
-// ===============================
-// INIT
-// ===============================
-document.addEventListener("DOMContentLoaded", init);
+/* ========================================
+   INIT (SYNCED)
+======================================== */
+
+document.addEventListener("headerLoaded", init);
 
 async function init() {
   try {
+    await window.APP_READY;
+
     const data = await loadAthleteData();
 
     processDataFromJSON(data);
 
-    render(); // 🔥 render immediately
+    render();
 
     const search = document.getElementById("leaderboardSearch");
-    if (search) search.addEventListener("input", render);
+    if (search) {
+      search.addEventListener("input", render);
+    }
 
   } catch (err) {
     console.error("❌ Leaderboard init error:", err);
   }
 }
 
-// ===============================
-// UTIL
-// ===============================
+/* ========================================
+   UTIL
+======================================== */
+
 function toNumber(val) {
   const num = parseFloat(String(val || "").replace(/[^0-9.\-]/g, ""));
   return isNaN(num) ? 0 : num;
@@ -50,9 +56,16 @@ function parseDateSafe(val) {
   return isNaN(d) ? null : d;
 }
 
-// ===============================
-// PROCESS DATA
-// ===============================
+function formatName(name) {
+  if (!name.includes(",")) return name;
+  const [last, first] = name.split(",");
+  return `${first.trim()} ${last.trim()}`;
+}
+
+/* ========================================
+   PROCESS DATA
+======================================== */
+
 function processDataFromJSON(data) {
 
   const parsed = data.map(row => {
@@ -61,11 +74,8 @@ function processDataFromJSON(data) {
     const squat = toNumber(row.squat);
     const clean = toNumber(row.clean);
 
-    const score = toNumber(row.score || row.overall);
-
     return {
       name: row.name,
-      dateRaw: row.date,
       date: parseDateSafe(row.date),
 
       bench,
@@ -82,31 +92,30 @@ function processDataFromJSON(data) {
 
       sit: toNumber(row.situps),
 
-      score,
+      score: toNumber(row.score),
       lift: bench + squat + clean
     };
 
   }).filter(a => a.name);
 
-  // GROUP
   grouped = {};
+
   parsed.forEach(a => {
     if (!grouped[a.name]) grouped[a.name] = [];
     grouped[a.name].push(a);
   });
 
-  // SORT each athlete
   Object.values(grouped).forEach(arr => {
     arr.sort((a, b) => (b.date || 0) - (a.date || 0));
   });
 
-  // LATEST snapshot
   athletes = Object.keys(grouped).map(name => grouped[name][0]);
 }
 
-// ===============================
-// BUILD LEADERBOARD
-// ===============================
+/* ========================================
+   BUILD DATA
+======================================== */
+
 function buildLeaderboardData(data) {
   const map = {};
 
@@ -138,9 +147,10 @@ function buildLeaderboardData(data) {
   return Object.values(map);
 }
 
-// ===============================
-// RENDER
-// ===============================
+/* ========================================
+   RENDER
+======================================== */
+
 function render() {
 
   const search = document.getElementById("leaderboardSearch")?.value.toLowerCase() || "";
@@ -152,19 +162,15 @@ function render() {
     a.name.toLowerCase().includes(search)
   );
 
-  // 🔥 CLEAN PODIUM BUILD
-  if (!podiumBuilt) {
-    renderPodium(leaderboardData);
-    podiumBuilt = true;
-  }
-
+  renderPodium(filtered);
   renderTable(filtered, "liftTable", "lift");
   renderTable(filtered, "scoreTable", "score");
 }
 
-// ===============================
-// TABLE
-// ===============================
+/* ========================================
+   TABLE
+======================================== */
+
 function renderTable(data, tableId, type) {
 
   const tbody = document.querySelector(`#${tableId} tbody`);
@@ -176,14 +182,20 @@ function renderTable(data, tableId, type) {
     .filter(a => a[type] > 0)
     .sort((a, b) => b[type] - a[type]);
 
+  if (!sorted.length) {
+    tbody.innerHTML = `<tr><td colspan="4">No data</td></tr>`;
+    return;
+  }
+
   sorted.forEach((a, i) => {
     tbody.appendChild(createRow(a, i, type));
   });
 }
 
-// ===============================
-// PODIUM
-// ===============================
+/* ========================================
+   PODIUM (DYNAMIC)
+======================================== */
+
 function renderPodium(data) {
 
   const container = document.getElementById("podium");
@@ -194,7 +206,10 @@ function renderPodium(data) {
     .sort((a, b) => b.score - a.score)
     .slice(0, 3);
 
-  if (top3.length < 3) return;
+  if (top3.length < 3) {
+    container.innerHTML = "";
+    return;
+  }
 
   const [first, second, third] = top3;
 
@@ -202,24 +217,25 @@ function renderPodium(data) {
     <div class="podium">
 
       <div class="podium-item second" onclick="goToAthlete('${second.name}')">
-        🥈 ${second.name}<br>${Math.round(second.score)}
+        🥈 ${formatName(second.name)}<br>${Math.round(second.score)}
       </div>
 
       <div class="podium-item first" onclick="goToAthlete('${first.name}')">
-        🥇 ${first.name}<br>${Math.round(first.score)}
+        🥇 ${formatName(first.name)}<br>${Math.round(first.score)}
       </div>
 
       <div class="podium-item third" onclick="goToAthlete('${third.name}')">
-        🥉 ${third.name}<br>${Math.round(third.score)}
+        🥉 ${formatName(third.name)}<br>${Math.round(third.score)}
       </div>
 
     </div>
   `;
 }
 
-// ===============================
-// ROW CREATION
-// ===============================
+/* ========================================
+   ROW
+======================================== */
+
 function formatDate(date) {
   if (!date) return "-";
   return new Date(date).toLocaleDateString();
@@ -231,7 +247,7 @@ function createRow(a, index, type) {
 
   tr.innerHTML = `
     <td class="${medal(index)}">${index + 1}</td>
-    <td>${a.name}</td>
+    <td>${formatName(a.name)}</td>
     <td>${safe(a[type])}</td>
     <td>${formatDate(type === "lift" ? a.liftDate : a.scoreDate)}</td>
   `;
@@ -239,9 +255,10 @@ function createRow(a, index, type) {
   return tr;
 }
 
-// ===============================
-// NAVIGATION (🔥 FIXED)
-// ===============================
+/* ========================================
+   NAV
+======================================== */
+
 function goToAthlete(name) {
   const params = new URLSearchParams(window.location.search);
   const school = params.get("school");
