@@ -1,20 +1,15 @@
 // ========================================
-// 🔥 ELITE V9 DATA LOADER (CACHED + BULLETPROOF)
+// 🔥 ELITE V10 DATA LOADER (PRODUCTION SAFE)
 // ========================================
 
-let APP_DATA = null;
+let APP_DATA = [];
 
 /* ========================================
    MAIN LOAD FUNCTION
 ======================================== */
 
-async function loadAthleteData(forceRefresh = false) {
+async function loadAthleteData() {
   try {
-    // ✅ RETURN CACHE (BIG PERFORMANCE WIN)
-    if (APP_DATA && !forceRefresh) {
-      return APP_DATA;
-    }
-
     const config = await window.APP_READY;
 
     if (!config || !config.dataURL) {
@@ -26,77 +21,81 @@ async function loadAthleteData(forceRefresh = false) {
     console.log("📡 Loading data from:", url);
 
     const res = await fetch(url);
+    const raw = await res.json();
 
-    if (!res.ok) {
-      throw new Error("Network response failed");
+    if (!Array.isArray(raw) || !raw.length) {
+      console.warn("⚠️ No data returned from API");
+      return [];
     }
 
-    const data = await res.json();
+    console.log("🧪 RAW SAMPLE:", raw[0]);
 
-    if (!Array.isArray(data) || !data.length) {
-      console.warn("⚠️ No data returned");
-      APP_DATA = [];
-      return APP_DATA;
-    }
+    const keyMap = buildKeyMap(raw[0]);
 
-    console.log("🧪 RAW SAMPLE:", data[0]);
+    APP_DATA = raw.map(row => {
+      // 🔑 SAFE ACCESSOR
+      const get = (...keys) => {
+        for (let k of keys) {
+          const mapped = keyMap[normalizeKey(k)];
+          if (mapped && row[mapped] !== undefined) {
+            return row[mapped];
+          }
+        }
+        return "";
+      };
 
-    // ========================================
-    // 🔥 HEADER MAP (SAFE + DEBUG)
-    // ========================================
-
-    const firstValidRow = data.find(r => Object.keys(r).length > 0) || {};
-    const keyMap = buildKeyMap(firstValidRow);
-
-    // 🔍 DEBUG MISSING KEYS
-    checkKey(keyMap, "studentathlete");
-    checkKey(keyMap, "testdate");
-
-    APP_DATA = data
-      .map(row => ({
-
+      return {
         // 🧍 BASIC
-        name: clean(row[keyMap.studentathlete]).replace(/\s+/g, " "),
-        date: clean(row[keyMap.testdate]),
+        name: clean(get("studentathlete", "student athlete", "name")),
+        date: clean(get("testdate", "test date", "date")),
 
-        hour: clean(row[keyMap.hour]),
-        grade: clean(row[keyMap.grade]),
-        weight: num(row[keyMap.actualweight]),
-        weightClass: clean(row[keyMap.weightgroup]),
+        hour: clean(get("hour")),
+        grade: clean(get("grade")),
+        weight: num(get("actualweight", "weight")),
+        weightClass: clean(get("weightgroup", "group")),
 
         // 🏋️ STRENGTH
-        bench: num(row[keyMap.benchpress]),
-        squat: num(row[keyMap.squat]),
-        clean: num(row[keyMap.hangclean]),
+        bench: num(get("benchpress", "bench")),
+        squat: num(get("squat")),
+        clean: num(get("hangclean", "clean")),
 
-        // ⚡ POWER
-        vertical: num(row[keyMap.verticaljump]),
-        broad: num(row[keyMap.broadjump]),
-        med: num(row[keyMap.medballtoss]),
+        // ⚡ EXPLOSIVE / POWER
+        vertical: num(get("verticaljump", "vertical")),
+        broad: num(get("broadjump", "broad")),
+        med: num(get("medballtoss", "medball", "med")),
 
         // 🏃 SPEED
-        agility: num(row[keyMap.proagility]),
-        ten: num(row[keyMap["10yddash"]]),
-        forty: num(row[keyMap["40yddash"]]),
+        agility: num(get("proagility", "agility")),
+        ten: num(get("10yddash", "10yd", "10")),
+        forty: num(get("40yddash", "40yd", "40")),
 
         // 🔁 CORE
-        situps: num(row[keyMap.situps]),
+        situps: num(get("situps", "sit-ups", "sit ups")),
 
-        // 📊 SCORE
+        // 📊 SCORE (robust fallback)
         score:
-          num(row[keyMap.totalathleticperformancepoints]) ||
-          num(row[keyMap["3liftprojectedmaxtotal"]]) ||
+          num(get("totalathleticperformancepoints", "score")) ||
+          num(get("3liftprojectedmaxtotal")) ||
           (
-            num(row[keyMap.benchpress]) +
-            num(row[keyMap.squat]) +
-            num(row[keyMap.hangclean])
+            num(get("benchpress", "bench")) +
+            num(get("squat")) +
+            num(get("hangclean", "clean"))
           )
-      }))
+      };
+    })
 
-      // ========================================
-      // ✅ CLEAN DATA
-      // ========================================
-      .filter(a => a.name)
+    // ========================================
+    // ✅ FINAL CLEAN FILTER (SAFE + FLEXIBLE)
+    // ========================================
+    .filter(a =>
+      a.name &&
+      (
+        a.score > 0 ||
+        a.bench > 0 ||
+        a.squat > 0 ||
+        a.clean > 0
+      )
+    );
 
     console.log("✅ DATA READY:", APP_DATA.length);
 
@@ -104,8 +103,7 @@ async function loadAthleteData(forceRefresh = false) {
 
   } catch (err) {
     console.error("❌ Data load failed:", err);
-    APP_DATA = [];
-    return APP_DATA;
+    return [];
   }
 }
 
@@ -127,16 +125,6 @@ function buildKeyMap(sampleRow) {
   });
 
   return map;
-}
-
-/* ========================================
-   🔍 DEBUG KEY CHECK (NEW)
-======================================== */
-
-function checkKey(map, key) {
-  if (!map[key]) {
-    console.warn(`⚠️ Missing column: ${key}`);
-  }
 }
 
 /* ========================================
