@@ -8,7 +8,11 @@ let radarChart, progressChart;
    INIT (LOCKED LOAD ORDER)
 ======================================== */
 
-document.addEventListener("headerLoaded", init);
+document.addEventListener("headerLoaded", () => {
+  if (window.__ATHLETE_INIT__) return;
+  window.__ATHLETE_INIT__ = true;
+  init();
+});
 
 async function init() {
   try {
