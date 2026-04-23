@@ -1,17 +1,20 @@
 // ========================================
-// 🔥 ELITE HISTORY ENGINE (API VERSION)
+// 🔥 ELITE HISTORY ENGINE (FINAL)
 // ========================================
 
 let DATA = [];
+let chartInstance = null;
 
 /* ========================================
-   INIT
+   INIT (SYNCED WITH APP)
 ======================================== */
 
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener("headerLoaded", init);
 
 async function init() {
   try {
+    await window.APP_READY;
+
     DATA = await loadAthleteData();
 
     const params = new URLSearchParams(window.location.search);
@@ -30,7 +33,7 @@ async function init() {
 }
 
 /* ========================================
-   SINGLE ATHLETE VIEW
+   SINGLE ATHLETE
 ======================================== */
 
 function renderAthlete(name) {
@@ -40,6 +43,7 @@ function renderAthlete(name) {
 
   const history = DATA
     .filter(a => a.name === name)
+    .slice() // 🔥 prevent mutation
     .sort((a, b) => new Date(a.date) - new Date(b.date));
 
   if (!history.length) {
@@ -67,7 +71,7 @@ function renderAthlete(name) {
 
   container.innerHTML = `
     <div class="card">
-      <h2>${name}</h2>
+      <h2>${formatName(name)}</h2>
 
       <div class="table-wrapper">
         <table class="table">
@@ -88,9 +92,7 @@ function renderAthlete(name) {
               <th>Score</th>
             </tr>
           </thead>
-          <tbody>
-            ${rows}
-          </tbody>
+          <tbody>${rows}</tbody>
         </table>
       </div>
 
@@ -112,18 +114,25 @@ function renderAll() {
 
   const grouped = groupByName(DATA);
 
+  const names = Object.keys(grouped);
+
+  if (!names.length) {
+    container.innerHTML = `<p>No athletes found</p>`;
+    return;
+  }
+
   container.innerHTML = "";
 
-  Object.keys(grouped).forEach(name => {
+  names.forEach(name => {
     const history = grouped[name];
 
-    const latest = history.sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
+    const latest = [...history].sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
 
     const card = document.createElement("div");
     card.className = "card";
 
     card.innerHTML = `
-      <h3>${name}</h3>
+      <h3>${formatName(name)}</h3>
       <p>Score: ${latest.score}</p>
       <button onclick="goToAthlete('${encodeURIComponent(name)}')">
         View History
@@ -135,16 +144,21 @@ function renderAll() {
 }
 
 /* ========================================
-   CHART
+   CHART (SAFE)
 ======================================== */
 
 function renderChart(id, history) {
 
   if (typeof Chart === "undefined") return;
 
-  const ctx = document.getElementById(id).getContext("2d");
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
 
-  new Chart(ctx, {
+  if (chartInstance) {
+    chartInstance.destroy(); // 🔥 prevent stacking
+  }
+
+  chartInstance = new Chart(ctx, {
     type: "line",
     data: {
       labels: history.map(a => a.date),
@@ -175,6 +189,12 @@ function groupByName(data) {
     acc[a.name].push(a);
     return acc;
   }, {});
+}
+
+function formatName(name) {
+  if (!name.includes(",")) return name;
+  const [last, first] = name.split(",");
+  return `${first.trim()} ${last.trim()}`;
 }
 
 function goToAthlete(name) {
