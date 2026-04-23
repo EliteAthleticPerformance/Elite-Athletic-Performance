@@ -9,7 +9,7 @@
 
 <title>Athlete Profile | Performance System</title>
 
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="/Elite-Athletic-Performance/styles.css">
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -20,7 +20,10 @@
 
 <!-- ===== HEADER ===== -->
 <div id="header-placeholder"></div>
-<script src="js/header.js"></script>
+
+<!-- 🔥 LOAD ORDER FIXED -->
+<script src="/Elite-Athletic-Performance/js/themeLoader.js"></script>
+<script src="/Elite-Athletic-Performance/js/header.js"></script>
 
 <!-- ===== MAIN ===== -->
 <main>
@@ -45,7 +48,7 @@
       <div class="stat-box"><h3>Med Ball</h3><p id="medballScore">-</p></div>
 
       <div class="stat-box"><h3>Agility</h3><p id="proagility">-</p></div>
-      <div class="stat-box"><h3>Sit Ups</h3><p id="situps">-</p></div>
+      <div class="stat-box"><h3>Sit-Ups</h3><p id="situps">-</p></div>
       <div class="stat-box"><h3>10 Yard</h3><p id="tenyard">-</p></div>
       <div class="stat-box"><h3>40 Yard</h3><p id="forty">-</p></div>
 
@@ -87,15 +90,13 @@
               <th>Broad</th>
               <th>Med</th>
               <th>Agility</th>
-              <th>Sit</th>
+              <th>Sit-Ups</th>
               <th>10yd</th>
               <th>40yd</th>
               <th>Performance</th>
             </tr>
           </thead>
-          <tbody>
-            <!-- Filled by athlete.js -->
-          </tbody>
+          <tbody></tbody>
         </table>
       </div>
 
@@ -104,16 +105,10 @@
 
 </main>
 
-<!-- ===== SCRIPTS ===== -->
+<!-- ===== DATA + PAGE LOGIC ===== -->
 
-<!-- 🔥 Theme + Config (loads SCHOOL_CONFIG including dataURL) -->
-<script src="js/themeLoader.js"></script>
-
-<!-- 🔥 Data loader (must use fetch → Apps Script JSON API) -->
-<script src="js/dataLoader.js"></script>
-
-<!-- 🔥 Athlete logic (renders page) -->
-<script src="js/athlete.js"></script>
+<script src="/Elite-Athletic-Performance/js/dataLoader.js"></script>
+<script src="/Elite-Athletic-Performance/js/athlete.js"></script>
 
 </body>
 </html>
