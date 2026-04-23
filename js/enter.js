@@ -1,6 +1,5 @@
-
 // ========================================
-// 🔥 ELITE ENTER ENGINE (PRODUCTION FINAL)
+// 🔥 ELITE ENTER ENGINE (PRODUCTION FINAL + DEBUG)
 // ========================================
 
 let isSubmitting = false;
@@ -97,7 +96,7 @@ function getWeightClass(weight) {
 function buildEntry() {
   const weight = toNumber(getValue("weight"));
 
-  return {
+  const entry = {
     name: normalizeName(getValue("name")),
     date: getValue("date") || todayISO(),
     hour: getValue("hour"),
@@ -119,6 +118,10 @@ function buildEntry() {
 
     weightClass: getWeightClass(weight)
   };
+
+  console.log("📦 BUILT ENTRY:", entry);
+
+  return entry;
 }
 
 /* ========================================
@@ -140,13 +143,13 @@ function validateEntry(entry) {
 }
 
 /* ========================================
-   SUBMIT TO GOOGLE (🔥 FIXED)
+   SUBMIT TO GOOGLE
 ======================================== */
 
 async function submitToGoogle(entry, url) {
   try {
-    console.log("🚀 POSTING TO:", url);
-    console.log("📦 DATA:", entry);
+    console.log("🚀 POSTING TO URL:", url);
+    console.log("📦 DATA BEING SENT:", entry);
 
     const res = await fetch(url, {
       method: "POST",
@@ -156,18 +159,17 @@ async function submitToGoogle(entry, url) {
       body: new URLSearchParams(entry)
     });
 
-const text = await res.text();
-console.log("📨 RESPONSE BODY:", text);
+    const text = await res.text();
 
-    console.log("✅ RESPONSE STATUS:", res.status);
+    console.log("📨 RESPONSE BODY:", text);
+    console.log("📊 RESPONSE STATUS:", res.status);
 
-    if (res.ok) {
-  showMessage("✅ Saved successfully!", "success");
-} else {
-  showMessage("❌ Save failed (server error)", "error");
-}
+    if (res.ok && text.includes("success")) {
+      showMessage("✅ Saved successfully!", "success");
+    } else {
+      showMessage("❌ Save failed", "error");
+    }
 
-    // Refresh cached data
     if (typeof loadAthleteData === "function") {
       loadAthleteData(true);
     }
@@ -188,6 +190,8 @@ async function getSubmitURL() {
   await window.APP_READY;
 
   const url = window.SCHOOL_CONFIG?.submitURL;
+
+  console.log("🔥 FINAL SUBMIT URL FROM CONFIG:", url);
 
   if (!url) {
     showMessage("Config error: missing submitURL", "error");
@@ -284,22 +288,8 @@ function focusFirstInput() {
   document.getElementById("name")?.focus();
 }
 
-function setupEnterSubmit() {
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && document.activeElement.tagName !== "BUTTON") {
-      const active = document.activeElement;
-
-      if (active && ["INPUT", "SELECT"].includes(active.tagName)) {
-        e.preventDefault();
-        document.getElementById("submitBtn")?.click();
-      }
-    }
-  });
-}
-
 /* ========================================
    GLOBAL
 ======================================== */
 
 window.saveAthlete = saveAthlete;
-
