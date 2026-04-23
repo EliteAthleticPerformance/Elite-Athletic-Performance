@@ -1,5 +1,4 @@
-/* ========================================
-   🔥 ELITE V5 HEADER ENGINE (GITHUB SAFE)
+🔥 ELITE V5 HEADER ENGINE (GITHUB SAFE)
 ======================================== */
 
 document.addEventListener("DOMContentLoaded", loadHeader);
@@ -13,6 +12,7 @@ async function loadHeader() {
   if (!container) return;
 
   try {
+    const res = await fetch("components/header.html");
     const res = await fetch(getBasePath() + "components/header.html");
     if (!res.ok) throw new Error("Header fetch failed");
 
@@ -40,6 +40,7 @@ function initHeaderUI() {
 }
 
 /* ========================================
+   🏫 SCHOOL HANDLING (FIXED)
    🌐 BASE PATH (🔥 CRITICAL FIX)
 ======================================== */
 
@@ -74,23 +75,29 @@ function getSchoolParam() {
 }
 
 /* ========================================
+   🔗 LINK INJECTION (SAFE)
    🔗 LINK INJECTION (SAFE + BASE PATH)
 ======================================== */
 
 function injectSchoolIntoLinks() {
   const school = getSchoolParam();
+  if (!school) return;
   const base = getBasePath();
 
   document.querySelectorAll("#dropdownMenu a").forEach(link => {
+    const href = link.getAttribute("href");
+    if (!href || href.startsWith("http")) return; // skip external
     let href = link.getAttribute("href");
     if (!href || href.startsWith("http")) return;
 
     // remove existing params
     href = href.split("?")[0];
 
+    const url = new URL(href, window.location.origin);
     // rebuild full path with base
     const fullPath = base + href;
 
+    url.searchParams.set("school", school);
     const url = new URL(fullPath, window.location.origin);
 
     if (school) {
@@ -122,6 +129,7 @@ function highlightActiveLink() {
     const href = link.getAttribute("href");
     if (!href) return;
 
+    const clean = href.split("?")[0];
     const clean = href.split("?")[0].split("/").pop();
 
     if (clean === current) {
@@ -159,6 +167,7 @@ function setupMenu() {
 }
 
 /* ========================================
+   🚀 NAVIGATION HELPERS
    🚀 NAVIGATION HELPERS (🔥 FIXED)
 ======================================== */
 
@@ -170,6 +179,9 @@ function goToPage(page) {
     ? `${base}${page}?school=${school}`
     : `${base}${page}`;
 
+  window.location.href = school
+    ? `${page}?school=${school}`
+    : page;
   window.location.href = url;
 }
 
