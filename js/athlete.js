@@ -1,9 +1,8 @@
 /* ========================================
-   🔥 ELITE ATHLETES (FINAL PRODUCTION VERSION)
+   🔥 ELITE ATHLETE PROFILE (FINAL)
 ======================================== */
 
-let athletes = [];
-let currentLetter = "ALL";
+let radarChart, progressChart;
 
 /* ========================================
    INIT (LOCKED LOAD ORDER)
@@ -13,193 +12,199 @@ document.addEventListener("headerLoaded", init);
 
 async function init() {
   try {
+    const params = new URLSearchParams(window.location.search);
+    const nameFromURL = params.get("name");
+
+    console.log("NAME:", nameFromURL);
+
+    if (!nameFromURL) {
+      document.getElementById("athleteName").textContent = "No athlete selected";
+      return;
+    }
+
     const data = await loadAthleteData();
 
-    console.log("👥 RAW DATA:", data);
+    console.log("DATA READY:", data.length);
 
-    const map = {};
+    // ========================================
+    // 🔍 FILTER THIS ATHLETE
+    // ========================================
+    const athleteData = data.filter(a => a.name === nameFromURL);
+
+    if (!athleteData.length) {
+      document.getElementById("athleteName").textContent = "Athlete not found";
+      return;
+    }
+
+    // latest test = first after sort
+    athleteData.sort((a, b) => new Date(b.date) - new Date(a.date));
+    const latest = athleteData[0];
+
+    // ========================================
+    // 🧠 RANKING + PERCENTILE
+    // ========================================
+    const bestScores = {};
 
     data.forEach(a => {
       if (!a.name) return;
 
-      const score = Number(a.score) || 0;
-
-      // ✅ keep best score per athlete
-      if (!map[a.name] || score > map[a.name]) {
-        map[a.name] = score;
+      if (!bestScores[a.name] || a.score > bestScores[a.name]) {
+        bestScores[a.name] = a.score;
       }
     });
 
-    athletes = Object.keys(map).map(name => ({
-      name,
-      score: map[name]
-    }));
+    const ranking = Object.values(bestScores).sort((a, b) => b - a);
+    const athleteScore = bestScores[nameFromURL];
 
-    athletes.sort((a, b) => b.score - a.score);
+    const rank = ranking.findIndex(s => s === athleteScore) + 1;
+    const percentile = Math.round((1 - rank / ranking.length) * 100);
 
-    console.log("✅ ATHLETES READY:", athletes);
+    // ========================================
+    // 🎯 HEADER
+    // ========================================
+    document.getElementById("athleteName").textContent = nameFromURL;
+    document.getElementById("rank").textContent = `Rank: #${rank}`;
+    document.getElementById("percentile").textContent = `Top ${percentile}%`;
 
-    renderAlphabet();
-    applyFilters();
+    // ========================================
+    // 📊 STATS
+    // ========================================
+    set("bench", latest.bench);
+    set("squat", latest.squat);
+    set("clean", latest.clean);
+
+    set("verticalScore", latest.vertical);
+    set("broadScore", latest.broad);
+    set("medballScore", latest.med);
+
+    set("proagility", latest.agility);
+    set("situps", latest.situps);
+    set("tenyard", latest.ten);
+    set("forty", latest.forty);
+
+    // ========================================
+    // 🕸️ RADAR CHART
+    // ========================================
+    const radarData = [
+      latest.bench,
+      latest.squat,
+      latest.clean,
+      latest.vertical,
+      latest.broad,
+      latest.med,
+      latest.agility,
+      latest.situps
+    ];
+
+    const radarCtx = document.getElementById("radarChart");
+
+    if (radarChart) radarChart.destroy();
+
+    radarChart = new Chart(radarCtx, {
+      type: "radar",
+      data: {
+        labels: [
+          "Bench",
+          "Squat",
+          "Clean",
+          "Vertical",
+          "Broad",
+          "Med Ball",
+          "Agility",
+          "Sit-Ups"
+        ],
+        datasets: [{
+          label: nameFromURL,
+          data: radarData
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          r: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    // ========================================
+    // 📈 PROGRESS CHART
+    // ========================================
+    const sortedHistory = [...athleteData].reverse();
+
+    const dates = sortedHistory.map(a => formatDate(a.date));
+    const scores = sortedHistory.map(a => a.score);
+
+    const progressCtx = document.getElementById("progressChart");
+
+    if (progressChart) progressChart.destroy();
+
+    progressChart = new Chart(progressCtx, {
+      type: "line",
+      data: {
+        labels: dates,
+        datasets: [{
+          label: "Performance Score",
+          data: scores,
+          tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true
+      }
+    });
+
+    // ========================================
+    // 📋 HISTORY TABLE
+    // ========================================
+    const tbody = document.querySelector("#historyTable tbody");
+    tbody.innerHTML = "";
+
+    sortedHistory.forEach(a => {
+      const tr = document.createElement("tr");
+
+      const strengthAvg = avg(a.bench, a.squat, a.clean);
+
+      tr.innerHTML = `
+        <td>${formatDate(a.date)}</td>
+        <td>${a.bench}</td>
+        <td>${a.squat}</td>
+        <td>${a.clean}</td>
+        <td>${strengthAvg}</td>
+        <td>${a.vertical}</td>
+        <td>${a.broad}</td>
+        <td>${a.med}</td>
+        <td>${a.agility}</td>
+        <td>${a.situps}</td>
+        <td>${a.ten}</td>
+        <td>${a.forty}</td>
+        <td>${a.score}</td>
+      `;
+
+      tbody.appendChild(tr);
+    });
 
   } catch (err) {
-    console.error("❌ Athlete load failed:", err);
+    console.error("❌ PROFILE LOAD FAILED:", err);
   }
 }
 
 /* ========================================
-   🔥 UNIFIED FILTER SYSTEM
+   HELPERS
 ======================================== */
 
-function applyFilters() {
-  const input = document.getElementById("search");
-  const term = input ? input.value.toLowerCase().trim() : "";
-
-  let filtered = athletes;
-
-  // LETTER FILTER
-  if (currentLetter !== "ALL") {
-    filtered = filtered.filter(a => {
-      const last = a.name.split(",")[0].trim().toUpperCase();
-      return last.startsWith(currentLetter);
-    });
-  }
-
-  // SEARCH FILTER
-  if (term) {
-    filtered = filtered.filter(a =>
-      a.name.toLowerCase().includes(term)
-    );
-  }
-
-  render(filtered);
+function set(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val || "-";
 }
 
-/* ========================================
-   TAG SYSTEM
-======================================== */
-
-function getTag(score) {
-  if (score >= 800) return ["elite", "🔥 Elite"];
-  if (score >= 650) return ["strong", "💪 Strong"];
-  if (score >= 500) return ["developing", "⚡ Developing"];
-  return ["needs", "📈 Needs Work"];
+function avg(a, b, c) {
+  return Math.round((a + b + c) / 3);
 }
 
-/* ========================================
-   RENDER GRID
-======================================== */
-
-function render(list) {
-  const grid = document.getElementById("athleteGrid");
-  if (!grid) return;
-
-  grid.innerHTML = "";
-
-  const fragment = document.createDocumentFragment();
-
-  list.forEach(a => {
-    const [tagClass, tagText] = getTag(a.score);
-
-    const card = document.createElement("div");
-    card.className = `card athlete-card ${tagClass}`;
-
-    card.onclick = () => goToAthlete(a.name);
-
-    card.innerHTML = `
-      <h3>${a.name}</h3>
-      <p class="score">Score: ${a.score}</p>
-      <div class="tag ${tagClass}">${tagText}</div>
-    `;
-
-    fragment.appendChild(card);
-  });
-
-  grid.appendChild(fragment);
-}
-
-/* ========================================
-   A-Z FILTER
-======================================== */
-
-function renderAlphabet() {
-  const bar = document.getElementById("alphabetBar");
-  if (!bar) return;
-
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-  const counts = {};
-
-  athletes.forEach(a => {
-    const last = (a.name.split(",")[0] || "").trim().toUpperCase()[0];
-    counts[last] = (counts[last] || 0) + 1;
-  });
-
-  bar.innerHTML = `
-    <span class="letter active" onclick="showAll()">
-      ALL (${athletes.length})
-    </span>
-  `;
-
-  letters.forEach(letter => {
-    const count = counts[letter] || 0;
-
-    bar.innerHTML += `
-      <span class="letter" onclick="filterByLetter('${letter}')">
-        ${letter}${count ? ` (${count})` : ""}
-      </span>
-    `;
-  });
-}
-
-function filterByLetter(letter) {
-  currentLetter = letter;
-  setActiveLetter(letter);
-  applyFilters();
-}
-
-function showAll() {
-  currentLetter = "ALL";
-  setActiveLetter("ALL");
-  applyFilters();
-}
-
-/* ========================================
-   ACTIVE UI
-======================================== */
-
-function setActiveLetter(letter) {
-  document.querySelectorAll(".letter").forEach(el => {
-    el.classList.remove("active");
-
-    if (letter === "ALL" && el.textContent.startsWith("ALL")) {
-      el.classList.add("active");
-    } else if (el.textContent.startsWith(letter)) {
-      el.classList.add("active");
-    }
-  });
-}
-
-/* ========================================
-   SEARCH
-======================================== */
-
-function filterAthletes() {
-  applyFilters();
-}
-
-/* ========================================
-   🚀 NAV (FIXED — THIS IS THE KEY)
-======================================== */
-
-function goToAthlete(name) {
-  const school = new URLSearchParams(window.location.search).get("school");
-
-  const base = window.location.pathname.includes("/Elite-Athletic-Performance/")
-    ? "/Elite-Athletic-Performance/"
-    : "/";
-
-  // ✅ FIX: route to athlete profile page (NOT history)
-  window.location.href = school
-    ? `${base}athlete.html?name=${encodeURIComponent(name)}&school=${school}`
-    : `${base}athlete.html?name=${encodeURIComponent(name)}`;
+function formatDate(d) {
+  if (!d) return "-";
+  const date = new Date(d);
+  return date.toLocaleDateString();
 }
