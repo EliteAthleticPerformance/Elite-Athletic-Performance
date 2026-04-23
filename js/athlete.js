@@ -1,8 +1,10 @@
 // ========================================
-// 🔥 ATHLETE PROFILE PAGE (FINAL)
+// 🔥 ATHLETE PROFILE (ELITE VERSION)
 // ========================================
 
 let DATA = [];
+let radarChart = null;
+let progressChart = null;
 
 /* ========================================
    INIT
@@ -19,10 +21,7 @@ async function init() {
     const params = new URLSearchParams(window.location.search);
     const name = params.get("name");
 
-    if (!name) {
-      showError("No athlete selected");
-      return;
-    }
+    if (!name) return showError("No athlete selected");
 
     renderAthlete(name);
 
@@ -43,18 +42,18 @@ function renderAthlete(name) {
     .sort((a, b) => new Date(a.date) - new Date(b.date));
 
   if (!history.length) {
-    showError("No data found for " + name);
-    return;
+    return showError("No data found for " + name);
   }
 
   const latest = history[history.length - 1];
 
-  /* ===== HEADER ===== */
-
+  // HEADER
   document.getElementById("athleteName").textContent = formatName(name);
 
-  /* ===== STATS ===== */
+  // RANKING
+  applyRanking(name, latest.score);
 
+  // STATS
   set("bench", latest.bench);
   set("squat", latest.squat);
   set("clean", latest.clean);
@@ -68,55 +67,79 @@ function renderAthlete(name) {
   set("tenyard", latest.ten);
   set("forty", latest.forty);
 
-  /* ===== CHARTS ===== */
-
+  // CHARTS
   renderRadar(latest);
   renderProgress(history);
 
-  /* ===== TABLE ===== */
-
+  // TABLE
   renderTable(history);
 }
 
 /* ========================================
-   RADAR CHART
+   🏆 RANK + PERCENTILE
+======================================== */
+
+function applyRanking(name, score) {
+  const scores = [...new Set(DATA.map(a => a.name))]
+    .map(n => {
+      const best = DATA
+        .filter(a => a.name === n)
+        .reduce((max, a) => Math.max(max, a.score || 0), 0);
+      return { name: n, score: best };
+    })
+    .sort((a, b) => b.score - a.score);
+
+  const index = scores.findIndex(a => a.name === name);
+
+  const rank = index + 1;
+  const total = scores.length;
+
+  const percentile = Math.round((1 - rank / total) * 100);
+
+  set("rank", `Rank: #${rank} of ${total}`);
+  set("percentile", `Top ${percentile}%`);
+}
+
+/* ========================================
+   RADAR (NORMALIZED)
 ======================================== */
 
 function renderRadar(a) {
   const ctx = document.getElementById("radarChart");
-
   if (!ctx || typeof Chart === "undefined") return;
 
-  new Chart(ctx, {
+  if (radarChart) radarChart.destroy();
+
+  const max = getMaxValues();
+
+  radarChart = new Chart(ctx, {
     type: "radar",
     data: {
       labels: [
-        "Bench",
-        "Squat",
-        "Clean",
-        "Vertical",
-        "Broad",
-        "Med Ball",
-        "Agility",
-        "Sit-Ups",
-        "10yd",
-        "40yd"
+        "Bench","Squat","Clean",
+        "Vertical","Broad","Med",
+        "Agility","Sit","10yd","40yd"
       ],
       datasets: [{
         label: "Performance",
         data: [
-          a.bench,
-          a.squat,
-          a.clean,
-          a.vertical,
-          a.broad,
-          a.med,
-          a.agility,
-          a.situps,
-          a.ten,
-          a.forty
+          normalize(a.bench, max.bench),
+          normalize(a.squat, max.squat),
+          normalize(a.clean, max.clean),
+          normalize(a.vertical, max.vertical),
+          normalize(a.broad, max.broad),
+          normalize(a.med, max.med),
+          normalizeReverse(a.agility, max.agility),
+          normalize(a.situps, max.situps),
+          normalizeReverse(a.ten, max.ten),
+          normalizeReverse(a.forty, max.forty)
         ]
       }]
+    },
+    options: {
+      scales: {
+        r: { suggestedMin: 0, suggestedMax: 100 }
+      }
     }
   });
 }
@@ -127,10 +150,11 @@ function renderRadar(a) {
 
 function renderProgress(history) {
   const ctx = document.getElementById("progressChart");
-
   if (!ctx || typeof Chart === "undefined") return;
 
-  new Chart(ctx, {
+  if (progressChart) progressChart.destroy();
+
+  progressChart = new Chart(ctx, {
     type: "line",
     data: {
       labels: history.map(a => a.date),
@@ -168,6 +192,34 @@ function renderTable(history) {
       <td>${h.score}</td>
     </tr>
   `).join("");
+}
+
+/* ========================================
+   NORMALIZATION
+======================================== */
+
+function getMaxValues() {
+  const max = {};
+
+  DATA.forEach(a => {
+    for (let key in a) {
+      if (typeof a[key] === "number") {
+        max[key] = Math.max(max[key] || 0, a[key]);
+      }
+    }
+  });
+
+  return max;
+}
+
+function normalize(val, max) {
+  if (!val || !max) return 0;
+  return Math.round((val / max) * 100);
+}
+
+function normalizeReverse(val, max) {
+  if (!val || !max) return 0;
+  return Math.round((1 - val / max) * 100);
 }
 
 /* ========================================
