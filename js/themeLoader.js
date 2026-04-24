@@ -49,7 +49,7 @@ window.APP_READY = new Promise(async (resolve, reject) => {
         logo: base + "images/roosters-logo.png",
 
         dataURL: "https://script.google.com/macros/s/AKfycbyZPnii9Qf3VdDiTRn1tPt_BOnIv22m2r5n5afnEQ6pNGO2sWO-jQa6MBtJBNfYGyA/exec",
-        submitURL: "https://script.google.com/macros/s/AKfycbyZPnii9Qf3VdDiTRn1tPt_BOnIv22m2r5n5afnEQ6pNGO2sWO-jQa6MBtJBNfYGyA/exec"
+        submitURL: "https://script.google.com/macros/s/AKfycbyZPnii9Qf3VdDiTRn1tPt_BOnIv22m2r5n5afnEQ6pNGO2sWO-jQa6MBtJBNfYGyA/exec" 
       }
     };
 
