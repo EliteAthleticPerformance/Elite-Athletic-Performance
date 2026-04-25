@@ -1,5 +1,5 @@
 // ========================================
-// 🔥 ATHLETE PROFILE (ELITE VERSION)
+// 🔥 ATHLETE PROFILE (ELITE VERSION - FINAL)
 // ========================================
 
 let DATA = [];
@@ -46,8 +46,7 @@ function renderAthlete(name) {
   }
 
   const latest = history[history.length - 1];
-   console.log("ATHLETE DATA:", latest);
-   
+  console.log("ATHLETE DATA:", latest);
 
   // HEADER
   document.getElementById("athleteName").textContent = formatName(name);
@@ -103,7 +102,7 @@ function applyRanking(name, score) {
 }
 
 /* ========================================
-   RADAR (NORMALIZED)
+   RADAR (CATEGORY SCORES ONLY)
 ======================================== */
 
 function renderRadar(a) {
@@ -112,35 +111,34 @@ function renderRadar(a) {
 
   if (radarChart) radarChart.destroy();
 
-  const max = getMaxValues();
-
   radarChart = new Chart(ctx, {
     type: "radar",
     data: {
       labels: [
-        "Bench","Squat","Clean",
-        "Vertical","Broad","Med",
-        "Agility","Sit","10yd","40yd"
+        "Strength",
+        "Power",
+        "Explosive",
+        "Speed"
       ],
       datasets: [{
-        label: "Performance",
+        label: "Category Scores",
         data: [
-          normalize(a.bench, max.bench),
-          normalize(a.squat, max.squat),
-          normalize(a.clean, max.clean),
-          normalize(a.vertical, max.vertical),
-          normalize(a.broad, max.broad),
-          normalize(a.med, max.med),
-          normalizeReverse(a.agility, max.agility),
-          normalize(a.situps, max.situps),
-          normalizeReverse(a.ten, max.ten),
-          normalizeReverse(a.forty, max.forty)
+          a.strengthPoints || 0,
+          a.powerPoints || 0,
+          a.explosivePoints || 0,
+          a.speedPoints || 0
         ]
       }]
     },
     options: {
       scales: {
-        r: { suggestedMin: 0, suggestedMax: 100 }
+        r: {
+          suggestedMin: 0,
+          suggestedMax: 100,
+          ticks: {
+            stepSize: 20
+          }
+        }
       }
     }
   });
@@ -194,34 +192,6 @@ function renderTable(history) {
       <td>${h.score}</td>
     </tr>
   `).join("");
-}
-
-/* ========================================
-   NORMALIZATION
-======================================== */
-
-function getMaxValues() {
-  const max = {};
-
-  DATA.forEach(a => {
-    for (let key in a) {
-      if (typeof a[key] === "number") {
-        max[key] = Math.max(max[key] || 0, a[key]);
-      }
-    }
-  });
-
-  return max;
-}
-
-function normalize(val, max) {
-  if (!val || !max) return 0;
-  return Math.round((val / max) * 100);
-}
-
-function normalizeReverse(val, max) {
-  if (!val || !max) return 0;
-  return Math.round((1 - val / max) * 100);
 }
 
 /* ========================================
