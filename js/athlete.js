@@ -79,7 +79,8 @@ function renderAthlete(name) {
 
   // CHARTS
   renderRadar(latest, null);
-  renderProgress(history);
+initProgressToggles(history);   // 🔥 ADD THIS
+renderProgress(history);
 
   // TABLE
   renderTable(history);
@@ -294,60 +295,48 @@ function renderProgress(history) {
   // ✅ Sort by date
   history.sort((a, b) => new Date(a.date) - new Date(b.date));
 
+  // 🔥 CONFIG MAP (clean + scalable)
+  const DATASETS = {
+    strengthPoints: {
+      label: "Strength",
+      color: "#ff4d4d"
+    },
+    speedPoints: {
+      label: "Speed",
+      color: "#4da6ff"
+    },
+    explosivePoints: {
+      label: "Explosive",
+      color: "#4dff88"
+    },
+    powerPoints: {
+      label: "Power",
+      color: "#b366ff"
+    },
+    score: {
+      label: "Overall",
+      color: "#ffffff"
+    }
+  };
+
+  // 🔥 BUILD DATASETS BASED ON ACTIVE TOGGLES
+  const datasets = Object.keys(DATASETS)
+    .filter(key => ACTIVE_PROGRESS_KEYS.has(key))
+    .map(key => ({
+      label: DATASETS[key].label,
+      data: history.map(a => a[key]),
+      borderColor: DATASETS[key].color,
+      backgroundColor: DATASETS[key].color + "22",
+      tension: 0.3,
+      borderWidth: key === "score" ? 3 : 2,
+      pointRadius: 3
+    }));
+
   progressChart = new Chart(ctx, {
     type: "line",
     data: {
       labels: history.map(a => a.date),
-
-      datasets: [
-
-        // 🔴 Strength
-        {
-          label: "Strength",
-          data: history.map(a => a.strengthPoints),
-          borderColor: "#ff4d4d",
-          backgroundColor: "rgba(255,77,77,0.15)",
-          tension: 0.3
-        },
-
-        // 🔵 Speed
-        {
-          label: "Speed",
-          data: history.map(a => a.speedPoints),
-          borderColor: "#4da6ff",
-          backgroundColor: "rgba(77,166,255,0.15)",
-          tension: 0.3
-        },
-
-        // 🟢 Explosive
-        {
-          label: "Explosive",
-          data: history.map(a => a.explosivePoints),
-          borderColor: "#4dff88",
-          backgroundColor: "rgba(77,255,136,0.15)",
-          tension: 0.3
-        },
-
-        // 🟣 Power
-        {
-          label: "Power",
-          data: history.map(a => a.powerPoints),
-          borderColor: "#b366ff",
-          backgroundColor: "rgba(179,102,255,0.15)",
-          tension: 0.3
-        },
-
-        // ⚪ Overall
-        {
-          label: "Overall",
-          data: history.map(a => a.score),
-          borderColor: "#ffffff",
-          backgroundColor: "rgba(255,255,255,0.15)",
-          borderWidth: 2,
-          tension: 0.3
-        }
-
-      ]
+      datasets
     },
 
     options: {
