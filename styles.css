@@ -1039,35 +1039,81 @@ body {
   margin-top: 4px;
 }
 
-.insights-box {
-  margin-top: 30px;
-  padding: 20px;
-  background: rgba(255,255,255,0.05);
+/* ========================================
+🧠 AI INSIGHTS (CLEAN + FINAL)
+======================================== */
+
+/* GRID LAYOUT (4 CARDS) */
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* INDIVIDUAL INSIGHT CARD */
+.insight-box {
+  background: rgba(255,255,255,0.04);
   border-radius: 12px;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+  padding: 16px;
   text-align: left;
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  transition: all 0.25s ease;
 }
 
-.insights-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 10px;
+/* HOVER EFFECT (SUBTLE GLOW) */
+.insight-box:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 0 12px rgba(139, 99, 181, 0.4);
+}
+
+/* TITLES */
+.insight-box h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
   color: var(--primaryLight);
-text-shadow:
-  0 0 6px var(--primary),
-  0 0 12px var(--primaryLight);
+
+  text-shadow:
+    0 0 6px var(--primary),
+    0 0 12px var(--primaryLight);
 }
 
-.insights-box ul {
+/* LIST STYLE */
+.insight-box ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
-.insights-box li {
+.insight-box li {
+  font-size: 14px;
   margin-bottom: 6px;
-  font-size: 15px;
+  opacity: 0.9;
+}
+
+/* PARAGRAPH TEXT */
+.insight-box p {
+  font-size: 14px;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+/* OPTIONAL: COLOR CODING */
+.insight-box li.positive {
+  color: #22c55e; /* green */
+}
+
+.insight-box li.negative {
+  color: #ef4444; /* red */
+}
+
+.insight-box li.neutral {
+  color: #facc15; /* yellow */
 }
 
 .podium {
