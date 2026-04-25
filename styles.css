@@ -754,15 +754,15 @@ text-shadow:
 #radarChart {
   width: 100% !important;
   max-width: 1200px;   /* ⬆️ was ~700 */
-  height: 400px !important; /* ⬆️ increase height */
+  height: 750px !important; /* ⬆️ increase height */
   margin: 0 auto;
 }
 
 /* 🔥 PROGRESS CHART FIX */
 #progressChart {
   width: 100% !important;
-  height: 400px !important; /* ⬅️ smaller, stable */
-  max-height: 400px;
+  height: 7500px !important; /* ⬅️ smaller, stable */
+  max-height: 7500px;
    margin: 0 auto;
 }
 
