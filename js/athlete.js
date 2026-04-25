@@ -1,10 +1,11 @@
 // ========================================
-// 🔥 ATHLETE PROFILE (ELITE VERSION - FINAL)
+// 🔥 ATHLETE PROFILE (FINAL + COMPARISON)
 // ========================================
 
 let DATA = [];
 let radarChart = null;
 let progressChart = null;
+let CURRENT_ATHLETE = null;
 
 /* ========================================
    INIT
@@ -46,6 +47,8 @@ function renderAthlete(name) {
   }
 
   const latest = history[history.length - 1];
+  CURRENT_ATHLETE = latest;
+
   console.log("ATHLETE DATA:", latest);
 
   // HEADER
@@ -69,7 +72,7 @@ function renderAthlete(name) {
   set("forty", fmt2(latest.forty));
 
   // CHARTS
-  renderRadar(latest);
+  renderRadar(latest, null);
   renderProgress(history);
 
   // TABLE
@@ -102,36 +105,103 @@ function applyRanking(name, score) {
 }
 
 /* ========================================
-   RADAR (CATEGORY SCORES ONLY)
+   🧠 COMPARISON ENGINE
 ======================================== */
 
-function renderRadar(a) {
+function getComparisonData(type, athlete) {
+  if (!type || type === "none") return null;
+
+  let group = [];
+
+  switch (type) {
+    case "top5":
+      group = [...DATA].sort((a, b) => b.score - a.score).slice(0, 5);
+      break;
+
+    case "team":
+      group = DATA;
+      break;
+
+    case "weight":
+      group = DATA.filter(a => a.weightClass === athlete.weightClass);
+      break;
+
+    case "grade":
+      group = DATA.filter(a => a.grade === athlete.grade);
+      break;
+  }
+
+  if (!group.length) return null;
+
+  const avg = (key) =>
+    group.reduce((sum, a) => sum + (a[key] || 0), 0) / group.length;
+
+  return {
+    strengthPoints: avg("strengthPoints"),
+    powerPoints: avg("powerPoints"),
+    explosivePoints: avg("explosivePoints"),
+    speedPoints: avg("speedPoints")
+  };
+}
+
+/* ========================================
+   🔄 UPDATE COMPARISON
+======================================== */
+
+function updateComparison() {
+  const type = document.getElementById("comparisonSelect")?.value;
+
+  const comparison = getComparisonData(type, CURRENT_ATHLETE);
+
+  renderRadar(CURRENT_ATHLETE, comparison);
+}
+
+/* ========================================
+   RADAR (WITH COMPARISON)
+======================================== */
+
+function renderRadar(a, comparison = null) {
   const ctx = document.getElementById("radarChart");
   if (!ctx || typeof Chart === "undefined") return;
 
   if (radarChart) radarChart.destroy();
 
+  const labels = ["Strength", "Power", "Explosive", "Speed"];
+
+  const datasets = [
+    {
+      label: "Athlete",
+      data: [
+        a.strengthPoints || 0,
+        a.powerPoints || 0,
+        a.explosivePoints || 0,
+        a.speedPoints || 0
+      ],
+      borderWidth: 2
+    }
+  ];
+
+  if (comparison) {
+    datasets.push({
+      label: "Comparison",
+      data: [
+        comparison.strengthPoints,
+        comparison.powerPoints,
+        comparison.explosivePoints,
+        comparison.speedPoints
+      ],
+      borderWidth: 2,
+      borderDash: [6, 6]
+    });
+  }
+
   radarChart = new Chart(ctx, {
     type: "radar",
-    data: {
-      labels: ["Strength", "Power", "Explosive", "Speed"],
-      datasets: [{
-        label: "Category Scores",
-        data: [
-          a.strengthPoints || 0,
-          a.powerPoints || 0,
-          a.explosivePoints || 0,
-          a.speedPoints || 0
-        ],
-        borderWidth: 2
-      }]
-    },
+    data: { labels, datasets },
     options: {
       plugins: {
         legend: {
-          labels: {
-            font: { size: 16 }
-          }
+          labels: { font: { size: 16 } }
         }
       },
       scales: {
@@ -144,13 +214,7 @@ function renderRadar(a) {
             font: { size: 14 }
           },
           pointLabels: {
-            font: {
-              size: 16,
-              weight: "bold"
-            }
-          },
-          grid: {
-            circular: true
+            font: { size: 16, weight: "bold" }
           }
         }
       }
