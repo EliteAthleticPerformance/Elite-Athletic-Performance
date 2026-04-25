@@ -191,8 +191,49 @@ function renderRadar(a, comparison=null) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+
+      plugins: {
+        legend: {
+          labels: {
+            color: "#ddd",
+            font: {
+              size: 14,
+              weight: "600"
+            }
+          }
+        }
+      },
+
       scales: {
-        r: { min: 0, max: 100 }
+        r: {
+          min: 0,
+          max: 100,
+
+          pointLabels: {
+            color: "#ffffff",
+            font: {
+              size: 16,
+              weight: "700"
+            }
+          },
+
+          ticks: {
+            color: "#bbb",
+            backdropColor: "transparent",
+            font: {
+              size: 11,
+              weight: "600"
+            }
+          },
+
+          grid: {
+            color: "rgba(255,255,255,0.15)"
+          },
+
+          angleLines: {
+            color: "rgba(255,255,255,0.2)"
+          }
+        }
       }
     }
   });
