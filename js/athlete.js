@@ -60,13 +60,13 @@ function renderAthlete(name) {
   set("clean", latest.clean);
 
   set("verticalScore", latest.vertical);
-  set("broadScore", latest.broad);
-  set("medballScore", latest.med);
+  set("broadScore", fmt2(latest.broad));
+  set("medballScore", fmt2(latest.med));
 
-  set("proagility", latest.agility);
+  set("proagility", fmt2(latest.agility));
   set("situps", latest.situps);
-  set("tenyard", latest.ten);
-  set("forty", latest.forty);
+  set("tenyard", fmt2(latest.ten));
+  set("forty", fmt2(latest.forty));
 
   // CHARTS
   renderRadar(latest);
@@ -114,12 +114,7 @@ function renderRadar(a) {
   radarChart = new Chart(ctx, {
     type: "radar",
     data: {
-      labels: [
-        "Strength",
-        "Power",
-        "Explosive",
-        "Speed"
-      ],
+      labels: ["Strength", "Power", "Explosive", "Speed"],
       datasets: [{
         label: "Category Scores",
         data: [
@@ -135,26 +130,22 @@ function renderRadar(a) {
       plugins: {
         legend: {
           labels: {
-            font: {
-              size: 16 // 🔥 bigger legend text
-            }
+            font: { size: 16 }
           }
         }
       },
       scales: {
         r: {
           min: 0,
-          max: 100, // ✅ reduced from 120 → 100
+          max: 100,
           ticks: {
             stepSize: 10,
             backdropColor: "transparent",
-            font: {
-              size: 14 // 🔥 bigger numbers
-            }
+            font: { size: 14 }
           },
           pointLabels: {
             font: {
-              size: 16, // 🔥 bigger axis labels
+              size: 16,
               weight: "bold"
             }
           },
@@ -206,12 +197,12 @@ function renderTable(history) {
       <td>${h.clean}</td>
       <td>${avg(h.bench, h.squat, h.clean)}</td>
       <td>${h.vertical}</td>
-      <td>${h.broad}</td>
-      <td>${h.med}</td>
-      <td>${h.agility}</td>
+      <td>${fmt2(h.broad)}</td>
+      <td>${fmt2(h.med)}</td>
+      <td>${fmt2(h.agility)}</td>
       <td>${h.situps}</td>
-      <td>${h.ten}</td>
-      <td>${h.forty}</td>
+      <td>${fmt2(h.ten)}</td>
+      <td>${fmt2(h.forty)}</td>
       <td>${h.score}</td>
     </tr>
   `).join("");
@@ -220,6 +211,13 @@ function renderTable(history) {
 /* ========================================
    HELPERS
 ======================================== */
+
+function fmt2(val) {
+  if (val === null || val === undefined || val === "") return "-";
+  const num = Number(val);
+  if (isNaN(num)) return val;
+  return num.toFixed(2);
+}
 
 function set(id, val) {
   const el = document.getElementById(id);
