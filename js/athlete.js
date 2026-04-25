@@ -7,6 +7,13 @@ let radarChart = null;
 let progressChart = null;
 let CURRENT_ATHLETE = null;
 let CURRENT_COMPARISON = "none";
+let ACTIVE_PROGRESS_KEYS = new Set([
+  "strengthPoints",
+  "speedPoints",
+  "explosivePoints",
+  "powerPoints",
+  "score"
+]);
 
 /* ========================================
    INIT
@@ -368,6 +375,26 @@ function renderProgress(history) {
         }
       }
     }
+  });
+}
+
+function initProgressToggles(history) {
+  const buttons = document.querySelectorAll("#progressToggles button");
+
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const key = btn.dataset.key;
+
+      if (ACTIVE_PROGRESS_KEYS.has(key)) {
+        ACTIVE_PROGRESS_KEYS.delete(key);
+        btn.classList.remove("active");
+      } else {
+        ACTIVE_PROGRESS_KEYS.add(key);
+        btn.classList.add("active");
+      }
+
+      renderProgress(history);
+    });
   });
 }
 
