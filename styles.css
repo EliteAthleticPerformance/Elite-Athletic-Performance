@@ -461,6 +461,11 @@ box-shadow: 0 10px 25px var(--primaryLight)
     filter: drop-shadow(0 0 10px var(--primaryLight));
 }
 
+#comparisonButtons button {
+  font-size: 15px;
+  padding: 10px 16px; /* ⬆️ slightly bigger buttons */
+}
+
 /* ===== MINI CARDS (STATS) ===== */
 .card-mini {
     background: transparent;
@@ -740,6 +745,17 @@ text-shadow:
   0 0 6px var(--primary),
   0 0 12px var(--primaryLight);
   box-shadow: 0 0 8px rgba(96,165,250,0.4);
+}
+
+/* ========================================
+🔥 RADAR SIZE BOOST (1.5x)
+======================================== */
+
+#radarChart {
+  width: 100% !important;
+  max-width: 1000px;   /* ⬆️ was ~700 */
+  height: 400px !important; /* ⬆️ increase height */
+  margin: 0 auto;
 }
 
 /* ========================================
