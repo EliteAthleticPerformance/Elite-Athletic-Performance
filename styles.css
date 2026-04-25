@@ -1235,6 +1235,13 @@ KEY (IDENTIFIER)
   opacity: 0.4;
 }
 
+/* 🔥 PROGRESS CHART FIX */
+#progressChart {
+  width: 100% !important;
+  height: 220px !important; /* ⬅️ smaller, stable */
+  max-height: 220px;
+}
+
 
 /* ========================================
 LEADERBOARD LAYOUT
