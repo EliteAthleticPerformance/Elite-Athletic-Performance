@@ -1,11 +1,12 @@
 // ========================================
-// 🔥 ATHLETE PROFILE (FINAL + COMPARISON)
+// 🔥 ATHLETE PROFILE (FINAL + BUTTON COMPARISON)
 // ========================================
 
 let DATA = [];
 let radarChart = null;
 let progressChart = null;
 let CURRENT_ATHLETE = null;
+let CURRENT_COMPARISON = "none";
 
 /* ========================================
    INIT
@@ -145,11 +146,29 @@ function getComparisonData(type, athlete) {
 }
 
 /* ========================================
-   🔄 UPDATE COMPARISON
+   🔥 BUTTON HANDLER
 ======================================== */
 
-function updateComparison() {
-  const type = document.getElementById("comparisonSelect")?.value;
+function setComparison(type) {
+  CURRENT_COMPARISON = type;
+
+  // Update active button UI
+  const buttons = document.querySelectorAll("#comparisonButtons button");
+  buttons.forEach(btn => btn.classList.remove("active"));
+
+  const labelMap = {
+    none: "none",
+    top5: "top 5",
+    team: "team",
+    weight: "weight",
+    grade: "grade"
+  };
+
+  buttons.forEach(btn => {
+    if (btn.textContent.toLowerCase().includes(labelMap[type])) {
+      btn.classList.add("active");
+    }
+  });
 
   const comparison = getComparisonData(type, CURRENT_ATHLETE);
 
