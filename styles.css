@@ -1242,6 +1242,50 @@ KEY (IDENTIFIER)
   max-height: 220px;
 }
 
+.chart-card {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.chart-wrapper {
+  position: relative;
+  height: 240px;
+  width: 100%;
+}
+
+#radarChart,
+#progressChart {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+:root {
+  --chart-height: 260px; /* 🔥 single source of truth */
+}
+
+/* 🔥 MATCH CARD WIDTH */
+.chart-card {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* 🔥 SAME HEIGHT FOR BOTH */
+.chart-wrapper {
+  position: relative;
+  height: var(--chart-height);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 🔥 FORCE CANVAS TO FILL WRAPPER */
+#radarChart,
+#progressChart {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 
 /* ========================================
 LEADERBOARD LAYOUT
