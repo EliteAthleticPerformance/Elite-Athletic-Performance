@@ -25,14 +25,18 @@ function getBasePath() {
 window.APP_READY = new Promise(async (resolve, reject) => {
   try {
     const params = new URLSearchParams(window.location.search);
-    let school = params.get("school") || sessionStorage.getItem("school");
+   let school = params.get("school") || sessionStorage.getItem("school");
 
-    if (!school) {
-      throw new Error("No school provided");
-    }
+if (!school) {
+  throw new Error("No school provided");
+}
 
-    school = school.toLowerCase();
-    sessionStorage.setItem("school", school);
+// 🔥 NORMALIZE EVERYTHING (THIS IS THE FIX)
+school = school
+  .toLowerCase()
+  .replace(/[^a-z0-9]/g, ""); // removes spaces, dashes, etc.
+
+sessionStorage.setItem("school", school);
 
     const base = getBasePath();
 
