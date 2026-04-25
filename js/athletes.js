@@ -1,5 +1,5 @@
 // ========================================
-// 🔥 ATHLETES LIST (POLISHED PRODUCTION)
+// 🔥 ATHLETES LIST (FINAL - NO DATA LOSS)
 // ========================================
 
 let athletes = [];
@@ -15,23 +15,14 @@ document.addEventListener("headerLoaded", async () => {
 
     const data = await loadAthleteData();
 
-    const map = {};
-
-    data.forEach(a => {
-      if (!a.name) return;
-
-      const score = Number(a.score) || 0;
-
-      if (!map[a.name] || score > map[a.name]) {
-        map[a.name] = score;
-      }
-    });
-
-    athletes = Object.keys(map).map(name => ({
-      name,
-      score: map[name]
+    // ✅ KEEP ALL ENTRIES (NO COLLAPSING)
+    athletes = data.map((a, i) => ({
+      id: i, // ensures uniqueness
+      name: a.name,
+      score: Number(a.score) || 0
     }));
 
+    // ✅ SORT BY SCORE
     athletes.sort((a, b) => b.score - a.score);
 
     renderAlphabet();
@@ -63,7 +54,7 @@ function applyFilters() {
 
   let filtered = athletes;
 
-  // LETTER FILTER (SAFE NAME HANDLING)
+  // LETTER FILTER
   if (currentLetter !== "ALL") {
     filtered = filtered.filter(a => {
       const last = getLastName(a.name);
@@ -91,7 +82,6 @@ function render(list) {
 
   grid.innerHTML = "";
 
-  // ✅ EMPTY STATE
   if (!list.length) {
     grid.innerHTML = `
       <div style="text-align:center; opacity:0.7;">
@@ -194,7 +184,7 @@ function filterAthletes() {
 }
 
 /* ========================================
-   NAME HELPERS (🔥 FIX)
+   NAME HELPERS
 ======================================== */
 
 function getLastName(name) {
