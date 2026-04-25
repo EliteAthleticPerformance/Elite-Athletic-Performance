@@ -57,7 +57,7 @@
 
   <!-- ===== PERFORMANCE PROFILE ===== -->
   <section class="section">
-    <div class="card chart-card" style="text-align:center;">
+    <div class="card" style="text-align:center;">
       
       <h2 style="margin-bottom:10px;">Performance Profile</h2>
 
@@ -80,15 +80,49 @@
     </div>
   </section>
 
+  <!-- ===== AI INSIGHTS ===== -->
+  <section class="section">
+    <div class="card">
+
+      <h2 style="text-align:center; margin-bottom:15px;">
+        🧠 AI Performance Insights
+      </h2>
+
+      <div class="insights-grid">
+
+        <div class="insight-box">
+          <h3>🔥 Strengths</h3>
+          <ul id="insightStrengths"></ul>
+        </div>
+
+        <div class="insight-box">
+          <h3>⚠️ Areas to Improve</h3>
+          <ul id="insightWeaknesses"></ul>
+        </div>
+
+        <div class="insight-box">
+          <h3>🎯 Focus</h3>
+          <p id="insightFocus"></p>
+        </div>
+
+        <div class="insight-box">
+          <h3>📊 Summary</h3>
+          <p id="insightSummary"></p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
   <!-- ===== PROGRESS CHART ===== -->
   <section class="section">
-    <div class="card chart-card">
+    <div class="card">
       
       <h2 style="text-align:center; margin-bottom:10px;">
         Progress Over Time
       </h2>
 
-      <!-- 🔥 TOGGLES (NOW INSIDE CARD) -->
       <div id="progressToggles" class="progress-toggles">
         <button data-key="strengthPoints" class="active">Strength</button>
         <button data-key="speedPoints" class="active">Speed</button>
