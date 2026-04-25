@@ -299,6 +299,74 @@ function renderTable(history) {
 }
 
 /* ========================================
+   🧠 AI INSIGHTS
+======================================== */
+
+function renderInsights(a) {
+  const container = document.getElementById("insightsGrid");
+  if (!container) return;
+
+  const categories = [
+    { key: "strengthPoints", label: "Strength" },
+    { key: "powerPoints", label: "Power" },
+    { key: "explosivePoints", label: "Explosive" },
+    { key: "speedPoints", label: "Speed" }
+  ];
+
+  // Sort high → low
+  const sorted = [...categories].sort(
+    (x, y) => (a[y.key] || 0) - (a[x.key] || 0)
+  );
+
+  const strengths = sorted.slice(0, 2);
+  const weaknesses = sorted.slice(-2);
+
+  // Athlete type
+  let type = "Balanced Athlete";
+  if (sorted[0].key === "speedPoints") type = "Speed-Dominant Athlete";
+  if (sorted[0].key === "strengthPoints") type = "Strength-Dominant Athlete";
+  if (sorted[0].key === "powerPoints") type = "Power Athlete";
+  if (sorted[0].key === "explosivePoints") type = "Explosive Athlete";
+
+  // Recommendations
+  const recommendations = weaknesses.map(w => {
+    if (w.key === "strengthPoints") return "Increase max strength (bench/squat focus)";
+    if (w.key === "speedPoints") return "Improve sprint mechanics and acceleration";
+    if (w.key === "explosivePoints") return "Focus on plyometrics and jumping";
+    if (w.key === "powerPoints") return "Develop Olympic lifts and med ball work";
+    return "";
+  });
+
+  container.innerHTML = `
+    <div class="insight-box">
+      <h3>🔥 Strengths</h3>
+      <ul>
+        ${strengths.map(s => `<li class="positive">✔ ${s.label}</li>`).join("")}
+      </ul>
+    </div>
+
+    <div class="insight-box">
+      <h3>⚠️ Needs Work</h3>
+      <ul>
+        ${weaknesses.map(w => `<li class="negative">✖ ${w.label}</li>`).join("")}
+      </ul>
+    </div>
+
+    <div class="insight-box">
+      <h3>🧬 Athlete Type</h3>
+      <p>${type}</p>
+    </div>
+
+    <div class="insight-box">
+      <h3>📈 Recommendations</h3>
+      <ul>
+        ${recommendations.map(r => `<li class="neutral">→ ${r}</li>`).join("")}
+      </ul>
+    </div>
+  `;
+}
+
+/* ========================================
    HELPERS
 ======================================== */
 
