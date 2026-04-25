@@ -761,8 +761,8 @@ text-shadow:
 /* 🔥 PROGRESS CHART FIX */
 #progressChart {
   width: 100% !important;
-  height: 7500px !important; /* ⬅️ smaller, stable */
-  max-height: 7500px;
+  height: 750px !important; /* ⬅️ smaller, stable */
+  max-height: 750px;
    margin: 0 auto;
 }
 
