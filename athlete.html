@@ -27,17 +27,17 @@
 
   <!-- TITLE -->
   <section class="section" style="text-align:center;">
-  <h1 id="athleteName">Athlete</h1>
-  <p id="rank"></p>
-  <p id="percentile"></p>
+    <h1 id="athleteName">Athlete</h1>
+    <p id="rank"></p>
+    <p id="percentile"></p>
 
-  <!-- 🔥 BACK BUTTON -->
-  <div style="margin-top: 12px;">
-    <a href="athletes.html" class="back-btn">
-      ← Back to Athletes
-    </a>
-  </div>
-</section>
+    <!-- 🔥 BACK BUTTON (NOW DYNAMIC) -->
+    <div style="margin-top: 12px;">
+      <a id="backBtn" href="athletes.html" class="back-btn">
+        ← Back to Athletes
+      </a>
+    </div>
+  </section>
 
   <!-- STATS -->
   <section class="section">
@@ -84,17 +84,13 @@
     </div>
   </section>
 
-  <!-- 🔥 NEW DYNAMIC AI INSIGHTS -->
+  <!-- AI INSIGHTS -->
   <section class="section">
     <div class="card">
-
       <h2 style="text-align:center; margin-bottom:15px;">
         🧠 AI Performance Insights
       </h2>
-
-      <!-- 🔥 THIS IS THE KEY CHANGE -->
       <div id="insightsGrid" class="insights-grid"></div>
-
     </div>
   </section>
 
@@ -159,6 +155,18 @@
 
 <script src="/Elite-Athletic-Performance/js/dataLoader.js"></script>
 <script src="/Elite-Athletic-Performance/js/athlete.js"></script>
+
+<!-- 🔥 DYNAMIC BACK BUTTON SCRIPT -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const school = sessionStorage.getItem("school");
+
+    if (school) {
+      const btn = document.getElementById("backBtn");
+      btn.href = `athletes.html?school=${school}`;
+    }
+  });
+</script>
 
 </body>
 </html>
