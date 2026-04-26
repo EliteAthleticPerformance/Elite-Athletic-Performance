@@ -1,5 +1,5 @@
 // ========================================
-// 🔥 ELITE LEADERBOARD (STABLE V1)
+// 🔥 ELITE LEADERBOARD (V2 - WITH TIERS)
 // ========================================
 
 document.addEventListener("DOMContentLoaded", init);
@@ -59,16 +59,14 @@ function renderLeaderboard(data) {
 }
 
 /* ========================================
-   🥇 PODIUM
+   🥇 PODIUM (UNCHANGED - WORKING)
 ======================================== */
 
 function renderPodium(data) {
   const container = document.getElementById("podium");
   if (!container) return;
 
-  // 🔥 Sort by performance score
   const sorted = [...data].sort((a, b) => b.score - a.score);
-
   const top3 = sorted.slice(0, 3);
 
   if (!top3.length) {
@@ -76,17 +74,15 @@ function renderPodium(data) {
     return;
   }
 
-  // 🔥 Assign ranks
   const first = top3[0];
   const second = top3[1];
   const third = top3[2];
 
-  // 🔥 VISUAL ORDER: 2 - 1 - 3
   const order = [
     { athlete: second, className: "second", rank: 2 },
     { athlete: first, className: "first", rank: 1 },
     { athlete: third, className: "third", rank: 3 }
-  ].filter(item => item.athlete); // handles <3 athletes
+  ].filter(item => item.athlete);
 
   container.innerHTML = order.map(item => {
     const a = item.athlete;
@@ -133,28 +129,66 @@ function renderLiftTable(data) {
 }
 
 /* ========================================
-   ⚡ SCORE TABLE
+   ⚡ PERFORMANCE TIERS LOGIC
+======================================== */
+
+function getPerformanceTier(score, total) {
+  if (!total || total === 0) return "average";
+
+  const ratio = score / total;
+
+  if (ratio >= 1.05) return "elite";
+  if (ratio >= 0.95) return "above";
+  if (ratio >= 0.85) return "average";
+  return "needs";
+}
+
+function getTierLabel(tier) {
+  if (tier === "elite") return "Elite";
+  if (tier === "above") return "Above Avg";
+  if (tier === "average") return "Average";
+  return "Needs Work";
+}
+
+/* ========================================
+   ⚡ SCORE TABLE (UPDATED)
 ======================================== */
 
 function renderScoreTable(data) {
   const tbody = document.querySelector("#scoreTable tbody");
   if (!tbody) return;
 
-  const sorted = [...data]
-    .sort((a, b) => b.score - a.score);
+  const sorted = [...data].sort((a, b) => b.score - a.score);
 
-  tbody.innerHTML = sorted.map((a, i) => `
-    <tr>
-      <td>${i + 1}</td>
-      <td>${a.name}</td>
-      <td>${a.score}</td>
-      <td>${formatDate(a.date)}</td>
-    </tr>
-  `).join("");
+  tbody.innerHTML = sorted.map((a, i) => {
+
+    const total =
+      (a.bench || 0) +
+      (a.squat || 0) +
+      (a.clean || 0);
+
+    const tier = getPerformanceTier(a.score, total);
+
+    return `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${a.name}</td>
+
+        <td>
+          ${a.score}
+          <span class="tier ${tier}">
+            ${getTierLabel(tier)}
+          </span>
+        </td>
+
+        <td>${formatDate(a.date)}</td>
+      </tr>
+    `;
+  }).join("");
 }
 
 /* ========================================
-   📱 MOBILE CARDS
+   📱 MOBILE (UPDATED WITH TIERS)
 ======================================== */
 
 function renderMobile(data) {
@@ -180,12 +214,27 @@ function renderMobile(data) {
     </div>
   `).join("");
 
-  score.innerHTML = scoreSorted.map((a, i) => `
-    <div class="mobile-card">
-      <div>#${i + 1} ${a.name}</div>
-      <div>Score: ${a.score}</div>
-    </div>
-  `).join("");
+  score.innerHTML = scoreSorted.map((a, i) => {
+
+    const total =
+      (a.bench || 0) +
+      (a.squat || 0) +
+      (a.clean || 0);
+
+    const tier = getPerformanceTier(a.score, total);
+
+    return `
+      <div class="mobile-card">
+        <div>#${i + 1} ${a.name}</div>
+        <div>
+          Score: ${a.score}
+          <span class="tier ${tier}">
+            ${getTierLabel(tier)}
+          </span>
+        </div>
+      </div>
+    `;
+  }).join("");
 }
 
 /* ========================================
@@ -220,6 +269,10 @@ function formatDate(dateStr) {
     year: "numeric"
   });
 }
+
+/* ========================================
+   🔗 NAVIGATION
+======================================== */
 
 function goToAthlete(name) {
   const school = sessionStorage.getItem("school") || "pleasanthill";
