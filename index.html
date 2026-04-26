@@ -7,7 +7,7 @@
 
 <link id="dynamicFavicon" rel="icon" type="image/png">
 
-<title>Elite Athletic Performance System</title>
+<title>Elite Athletic Performance</title>
 
 <link rel="stylesheet" href="/Elite-Athletic-Performance/styles.css">
 
@@ -15,134 +15,114 @@
 
 <body>
 
-<!-- HEADER -->
+<!-- ===== HEADER ===== -->
 <div id="header-placeholder"></div>
 
-<!-- 🔥 CORRECT LOAD ORDER -->
 <script src="/Elite-Athletic-Performance/js/themeLoader.js"></script>
 <script src="/Elite-Athletic-Performance/js/header.js"></script>
 
-<!-- MAIN -->
+<!-- ===== MAIN ===== -->
 <main>
 
   <!-- HERO -->
   <section class="section" style="text-align:center;">
-    <h1 class="hero-title">Track. Compete. Improve.</h1>
-    <p style="color: var(--muted); margin-top:10px;">
-      Elite Athlete Performance Tracking System
-    </p>
-  </section>
 
-  <!-- PRIMARY ACTION -->
-  <section class="section" style="text-align:center;">
-    <a id="enterBtn" class="btn">➕ Enter Test</a>
+    <h1>Track. Compete. Improve.</h1>
+    <p style="opacity:0.8;">Elite Athlete Performance Tracking System</p>
+
+    <div style="margin-top:20px;">
+      <button class="primary-btn" onclick="goToPage('enter.html')">
+        ➕ Enter Test
+      </button>
+    </div>
+
   </section>
 
   <!-- QUICK STATS -->
-  <section class="section">
-    <div class="grid-2">
+  <section class="section" style="text-align:center;">
 
-      <div class="card-mini">
-        <div class="card-icon">👥</div>
-        <h3>Athletes</h3>
-        <p id="totalAthletes">--</p>
+    <div class="stats-row">
+
+      <div class="stat-item">
+        <div class="stat-icon">👥</div>
+        <div class="stat-label">Athletes</div>
+        <div id="athleteCount" class="stat-value">-</div>
       </div>
 
-      <div class="card-mini">
-        <div class="card-icon">📊</div>
-        <h3>Tests</h3>
-        <p id="totalTests">--</p>
+      <div class="stat-item">
+        <div class="stat-icon">📊</div>
+        <div class="stat-label">Tests</div>
+        <div id="testCount" class="stat-value">-</div>
       </div>
 
     </div>
+
   </section>
 
-  <!-- DASHBOARD -->
+  <!-- NAV CARDS -->
   <section class="section">
-    <div class="grid grid-auto">
 
-      <a class="card" id="timerLink">
-        <div class="card-icon">⏱️</div>
+    <div class="card-grid">
+
+      <div class="card" onclick="goToPage('timer.html')">
+        <div class="card-icon">⏱</div>
         <h2>Training Timer</h2>
         <p>4 Quadrant Weight Room Timer</p>
-      </a>
+      </div>
 
-      <a class="card" id="testingLink">
+      <div class="card" onclick="goToPage('enter.html')">
         <div class="card-icon">📋</div>
         <h2>Combine Testing</h2>
         <p>Record and Analyze Results</p>
-      </a>
+      </div>
 
-      <a class="card" id="athletesLink">
-        <div class="card-icon">🧑</div>
+      <div class="card" onclick="goToPage('athletes.html')">
+        <div class="card-icon">👤</div>
         <h2>Athlete Profiles</h2>
         <p>View Performance Ratings</p>
-      </a>
+      </div>
 
-      <a class="card" id="leaderboardLink">
+      <div class="card" onclick="goToPage('leaderboard.html')">
         <div class="card-icon">🏆</div>
         <h2>Leaderboard</h2>
         <p>Athlete Rankings</p>
-      </a>
+      </div>
 
     </div>
+
   </section>
 
 </main>
 
-<!-- DATA -->
-<script src="/Elite-Athletic-Performance/js/dataLoader.js"></script>
-
-<!-- 🔗 LINK HANDLING (KEEP SCHOOL PARAM) -->
+<!-- ===== NAVIGATION SCRIPT ===== -->
 <script>
-(async function () {
-  await window.APP_READY;
-
-  const school = sessionStorage.getItem("school");
-
-  const base = window.location.pathname.includes("/Elite-Athletic-Performance/")
-    ? "/Elite-Athletic-Performance/"
-    : "/";
-
-  function build(path) {
-    return school ? `${base}${path}?school=${school}` : `${base}${path}`;
-  }
-
-  document.getElementById("enterBtn").href = build("enter.html");
-
-  document.getElementById("timerLink").href = build("timer.html");
-  document.getElementById("testingLink").href = build("testing.html");
-  document.getElementById("athletesLink").href = build("athletes.html");
-  document.getElementById("leaderboardLink").href = build("leaderboard.html");
-})();
+function goToPage(page) {
+  const school = sessionStorage.getItem("school") || "pleasanthill";
+  window.location.href = page + "?school=" + school;
+}
 </script>
 
-<!-- 📊 LIVE STATS (FIXED) -->
+<!-- ===== OPTIONAL: LOAD COUNTS ===== -->
+<script src="/Elite-Athletic-Performance/js/dataLoader.js"></script>
+
 <script>
-(async function () {
+document.addEventListener("DOMContentLoaded", async () => {
   try {
     await window.APP_READY;
 
     const data = await loadAthleteData();
 
-    document.getElementById("totalTests").textContent =
-      Array.isArray(data) ? data.length : 0;
+    if (!data || !data.length) return;
 
-    const unique = new Set(
-      (data || [])
-        .map(d => d.name)
-        .filter(n => n && n.trim() !== "")
-    );
+    const athletes = new Set(data.map(d => d.name)).size;
 
-    document.getElementById("totalAthletes").textContent = unique.size;
+    document.getElementById("athleteCount").textContent = athletes;
+    document.getElementById("testCount").textContent = data.length;
 
   } catch (err) {
-    console.warn("Stats load failed:", err);
-
-    document.getElementById("totalTests").textContent = "0";
-    document.getElementById("totalAthletes").textContent = "0";
+    console.error("❌ Dashboard load error:", err);
   }
-})();
+});
 </script>
 
 </body>
