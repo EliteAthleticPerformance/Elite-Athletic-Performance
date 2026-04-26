@@ -714,7 +714,7 @@ background: #1a1a1a;
 }
 
 .section:first-child {
-  margin-top: 100px;
+  margin-top: 60px; /* 🔥 reduces giant top gap */
 }
 
 @keyframes eliteGlow {
@@ -1296,7 +1296,7 @@ text-shadow:
 }
 
 .podium-wrapper {
-  margin-bottom: 60px;
+  margin-bottom: 30px; /* 🔥 was too big */
 }
 
 /* ========================================
@@ -1322,14 +1322,16 @@ KEY (IDENTIFIER)
 ======================================== */
 
 .key-card {
-  max-width: 1300px;
-  margin: 0 auto 30px auto;
+  max-width: 600px;
+  margin: 30px auto 10px auto; /* 🔥 pulls it closer to tables */
+
   text-align: center;
 
   border: 1px solid rgba(255,255,255,0.1);
-  box-shadow: 0 0 10px rgba(255,255,255,0.05);
+  box-shadow: 0 0 12px rgba(139,99,181,0.25);
+
   border-radius: 12px;
-  padding: 20px;
+  padding: 18px;
 }
 
 .key-content {
@@ -1379,29 +1381,37 @@ KEY (IDENTIFIER)
 LEADERBOARD LAYOUT (CLEAN + BALANCED)
 ======================================== */
 
+.leaderboard-title {
+  font-size: 2.4rem;
+  text-shadow:
+    0 0 6px var(--primary),
+    0 0 12px var(--primaryLight);
+}
+
 .leaderboard-grid {
   display: flex;
-  gap: 32px;
   justify-content: center;
-  align-items: stretch;
+  gap: 40px;
   flex-wrap: wrap;
 
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: 1400px;   /* 🔥 wider */
+  margin: 20px auto 0 auto;
 }
 
 .leaderboard-card {
-  flex: 1 1 500px; /* 🔥 responsive balance */
-  max-width: 600px;
+  flex: 1 1 600px;     /* 🔥 bigger cards */
+  max-width: 700px;
 
-  padding: 20px;
-  border-radius: 14px;
+  padding: 25px;
+  border-radius: 16px;
 
   background: linear-gradient(145deg, #1a1a1a, #111);
 
   box-shadow:
-    0 10px 25px rgba(0,0,0,0.6),
-    0 0 10px var(--primaryLight);
+    0 12px 30px rgba(0,0,0,0.7),
+    0 0 15px var(--primaryLight);
+
+  transition: all 0.25s ease;
 }
 
 .leaderboard-card h2 {
@@ -1416,14 +1426,20 @@ LEADERBOARD LAYOUT (CLEAN + BALANCED)
 .leaderboard-card:hover {
   transform: translateY(-4px);
   box-shadow:
-    0 15px 35px rgba(0,0,0,0.8),
-    0 0 20px var(--primaryLight);
+    0 20px 40px rgba(0,0,0,0.9),
+    0 0 25px var(--primaryLight);
 }
 
+.leaderboard-table th {
+  font-size: 16px;
+  opacity: 0.8;
+}
 
-/* ========================================
-TABLE STYLING
-======================================== */
+.leaderboard-table td {
+  font-size: 18px;
+  font-weight: 700;
+}
+
 
 /* ========================================
 TABLE SCROLL (FIXED)
