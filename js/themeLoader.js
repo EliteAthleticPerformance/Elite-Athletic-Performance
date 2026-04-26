@@ -34,8 +34,8 @@ window.APP_READY = new Promise(async (resolve, reject) => {
 
       logo: base + "images/roosters-logo.png",
 
-      dataURL: "https://script.google.com/macros/s/AKfycbyZPnii9Qf3VdDiTRn1tPt_BOnIv22m2r5n5afnEQ6pNGO2sWO-jQa6MBtJBNfYGyA/exec",
-      submitURL: "https://script.google.com/macros/s/AKfycbyZPnii9Qf3VdDiTRn1tPt_BOnIv22m2r5n5afnEQ6pNGO2sWO-jQa6MBtJBNfYGyA/exec"
+      dataURL: "https://script.google.com/macros/s/AKfycbx4PyTeFkNyFE_LpovykeiFXiLgPwcB3shbjwDIyFMARi496yZ2wHq_G5jwXJsqV_3o/exec",
+      submitURL: "https://script.google.com/macros/s/AKfycbx4PyTeFkNyFE_LpovykeiFXiLgPwcB3shbjwDIyFMARi496yZ2wHq_G5jwXJsqV_3o/exec"
     };
 
     window.SCHOOL_CONFIG = config;
