@@ -1501,6 +1501,36 @@ BADGE STYLES (FOR TABLE)
 }
 
 /* ========================================
+PERFORMANCE TIERS
+======================================== */
+
+.tier {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 8px;
+}
+
+/* 🔥 COLORS MATCH YOUR KEY */
+.tier.elite {
+  color: #22c55e;
+}
+
+.tier.above {
+  color: #f97316;
+}
+
+.tier.average {
+  color: #eab308;
+}
+
+.tier.needs {
+  color: #ef4444;
+}
+
+/* ========================================
 MOBILE (RESPONSIVE)
 ======================================== */
 
