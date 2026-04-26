@@ -1,19 +1,31 @@
 // ========================================
-// 🔥 ELITE V10 THEME + CONFIG ENGINE (FIXED)
+// 🔥 ELITE V11 THEME ENGINE (MULTI-TENANT)
 // ========================================
 
 window.SCHOOL_CONFIG = null;
+
+const CONFIG_API =
+  "https://script.google.com/macros/s/YOUR_CONFIG_ENDPOINT/exec";
 
 /* ========================================
    🌐 BASE PATH
 ======================================== */
 
 function getBasePath() {
-  const path = window.location.pathname;
-  if (path.includes("/Elite-Athletic-Performance/")) {
-    return "/Elite-Athletic-Performance/";
-  }
-  return "/";
+  return window.location.pathname.includes("/Elite-Athletic-Performance/")
+    ? "/Elite-Athletic-Performance/"
+    : "/";
+}
+
+/* ========================================
+   🧠 GET SCHOOL FROM URL
+======================================== */
+
+function getSchoolKey() {
+  const params = new URLSearchParams(window.location.search);
+  const school = params.get("school") || "pleasanthill";
+
+  return school.toLowerCase().replace(/\s+/g, "");
 }
 
 /* ========================================
@@ -22,45 +34,66 @@ function getBasePath() {
 
 window.APP_READY = new Promise(async (resolve, reject) => {
   try {
-
     const base = getBasePath();
+    const schoolKey = getSchoolKey();
 
-    // 🔥 HARD-CODED CONFIG (WITH THEME)
-    const config = {
-      key: "pleasanthill",
-      name: "Pleasant Hill Roosters",
+    let config = null;
 
-      logo: base + "images/roosters-logo.png",
+    // 🔥 TRY FETCH CONFIG (MULTI-TENANT)
+    try {
+      const res = await fetch(CONFIG_API + "?t=" + Date.now());
+      const list = await res.json();
 
-      dataURL: "https://script.google.com/macros/s/AKfycbx4PyTeFkNyFE_LpovykeiFXiLgPwcB3shbjwDIyFMARi496yZ2wHq_G5jwXJsqV_3o/exec",
-      submitURL: "https://script.google.com/macros/s/AKfycbx4PyTeFkNyFE_LpovykeiFXiLgPwcB3shbjwDIyFMARi496yZ2wHq_G5jwXJsqV_3o/exec",
-
-      // 🔥 THIS WAS MISSING
-      theme: {
-        primary: "#5a2ca0",        // Pleasant Hill purple
-        primaryLight: "#8b5cf6",
-        primaryDark: "#3b1a6e",
-        secondary: "#a78bfa",
-        secondaryLight: "#c4b5fd"
+      if (Array.isArray(list)) {
+        config = list.find(
+          s => String(s.school).toLowerCase() === schoolKey
+        );
       }
+    } catch (err) {
+      console.warn("⚠️ Config API failed, using fallback");
+    }
+
+    // 🔥 FALLBACK (PLEASANT HILL SAFE MODE)
+    if (!config) {
+      config = {
+        school: "pleasanthill",
+        fullName: "Pleasant Hill Roosters",
+
+        logo: base + "images/roosters-logo.png",
+
+        primary: "#7c3aed",
+        primaryLight: "#a78bfa",
+        accent: "#f59e0b",
+
+        dataURL:
+          "https://script.google.com/macros/s/AKfycbx4PyTeFkNyFE_LpovykeiFXiLgPwcB3shbjwDIyFMARi496yZ2wHq_G5jwXJsqV_3o/exec",
+
+        submitURL:
+          "https://script.google.com/macros/s/AKfycbx4PyTeFkNyFE_LpovykeiFXiLgPwcB3shbjwDIyFMARi496yZ2wHq_G5jwXJsqV_3o/exec"
+      };
+
+      console.warn("⚠️ Using fallback config");
+    }
+
+    window.SCHOOL_CONFIG = {
+      key: config.school,
+      name: config.fullName || config.name,
+      logo: config.logo,
+      primary: config.primary || "#7c3aed",
+      primaryLight: config.primaryLight || "#a78bfa",
+      accent: config.accent || "#f59e0b",
+      dataURL: config.dataURL,
+      submitURL: config.submitURL
     };
 
-    window.SCHOOL_CONFIG = config;
+    console.log("🏫 CONFIG LOADED:", window.SCHOOL_CONFIG);
 
-    console.log("🏫 CONFIG LOADED:", config);
+    applyTheme(window.SCHOOL_CONFIG);
 
-    // ✅ APPLY THEME (🔥 KEY FIX)
-    applyTheme(config.theme);
-
-    // ✅ APPLY BASE
-    applyBaseTheme(config);
-
-    // ✅ HEADER SYNC
     await waitForHeader();
-    applyHeaderBranding(config);
+    applyHeaderBranding(window.SCHOOL_CONFIG);
 
-    resolve(config);
-
+    resolve(window.SCHOOL_CONFIG);
   } catch (err) {
     console.error("❌ CONFIG LOAD FAILED:", err);
     reject(err);
@@ -68,37 +101,21 @@ window.APP_READY = new Promise(async (resolve, reject) => {
 });
 
 /* ========================================
-   🎨 APPLY THEME (🔥 NEW)
+   🎨 APPLY GLOBAL THEME
 ======================================== */
 
-function applyTheme(theme) {
-  if (!theme) return;
-
+function applyTheme(config) {
   const root = document.documentElement;
 
-  root.style.setProperty("--primary", theme.primary);
-  root.style.setProperty("--primaryLight", theme.primaryLight);
-  root.style.setProperty("--primaryDark", theme.primaryDark);
-  root.style.setProperty("--secondary", theme.secondary);
-  root.style.setProperty("--secondaryLight", theme.secondaryLight);
+  root.style.setProperty("--primary", config.primary);
+  root.style.setProperty("--primaryLight", config.primaryLight);
+  root.style.setProperty("--accent", config.accent);
 
-  // 🔥 STORE FOR OTHER PAGES (CRITICAL)
-  sessionStorage.setItem(
-    "theme-" + "pleasanthill",
-    JSON.stringify(theme)
-  );
+  // 🔥 TIMER PAGE SUPPORT
+  document.body.style.setProperty("--primary", config.primary);
 
-  console.log("🎨 THEME APPLIED:", theme);
-}
-
-/* ========================================
-   🎨 BASE THEME
-======================================== */
-
-function applyBaseTheme(config) {
-
+  // favicon
   let favicon = document.getElementById("dynamicFavicon");
-
   if (!favicon) {
     favicon = document.createElement("link");
     favicon.id = "dynamicFavicon";
@@ -108,6 +125,7 @@ function applyBaseTheme(config) {
 
   favicon.href = config.logo + "?v=" + Date.now();
 
+  sessionStorage.setItem("school", config.key);
   sessionStorage.setItem("schoolName", config.name);
   sessionStorage.setItem("schoolLogo", config.logo);
 }
@@ -118,19 +136,15 @@ function applyBaseTheme(config) {
 
 function waitForHeader() {
   return new Promise(resolve => {
-
     let attempts = 0;
 
     const check = () => {
-      const logo = document.getElementById("schoolLogo");
-
-      if (logo) {
+      if (document.getElementById("schoolLogo")) {
         resolve();
       } else if (attempts < 50) {
         attempts++;
         setTimeout(check, 50);
       } else {
-        console.warn("⚠️ Header not detected");
         resolve();
       }
     };
@@ -140,53 +154,28 @@ function waitForHeader() {
 }
 
 /* ========================================
-   🏫 APPLY HEADER BRANDING
+   🏫 HEADER BRANDING
 ======================================== */
 
 function applyHeaderBranding(config) {
-
   const logo = document.getElementById("schoolLogo");
   const name = document.getElementById("schoolName");
 
   if (logo) {
-    const logoURL = config.logo + "?v=" + Date.now();
-    logo.src = logoURL;
-
-    logo.onload = () => logo.classList.add("loaded");
-
-    logo.onerror = () => {
-      logo.src = getBasePath() + "images/default-logo.png";
-      logo.classList.add("loaded");
-    };
-
-    if (logo.complete) {
-      logo.classList.add("loaded");
-    }
+    logo.src = config.logo + "?v=" + Date.now();
+    logo.classList.add("loaded");
   }
 
   if (name) {
     name.textContent = config.name;
   }
+
+  // 🔥 APPLY HEADER COLOR GLOW
+  const headerTitle = document.querySelector("h1");
+  if (headerTitle) {
+    headerTitle.style.textShadow = `
+      0 0 10px ${config.primary},
+      0 0 20px ${config.primaryLight}
+    `;
+  }
 }
-
-/* ========================================
-   🚨 FAIL SAFE
-======================================== */
-
-window.APP_READY.catch(() => {
-  document.body.innerHTML = `
-    <div style="
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      height:100vh;
-      font-family:sans-serif;
-      text-align:center;
-    ">
-      <div>
-        <h1>⚠️ System Error</h1>
-        <p>Unable to load configuration</p>
-      </div>
-    </div>
-  `;
-});
