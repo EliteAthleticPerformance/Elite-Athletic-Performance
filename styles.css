@@ -1184,7 +1184,8 @@ body {
 PODIUM CLEANUP
 ======================================== */
 
-.podium {
+/* 🔥 FIXED CONTAINER (MATCHES HTML) */
+.podium-container {
   display: flex;
   justify-content: center;
   align-items: flex-end;
@@ -1198,19 +1199,26 @@ PODIUM CLEANUP
   padding: 12px;
 }
 
-/* Heights create podium effect */
+/* 🔥 AUTO POSITIONING (NO JS CLASS DEPENDENCY) */
+/* 🥇 FIRST */
 .podium-item.first {
   height: 220px;
   background: linear-gradient(to top, #1e3a8a, var(--primaryLight));
   transform: scale(1.1);
   z-index: 2;
+
+  box-shadow:
+    0 0 20px var(--primaryLight),
+    0 0 40px rgba(139,99,181,0.6);
 }
 
+/* 🥈 SECOND */
 .podium-item.second {
   height: 170px;
   background: linear-gradient(to top, #374151, #9ca3af);
 }
 
+/* 🥉 THIRD */
 .podium-item.third {
   height: 150px;
   background: linear-gradient(to top, #78350f, #f59e0b);
@@ -1244,26 +1252,8 @@ text-shadow:
 /* ===== PODIUM ANIMATION ===== */
 
 .podium-item {
-  transform: translateY(80px);
-  opacity: 0;
-}
-
-/* Animate in */
-.podium-item.show {
-  animation: podiumRise 0.6s ease-out forwards;
-}
-
-/* Stagger timing */
-.podium-item.second.show {
-  animation-delay: 0.2s;
-}
-
-.podium-item.first.show {
-  animation-delay: 0.4s;
-}
-
-.podium-item.third.show {
-  animation-delay: 0s;
+  transform: translateY(0);
+  opacity: 1;
 }
 
 @keyframes podiumRise {
@@ -1296,7 +1286,12 @@ text-shadow:
 }
 
 .podium-wrapper {
-  margin-bottom: 30px; /* 🔥 was too big */
+  margin-bottom: 20px;
+}
+
+.podium-title {
+  margin-bottom: 10px;
+  opacity: 0.9;
 }
 
 /* ========================================
