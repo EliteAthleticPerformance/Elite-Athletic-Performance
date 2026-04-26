@@ -1,11 +1,11 @@
 // ========================================
-// 🔥 ELITE V11 THEME + CONFIG ENGINE (MULTI-TENANT)
+// 🔥 ELITE V10 THEME + CONFIG ENGINE (PLEASANT HILL LOCKED)
 // ========================================
 
 window.SCHOOL_CONFIG = null;
 
 /* ========================================
-   🌐 BASE PATH (CRITICAL FIX)
+   🌐 BASE PATH
 ======================================== */
 
 function getBasePath() {
@@ -19,79 +19,33 @@ function getBasePath() {
 }
 
 /* ========================================
-   🌐 LOAD CONFIG FROM GOOGLE SHEETS
-======================================== */
-
-async function loadSchoolConfig(school) {
-  const base = getBasePath();
-
-  // 🔥 YOUR CONFIG ENDPOINT (already deployed)
-  const CONFIG_URL = "https://script.google.com/macros/s/AKfycbyZPnii9Qf3VdDiTRn1tPt_BOnIv22m2r5n5afnEQ6pNGO2sWO-jQa6MBtJBNfYGyA/exec";
-
-  const res = await fetch(CONFIG_URL + "?t=" + Date.now());
-  const list = await res.json();
-
-  if (!Array.isArray(list)) {
-    throw new Error("Invalid config response");
-  }
-
-  const config = list.find(
-  s =>
-    String(s.school)
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, "") === school
-);
-
-  if (!config) {
-    throw new Error("School config not found: " + school);
-  }
-
-  return {
-  key: config.school,
-  name: config.fullName || config.name,
-
-    // 🔥 AUTO HANDLE RELATIVE VS FULL URL
-    logo: config.logo?.startsWith("http")
-      ? config.logo
-      : base + config.logo,
-
-    dataURL: config.dataURL,
-    submitURL: config.submitURL
-  };
-}
-
-/* ========================================
    🌐 GLOBAL APP READY
 ======================================== */
 
 window.APP_READY = new Promise(async (resolve, reject) => {
   try {
-    const params = new URLSearchParams(window.location.search);
 
-    let school = params.get("school") || sessionStorage.getItem("school");
+    const base = getBasePath();
 
-    if (!school) {
-      throw new Error("No school provided");
-    }
+    // 🔥 HARD-CODED CONFIG (PLEASANT HILL ONLY)
+    const config = {
+      key: "pleasanthill",
+      name: "Pleasant Hill Roosters",
 
-    // 🔥 NORMALIZE (CRITICAL)
-    school = school
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, "");
+      logo: base + "images/roosters-logo.png",
 
-    sessionStorage.setItem("school", school);
-
-    // 🔥 LOAD FROM GOOGLE SHEET
-    const config = await loadSchoolConfig(school);
+      dataURL: "https://script.google.com/macros/s/AKfycbyZPnii9Qf3VdDiTRn1tPt_BOnIv22m2r5n5afnEQ6pNGO2sWO-jQa6MBtJBNfYGyA/exec",
+      submitURL: "https://script.google.com/macros/s/AKfycbyZPnii9Qf3VdDiTRn1tPt_BOnIv22m2r5n5afnEQ6pNGO2sWO-jQa6MBtJBNfYGyA/exec"
+    };
 
     window.SCHOOL_CONFIG = config;
 
-    console.log("🏫 CONFIG LOADED:", config);
+    console.log("🏫 CONFIG LOADED (HARDCODED):", config);
 
     // ✅ APPLY BASE
     applyBaseTheme(config);
 
-    // ✅ GUARANTEED HEADER SYNC
+    // ✅ HEADER SYNC
     await waitForHeader();
     applyHeaderBranding(config);
 
@@ -118,7 +72,6 @@ function applyBaseTheme(config) {
     document.head.appendChild(favicon);
   }
 
-  // 🔥 CACHE BUST
   favicon.href = config.logo + "?v=" + Date.now();
 
   sessionStorage.setItem("schoolName", config.name);
@@ -171,7 +124,6 @@ function applyHeaderBranding(config) {
       logo.classList.add("loaded");
     };
 
-    // 🔥 FALLBACK
     logo.onerror = () => {
       console.warn("⚠️ Logo failed to load, using fallback");
       logo.src = getBasePath() + "images/default-logo.png";
