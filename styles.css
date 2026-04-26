@@ -1181,25 +1181,36 @@ body {
 }
 
 /* ========================================
-PODIUM CLEANUP
+PODIUM ENGINE (FINAL)
 ======================================== */
 
-/* 🔥 FIXED CONTAINER (MATCHES HTML) */
 .podium-container {
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  gap: 20px;
+  gap: 25px;
   margin-top: 20px;
-  flex-wrap: nowrap;
 }
 
+/* BASE */
 .podium-item {
   width: 140px;
-  padding: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+
+  transform: translateY(0);
+  opacity: 1;
 }
 
-/* 🔥 AUTO POSITIONING (NO JS CLASS DEPENDENCY) */
+/* HOVER */
+.podium-item:hover {
+  transform: translateY(-6px) scale(1.03);
+}
+
 /* 🥇 FIRST */
 .podium-item.first {
   height: 220px;
@@ -1224,36 +1235,31 @@ PODIUM CLEANUP
   background: linear-gradient(to top, #78350f, #f59e0b);
 }
 
-/* 🏆 Medal (icon) */
+/* TEXT */
 .podium-rank {
-  font-size: 36px; /* ⬆️ was ~28px */
-  margin-bottom: 8px;
+  font-size: 34px;
+  margin-bottom: 6px;
 }
 
-/* 👤 Name */
 .podium-name {
-  font-size: 18px;   /* ⬆️ was ~15px */
+  font-size: 16px;
   font-weight: 700;
   margin-top: 10px;
-  line-height: 1.2;
 }
 
-/* 🔢 Score */
 .podium-score {
-  font-size: 26px;   /* ⬆️ was ~20px */
+  font-size: 24px;
   font-weight: 800;
   color: var(--primaryLight);
-text-shadow:
-  0 0 6px var(--primary),
-  0 0 12px var(--primaryLight);
-  margin-top: 6px;
+
+  text-shadow:
+    0 0 6px var(--primary),
+    0 0 12px var(--primaryLight);
 }
 
-/* ===== PODIUM ANIMATION ===== */
-
-.podium-item {
-  transform: translateY(0);
-  opacity: 1;
+/* ENTRY ANIMATION */
+.podium-item.show {
+  animation: podiumRise 0.6s ease-out forwards;
 }
 
 @keyframes podiumRise {
@@ -1261,37 +1267,10 @@ text-shadow:
     transform: translateY(80px);
     opacity: 0;
   }
-  60% {
-    transform: translateY(-10px);
-    opacity: 1;
-  }
   100% {
     transform: translateY(0);
-    opacity: 1; /* 🔥 CRITICAL FIX */
+    opacity: 1;
   }
-}
-
-.podium-item.first.show {
-  animation: podiumRise 0.6s ease-out forwards,
-             winnerGlow 1.2s ease-in-out infinite alternate;
-}
-
-@keyframes winnerGlow {
-  from {
-    box-shadow: 0 0 10px rgba(59,130,246,0.4);
-  }
-  to {
-    box-shadow: 0 0 30px rgba(59,130,246,0.9);
-  }
-}
-
-.podium-wrapper {
-  margin-bottom: 20px;
-}
-
-.podium-title {
-  margin-bottom: 10px;
-  opacity: 0.9;
 }
 
 /* ========================================
