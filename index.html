@@ -9,7 +9,8 @@
 
 <title>Elite Athletic Performance</title>
 
-<link rel="stylesheet" href="/Elite-Athletic-Performance/styles.css">
+<!-- 🔥 FIXED PATH -->
+<link rel="stylesheet" href="./styles.css">
 
 </head>
 
@@ -18,8 +19,9 @@
 <!-- ===== HEADER ===== -->
 <div id="header-placeholder"></div>
 
-<script src="/Elite-Athletic-Performance/js/themeLoader.js"></script>
-<script src="/Elite-Athletic-Performance/js/header.js"></script>
+<!-- 🔥 FIXED PATHS -->
+<script src="./js/themeLoader.js"></script>
+<script src="./js/header.js"></script>
 
 <!-- ===== MAIN ===== -->
 <main>
@@ -43,19 +45,19 @@
 
     <div class="stats-row">
 
-  <div class="stat-item">
-    <div class="stat-icon">👥</div>
-    <div id="athleteCount" class="stat-value">2</div>
-    <div class="stat-label">Athletes</div>
-  </div>
+      <div class="stat-item">
+        <div class="stat-icon">👥</div>
+        <div id="athleteCount" class="stat-value">--</div>
+        <div class="stat-label">Athletes</div>
+      </div>
 
-  <div class="stat-item">
-    <div class="stat-icon">📊</div>
-    <div id="testCount" class="stat-value">3</div>
-    <div class="stat-label">Tests</div>
-  </div>
+      <div class="stat-item">
+        <div class="stat-icon">📊</div>
+        <div id="testCount" class="stat-value">--</div>
+        <div class="stat-label">Tests</div>
+      </div>
 
-</div>
+    </div>
 
   </section>
 
@@ -82,6 +84,7 @@
         <p>View Performance Ratings</p>
       </div>
 
+      <!-- 🔥 UPDATED: ALWAYS PASSES SCHOOL -->
       <div class="card" onclick="goToPage('leaderboard.html')">
         <div class="card-icon">🏆</div>
         <h2>Leaderboard</h2>
@@ -94,16 +97,22 @@
 
 </main>
 
-<!-- ===== NAVIGATION SCRIPT ===== -->
+<!-- ===== NAVIGATION ===== -->
 <script>
 function goToPage(page) {
-  const school = sessionStorage.getItem("school") || "pleasanthill";
+  const school =
+    new URLSearchParams(window.location.search).get("school") ||
+    sessionStorage.getItem("school") ||
+    "pleasanthill";
+
+  sessionStorage.setItem("school", school);
+
   window.location.href = page + "?school=" + school;
 }
 </script>
 
-<!-- ===== OPTIONAL: LOAD COUNTS ===== -->
-<script src="/Elite-Athletic-Performance/js/dataLoader.js"></script>
+<!-- ===== DATA ===== -->
+<script src="./js/dataLoader.js"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
