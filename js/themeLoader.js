@@ -41,31 +41,39 @@ window.APP_READY = (async () => {
       `${CONFIG_API}?type=config&school=${schoolKey}&t=${Date.now()}`
     );
 
-    if (!res.ok) throw new Error("Config fetch failed");
+    if (!res.ok) {
+      throw new Error("Config fetch failed");
+    }
 
     const config = await res.json();
 
-    // ❌ If API returns error → stop
-    if (config.error) {
-      throw new Error(config.error);
+    if (!config || config.error) {
+      throw new Error(config?.error || "Invalid config response");
     }
 
-    // ✅ Normalize config
+    // ========================================
+    // 🧠 NORMALIZE CONFIG
+    // ========================================
+
     window.SCHOOL_CONFIG = {
       key: config.school,
-      name: config.fullName || config.name,
+      name: config.fullName || config.name || "Unknown School",
       logo: resolveLogo(config.logo, base),
 
-      primary: config.primary,
-      primaryLight: config.primaryLight,
-      primaryDark: config.primaryDark,
-      secondary: config.secondary,
-      secondaryLight: config.secondaryLight,
-      background: config.background,
+      primary: config.primary || "#7c3aed",
+      primaryLight: config.primaryLight || "#a78bfa",
+      primaryDark: config.primaryDark || "#6d28d9",
+
+      secondary: config.secondary || "#f59e0b",
+      secondaryLight: config.secondaryLight || "#fbbf24",
+
+      background: config.background || "#000000",
 
       dataURL: config.dataURL,
       submitURL: config.submitURL
     };
+
+    console.log("🏫 Loaded Config:", window.SCHOOL_CONFIG);
 
     applyTheme(window.SCHOOL_CONFIG);
 
@@ -76,7 +84,7 @@ window.APP_READY = (async () => {
 
   } catch (err) {
     console.error("❌ Theme load failed:", err);
-    showFatalError("Failed to load school configuration.");
+    showFatalError(err.message || "Failed to load configuration.");
     throw err;
   }
 })();
@@ -99,6 +107,7 @@ function applyTheme(config) {
 
   // favicon
   let favicon = document.getElementById("dynamicFavicon");
+
   if (!favicon) {
     favicon = document.createElement("link");
     favicon.id = "dynamicFavicon";
@@ -108,8 +117,10 @@ function applyTheme(config) {
 
   favicon.href = config.logo + "?v=" + Date.now();
 
-  // session cache (optional but helpful)
+  // session cache (light usage)
   sessionStorage.setItem("school", config.key);
+  sessionStorage.setItem("schoolName", config.name);
+  sessionStorage.setItem("schoolLogo", config.logo);
 }
 
 /* ========================================
@@ -130,6 +141,7 @@ function applyHeaderBranding(config) {
   }
 
   const title = document.querySelector("h1");
+
   if (title) {
     title.style.textShadow = `
       0 0 10px ${config.primary},
@@ -149,7 +161,7 @@ function waitForHeader() {
     const check = () => {
       if (document.getElementById("schoolLogo")) {
         resolve();
-      } else if (attempts < 40) {
+      } else if (attempts < 50) {
         attempts++;
         setTimeout(check, 50);
       } else {
@@ -165,7 +177,6 @@ function waitForHeader() {
    🧩 HELPERS
 ======================================== */
 
-// handle relative vs absolute logo paths
 function resolveLogo(logo, base) {
   if (!logo) return "";
   if (logo.startsWith("http")) return logo;
