@@ -5,7 +5,7 @@
 window.SCHOOL_CONFIG = null;
 
 const CONFIG_API =
-  "https://script.google.com/macros/s/YOUR_CONFIG_ENDPOINT/exec";
+  "https://script.google.com/macros/s/AKfycbx4PyTeFkNyFE_LpovykeiFXiLgPwcB3shbjwDIyFMARi496yZ2wHq_G5jwXJsqV_3o/exec";
 
 /* ========================================
    🌐 BASE PATH
