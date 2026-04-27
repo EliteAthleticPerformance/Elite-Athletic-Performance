@@ -1,5 +1,5 @@
 // ========================================
-// 🔥 ELITE V12 DATA LOADER (LOCKED + SAFE)
+// 🔥 ELITE V13 DATA LOADER (PRODUCTION SAFE)
 // ========================================
 
 let APP_DATA = [];
@@ -23,7 +23,12 @@ async function loadAthleteData() {
     const res = await fetch(url);
     const raw = await res.json();
 
-    if (!Array.isArray(raw) || !raw.length) {
+    if (!Array.isArray(raw)) {
+      console.warn("⚠️ API did not return array");
+      return [];
+    }
+
+    if (!raw.length) {
       console.warn("⚠️ No data returned from API");
       return [];
     }
@@ -31,40 +36,46 @@ async function loadAthleteData() {
     console.log("🧪 RAW SAMPLE:", raw[0]);
 
     const keyMap = buildKeyMap(raw[0]);
-    console.log("🔑 KEY MAP:", keyMap);
-    console.log("📋 AVAILABLE HEADERS:", Object.keys(raw[0]));
 
     APP_DATA = raw.map(row => {
 
       // ========================================
-      // 🔒 STRICT + SAFE ACCESSOR
+      // 🔒 SAFE ACCESSOR (exact → normalized)
       // ========================================
       const get = (...keys) => {
 
-  // ✅ FIRST: try EXACT match (case-sensitive)
-  for (let k of keys) {
-    if (row[k] !== undefined && row[k] !== "") {
-      return row[k];
-    }
-  }
+        // 1️⃣ exact match first
+        for (let k of keys) {
+          if (row[k] !== undefined && row[k] !== "") {
+            return row[k];
+          }
+        }
 
-  // ✅ SECOND: fallback to normalized match
-  for (let k of keys) {
-    const normalized = normalizeKey(k);
-    if (keyMap[normalized]) {
-      const realKey = keyMap[normalized];
-      if (row[realKey] !== undefined && row[realKey] !== "") {
-        return row[realKey];
-      }
-    }
-  }
+        // 2️⃣ normalized fallback
+        for (let k of keys) {
+          const normalized = normalizeKey(k);
+          if (keyMap[normalized]) {
+            const realKey = keyMap[normalized];
+            if (row[realKey] !== undefined && row[realKey] !== "") {
+              return row[realKey];
+            }
+          }
+        }
 
-  return "";
-};
+        return "";
+      };
 
       return {
 
+        // ========================================
+        // 🆔 REQUIRED SYSTEM FIELDS
+        // ========================================
+        id: clean(get("id")),
+        active: get("active") !== false && get("active") !== "FALSE",
+
+        // ========================================
         // 🧍 BASIC
+        // ========================================
         name: clean(get("Student-Athlete")),
         date: clean(get("Test Date")),
 
@@ -73,31 +84,43 @@ async function loadAthleteData() {
         weight: num(get("Actual Weight")),
         weightClass: clean(get("Weight Group")),
 
+        // ========================================
         // 🏋️ STRENGTH
+        // ========================================
         bench: num(get("Bench Press")),
         squat: num(get("Squat")),
         clean: num(get("Hang Clean")),
 
-        // ⚡ EXPLOSIVE / POWER
+        // ========================================
+        // ⚡ EXPLOSIVE
+        // ========================================
         vertical: num(get("Vertical Jump")),
         broad: num(get("Broad Jump")),
         med: num(get("Med Ball Toss")),
 
+        // ========================================
         // 🏃 SPEED
+        // ========================================
         agility: num(get("Pro Agility")),
         ten: num(get("10 yd Dash")),
         forty: num(get("40 yd Dash")),
 
+        // ========================================
         // 🔁 CORE
+        // ========================================
         situps: num(get("Sit-Ups")),
 
+        // ========================================
         // 🔥 CATEGORY SCORES
+        // ========================================
         strengthPoints: num(get("Strength Score")),
         speedPoints: num(get("Speed Score")),
         explosivePoints: num(get("Explosive Score")),
         powerPoints: num(get("Power Score")),
 
+        // ========================================
         // 📊 TOTAL SCORE
+        // ========================================
         score:
           num(get("Total Athletic Performance Points")) ||
           num(get("3 Lift Projected Max Total")) ||
@@ -110,23 +133,13 @@ async function loadAthleteData() {
     })
 
     // ========================================
-    // ✅ FINAL CLEAN FILTER
+    // ✅ FINAL FILTER (SAFE)
     // ========================================
-    .filter(a =>
-      a.name &&
-      (
-        a.score > 0 ||
-        a.strengthPoints > 0 ||
-        a.speedPoints > 0 ||
-        a.explosivePoints > 0 ||
-        a.powerPoints > 0
-      )
-    );
+    .filter(a => a.name && a.active);
 
-    // ✅ CORRECT PLACE FOR DEBUG
-    console.log("🔥 FINAL TRANSFORMED DATA SAMPLE:", APP_DATA[0]);
-
+    console.log("🔥 FINAL SAMPLE:", APP_DATA[0]);
     console.log("✅ DATA READY:", APP_DATA.length);
+
     return APP_DATA;
 
   } catch (err) {
@@ -160,7 +173,7 @@ function buildKeyMap(sampleRow) {
 ======================================== */
 
 function num(val) {
-  if (val === null || val === undefined) return 0;
+  if (val === null || val === undefined || val === "") return 0;
 
   const n = parseFloat(String(val).replace(/[^0-9.\-]/g, ""));
   return isNaN(n) ? 0 : n;
