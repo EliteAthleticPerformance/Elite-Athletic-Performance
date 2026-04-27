@@ -1,5 +1,5 @@
 // ========================================
-// 🔥 ELITE V13 DATA LOADER (PRODUCTION SAFE)
+// 🔥 ELITE V14 DATA LOADER (FULLY FIXED)
 // ========================================
 
 let APP_DATA = [];
@@ -40,11 +40,11 @@ async function loadAthleteData() {
     APP_DATA = raw.map(row => {
 
       // ========================================
-      // 🔒 SAFE ACCESSOR (exact → normalized)
+      // 🔒 SAFE ACCESSOR
       // ========================================
       const get = (...keys) => {
 
-        // 1️⃣ exact match first
+        // 1️⃣ exact match
         for (let k of keys) {
           if (row[k] !== undefined && row[k] !== "") {
             return row[k];
@@ -65,13 +65,23 @@ async function loadAthleteData() {
         return "";
       };
 
+      // ========================================
+      // 🆔 SYSTEM FIELDS (FIXED)
+      // ========================================
+
+      const rawActive = get("active");
+
+      const isActive =
+        rawActive === "" ||
+        rawActive === undefined ||
+        rawActive === true ||
+        rawActive === "TRUE" ||
+        rawActive === "true";
+
       return {
 
-        // ========================================
-        // 🆔 REQUIRED SYSTEM FIELDS
-        // ========================================
         id: clean(get("id")),
-        active: get("active") !== false && get("active") !== "FALSE",
+        active: isActive,
 
         // ========================================
         // 🧍 BASIC
@@ -133,7 +143,7 @@ async function loadAthleteData() {
     })
 
     // ========================================
-    // ✅ FINAL FILTER (SAFE)
+    // ✅ FINAL FILTER (FIXED)
     // ========================================
     .filter(a => a.name && a.active);
 
