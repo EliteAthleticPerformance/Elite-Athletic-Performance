@@ -305,7 +305,7 @@ function sortTable(colIndex) {
   }
 
   const keys = [
-    "name", "date", "hour", "grade", "weight", "weightClass",
+    "name", "date", "hour", "grade", "weight", "group",
     "bench", "squat", "clean",
     "vertical", "broad", "med",
     "agility", "situps", "ten", "forty"
