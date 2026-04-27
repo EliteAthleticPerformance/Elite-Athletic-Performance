@@ -108,7 +108,7 @@ function getWeightClass(weight) {
   if (weight <= 270) return "256";
   if (weight <= 285) return "271";
   if (weight <= 300) return "286";
-  return "301+";
+  return "301";
 }
 
 /* ========================================
@@ -117,16 +117,20 @@ function getWeightClass(weight) {
 
 function buildEntry() {
   const weight = toNumber(getValue("weight"));
-  const school = getSchool(); // 🔥 FIX
+  const school = getSchool();
+
+  const group = getWeightClass(weight); // 🔥 FIX
 
   const entry = {
-    school, // 🔥 REQUIRED BY API
+    school,
 
     name: normalizeName(getValue("name")),
     date: getValue("date") || todayISO(),
     hour: getValue("hour"),
     grade: getValue("grade"),
     weight,
+
+    group, // 🔥 THIS IS THE FIX
 
     bench: toNumber(getValue("bench")),
     squat: toNumber(getValue("squat")),
@@ -139,9 +143,7 @@ function buildEntry() {
     agility: toNumber(getValue("agility")),
     ten: toNumber(getValue("ten")),
     forty: toNumber(getValue("forty")),
-    situps: toNumber(getValue("situps")),
-
-    weightClass: getWeightClass(weight)
+    situps: toNumber(getValue("situps"))
   };
 
   console.log("📦 BUILT ENTRY:", entry);
