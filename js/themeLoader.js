@@ -32,8 +32,8 @@ window.APP_READY = new Promise(async (resolve, reject) => {
 
       logo: base + "images/roosters-logo.png",
 
-      dataURL: "https://script.google.com/macros/s/AKfycbx4PyTeFkNyFE_LpovykeiFXiLgPwcB3shbjwDIyFMARi496yZ2wHq_G5jwXJsqV_3o/exec",
-      submitURL: "https://script.google.com/macros/s/AKfycbx4PyTeFkNyFE_LpovykeiFXiLgPwcB3shbjwDIyFMARi496yZ2wHq_G5jwXJsqV_3o/exec",
+      dataURL: "https://script.google.com/macros/s/AKfycbwnSjmwlod_AoqmTEoownI1CsWhjpTu9ubLrb78DsLBTaH0WDnYxXNiXEyJmY1J0Uh2/exec",
+      submitURL: "https://script.google.com/macros/s/AKfycbwnSjmwlod_AoqmTEoownI1CsWhjpTu9ubLrb78DsLBTaH0WDnYxXNiXEyJmY1J0Uh2/exec",
 
       // 🔥 THIS WAS MISSING
       theme: {
