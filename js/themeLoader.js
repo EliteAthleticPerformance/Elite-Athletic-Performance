@@ -5,7 +5,7 @@
 window.SCHOOL_CONFIG = null;
 
 const CONFIG_API =
-  "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
+  "https://script.google.com/macros/s/AKfycbzRZrqzgvzb5St-DKlPt9rDp9IqXDCqNfA1xFScV1nMnFCw_BkEYBmLuy8d4F4bxUeV/exec";
 
 /* ========================================
    🧠 GET SCHOOL FROM URL
