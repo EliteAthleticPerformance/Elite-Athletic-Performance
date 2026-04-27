@@ -1,3 +1,5 @@
+alert("NEW DATA LOADER ACTIVE");
+
 // ========================================
 // 🔥 ELITE DATA LOADER (BULLETPROOF)
 // ========================================
