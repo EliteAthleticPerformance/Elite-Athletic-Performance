@@ -1,5 +1,5 @@
 // ========================================
-// 🔥 ELITE ENTER ENGINE (PRODUCTION FINAL + DEBUG)
+// 🔥 ELITE ENTER ENGINE (PRODUCTION FINAL)
 // ========================================
 
 let isSubmitting = false;
@@ -28,6 +28,28 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+/* ========================================
+   SCHOOL (🔥 CRITICAL FIX)
+======================================== */
+
+function getSchool() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlSchool = urlParams.get("school");
+
+  const stored = sessionStorage.getItem("school");
+
+  const school = (urlSchool || stored || "pleasanthill")
+    .toLowerCase()
+    .replace(/\s+/g, "");
+
+  // keep storage synced
+  sessionStorage.setItem("school", school);
+
+  console.log("🏫 ACTIVE SCHOOL (ENTER):", school);
+
+  return school;
+}
 
 /* ========================================
    HELPERS
@@ -95,8 +117,11 @@ function getWeightClass(weight) {
 
 function buildEntry() {
   const weight = toNumber(getValue("weight"));
+  const school = getSchool(); // 🔥 FIX
 
   const entry = {
+    school, // 🔥 REQUIRED BY API
+
     name: normalizeName(getValue("name")),
     date: getValue("date") || todayISO(),
     hour: getValue("hour"),
@@ -150,8 +175,6 @@ async function submitToGoogle(entry, url) {
   try {
     console.log("🚀 POSTING TO URL:", url);
     console.log("📦 DATA BEING SENT:", entry);
-     // 👇 ADD THIS LINE RIGHT HERE
-    console.log("🚨 FINAL URL USED IN FETCH:", url);
 
     const res = await fetch(url, {
       method: "POST",
@@ -193,7 +216,7 @@ async function getSubmitURL() {
 
   const url = window.SCHOOL_CONFIG?.submitURL;
 
-  console.log("🔥 FINAL SUBMIT URL FROM CONFIG:", url);
+  console.log("🔥 FINAL SUBMIT URL:", url);
 
   if (!url) {
     showMessage("Config error: missing submitURL", "error");
