@@ -602,6 +602,60 @@ h1 {
     font-weight: 900;
 }
 
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: #111;
+  padding: 20px;
+  border-radius: 12px;
+  width: 300px;
+  box-shadow: 0 0 20px var(--primary);
+}
+
+.modal-content input {
+  width: 100%;
+  margin: 8px 0;
+  padding: 8px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #111;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px var(--primary);
+  display: flex;
+  gap: 10px;
+}
+
+.toast.hidden {
+  display: none;
+}
+
 /* ========================================
    ATHLETE CARDS (FIXED)
 ======================================== */
