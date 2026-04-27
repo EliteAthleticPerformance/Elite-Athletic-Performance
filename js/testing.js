@@ -157,6 +157,9 @@ function renderTable(data) {
   const prMap = computeAthletePRs(data);
 
   data.forEach(a => {
+
+     console.log("GROUP VALUE:", a.group);
+     
     const prs = prMap[a.name];
 
     const tr = document.createElement("tr");
