@@ -1,8 +1,30 @@
 // ========================================
-// 🔥 ELITE V10 THEME + CONFIG ENGINE (FIXED)
+// 🔥 ELITE THEME + CONFIG ENGINE (DYNAMIC)
 // ========================================
 
 window.SCHOOL_CONFIG = null;
+
+/* ========================================
+   🌐 GET SCHOOL (FIXED)
+======================================== */
+
+function getSchool() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlSchool = urlParams.get("school");
+
+  const stored = sessionStorage.getItem("school");
+
+  const school = (urlSchool || stored || "pleasanthill")
+    .toLowerCase()
+    .replace(/\s+/g, "");
+
+  // ✅ ALWAYS sync storage
+  sessionStorage.setItem("school", school);
+
+  console.log("🎯 ACTIVE SCHOOL:", school);
+
+  return school;
+}
 
 /* ========================================
    🌐 BASE PATH
@@ -17,45 +39,63 @@ function getBasePath() {
 }
 
 /* ========================================
-   🌐 GLOBAL APP READY
+   🌐 APP READY
 ======================================== */
 
 window.APP_READY = new Promise(async (resolve, reject) => {
   try {
 
     const base = getBasePath();
+    const school = getSchool();
 
-    // 🔥 HARD-CODED CONFIG (WITH THEME)
-    const config = {
-      key: "pleasanthill",
-      name: "Pleasant Hill Roosters",
+    // 🔥 MULTI-SCHOOL CONFIG MAP
+    const CONFIG_MAP = {
 
-      logo: base + "images/roosters-logo.png",
+      pleasanthill: {
+        key: "pleasanthill",
+        name: "Pleasant Hill Roosters",
+        logo: base + "images/roosters-logo.png",
+        theme: {
+          primary: "#5a2ca0",
+          primaryLight: "#8b5cf6",
+          primaryDark: "#3b1a6e",
+          secondary: "#a78bfa",
+          secondaryLight: "#c4b5fd"
+        }
+      },
 
-      dataURL: "https://script.google.com/macros/s/AKfycbwnSjmwlod_AoqmTEoownI1CsWhjpTu9ubLrb78DsLBTaH0WDnYxXNiXEyJmY1J0Uh2/exec",
-      submitURL: "https://script.google.com/macros/s/AKfycbwnSjmwlod_AoqmTEoownI1CsWhjpTu9ubLrb78DsLBTaH0WDnYxXNiXEyJmY1J0Uh2/exec",
-
-      // 🔥 THIS WAS MISSING
-      theme: {
-        primary: "#5a2ca0",        // Pleasant Hill purple
-        primaryLight: "#8b5cf6",
-        primaryDark: "#3b1a6e",
-        secondary: "#a78bfa",
-        secondaryLight: "#c4b5fd"
+      harrisonville: {
+        key: "harrisonville",
+        name: "Harrisonville Wildcats",
+        logo: base + "images/wildcats-logo.png", // 🔥 CHANGE if needed
+        theme: {
+          primary: "#1e3a8a",     // blue example
+          primaryLight: "#3b82f6",
+          primaryDark: "#1e40af",
+          secondary: "#60a5fa",
+          secondaryLight: "#93c5fd"
+        }
       }
+
+    };
+
+    const selected = CONFIG_MAP[school] || CONFIG_MAP["pleasanthill"];
+
+    const config = {
+      ...selected,
+
+      // 🔥 SAME API FOR ALL
+      dataURL: "https://script.google.com/macros/s/AKfycbwnSjmwlod_AoqmTEoownI1CsWhjpTu9ubLrb78DsLBTaH0WDnYxXNiXEyJmY1J0Uh2/exec",
+      submitURL: "https://script.google.com/macros/s/AKfycbwnSjmwlod_AoqmTEoownI1CsWhjpTu9ubLrb78DsLBTaH0WDnYxXNiXEyJmY1J0Uh2/exec"
     };
 
     window.SCHOOL_CONFIG = config;
 
     console.log("🏫 CONFIG LOADED:", config);
 
-    // ✅ APPLY THEME (🔥 KEY FIX)
-    applyTheme(config.theme);
-
-    // ✅ APPLY BASE
+    applyTheme(config.theme, school);
     applyBaseTheme(config);
 
-    // ✅ HEADER SYNC
     await waitForHeader();
     applyHeaderBranding(config);
 
@@ -68,10 +108,10 @@ window.APP_READY = new Promise(async (resolve, reject) => {
 });
 
 /* ========================================
-   🎨 APPLY THEME (🔥 NEW)
+   🎨 APPLY THEME
 ======================================== */
 
-function applyTheme(theme) {
+function applyTheme(theme, school) {
   if (!theme) return;
 
   const root = document.documentElement;
@@ -82,11 +122,8 @@ function applyTheme(theme) {
   root.style.setProperty("--secondary", theme.secondary);
   root.style.setProperty("--secondaryLight", theme.secondaryLight);
 
-  // 🔥 STORE FOR OTHER PAGES (CRITICAL)
-  sessionStorage.setItem(
-    "theme-" + "pleasanthill",
-    JSON.stringify(theme)
-  );
+  // ✅ store PER SCHOOL
+  sessionStorage.setItem("theme-" + school, JSON.stringify(theme));
 
   console.log("🎨 THEME APPLIED:", theme);
 }
@@ -118,21 +155,16 @@ function applyBaseTheme(config) {
 
 function waitForHeader() {
   return new Promise(resolve => {
-
     let attempts = 0;
 
     const check = () => {
       const logo = document.getElementById("schoolLogo");
 
-      if (logo) {
-        resolve();
-      } else if (attempts < 50) {
+      if (logo) resolve();
+      else if (attempts < 50) {
         attempts++;
         setTimeout(check, 50);
-      } else {
-        console.warn("⚠️ Header not detected");
-        resolve();
-      }
+      } else resolve();
     };
 
     check();
@@ -140,7 +172,7 @@ function waitForHeader() {
 }
 
 /* ========================================
-   🏫 APPLY HEADER BRANDING
+   🏫 APPLY HEADER
 ======================================== */
 
 function applyHeaderBranding(config) {
@@ -149,19 +181,8 @@ function applyHeaderBranding(config) {
   const name = document.getElementById("schoolName");
 
   if (logo) {
-    const logoURL = config.logo + "?v=" + Date.now();
-    logo.src = logoURL;
-
+    logo.src = config.logo + "?v=" + Date.now();
     logo.onload = () => logo.classList.add("loaded");
-
-    logo.onerror = () => {
-      logo.src = getBasePath() + "images/default-logo.png";
-      logo.classList.add("loaded");
-    };
-
-    if (logo.complete) {
-      logo.classList.add("loaded");
-    }
   }
 
   if (name) {
@@ -175,14 +196,7 @@ function applyHeaderBranding(config) {
 
 window.APP_READY.catch(() => {
   document.body.innerHTML = `
-    <div style="
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      height:100vh;
-      font-family:sans-serif;
-      text-align:center;
-    ">
+    <div style="display:flex;justify-content:center;align-items:center;height:100vh;">
       <div>
         <h1>⚠️ System Error</h1>
         <p>Unable to load configuration</p>
