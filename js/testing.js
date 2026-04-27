@@ -167,7 +167,7 @@ function renderTable(data) {
       <td>${a.hour || "-"}</td>
       <td>${a.grade || "-"}</td>
       <td>${format(a.weight)}</td>
-      <td>${a.weightClass || "-"}</td>
+      <td>${a.group || "-"}</td>
 
       <td class="${a.bench === prs.bench ? 'pr' : ''}">${format(a.bench)}</td>
       <td class="${a.squat === prs.squat ? 'pr' : ''}">${format(a.squat)}</td>
