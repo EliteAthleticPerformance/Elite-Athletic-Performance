@@ -126,7 +126,7 @@ function buildEntry() {
 
     name: normalizeName(getValue("name")),
     date: getValue("date") || todayISO(),
-    hour: getValue("hour"),
+    gender: getValue("gender"),
     grade: getValue("grade"),
     weight,
 
