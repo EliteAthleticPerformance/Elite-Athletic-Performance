@@ -89,11 +89,7 @@
   <div class="form-grid cols-3">
     <input id="bench" type="number" placeholder="Bench">
     <input id="squat" type="number" placeholder="Squat">
-    <select id="situps">
-      <option value="">Sit-Ups</option>
-      <option>30</option><option>40</option>
-      <option>50</option><option>60</option><option>70</option>
-    </select>
+    <input id="situps" type="number" placeholder="Sit-Ups">
   </div>
 </div>
 
@@ -101,12 +97,7 @@
 <div class="form-section">
   <h2>EXPLOSIVE</h2>
   <div class="form-grid cols-3">
-    <select id="vertical">
-      <option value="">Vertical</option>
-      <option>20</option><option>22</option><option>24</option>
-      <option>26</option><option>28</option><option>30</option>
-      <option>32</option><option>34</option><option>36</option>
-    </select>
+    <input id="vertical" type="number" placeholder="Vertical (inches)">
 
     <select id="broad">
       <option value="">Broad</option>
@@ -114,11 +105,7 @@
       <option>8.00</option><option>9.00</option><option>10.00</option>
     </select>
 
-    <select id="agility">
-      <option value="">Pro Agility</option>
-      <option>4.2</option><option>4.4</option>
-      <option>4.6</option><option>4.8</option><option>5.0</option>
-    </select>
+    <input id="agility" type="number" step="0.01" placeholder="Pro Agility (sec)">
   </div>
 </div>
 
@@ -129,8 +116,17 @@
     <input id="clean" type="number" placeholder="Clean">
     <select id="medball">
       <option value="">Med Ball Toss</option>
-      <option>10</option><option>12</option><option>14</option>
-      <option>16</option><option>18</option><option>20</option>
+      <option>10.00</option> <option>10.03</option> <option>10.06</option> <option>10.09</option>
+       <option>11.00</option> <option>11.03</option> <option>11.06</option> <option>11.09</option>
+       <option>12.00</option> <option>12.03</option> <option>12.06</option> <option>12.09</option>
+        <option>13.00</option> <option>13.03</option> <option>13.06</option> <option>13.09</option>
+        <option>14.00</option> <option>14.03</option> <option>14.06</option> <option>14.09</option>
+       <option>15.00</option> <option>15.03</option> <option>15.06</option> <option>15.09</option>
+      <option>16.00</option> <option>16.03</option> <option>16.06</option> <option>16.09</option>
+       <option>17.00</option> <option>17.03</option> <option>17.06</option> <option>17.09</option>
+      <option>18.00</option> <option>18.03</option> <option>18.06</option> <option>18.09</option>
+       <option>19.00</option> <option>19.03</option> <option>19.06</option> <option>19.09</option>
+      <option>20.00</option> <option>20.03</option> <option>20.06</option> <option>20.9</option>
     </select>
   </div>
 </div>
@@ -139,17 +135,9 @@
 <div class="form-section">
   <h2>SPEED</h2>
   <div class="form-grid cols-2">
-    <select id="ten">
-      <option value="">10 Yard</option>
-      <option>1.2</option><option>1.4</option>
-      <option>1.6</option><option>1.8</option><option>2.0</option>
-    </select>
+    <input id="ten" type="number" step="0.01" placeholder="10 Yard (sec)">
 
-    <select id="forty">
-      <option value="">40 Yard</option>
-      <option>4.4</option><option>4.6</option>
-      <option>4.8</option><option>5.0</option><option>5.2</option>
-    </select>
+    <input id="forty" type="number" step="0.01" placeholder="40 Yard (sec)">
   </div>
 </div>
 
