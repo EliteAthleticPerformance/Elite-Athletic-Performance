@@ -130,8 +130,8 @@ console.log("🧪 ROW DATA:", row);
 
         // 🏃 SPEED
         agility: num(row.agility || row["Pro Agility"]),
-        ten: num(row.dash10 || row["10 yd Dash"]),
-        forty: num(row.dash40 || row["40 yd Dash"]),
+        ten: num(row.dash10 || row["10 Yd Dash"]),
+        forty: num(row.dash40 || row["40 Yd Dash"]),
 
         // 🔁 CORE
         situps: num(row.situps || row["Sit-Ups"]),
