@@ -113,7 +113,7 @@ console.log("🧪 ROW DATA:", row);
         // 🧍 BASIC
         name: clean(name),
         date: clean(row.date || row["Test Date"]),
-        hour: clean(row.hour || row["Hour"]),
+        gender: clean(row.gender || row["Gender"]),
         grade: clean(row.grade || row["Grade"]),
         weight: num(row.weight || row["Actual Weight"]),
         group: clean(row.group || row["Weight Group"]),
