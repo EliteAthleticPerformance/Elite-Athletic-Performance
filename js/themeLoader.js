@@ -50,6 +50,19 @@ const CONFIG_MAP = (() => {
       }
     },
 
+     raypec: {
+      key: "raypec",
+      name: "Ray-Pec Panthers",
+      logo: base + "images/Panthers-logo.png",
+      theme: {
+        primary: "#C9A646",
+        primaryLight: "#E2C46A",
+        primaryDark: "#8A6E2F",
+        secondary: "#0A0A0A",
+        secondaryLight: "#2E2E2E"
+      }
+    },
+
     springhill: {
       key: "springhill",
       name: "Spring Hill Broncos",
