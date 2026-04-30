@@ -499,7 +499,8 @@ let nextTickTime = null;
 let workoutData = [];
 
 Object.defineProperty(window, "workoutData", {
-    get: () => workoutData
+    get: () => workoutData,
+    set: (val) => { workoutData = val; }
 });
 
 
