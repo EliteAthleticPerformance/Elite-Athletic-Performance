@@ -29,6 +29,7 @@ window.loadWorkout = async function loadWorkout() {
 
     const res = await fetch(url);
     const text = await res.text();
+    workoutData.length = 0;
 
     console.log("📦 CSV received:", text.slice(0, 200));
 
