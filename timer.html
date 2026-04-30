@@ -15,6 +15,7 @@
 
 <!-- ✅ APPLY THEME -->
 <script>
+  console.log("🔥 SCRIPT STARTED");
 (function () {
   const params = new URLSearchParams(window.location.search);
   const school = params.get("school") || sessionStorage.getItem("school") || "harrisonville";
@@ -984,6 +985,7 @@ function getSheetGid() {
     return "1830705073";
 }
 
+  console.log("🔥 BEFORE loadWorkout definition");
 async function loadWorkout() {
     console.log("🚀 loadWorkout STARTED");
 
@@ -1053,7 +1055,7 @@ for (const r of rows) {
         continue;
     }
 
-    const firstRaw = clean(r[0] ?? "");
+    const firstRaw = clean(r[0] || "");
     const firstCell = firstRaw.replace(/"/g, "").trim().toLowerCase();
 
     // ---------- BULLETPROOF BLANK ROW ----------
