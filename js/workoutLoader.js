@@ -1,3 +1,16 @@
+function parseCSV(text) {
+    return text
+        .split("\n")
+        .map(line =>
+            line.split(",").map(cell =>
+                cell
+                    .replace(/^"|"$/g, "")   // remove surrounding quotes
+                    .replace(/""/g, '"')     // fix escaped quotes
+                    .trim()
+            )
+        );
+}
+
 console.log("🔥 workoutLoader.js LOADED");
 
 window.loadWorkout = async function loadWorkout() {
