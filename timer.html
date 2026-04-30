@@ -1055,7 +1055,7 @@ for (const r of rows) {
     }
 
     const firstRaw = clean(r[0] ?? "");
-    const firstCell = firstRaw.toLowerCase();
+    const firstCell = firstRaw.replace(/"/g, "").trim().toLowerCase();
 
     // ---------- BULLETPROOF BLANK ROW ----------
     if (isEffectivelyBlankRow(r)) {
@@ -1183,9 +1183,8 @@ for (const r of rows) {
     ================================================= */
 
     const looksLikeSetNumber =
-        /^\d+$/.test(firstCell) ||
-        /^\d+\.$/.test(firstCell) ||
-        /^set\s*\d*$/i.test(firstRaw);
+    /^\d+$/.test(firstCell) ||
+    /^set\s*\d*$/i.test(firstCell);
 
     if (looksLikeSetNumber) {
 
