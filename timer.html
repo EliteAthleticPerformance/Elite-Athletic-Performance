@@ -491,10 +491,7 @@ let nextTickTime = null;
 
 let workoutData = [];
 
-/* ✅ safer global access (no desync risk) */
-Object.defineProperty(window, "workoutData", {
-    get: () => workoutData
-});
+window.workoutData = workoutData;
 
 
 /* ===================== SETS ===================== */
@@ -991,7 +988,7 @@ async function loadWorkout() {
     console.log("🚀 loadWorkout STARTED");
 
     try {
-        const config = window.SCHOOL_CONFIG;
+        const config = await window.APP_READY;
 
       if (!config) {
     console.error("❌ No SCHOOL_CONFIG found");
