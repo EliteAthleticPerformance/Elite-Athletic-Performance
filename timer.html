@@ -991,10 +991,10 @@ async function loadWorkout() {
     console.log("🚀 loadWorkout started");
 
     try {
-        const gid = getSheetGid();
+        const config = window.SCHOOL_CONFIG;
 
 const response = await fetch(
-`https://docs.google.com/spreadsheets/d/e/2PACX-1vRjAVNz1buONnBF0Fkqse6QQwdpcreJdvdQGWiVNWp6UGewHgd-4f5uC0ZcyHhfRZxTU7BDC3_AjQA1/pub?gid=${gid}&single=true&output=csv`
+`${config.dataURL}?school=${config.key}&type=workout`
 );
 
         if (!response.ok) {
