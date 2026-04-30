@@ -980,7 +980,7 @@ function isEffectivelyBlankRow(row) {
     if (!row || row.length === 0) return true;
 
     return row.every(cell =>
-        String(cell ?? "")
+        String(cell || "")
             .replace(/\u00A0/g, "") // non-breaking space
             .replace(/\s/g, "")
             .trim() === ""
@@ -1472,7 +1472,7 @@ function tick() {
 
         rotationCount = 0;
 
-        const nextItem = workoutData[currentSet] ?? null;
+        const nextItem = workoutData[currentSet] || null;
 
         // 🔴 no more items
         if (!nextItem) {
@@ -1517,7 +1517,7 @@ function tick() {
 
         case "break": {
 
-            const nextItem = workoutData[currentSet] ?? null;
+            const nextItem = workoutData[currentSet] || null;
 
             if (!nextItem) {
                 workoutComplete();
