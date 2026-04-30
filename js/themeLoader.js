@@ -224,14 +224,31 @@ function waitForHeader() {
 
 function applyHeaderBranding(config) {
 
-  const logo = document.getElementById("schoolLogo");
+  // 🔥 Support BOTH header logo + timer logo
+  const headerLogo = document.getElementById("schoolLogo");
+  const timerLogo = document.getElementById("teamLogo");
+
   const name = document.getElementById("schoolName");
 
-  if (logo) {
-    logo.src = config.logo + "?v=" + Date.now();
-    logo.onload = () => logo.classList.add("loaded");
+  /* =============================
+     APPLY LOGO (HEADER)
+  ============================= */
+  if (headerLogo) {
+    headerLogo.src = config.logo + "?v=" + Date.now();
+    headerLogo.onload = () => headerLogo.classList.add("loaded");
   }
 
+  /* =============================
+     APPLY LOGO (TIMER PAGE)
+  ============================= */
+  if (timerLogo) {
+    timerLogo.src = config.logo + "?v=" + Date.now();
+    timerLogo.onload = () => timerLogo.classList.add("loaded");
+  }
+
+  /* =============================
+     APPLY SCHOOL NAME
+  ============================= */
   if (name) {
     name.textContent = config.name;
   }
