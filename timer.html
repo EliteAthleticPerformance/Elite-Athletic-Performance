@@ -1802,21 +1802,40 @@ window.addEventListener("keydown", (e) => {
 
 window.addEventListener("DOMContentLoaded", async () => {
 
-    // 🔥 WAIT FOR THEME + CONFIG TO LOAD
-    const config = await window.APP_READY;
+    try {
 
-    console.log("✅ SCHOOL CONFIG READY:", config);
+        if (!window.APP_READY) {
+            console.error("❌ APP_READY missing — themeLoader not loaded");
+            return;
+        }
 
-    applyDaySpecificClassLength();
+        const config = await window.APP_READY;
 
-    totalSeconds = classBlockLength;
-    originalTotalSeconds = classBlockLength;
-    updateTotalDisplay();
+        if (!config) {
+            console.error("❌ Config failed to load");
+            return;
+        }
 
-    // 🔥 NOW SAFE TO LOAD WORKOUT
-    await loadWorkout();
+        console.log("✅ SCHOOL CONFIG READY:", config);
 
-    // auto detect if class already started
-    setTimeout(autoDetectActiveClass, 2000);
+        applyDaySpecificClassLength();
+
+        totalSeconds = classBlockLength;
+        originalTotalSeconds = classBlockLength;
+        updateTotalDisplay();
+
+        // 🔥 IMPORTANT: ensure function exists BEFORE calling
+        if (typeof loadWorkout !== "function") {
+            console.error("❌ loadWorkout is NOT defined");
+            return;
+        }
+
+        await loadWorkout();
+
+        setTimeout(autoDetectActiveClass, 2000);
+
+    } catch (err) {
+        console.error("🔥 CRITICAL INIT ERROR:", err);
+    }
 
 });
