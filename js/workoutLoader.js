@@ -1,4 +1,3 @@
-const workoutData = window.workoutData;
 
 function parseCSV(text) {
     return text
