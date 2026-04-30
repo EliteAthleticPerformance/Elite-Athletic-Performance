@@ -1039,7 +1039,7 @@ const response = await fetch(
                 .trim();
 
       
-       /* =============================
+/* =============================
    PROCESS ROWS
 ============================= */
 for (const r of rows) {
@@ -1177,48 +1177,46 @@ for (const r of rows) {
         if (v !== null) breakDuration = v;
         continue;
     }
+
+    /* =================================================
+       FLEXIBLE SET DETECTION (FIXED — INSIDE LOOP)
+    ================================================= */
+
+    const looksLikeSetNumber =
+        /^\d+$/.test(firstCell) ||
+        /^\d+\.$/.test(firstCell) ||
+        /^set\s*\d*$/i.test(firstRaw);
+
+    if (looksLikeSetNumber) {
+
+        const workSec = parseSheetNumber(r[8]);
+        const rotateSec = parseSheetNumber(r[9]);
+        const breakSec = parseSheetNumber(r[10], breakDuration);
+
+        workoutData.push({
+            type: "set",
+            core: clean(r[1]),
+            percent: clean(r[2]),
+            reps: clean(r[3]),
+            aux: clean(r[4]),
+            auxReps: clean(r[5]),
+            move: clean(r[6]),
+            moveReps: clean(r[7]),
+            workSec,
+            rotateSec,
+            breakSec
+        });
+
+        console.log("📥 Set parsed:", {
+            set: firstRaw,
+            workSec,
+            rotateSec,
+            breakSec
+        });
+
+        continue;
+    }
 }
-
-          
-            /* =================================================
-               FLEXIBLE SET DETECTION
-            ================================================= */
-
-            const looksLikeSetNumber =
-                /^\d+$/.test(firstCell) ||
-                /^\d+\.$/.test(firstCell) ||
-                /^set\s*\d*$/i.test(firstRaw);
-
-            if (looksLikeSetNumber) {
-
-                const workSec = parseSheetNumber(r[8]);
-                const rotateSec = parseSheetNumber(r[9]);
-                const breakSec = parseSheetNumber(r[10], breakDuration);
-
-                workoutData.push({
-                    type: "set",
-                    core: clean(r[1]),
-                    percent: clean(r[2]),
-                    reps: clean(r[3]),
-                    aux: clean(r[4]),
-                    auxReps: clean(r[5]),
-                    move: clean(r[6]),
-                    moveReps: clean(r[7]),
-                    workSec,
-                    rotateSec,
-                    breakSec
-                });
-
-                console.log("📥 Set parsed:", {
-                    set: firstRaw,
-                    workSec,
-                    rotateSec,
-                    breakSec
-                });
-
-                continue;
-            }
-        }
 
         console.log("✅ Workout rows:", workoutData.length);
         console.log("✅ Auto start:", autoStartEnabled);
