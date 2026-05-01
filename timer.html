@@ -168,10 +168,10 @@ body {
 .quad-title { font-size:3.5vh; }
 .quad-text  { font-size:6.5vh; font-weight:900; }
 
-.q1{background:#000;color:#fff;border:8px solid var(--silver);}
-.q2{background:#fff;color:#000;border:8px solid var(--silver);}
-.q3{background:var(--primary);color:#fff;border:8px solid var(--secondaryLight);}
-.q4{background:#555555d5;color:#fff;border:8px solid var(--silver);}
+.blackQuad { background:#000; color:#fff; }
+.whiteQuad { background:#fff; color:#000; }
+.blueQuad  { background:var(--primary); color:#fff; }
+.greyQuad  { background:#555555d5; color:#fff; }
 
 /* ===================== CENTER CLOCK ===================== */
 
@@ -276,25 +276,25 @@ body {
 
 <div id="display">
 
-    <div class="quad q1" id="q1">
+    <div class="quad q1 blackQuad" id="q1">
         <div class="quad-title">Core Lift</div>
         <div class="quad-text core-lift-title">Squats</div>
         <div class="quad-text core-reps">Reps: 10</div>
         <div class="quad-text core-percent">Percentage: 65</div>
     </div>
 
-    <div class="quad q2" id="q2">
+    <div class="quad q2 whiteQuad" id="q2">
         <div class="quad-title">Aux Lift</div>
         <div class="quad-text aux-lift-title">Aux Lift</div>
         <div class="quad-text aux-reps">Reps: 10</div>
     </div>
 
-    <div class="quad q3" id="q3">
+    <div class="quad q3 blueQuad"  id="q3">
         <div class="quad-title">REST</div>
         <div class="quad-text">Spot</div>
     </div>
 
-    <div class="quad q4" id="q4">
+    <div class="quad q4 greyQuad"  id="q4">
         <div class="quad-title">Movement / Stability Skill</div>
         <div class="quad-text movement-title">Movement</div>
         <div class="quad-text movement-reps">Reps/Time:</div>
