@@ -45,7 +45,28 @@ for (const r of rows) {
     window.serverTime = new Date(r[1]);
 }
 
-    if (key === "AUTO_START") {
+    // 🔥 CONTROL SYSTEM (REQUIRED FOR COACH CONTROLS)
+if (key === "CONTROL_ACTION") {
+    window.controlAction = r[1];
+}
+
+if (key === "CONTROL_TIMESTAMP") {
+    window.controlTimestamp = r[1];
+}
+
+if (key === "CONTROL_PHASE") {
+    window.controlPhase = r[1];
+}
+
+if (key === "CONTROL_SET") {
+    window.controlSet = parseInt(r[1], 10);
+}
+
+if (key === "CONTROL_ROTATION") {
+    window.controlRotation = parseInt(r[1], 10);
+}
+
+        if (key === "AUTO_START") {
         autoStartEnabled = String(r[1]).toUpperCase() === "TRUE";
     }
 
@@ -79,6 +100,11 @@ console.log("Thu:", thurTimes);
 console.log("Fri:", friTimes);
 console.log("AutoStart:", autoStartEnabled);
     console.log("🕒 SERVER TIME:", window.serverTime);
+    console.log("🎮 CONTROL STATE:");
+console.log("Action:", window.controlAction);
+console.log("Phase:", window.controlPhase);
+console.log("Set:", window.controlSet);
+console.log("Rotation:", window.controlRotation);
 
 // =============================
 // BUILD WORKOUT DATA (SECOND PASS)
