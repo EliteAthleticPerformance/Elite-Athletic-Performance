@@ -586,6 +586,38 @@ else return;
     }
 }
 
+function rotateQuadrantColors() {
+    const q1 = document.getElementById("q1");
+    const q2 = document.getElementById("q2");
+    const q3 = document.getElementById("q3");
+    const q4 = document.getElementById("q4");
+
+    if (!q1 || !q2 || !q3 || !q4) return;
+
+    const getColor = (el) => {
+        if (el.classList.contains("blackQuad")) return "blackQuad";
+        if (el.classList.contains("whiteQuad")) return "whiteQuad";
+        if (el.classList.contains("blueQuad")) return "blueQuad";
+        if (el.classList.contains("greyQuad")) return "greyQuad";
+    };
+
+    const c1 = getColor(q1);
+    const c2 = getColor(q2);
+    const c3 = getColor(q3);
+    const c4 = getColor(q4);
+
+    // remove all
+    [q1, q2, q3, q4].forEach(q =>
+        q.classList.remove("blackQuad","whiteQuad","blueQuad","greyQuad")
+    );
+
+    // 🔥 YOUR ROTATION RULE
+    q2.classList.add(c1); // q1 → q2
+    q4.classList.add(c2); // q2 → q4
+    q3.classList.add(c4); // q4 → q3
+    q1.classList.add(c3); // q3 → q1
+}
+
   function computeWorkoutState(nowMs) {
 
     if (!window.classStartTime) return null;
@@ -921,7 +953,18 @@ if (!state) {
 }
 
 if (currentPhase !== state.phase) {
+
+    // 🔥 ROTATE COLORS ONLY when WORK ends
+    if (currentPhase === "work" && state.phase === "rotate") {
+        rotateQuadrantColors();
+    }
+
     phaseJustChanged = true;
+
+    setTimeout(() => {
+        updatePhaseDisplay();
+    }, 0);
+}
 
     // 🔥 FORCE immediate UI reset on phase change
     setTimeout(() => {
@@ -976,7 +1019,7 @@ rotationCount = state.rotation || 0;
   updateClock();
 
   updatePhaseDisplay();
-  updateQuadrantHighlight();
+  
     
   if (timeLeft > 0) return;
 
@@ -1068,34 +1111,7 @@ function updatePhaseDisplay() {
     }
 }
 
-function updateQuadrantHighlight() {
-    const quads = [
-        document.querySelector(".q1"),
-        document.querySelector(".q2"),
-        document.querySelector(".q3"),
-        document.querySelector(".q4")
-    ];
 
-    if (!quads.every(q => q)) return;
-
-    // 🔥 RESET ALL
-    quads.forEach(q => {
-        q.classList.remove("activeQuad", "inactiveQuad");
-    });
-
-    // Only during WORK
-    if (currentPhase === "work") {
-        const activeIndex = rotationCount % quads.length;
-
-        quads.forEach((q, i) => {
-            if (i === activeIndex) {
-                q.classList.add("activeQuad");
-            } else {
-                q.classList.add("inactiveQuad");
-            }
-        });
-    }
-}
   
 /* ======================================================
    SPEECH ENGINE (shared helper)
