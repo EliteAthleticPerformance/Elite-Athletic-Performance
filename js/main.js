@@ -1067,10 +1067,10 @@ function updatePhaseDisplay() {
 
 function updateQuadrantHighlight() {
     const quads = [
-        document.querySelector(".quad1"),
-        document.querySelector(".quad2"),
-        document.querySelector(".quad3"),
-        document.querySelector(".quad4")
+        document.querySelector(".q1"),
+        document.querySelector(".q2"),
+        document.querySelector(".q3"),
+        document.querySelector(".q4")
     ];
 
     if (!quads.every(q => q)) return;
