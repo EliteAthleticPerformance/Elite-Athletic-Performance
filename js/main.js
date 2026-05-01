@@ -82,7 +82,12 @@ function updateClock() {
     const el = document.getElementById("clock");
     if (!el) return;
 
-    el.textContent = timeLeft;
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+
+    el.textContent =
+        String(minutes).padStart(2, "0") + ":" +
+        String(seconds).padStart(2, "0");
 }
 
 function getSyncedNow() {
@@ -136,29 +141,7 @@ function resetWorkoutState() {
    APPLY DAY-SPECIFIC CLASS LENGTH
 ====================================================== */
 
-function applyDaySpecificClassLength() {
-    const now = new Date();
-    const day = now.getDay(); // 0=Sun
 
-    let minutes = monMinutes; // safe default
-
-    if (day === 1) minutes = monMinutes;
-else if (day === 2) minutes = tueMinutes;
-else if (day === 3) minutes = wedMinutes;
-else if (day === 4) minutes = thurMinutes;
-else if (day === 5) minutes = friMinutes;
-
-    classBlockLength = minutes * 60;
-
-    console.log("📅 Using class length:", minutes, "minutes");
-    console.log("📊 Mon minutes:", monMinutes);
-    console.log("📊 Tue minutes:", tueMinutes);
-    console.log("📊 Wed minutes:", wedMinutes);
-    console.log("📊 Thur minutes:", thurMinutes);
-    console.log("📊 Fri minutes:", friMinutes);
-}
-
-  
 
 /* ======================================================
    CALCULATE TOTAL CLASS TIME
@@ -167,56 +150,66 @@ function calculateTotalTime() {
 
     if (!window.workoutData || !window.workoutData.length) {
         console.warn("Workout still loading...");
-        return;
+        return 0;
     }
 
     const work = parseInt(document.getElementById("workTime").value, 10) || 0;
     const rest = parseInt(document.getElementById("restTime").value, 10) || 0;
 
-    let prepTotal = 0;
-    let workoutTotal = 0;
-    let breakTotal = 0;
+    let total = 0;
 
-    /* ---------- PREP BLOCKS ---------- */
-    prepTotal += dressOutDuration;
-    prepTotal += dynamicStretchDuration;
+    /* ---------- PREP ---------- */
+    total += dressOutDuration;
+    total += dynamicStretchDuration;
 
+    /* ---------- WORKOUT ---------- */
     window.workoutData.forEach(item => {
 
         if (item.type === "set") {
 
             for (let i = 0; i < maxRotations; i++) {
-                workoutTotal += work;
+                total += item.workSec || work;
 
                 if (i < maxRotations - 1) {
-                    workoutTotal += rest;
+                    total += item.rotateSec || rest;
                 }
             }
         }
 
         if (item.type === "break") {
-            breakTotal += item.breakSec || breakDuration;
+            total += item.breakSec || breakDuration;
         }
 
     });
 
-    /* ---------- TOTAL WORKOUT BEFORE COOLDOWN ---------- */
-    const workoutBlock = prepTotal + workoutTotal + breakTotal;
+    /* ---------- COOLDOWN ---------- */
+    total += cooldownDuration; // optional if you want manual cooldown
 
-    /* ---------- COOLDOWN CALCULATION ---------- */
-    cooldownDuration = Math.max(
-        classBlockLength - workoutBlock,
-        0
-    );
+    console.log("🧮 Calculated class length (sec):", total);
 
-    console.log("Cooldown calculated:", cooldownDuration);
-
-    /* ---------- FINAL TOTAL (ALWAYS CLASS LENGTH) ---------- */
-    return classBlockLength;
+    return total;
 }
 
+function parseTimeToToday(timeStr) {
+    const [h, m] = timeStr.split(":").map(Number);
 
-  
+    const now = getEffectiveNow();
+
+    return new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        h,
+        m,
+        0
+    );
+}
+
+function workoutFinishScreen() {
+    stopAllTimers();
+    document.getElementById("phase").innerText = "WORKOUT COMPLETE";
+}
+
 function preciseTick() {
 
     if (!isRunning) return;
@@ -309,6 +302,8 @@ updateTotalDisplay();
 
 function startTimer() {
 
+  stopAllTimers();
+  
 if (!window.classStartTime) {
     window.classStartTime = getEffectiveNow().getTime();
 }
@@ -334,9 +329,10 @@ if (!window.classStartTime) {
   
     /* ---------- START STATE ---------- */
     isRunning = true;
-    applyDaySpecificClassLength();
+    
 
-// ⭐ Force fresh class time calculation
+classBlockLength = calculateTotalTime(); // 🔥 NOW DYNAMIC
+
 totalSeconds = classBlockLength;
 originalTotalSeconds = classBlockLength;
 updateTotalDisplay();
@@ -374,20 +370,23 @@ window.loadSetData = function(index) {
 
     console.log("🎯 Loading set:", set);
 
-    // CORE
-    document.querySelector(".core-lift-title").textContent = set.coreLift;
-    document.querySelector(".core-reps").textContent = "Reps: " + set.coreReps;
-    document.querySelector(".core-percent").textContent = "Percentage: " + set.percentage;
+  // CORE
+const map = {
+    ".core-lift-title": set.coreLift,
+    ".core-reps": "Reps: " + set.coreReps,
+    ".core-percent": "Percentage: " + set.percentage,
+    ".aux-lift-title": set.auxLift,
+    ".aux-reps": "Reps: " + set.auxReps,
+    ".movement-title": set.movement,
+    ".movement-reps": "Reps/Time: " + set.movementReps
+};
 
-    // AUX
-    document.querySelector(".aux-lift-title").textContent = set.auxLift;
-    document.querySelector(".aux-reps").textContent = "Reps: " + set.auxReps;
+Object.entries(map).forEach(([selector, value]) => {
+    const el = document.querySelector(selector);
+    if (el) el.textContent = value;
+});
+  }; 
 
-    // MOVEMENT
-    document.querySelector(".movement-title").textContent = set.movement;
-    document.querySelector(".movement-reps").textContent = "Reps/Time: " + set.movementReps;
-}
-  
 /* ---------- AUTO START ---------- */
 
 function getEffectiveNow() {
@@ -403,6 +402,10 @@ function getEffectiveNow() {
  
 
 function autoDetectActiveClass() {
+
+  if (window.workoutData?.length) {
+    classBlockLength = calculateTotalTime();
+}
 
     // ✅ FIXED (allow sync even if already running)
     if (!autoStartEnabled) return;
@@ -530,71 +533,58 @@ else return;
     return { phase: "done", timeLeft: 0 };
 }
 
-function startAutoScheduler() {
+function checkAutoStart() {
 
-    if (autoStartTimer) clearInterval(autoStartTimer);
+  if (window.workoutData?.length) {
+    classBlockLength = calculateTotalTime();
+}
 
-    autoStartTimer = setInterval(() => {
+    if (!autoStartEnabled) return;
+    if (isRunning) return;
 
-        if (!autoStartEnabled) return;
-        if (isRunning) return;
+    const now = getEffectiveNow();
 
-        const now = getEffectiveNow();
-        const day = now.getDay();
+    const day = now.getDay();
 
-        if (todayOnlyMode && (day === 0 || day === 6)) return;
+    let todaySchedule = [];
 
-        let todaySchedule = [];
+    if (day === 1) todaySchedule = monTimes;
+    else if (day === 2) todaySchedule = tueTimes;
+    else if (day === 3) todaySchedule = wedTimes;
+    else if (day === 4) todaySchedule = thurTimes;
+    else if (day === 5) todaySchedule = friTimes;
+    else return;
 
-        if (day === 1) todaySchedule = monTimes;
-else if (day === 2) todaySchedule = tueTimes;
-else if (day === 3) todaySchedule = wedTimes;
-else if (day === 4) todaySchedule = thurTimes;
-else if (day === 5) todaySchedule = friTimes;
-else return;
+    if (!todaySchedule.length) return;
 
-        const currentTotalSeconds =
-            now.getHours() * 3600 +
-            now.getMinutes() * 60 +
-            now.getSeconds();
+    // 🔥 convert ALL schedule times to timestamps
+    const timestamps = todaySchedule.map(t => parseTimeToToday(t));
 
-        for (const raw of todaySchedule) {
+    // 🔥 find the most recent start time that has passed
+    let bestStart = null;
 
-            // 🔥 supports: "06:10,06:58"
-            const times = raw.split(",").map(t => t.trim());
-
-            for (const timeStr of times) {
-
-              console.log("⏱ NOW:", now.toTimeString());
-        console.log("🎯 TARGET:", timeStr);
-
-                if (!timeStr.includes(":")) continue;
-
-                const parts = timeStr.split(":");
-
-                const h = parseInt(parts[0], 10);
-                const m = parseInt(parts[1], 10);
-
-                if (isNaN(h) || isNaN(m)) continue;
-
-                const targetTotalSeconds = h * 3600 + m * 60;
-
-                // 🔥 60-second window (instead of 5)
-                if (
-                    currentTotalSeconds >= targetTotalSeconds &&
-                    currentTotalSeconds < targetTotalSeconds + 60 &&
-                    lastAutoStartMinute !== timeStr
-                ) {
-                    lastAutoStartMinute = timeStr;
-
-                    console.log("🔔 Auto starting:", timeStr);
-                    startTimer();
-                    return;
-                }
+    for (const t of timestamps) {
+        if (t <= now) {
+            if (!bestStart || t > bestStart) {
+                bestStart = t;
             }
         }
+    }
 
-    }, 1000);
+    if (!bestStart) return;
+
+    // 🔥 prevent restarting same session
+    if (window.lastStartTime &&
+        Math.abs(window.lastStartTime - bestStart.getTime()) < 60000) {
+        return;
+    }
+
+    console.log("🔥 AUTO START (ABSOLUTE):", bestStart);
+
+    window.classStartTime = bestStart.getTime();
+    window.lastStartTime = bestStart.getTime();
+
+    startTimer();
 }
   
   
@@ -635,7 +625,7 @@ function parseSheetNumber(val, fallback = null) {
     return isNaN(num) ? fallback : num;
 }
 
-  
+  setInterval(checkAutoStart, 1000);
   
 /* ======================================================
    MAIN LOADER
@@ -703,7 +693,7 @@ if (today === 5) return "FRI_GID";
   function getNextSetIndex() {
 
     // Start searching AFTER currentSet
-    for (let i = currentSet; i < window.workoutData.length; i++) {
+    for (let i = currentSet + 1; i < window.workoutData.length; i++) {
         if (window.workoutData[i].type === "set") {
             return i + 1; // convert to 1-based index
         }
@@ -762,7 +752,8 @@ applyCoachControl();
     /* ======================================================
        1️⃣ MASTER CLASS TIMER (authoritative)
     ====================================================== */
-    if (totalSeconds <= 0) {
+    
+  if (totalSeconds <= 0) {
         workoutFinishScreen();
         return;
     }
@@ -789,6 +780,10 @@ if (!state) {
     return;
 }
 
+if (currentPhase !== state.phase) {
+    phaseJustChanged = true;
+}
+  
 currentPhase = state.phase;
 timeLeft = state.timeLeft;
 
@@ -1129,10 +1124,7 @@ setInterval(async () => {
     isPolling = false;
 }, 3000);
       
-        applyDaySpecificClassLength();
-
-        totalSeconds = classBlockLength;
-        originalTotalSeconds = classBlockLength;
+        
         updateTotalDisplay();
 
         // 🔥 IMPORTANT: ensure function exists BEFORE calling
