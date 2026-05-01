@@ -15,6 +15,10 @@ let audioCtx = null;
 let lastCountdownSpoken = null;
 let phaseJustChanged = false;
 let nextTickTime = null;
+let timeOffset = 0;
+let phaseStartTime = null;     // timestamp (ms)
+let phaseDuration = 0;         // seconds
+
 
 /* ===================== SETS ===================== */
 
@@ -81,13 +85,37 @@ function updateClock() {
     el.textContent = timeLeft;
 }
 
+function getSyncedNow() {
+    return new Date(Date.now() + timeOffset);
+}
+
+function syncClockOffset() {
+    if (!window.serverTime) {
+        console.warn("⚠️ No server time found");
+        return;
+    }
+
+    const clientNow = Date.now();
+    const serverNow = new Date(window.serverTime).getTime();
+
+    timeOffset = serverNow - clientNow;
+
+    console.log("⏱ Clock offset (ms):", timeOffset);
+}
+
 /* ===================== UTIL ===================== */
 
 function goFullscreen() {
     document.documentElement.requestFullscreen();
 }
 
-  
+function startPhase(phase, durationSeconds) {
+    currentPhase = phase;
+    phaseDuration = durationSeconds;
+    phaseStartTime = getEffectiveNow().getTime();
+
+    console.log("▶️ Phase start:", phase, "duration:", durationSeconds);
+}  
 
 /* ======================================================
    START / STOP + TOTAL TIME CALCULATION
@@ -262,8 +290,7 @@ document.getElementById("startBtn").innerText = "STOP";
     preloadFirstSet();
 
     /* ---------- START WITH DRESS PHASE ---------- */
-    currentPhase = "dress";
-    timeLeft = dressOutDuration;
+    startPhase("dress", dressOutDuration);
 
       
     updatePhaseDisplay();
@@ -302,23 +329,9 @@ window.loadSetData = function(index) {
 
 function getEffectiveNow() {
 
-    // ⭐ FORCE_DATE override (LOCAL TIME SAFE)
-    if (forceDateString) {
-        const parts = forceDateString.split(/[T:\-]/);
-
-        if (parts.length >= 6) {
-            const forced = new Date(
-                Number(parts[0]),     // year
-                Number(parts[1]) - 1, // month
-                Number(parts[2]),     // day
-                Number(parts[3]),     // hour
-                Number(parts[4]),     // minute
-                Number(parts[5])      // second
-            );
-
-            // ✅ FIXED (proper Date validation)
-            if (!isNaN(forced.getTime())) return forced;
-        }
+    // use server-synced time if available
+    if (window.serverTime) {
+        return getSyncedNow();
     }
 
     return new Date();
@@ -361,7 +374,7 @@ else return;
             startTimer();
 
             const elapsed = Math.floor((now - start) / 1000);
-
+            
             totalSeconds = Math.max(classBlockLength - elapsed, 1);
             originalTotalSeconds = totalSeconds;
 
@@ -618,7 +631,13 @@ function tick() {
        2️⃣ PHASE TIMER
     ====================================================== */
    
-  timeLeft = Math.max(0, timeLeft - 1);
+  if (!phaseStartTime) return;
+
+const now = getEffectiveNow().getTime();
+const elapsed = Math.floor((now - phaseStartTime) / 1000);
+  timeLeft = Math.max(phaseDuration - elapsed, 0);
+
+
 
   
     /* ======================================================
@@ -672,22 +691,21 @@ function tick() {
   switch (currentPhase) {
 
         case "dress":
-            currentPhase = "stretch";
-            timeLeft = dynamicStretchDuration;
+            startPhase("stretch", dynamicStretchDuration);
             dressWarningSpoken = false;
             phaseJustChanged = true;
             speakStretch();
             break;
 
         case "stretch":
-            currentPhase = "work";
+            startPhase("work", getWorkDuration());
             rotationCount = 0;
             currentSet = 0;
             displaySetNumber = 0;
 
             loadSetData(0)
 
-            timeLeft = getWorkDuration();
+            
             phaseJustChanged = true;
             speakLift();
             break;
@@ -696,8 +714,7 @@ function tick() {
             rotateQuadrants();
             rotationCount++;
 
-            currentPhase = "rotate";
-            timeLeft = getRestDuration();
+            startPhase("rotate", getRestDuration());
             phaseJustChanged = true;
             speakRotate();
             break;
@@ -729,12 +746,12 @@ function tick() {
             // advance pointer onto the break row
             currentSet++;
 
-            currentPhase = "break";
+            const breakTime = Math.max(
+    1,
+    nextItem.breakSec || breakDuration
+);
 
-            timeLeft = Math.max(
-                1,
-                nextItem.breakSec || breakDuration
-            );
+startPhase("break", breakTime);
 
             phaseJustChanged = true;
             speakBreakPrep();
@@ -750,8 +767,7 @@ function tick() {
         loadSetData(currentSet);
     }
 
-    currentPhase = "work";
-    timeLeft = getWorkDuration();
+    startPhase("work", getWorkDuration());
     phaseJustChanged = true;
     speakLift();
     break;
@@ -774,8 +790,7 @@ function tick() {
                 loadSetData(currentSet);
             }
 
-            currentPhase = "work";
-            timeLeft = getWorkDuration();
+            startPhase("work", getWorkDuration());
             phaseJustChanged = true;
             speakLift();
             break;
@@ -1063,6 +1078,10 @@ window.addEventListener("DOMContentLoaded", async () => {
         }
 
         await loadWorkout();
+
+// 🔥 sync clocks BEFORE scheduler starts
+syncClockOffset();
+
 loadSetData(0);
 
 // 🔥 START TIMER AUTOMATICALLY
