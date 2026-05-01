@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Coach Control Panel</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: white;
+    padding: 20px;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 15px 20px;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.start { background: #28a745; }
+.pause { background: #ffc107; }
+.resume { background: #17a2b8; }
+.next { background: #007bff; }
+.restart { background: #dc3545; }
+
+select {
+    padding: 10px;
+    font-size: 16px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>🏋️ Coach Control Panel</h1>
+
+<!-- 🔥 QUICK BUTTONS -->
+<div class="row">
+  <button class="restart" onclick="restartWorkout()">🔥 Restart</button>
+  <button class="pause" onclick="pauseAll()">⏸ Pause</button>
+  <button class="resume" onclick="resumeAll()">▶️ Resume</button>
+  <button class="next" onclick="nextSet()">⏭ Next Set</button>
+</div>
+
+<!-- 🔥 JUMP CONTROL -->
+<div class="row">
+  <label>Set:</label>
+  <select id="setSelect"></select>
+
+  <label>Rotation:</label>
+  <select id="rotationSelect">
+    <option value="0">1</option>
+    <option value="1">2</option>
+    <option value="2">3</option>
+    <option value="3">4</option>
+  </select>
+
+  <label>Phase:</label>
+  <select id="phaseSelect">
+    <option value="work">Work</option>
+    <option value="rotate">Rotate</option>
+    <option value="break">Break</option>
+  </select>
+
+  <button onclick="jumpToSelection()">JUMP</button>
+</div>
+
+<script src="js/themeLoader.js"></script>
+<script src="js/workoutLoader.js"></script>
+
+<script>
+
+// 🔥 SEND CONTROL
+async function sendControl(payload) {
+
+    payload.timestamp = new Date().toISOString();
+
+    await fetch(window.SCHOOL_CONFIG.dataURL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+    });
+}
+
+// 🔥 BUTTON ACTIONS
+function restartWorkout() {
+    sendControl({ action: "START", phase: "dress", set: 0, rotation: 0 });
+}
+
+function pauseAll() {
+    sendControl({ action: "PAUSE" });
+}
+
+function resumeAll() {
+    sendControl({ action: "RESUME" });
+}
+
+function nextSet() {
+
+    const totalSets = window.workoutData
+        .filter(x => x.type === "set").length;
+
+    let next = (window.currentSet || 0) + 1;
+
+    if (next >= totalSets) next = 0;
+
+    sendControl({
+        action: "JUMP",
+        phase: "work",
+        set: next,
+        rotation: 0
+    });
+}
+
+// 🔥 JUMP DROPDOWN
+function populateSetDropdown() {
+
+    const select = document.getElementById("setSelect");
+    select.innerHTML = "";
+
+    const totalSets = window.workoutData
+        .filter(x => x.type === "set").length;
+
+    for (let i = 0; i < totalSets; i++) {
+        const opt = document.createElement("option");
+        opt.value = i;
+        opt.textContent = `Set ${i + 1}`;
+        select.appendChild(opt);
+    }
+}
+
+function jumpToSelection() {
+
+    const set = parseInt(document.getElementById("setSelect").value);
+    const rotation = parseInt(document.getElementById("rotationSelect").value);
+    const phase = document.getElementById("phaseSelect").value;
+
+    sendControl({
+        action: "JUMP",
+        phase: phase,
+        set: set,
+        rotation: rotation
+    });
+}
+
+// 🔥 INIT
+(async () => {
+    await loadWorkout();
+    populateSetDropdown();
+})();
+
+</script>
+
+</body>
+</html>
