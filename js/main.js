@@ -919,6 +919,11 @@ if (!state) {
 
 if (currentPhase !== state.phase) {
     phaseJustChanged = true;
+
+    // 🔥 FORCE immediate UI reset on phase change
+    setTimeout(() => {
+        updatePhaseDisplay();
+    }, 0);
 }
   
 currentPhase = state.phase;
