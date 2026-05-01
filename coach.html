@@ -1,4 +1,6 @@
+
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 
@@ -33,11 +35,10 @@ button {
     margin-bottom: 20px;
 }
 
-.start { background: #28a745; }
+.restart { background: #dc3545; }
 .pause { background: #ffc107; }
 .resume { background: #17a2b8; }
 .next { background: #007bff; }
-.restart { background: #dc3545; }
 
 select {
     padding: 10px;
@@ -51,7 +52,33 @@ select {
 
 <h1>🏋️ Coach Control Panel</h1>
 
+<!-- 🔥 DASHBOARD -->
+
+<div id="dashboard" style="
+    background:#1a1a1a;
+    padding:20px;
+    border-radius:10px;
+    margin-bottom:20px;
+">
+
+  <div style="font-size:28px; font-weight:bold;" id="coachPhase">--</div>
+
+  <div style="font-size:18px; margin-top:5px;" id="coachSet">
+    Set -- | Rotation --
+  </div>
+
+  <div style="font-size:48px; margin-top:10px;" id="coachClock">
+    00
+  </div>
+
+  <div style="margin-top:10px; font-size:14px; opacity:0.7;" id="coachStatus">
+    Connecting...
+  </div>
+
+</div>
+
 <!-- 🔥 QUICK BUTTONS -->
+
 <div class="row">
   <button class="restart" onclick="restartWorkout()">🔥 Restart</button>
   <button class="pause" onclick="pauseAll()">⏸ Pause</button>
@@ -60,37 +87,36 @@ select {
 </div>
 
 <!-- 🔥 JUMP CONTROL -->
+
 <div class="row">
   <label>Set:</label>
   <select id="setSelect"></select>
 
-  <label>Rotation:</label>
-  <select id="rotationSelect">
-    <option value="0">1</option>
-    <option value="1">2</option>
-    <option value="2">3</option>
-    <option value="3">4</option>
-  </select>
+<label>Rotation:</label> <select id="rotationSelect"> <option value="0">1</option> <option value="1">2</option> <option value="2">3</option> <option value="3">4</option> </select>
 
-  <label>Phase:</label>
-  <select id="phaseSelect">
-    <option value="work">Work</option>
-    <option value="rotate">Rotate</option>
-    <option value="break">Break</option>
-  </select>
+<label>Phase:</label> <select id="phaseSelect"> <option value="work">Work</option> <option value="rotate">Rotate</option> <option value="break">Break</option> </select>
 
-  <button onclick="jumpToSelection()">JUMP</button>
+<button onclick="jumpToSelection()">JUMP</button>
+
 </div>
 
 <script src="js/themeLoader.js"></script>
+
 <script src="js/workoutLoader.js"></script>
 
 <script>
+
+// 🔥 BASIC CLOCK (keeps coach page simple)
+function getEffectiveNow() {
+    return new Date();
+}
 
 // 🔥 SEND CONTROL
 async function sendControl(payload) {
 
     payload.timestamp = new Date().toISOString();
+
+    console.log("🎮 Sending control:", payload);
 
     await fetch(window.SCHOOL_CONFIG.dataURL, {
         method: "POST",
@@ -128,7 +154,7 @@ function nextSet() {
     });
 }
 
-// 🔥 JUMP DROPDOWN
+// 🔥 POPULATE SET DROPDOWN
 function populateSetDropdown() {
 
     const select = document.getElementById("setSelect");
@@ -145,6 +171,7 @@ function populateSetDropdown() {
     }
 }
 
+// 🔥 JUMP DROPDOWN ACTION
 function jumpToSelection() {
 
     const set = parseInt(document.getElementById("setSelect").value);
@@ -159,13 +186,123 @@ function jumpToSelection() {
     });
 }
 
+// 🔥 COMPUTE CURRENT STATE (same logic as athletes)
+function computeCoachState(nowMs) {
+
+    if (!window.classStartTime || !window.workoutData?.length) return null;
+
+    let elapsed = Math.floor((nowMs - window.classStartTime) / 1000);
+
+    let t = 0;
+
+    // DRESS
+    if (elapsed < dressOutDuration) {
+        return { phase: "DRESS", timeLeft: dressOutDuration - elapsed };
+    }
+    t += dressOutDuration;
+
+    // STRETCH
+    if (elapsed < t + dynamicStretchDuration) {
+        return { phase: "STRETCH", timeLeft: (t + dynamicStretchDuration) - elapsed };
+    }
+    t += dynamicStretchDuration;
+
+    let setIndex = 0;
+
+    for (const item of window.workoutData) {
+
+        if (item.type === "set") {
+
+            for (let r = 0; r < maxRotations; r++) {
+
+                const work = item.workSec || 30;
+
+                if (elapsed < t + work) {
+                    return {
+                        phase: "WORK",
+                        timeLeft: (t + work) - elapsed,
+                        set: setIndex,
+                        rotation: r
+                    };
+                }
+                t += work;
+
+                if (r < maxRotations - 1) {
+
+                    const rotate = item.rotateSec || 30;
+
+                    if (elapsed < t + rotate) {
+                        return {
+                            phase: "ROTATE",
+                            timeLeft: (t + rotate) - elapsed,
+                            set: setIndex,
+                            rotation: r
+                        };
+                    }
+                    t += rotate;
+                }
+            }
+
+            setIndex++;
+        }
+
+        if (item.type === "break") {
+
+            const br = item.breakSec || 90;
+
+            if (elapsed < t + br) {
+                return { phase: "BREAK", timeLeft: (t + br) - elapsed };
+            }
+            t += br;
+        }
+    }
+
+    return { phase: "DONE", timeLeft: 0 };
+}
+
+// 🔥 UPDATE DASHBOARD
+function updateCoachDashboard() {
+
+    const now = getEffectiveNow().getTime();
+    const state = computeCoachState(now);
+
+    if (!state) {
+        document.getElementById("coachStatus").textContent = "Waiting for start...";
+        return;
+    }
+
+    document.getElementById("coachPhase").textContent = state.phase;
+
+    if (state.set !== undefined) {
+        document.getElementById("coachSet").textContent =
+            `Set ${state.set + 1} | Rotation ${state.rotation + 1}`;
+    } else {
+        document.getElementById("coachSet").textContent = "";
+    }
+
+    document.getElementById("coachClock").textContent = state.timeLeft;
+    document.getElementById("coachStatus").textContent = "Live";
+}
+
 // 🔥 INIT
 (async () => {
     await loadWorkout();
     populateSetDropdown();
+
+    // update dashboard every second
+    setInterval(updateCoachDashboard, 1000);
+
+    // refresh control + data every 3s
+    setInterval(async () => {
+        await loadWorkout();
+    }, 3000);
 })();
 
 </script>
 
 </body>
 </html>
+
+
+
+                
