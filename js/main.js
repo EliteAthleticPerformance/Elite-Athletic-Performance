@@ -26,7 +26,7 @@ const maxRotations = 4;
 
 /* ===================== PERIOD AUTO START ===================== */
 
-let autoStartEnabled = false;
+let autoStartEnabled = true;
 let monTimes = [];
 let tueTimes = [];
 let wedTimes = [];
