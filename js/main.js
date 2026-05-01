@@ -358,71 +358,65 @@ function autoDetectActiveClass() {
 
 function startAutoScheduler() {
 
-    if (autoStartTimer) {
-        clearInterval(autoStartTimer);
-    }
+    if (autoStartTimer) clearInterval(autoStartTimer);
 
     autoStartTimer = setInterval(() => {
 
         if (!autoStartEnabled) return;
+        if (isRunning) return;
 
         const now = getEffectiveNow();
-        const day = now.getDay(); // 0=Sun, 1=Mon...
+        const day = now.getDay();
 
-        if (todayOnlyMode) {
-            const today = now.getDay();
-            if (today === 0 || today === 6) return; // block weekends
-        }
-
-        if (isRunning) return;
+        if (todayOnlyMode && (day === 0 || day === 6)) return;
 
         let todaySchedule = [];
 
         if (day === 1) todaySchedule = mondayTimes;
         else if (day === 2 || day === 3) todaySchedule = tueWedTimes;
         else if (day === 4 || day === 5) todaySchedule = thuFriTimes;
-        else return; // weekend
+        else return;
 
-        for (const timeStr of todaySchedule) {
+        const currentTotalSeconds =
+            now.getHours() * 3600 +
+            now.getMinutes() * 60 +
+            now.getSeconds();
 
-            const parts = timeStr.split(":");
-            if (parts.length !== 2) continue;
+        for (const raw of todaySchedule) {
 
-            const targetHour = parseInt(parts[0], 10);
-            const targetMinute = parseInt(parts[1], 10);
+            // 🔥 supports: "06:10,06:58"
+            const times = raw.split(",").map(t => t.trim());
 
-            if (isNaN(targetHour) || isNaN(targetMinute)) continue;
+            for (const timeStr of times) {
 
-            // start within first 5 seconds of the minute
-            const currentMinuteStamp =
-                String(now.getHours()).padStart(2, "0") + ":" +
-                String(now.getMinutes()).padStart(2, "0");
+                if (!timeStr.includes(":")) continue;
 
-            const currentTotalSeconds =
-                now.getHours() * 3600 +
-                now.getMinutes() * 60 +
-                now.getSeconds();
+                const parts = timeStr.split(":");
 
-            const targetTotalSeconds =
-                targetHour * 3600 +
-                targetMinute * 60;
+                const h = parseInt(parts[0], 10);
+                const m = parseInt(parts[1], 10);
 
-            if (
-                currentTotalSeconds >= targetTotalSeconds &&
-                currentTotalSeconds < targetTotalSeconds + 5 &&
-                lastAutoStartMinute !== currentMinuteStamp
-            ) {
-                lastAutoStartMinute = currentMinuteStamp;
+                if (isNaN(h) || isNaN(m)) continue;
 
-                console.log("🔔 Auto starting:", timeStr);
-                startTimer();
-                break;
+                const targetTotalSeconds = h * 3600 + m * 60;
+
+                // 🔥 60-second window (instead of 5)
+                if (
+                    currentTotalSeconds >= targetTotalSeconds &&
+                    currentTotalSeconds < targetTotalSeconds + 60 &&
+                    lastAutoStartMinute !== timeStr
+                ) {
+                    lastAutoStartMinute = timeStr;
+
+                    console.log("🔔 Auto starting:", timeStr);
+                    startTimer();
+                    return;
+                }
             }
         }
 
     }, 1000);
 }
-
   
   
 /* ======================================================
