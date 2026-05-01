@@ -108,7 +108,7 @@ function resetWorkoutState() {
 ====================================================== */
 
 function applyDaySpecificClassLength() {
-    const now = getEffectiveNow();
+    const now = new Date();
     const day = now.getDay(); // 0=Sun
 
     let minutes = summonMinutes; // safe default
