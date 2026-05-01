@@ -202,25 +202,6 @@ body {
     100% { transform:translate(-50%, -50%) scale(1); }
 }
 
-#timelineContainer {
-    position: absolute;
-    bottom: 20px;
-    left: 5%;
-    width: 90%;
-    height: 18px;
-    background: #222;
-    border-radius: 10px;
-    overflow: hidden;
-    z-index: 10;
-}
-
-#timelineBar {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #00ffcc, #00aaff);
-    transition: width 0.3s linear;
-}
-
   #timelineContainer {
     position: absolute;
     bottom: 20px;
@@ -323,6 +304,35 @@ body {
 <script src="js/themeLoader.js"></script>
 <script src="js/workoutLoader.js"></script>
 <script src="js/main.js"></script>
+  <script>
+function openCoachPanel() {
+    const code = prompt("Enter coach access code:");
 
+    // 🔐 CHANGE THIS CODE
+    const correctCode = "Admin123";
+
+    if (code === correctCode) {
+        window.open("coach.html", "_blank");
+    } else if (code !== null) {
+        alert("Incorrect code");
+    }
+}
+</script>
+
+<a href="#"
+   onclick="openCoachPanel()"
+   style="
+     position: absolute;
+     bottom: 10px;
+     right: 10px;
+     font-size: 10px;
+     color: white;
+     opacity: 0.15;
+     text-decoration: none;
+     z-index: 999;
+   ">
+   coach
+</a>
+  
 </body>
 </html>
