@@ -322,6 +322,10 @@ function preciseTick() {
 
 function applyCoachControl() {
 
+  if (!window.classStartTime && window.controlTimestamp) {
+    window.classStartTime = new Date(window.controlTimestamp).getTime();
+}
+
     if (!window.controlAction) return;
 
     const signature = [
@@ -344,12 +348,31 @@ function applyCoachControl() {
     switch (window.controlAction) {
 
         case "START":
-            window.classStartTime = new Date(window.controlTimestamp).getTime();
-            isRunning = true;
+    window.classStartTime = new Date(window.controlTimestamp).getTime();
+    isRunning = true;
+
+    // 🔥 FORCE SYNC TO CORRECT PHASE (late join fix)
+    const now = getEffectiveNow().getTime();
+    const state = computeWorkoutState(now);
+
+    if (state) {
+        currentPhase = state.phase;
+        timeLeft = state.timeLeft;
+
+        if (state.setIndex !== undefined) {
+            currentSet = state.setIndex;
+            displaySetNumber = currentSet + 1;
+            loadSetData(currentSet);
+        }
+
+        rotationCount = state.rotation || 0;
+
+        updateClock();
         updatePhaseDisplay();
-updateClock();
-updateTotalDisplay();
-            break;
+        updateTotalDisplay();
+    }
+
+    break;
 
         case "STOP":
     stopAllTimers();
@@ -928,7 +951,7 @@ rotationCount = state.rotation || 0;
     lastCountdownSpoken = null;
 
     console.log("Set:", currentSet, "Rotation:", rotationCount);
-
+}
     
 /* ======================================================
    PHASE DISPLAY + CENTER MODES
