@@ -16,8 +16,8 @@ let lastCountdownSpoken = null;
 let phaseJustChanged = false;
 let nextTickTime = null;
 let timeOffset = 0;
-let phaseStartTime = null;     // timestamp (ms)
-let phaseDuration = 0;         // seconds
+let lastControlSignature = null;
+
 
 
 /* ===================== SETS ===================== */
@@ -108,14 +108,6 @@ function syncClockOffset() {
 function goFullscreen() {
     document.documentElement.requestFullscreen();
 }
-
-function startPhase(phase, durationSeconds) {
-    currentPhase = phase;
-    phaseDuration = durationSeconds;
-    phaseStartTime = getEffectiveNow().getTime();
-
-    console.log("▶️ Phase start:", phase, "duration:", durationSeconds);
-}  
 
 /* ======================================================
    START / STOP + TOTAL TIME CALCULATION
@@ -246,10 +238,81 @@ function preciseTick() {
 
 }
 
-  
+function applyCoachControl() {
+
+    if (!window.controlAction) return;
+
+    const signature = [
+        window.controlAction,
+        window.controlTimestamp,
+        window.controlPhase,
+        window.controlSet,
+        window.controlRotation
+    ].join("|");
+
+    // 🚫 prevent re-running same command
+    if (signature === lastControlSignature) return;
+
+    lastControlSignature = signature;
+
+    const now = getEffectiveNow().getTime();
+
+    console.log("🎮 Applying control:", signature);
+
+    switch (window.controlAction) {
+
+        case "START":
+            window.classStartTime = new Date(window.controlTimestamp).getTime();
+            isRunning = true;
+        updatePhaseDisplay();
+updateClock();
+updateTotalDisplay();
+            break;
+
+        case "STOP":
+    stopAllTimers();
+    window.classStartTime = null;
+        updatePhaseDisplay();
+updateClock();
+updateTotalDisplay();
+    break;
+
+        case "PAUSE":
+            isRunning = false;
+        updatePhaseDisplay();
+updateClock();
+updateTotalDisplay();
+            break;
+
+        case "RESUME":
+            isRunning = true;
+        updatePhaseDisplay();
+updateClock();
+updateTotalDisplay();
+            break;
+
+        case "JUMP":
+
+            const offset = calculateOffsetForTarget(
+                window.controlPhase,
+                window.controlSet,
+                window.controlRotation
+            );
+
+            window.classStartTime = now - (offset * 1000);
+        updatePhaseDisplay();
+updateClock();
+updateTotalDisplay();
+            break;
+    }
+} 
 
 function startTimer() {
 
+if (!window.classStartTime) {
+    window.classStartTime = getEffectiveNow().getTime();
+}
+  
     // Safety: require workout
     if (!window.workoutData || !window.workoutData.length) {
         console.warn("Workout not loaded yet.");
@@ -290,7 +353,7 @@ document.getElementById("startBtn").innerText = "STOP";
     preloadFirstSet();
 
     /* ---------- START WITH DRESS PHASE ---------- */
-    startPhase("dress", dressOutDuration);
+    
 
       
     updatePhaseDisplay();
@@ -374,7 +437,7 @@ else return;
             startTimer();
 
             const elapsed = Math.floor((now - start) / 1000);
-            
+            window.classStartTime = start.getTime();
             totalSeconds = Math.max(classBlockLength - elapsed, 1);
             originalTotalSeconds = totalSeconds;
 
@@ -385,7 +448,87 @@ else return;
     }
 }
 
-  
+  function computeWorkoutState(nowMs) {
+
+    if (!window.classStartTime) return null;
+
+    let elapsed = Math.floor((nowMs - window.classStartTime) / 1000);
+
+    // 1️⃣ DRESS
+    if (elapsed < dressOutDuration) {
+        return {
+            phase: "dress",
+            timeLeft: dressOutDuration - elapsed
+        };
+    }
+    elapsed -= dressOutDuration;
+
+    // 2️⃣ STRETCH
+    if (elapsed < dynamicStretchDuration) {
+        return {
+            phase: "stretch",
+            timeLeft: dynamicStretchDuration - elapsed
+        };
+    }
+    elapsed -= dynamicStretchDuration;
+
+    // 3️⃣ WORKOUT LOOP
+    for (let i = 0; i < window.workoutData.length; i++) {
+
+        const item = window.workoutData[i];
+
+        if (item.type === "set") {
+
+            for (let r = 0; r < maxRotations; r++) {
+
+                const work = item.workSec || getWorkDuration();
+
+                if (elapsed < work) {
+                    return {
+                        phase: "work",
+                        setIndex: i,
+                        rotation: r,
+                        timeLeft: work - elapsed
+                    };
+                }
+
+                elapsed -= work;
+
+                if (r < maxRotations - 1) {
+
+                    const rest = item.rotateSec || getRestDuration();
+
+                    if (elapsed < rest) {
+                        return {
+                            phase: "rotate",
+                            setIndex: i,
+                            rotation: r,
+                            timeLeft: rest - elapsed
+                        };
+                    }
+
+                    elapsed -= rest;
+                }
+            }
+        }
+
+        if (item.type === "break") {
+            const b = item.breakSec || breakDuration;
+
+            if (elapsed < b) {
+                return {
+                    phase: "break",
+                    setIndex: i,
+                    timeLeft: b - elapsed
+                };
+            }
+
+            elapsed -= b;
+        }
+    }
+
+    return { phase: "done", timeLeft: 0 };
+}
 
 function startAutoScheduler() {
 
@@ -609,7 +752,8 @@ if (today === 5) return "FRI_GID";
 ====================================================== */
 
 function tick() {
-
+  if (!window.workoutData?.length) return;
+applyCoachControl();
     if (!isRunning) return;
 
     phaseJustChanged = false;
@@ -623,7 +767,12 @@ function tick() {
         return;
     }
 
-    totalSeconds = Math.max(0, totalSeconds - 1);
+    if (window.classStartTime) {
+    const now = getEffectiveNow().getTime();
+    const elapsed = Math.floor((now - window.classStartTime) / 1000);
+
+    totalSeconds = Math.max(classBlockLength - elapsed, 0);
+}
     updateTotalDisplay();
 
   
@@ -631,11 +780,25 @@ function tick() {
        2️⃣ PHASE TIMER
     ====================================================== */
    
-  if (!phaseStartTime) return;
+ const nowMs = getEffectiveNow().getTime();
 
-const now = getEffectiveNow().getTime();
-const elapsed = Math.floor((now - phaseStartTime) / 1000);
-  timeLeft = Math.max(phaseDuration - elapsed, 0);
+const state = computeWorkoutState(nowMs);
+
+if (!state) {
+    console.warn("⚠️ No workout state yet (waiting for classStartTime)");
+    return;
+}
+
+currentPhase = state.phase;
+timeLeft = state.timeLeft;
+
+if (state.setIndex !== undefined && state.setIndex !== currentSet) {
+    currentSet = state.setIndex;
+  displaySetNumber = currentSet + 1;
+    loadSetData(currentSet);
+}
+
+rotationCount = state.rotation || 0;
 
 
 
@@ -684,122 +847,7 @@ const elapsed = Math.floor((now - phaseStartTime) / 1000);
     console.log("Set:", currentSet, "Rotation:", rotationCount);
 
   
-    /* ======================================================
-       PHASE TRANSITIONS (STATE MACHINE)
-    ====================================================== */
-   
-  switch (currentPhase) {
-
-        case "dress":
-            startPhase("stretch", dynamicStretchDuration);
-            dressWarningSpoken = false;
-            phaseJustChanged = true;
-            speakStretch();
-            break;
-
-        case "stretch":
-            startPhase("work", getWorkDuration());
-            rotationCount = 0;
-            currentSet = 0;
-            displaySetNumber = 0;
-
-            loadSetData(0)
-
-            
-            phaseJustChanged = true;
-            speakLift();
-            break;
-
-        case "work": {
-            rotateQuadrants();
-            rotationCount++;
-
-            startPhase("rotate", getRestDuration());
-            phaseJustChanged = true;
-            speakRotate();
-            break;
-        }
-
-      
-        /* ---------- ROTATE → NEXT ---------- */
-      
-    case "rotate": {
-
-    const finishedRotations = rotationCount >= maxRotations;
-
-    if (finishedRotations) {
-
-        rotationCount = 0;
-
-        const nextItem = window.workoutData[currentSet] || null;
-
-        // 🔴 no more items
-        if (!nextItem) {
-            workoutComplete();
-            return;
-        }
-
-
-        // 🟡 break row
-        if (nextItem.type === "break") {
-
-            // advance pointer onto the break row
-            currentSet++;
-
-            const breakTime = Math.max(
-    1,
-    nextItem.breakSec || breakDuration
-);
-
-startPhase("break", breakTime);
-
-            phaseJustChanged = true;
-            speakBreakPrep();
-
-            previewNextSet();
-            break;
-        }
-
-
-        // ✅ next is real set
-        currentSet++;
-        displaySetNumber++;
-        loadSetData(currentSet);
-    }
-
-    startPhase("work", getWorkDuration());
-    phaseJustChanged = true;
-    speakLift();
-    break;
-}
-
-        case "break": {
-
-            const nextItem = window.workoutData[currentSet] || null;
-
-            if (!nextItem) {
-                workoutComplete();
-                return;
-            }
-
-          
-            // ✅ ONLY advance when next is a set
-            if (nextItem.type === "set") {
-                currentSet++;
-                displaySetNumber++;
-                loadSetData(currentSet);
-            }
-
-            startPhase("work", getWorkDuration());
-            phaseJustChanged = true;
-            speakLift();
-            break;
-        }
-
-    } // ✅ CLOSES switch(currentPhase)
-
-  
-    /* ======================================================
+        /* ======================================================
        FINAL UI UPDATE
     ====================================================== */
     
@@ -1065,6 +1113,22 @@ window.addEventListener("DOMContentLoaded", async () => {
 
         console.log("✅ SCHOOL CONFIG READY:", config);
 
+let isPolling = false;
+
+setInterval(async () => {
+    if (isPolling) return;
+
+    isPolling = true;
+
+    try {
+        await loadWorkout();
+    } catch (e) {
+        console.error("Polling error:", e);
+    }
+
+    isPolling = false;
+}, 3000);
+      
         applyDaySpecificClassLength();
 
         totalSeconds = classBlockLength;
