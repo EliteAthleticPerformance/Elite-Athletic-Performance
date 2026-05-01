@@ -41,6 +41,10 @@ for (const r of rows) {
 
     const key = String(r[0] || "").trim().toUpperCase();
 
+    if (key === "SERVER_TIME") {
+    window.serverTime = new Date(r[1]);
+}
+
     if (key === "AUTO_START") {
         autoStartEnabled = String(r[1]).toUpperCase() === "TRUE";
     }
@@ -74,6 +78,7 @@ console.log("Wed:", wedTimes);
 console.log("Thu:", thurTimes);
 console.log("Fri:", friTimes);
 console.log("AutoStart:", autoStartEnabled);
+    console.log("🕒 SERVER TIME:", window.serverTime);
 
 // =============================
 // BUILD WORKOUT DATA (SECOND PASS)
