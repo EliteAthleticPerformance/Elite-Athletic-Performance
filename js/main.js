@@ -58,7 +58,17 @@ let onBreak = false;
 let selectedVoice = null;
 let displaySetNumber = 0;
 
-  
+ function updateTotalDisplay() {
+    const el = document.getElementById("totalTime");
+    if (!el) return;
+
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    el.textContent =
+        String(minutes).padStart(2, "0") + ":" +
+        String(seconds).padStart(2, "0");
+} 
 
 /* ===================== UTIL ===================== */
 
