@@ -670,7 +670,7 @@ function rotateQuadrantColors() {
                 elapsed -= work;
 
                 // 🔥 ROTATE PHASE (ALWAYS RUN — no skipping)
-                const rest = item.rotateSec || getRestDuration();
+                const rest = Math.max(1, item.rotateSec || getRestDuration());
 
                 if (elapsed < rest) {
                     return {
