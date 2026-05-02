@@ -619,7 +619,7 @@ function rotateQuadrantColors() {
     q1.classList.add(c3); // q3 → q1
 }
 
-  function computeWorkoutState(nowMs) {
+ function computeWorkoutState(nowMs) {
 
     if (!window.classStartTime) return null;
 
@@ -654,38 +654,38 @@ function rotateQuadrantColors() {
 
                 const work = item.workSec || getWorkDuration();
 
+                // 🔥 WORK PHASE
                 if (elapsed < work) {
-                   return {
-    phase: "work",
-    setIndex: i,
-    setNumber: window.workoutData
-        .slice(0, i + 1)
-        .filter(x => x.type === "set").length,
-    rotation: r,
-    timeLeft: work - elapsed
-};
+                    return {
+                        phase: "work",
+                        setIndex: i,
+                        setNumber: window.workoutData
+                            .slice(0, i + 1)
+                            .filter(x => x.type === "set").length,
+                        rotation: r,
+                        timeLeft: work - elapsed
+                    };
                 }
 
                 elapsed -= work;
 
-                if (r < maxRotations - 1) {
+                // 🔥 ROTATE PHASE (ALWAYS RUN — no skipping)
+                const rest = item.rotateSec || getRestDuration();
 
-                    const rest = item.rotateSec || getRestDuration();
-
-                    if (elapsed < rest) {
-                        return {
-                            phase: "rotate",
-                            setIndex: i,
-                            rotation: r,
-                            timeLeft: rest - elapsed
-                        };
-                    }
-
-                    elapsed -= rest;
+                if (elapsed < rest) {
+                    return {
+                        phase: "rotate",
+                        setIndex: i,
+                        rotation: r,
+                        timeLeft: rest - elapsed
+                    };
                 }
+
+                elapsed -= rest;
             }
         }
 
+        // 🔥 BREAK PHASE
         if (item.type === "break") {
             const b = item.breakSec || breakDuration;
 
@@ -701,6 +701,7 @@ function rotateQuadrantColors() {
         }
     }
 
+    // 🔥 DONE
     return { phase: "done", timeLeft: 0 };
 }
 
