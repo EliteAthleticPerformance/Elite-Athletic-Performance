@@ -377,19 +377,24 @@ if (window.classStartTime && isRunning) {
 
     // 🔥 FORCE SYNC TO CORRECT PHASE (late join fix)
    
-    const state = computeWorkoutState(now);
+    const state = computeWorkoutState(nowMs);
 
-    if (state) {
-        currentPhase = state.phase;
-        timeLeft = state.timeLeft;
+if (!state) return;
 
-        if (state.setIndex !== undefined) {
-            currentSet = state.setIndex;
-            displaySetNumber = state.setNumber;
-            loadSetData(currentSet);
-        }
+// 🔥 ROTATE HERE
+if (
+    state.phase === "rotate" &&
+    state.rotation !== rotationCount
+) {
+    console.log("🔁 ROTATING QUADRANTS (NEW ROTATION)");
+    rotateQuadrantColors();
+}
 
-        rotationCount = state.rotation || 0;
+// THEN update state
+currentPhase = state.phase;
+timeLeft = state.timeLeft;
+
+rotationCount = state.rotation || 0;
 
         updateClock();
         updatePhaseDisplay();
