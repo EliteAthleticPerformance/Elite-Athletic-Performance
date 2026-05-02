@@ -631,14 +631,9 @@ function applyQuadrantColors() {
     const primary = config.theme.primary;
     const secondary = config.theme.secondary;
 
-    const q2 = document.getElementById("q2");
-    const q3 = document.getElementById("q3");
+       const q3 = document.getElementById("q3");
 
-    if (q2) {
-        q2.style.backgroundColor = secondary;
-        q2.style.color = "#000";
-    }
-
+    
     if (q3) {
         q3.style.backgroundColor = primary;
         q3.style.color = "#fff";
@@ -1302,8 +1297,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
         console.log("✅ SCHOOL CONFIG READY:", config);
 
-      document.documentElement.style.setProperty('--primary-color', config.theme.primary);
-document.documentElement.style.setProperty('--secondary-color', config.theme.secondary);
+      document.documentElement.style.setProperty('--secondary-color', config.theme.secondary);
 
         applyQuadrantColors();
 
