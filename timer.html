@@ -84,16 +84,7 @@ Object.defineProperty(window, "workoutData", {
     box-shadow:0 0 25px #FFA500, 0 0 60px #FF8C00, 0 0 110px #FF8C00;
 }
 
-  .activeQuad {
-    background-color: #00ff88 !important;
-    color: black !important;
-    transform: scale(1.03);
-    z-index: 2;
-}
-
-.inactiveQuad {
-    opacity: 0.4;
-}
+ 
 
 /* ===================== BASE ===================== */
 
@@ -276,25 +267,25 @@ body {
 
 <div id="display">
 
-    <div class="quad q1 blackQuad" id="q1">
+    <div id="q1" class="quad q1 blackQuad">
         <div class="quad-title">Core Lift</div>
         <div class="quad-text core-lift-title">Squats</div>
         <div class="quad-text core-reps">Reps: 10</div>
         <div class="quad-text core-percent">Percentage: 65</div>
     </div>
 
-    <div class="quad q2 whiteQuad" id="q2">
+    <div id="q2" class="quad q2 whiteQuad">
         <div class="quad-title">Aux Lift</div>
         <div class="quad-text aux-lift-title">Aux Lift</div>
         <div class="quad-text aux-reps">Reps: 10</div>
     </div>
 
-    <div class="quad q3 blueQuad"  id="q3">
+    <div id="q3" class="quad q3 blueQuad">
         <div class="quad-title">REST</div>
         <div class="quad-text">Spot</div>
     </div>
 
-    <div class="quad q4 greyQuad"  id="q4">
+    <div id="q4" class="quad q4 greyQuad">
         <div class="quad-title">Movement / Stability Skill</div>
         <div class="quad-text movement-title">Movement</div>
         <div class="quad-text movement-reps">Reps/Time:</div>
