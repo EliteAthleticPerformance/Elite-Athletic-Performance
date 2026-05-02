@@ -17,6 +17,7 @@ let phaseJustChanged = false;
 let nextTickTime = null;
 let timeOffset = 0;
 let lastControlSignature = null;
+let lastRotationIndex = -1;
 
 
 
@@ -959,13 +960,14 @@ const prevTime = timeLeft;
   // 🔍 DEBUG — ADD THIS LINE RIGHT HERE
 console.log("DEBUG:", prevPhase, prevTime, "→", state.phase);
 
-// 🔥 ROTATE ON NEW ROTATION INDEX (REAL FIX)
+// 🔥 STABLE ROTATION DETECTION (FINAL FIX)
 if (
     state.phase === "rotate" &&
-    state.rotation !== rotationCount
+    state.rotation !== lastRotationIndex
 ) {
     console.log("🔁 ROTATING QUADRANTS (NEW ROTATION)", state.rotation);
     rotateQuadrantColors();
+    lastRotationIndex = state.rotation;
 }
 
 // Phase change tracking (for UI only)
