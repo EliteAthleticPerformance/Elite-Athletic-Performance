@@ -913,78 +913,78 @@ if (today === 5) return "FRI_GID";
 ====================================================== */
 
 function tick() {
-  if (!window.workoutData?.length) return;
-applyCoachControl();
+
+    if (!window.workoutData?.length) return;
+
+    applyCoachControl();
+
     if (!isRunning) return;
 
     phaseJustChanged = false;
 
-   updateSegmentHighlight();
+    updateSegmentHighlight();
 
-  
     /* ======================================================
-       1️⃣ MASTER CLASS TIMER (authoritative)
+       1️⃣ MASTER CLASS TIMER
     ====================================================== */
-    
-  if (totalSeconds <= 0) {
+
+    if (totalSeconds <= 0) {
         workoutFinishScreen();
         return;
     }
 
     if (window.classStartTime) {
-    const now = getEffectiveNow().getTime();
-    const elapsed = Math.floor((now - window.classStartTime) / 1000);
+        const now = getEffectiveNow().getTime();
+        const elapsed = Math.floor((now - window.classStartTime) / 1000);
+        totalSeconds = Math.max(classBlockLength - elapsed, 0);
+    }
 
-    totalSeconds = Math.max(classBlockLength - elapsed, 0);
-}
     updateTotalDisplay();
 
-  
     /* ======================================================
        2️⃣ PHASE TIMER
     ====================================================== */
-   
- const nowMs = getEffectiveNow().getTime();
 
-const state = computeWorkoutState(nowMs);
+    const nowMs = getEffectiveNow().getTime();
+    const state = computeWorkoutState(nowMs);
 
-if (!state) {
-    console.warn("⚠️ No workout state yet (waiting for classStartTime)");
-    return;
-}
-
-if (currentPhase !== state.phase) {
-
-    console.log("PHASE CHANGE:", currentPhase, "→", state.phase);
-
-    // 🔥 WORK → ROTATE transition
-    if (currentPhase === "work" && state.phase === "rotate") {
-        console.log("🔁 ROTATING QUADRANTS");
-        rotateQuadrantColors();
+    if (!state) {
+        console.warn("⚠️ No workout state yet (waiting for classStartTime)");
+        return;
     }
 
-    phaseJustChanged = true;
-}
+    // 🔥 CAPTURE PREVIOUS PHASE (CRITICAL FIX)
+    const prevPhase = currentPhase;
 
-currentPhase = state.phase;
-timeLeft = state.timeLeft;
+    if (prevPhase !== state.phase) {
 
-if (state.setIndex !== undefined && state.setIndex !== currentSet) {
-    currentSet = state.setIndex;
-  displaySetNumber = state.setNumber;
-    loadSetData(currentSet);
-}
+        console.log("PHASE CHANGE:", prevPhase, "→", state.phase);
 
-rotationCount = state.rotation || 0;
+        // 🔥 WORK → ROTATE transition (THIS FIXES YOUR ISSUE)
+        if (prevPhase === "work" && state.phase === "rotate") {
+            console.log("🔁 ROTATING QUADRANTS");
+            rotateQuadrantColors();
+        }
 
+        phaseJustChanged = true;
+    }
 
+    currentPhase = state.phase;
+    timeLeft = state.timeLeft;
 
-  
+    if (state.setIndex !== undefined && state.setIndex !== currentSet) {
+        currentSet = state.setIndex;
+        displaySetNumber = state.setNumber;
+        loadSetData(currentSet);
+    }
+
+    rotationCount = state.rotation || 0;
+
     /* ======================================================
-       3️⃣ DRESS WARNING (exact trigger)
+       3️⃣ DRESS WARNING
     ====================================================== */
-  
-  if (
+
+    if (
         currentPhase === "dress" &&
         timeLeft === 120 &&
         !dressWarningSpoken
@@ -993,29 +993,25 @@ rotationCount = state.rotation || 0;
         dressWarningSpoken = true;
     }
 
-    
     /* ======================================================
-       4️⃣ FINAL COUNTDOWN (no repeats)
+       4️⃣ FINAL COUNTDOWN
     ====================================================== */
-    
-  if (timeLeft >= 1 && timeLeft <= 5) {
+
+    if (timeLeft >= 1 && timeLeft <= 5) {
         if (lastCountdownSpoken !== timeLeft) {
             speakNumber(timeLeft);
             lastCountdownSpoken = timeLeft;
         }
     }
 
-    
     /* ======================================================
-       5️⃣ UPDATE CLOCK
+       5️⃣ UPDATE UI
     ====================================================== */
-    
-  updateClock();
 
-  updatePhaseDisplay();
-  
-    
-  if (timeLeft > 0) return;
+    updateClock();
+    updatePhaseDisplay();
+
+    if (timeLeft > 0) return;
 
     lastCountdownSpoken = null;
 
