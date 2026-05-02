@@ -619,29 +619,30 @@ function rotateQuadrantColors() {
     q1.classList.add(c3); // q3 → q1
 }
 
- function computeWorkoutState(nowMs) {
+function computeWorkoutState(nowMs) {
 
     if (!window.classStartTime) return null;
 
     let elapsed = Math.floor((nowMs - window.classStartTime) / 1000);
+    let cursor = 0;
 
     // 1️⃣ DRESS
-    if (elapsed < dressOutDuration) {
+    if (elapsed < cursor + dressOutDuration) {
         return {
             phase: "dress",
-            timeLeft: dressOutDuration - elapsed
+            timeLeft: (cursor + dressOutDuration) - elapsed
         };
     }
-    elapsed -= dressOutDuration;
+    cursor += dressOutDuration;
 
     // 2️⃣ STRETCH
-    if (elapsed < dynamicStretchDuration) {
+    if (elapsed < cursor + dynamicStretchDuration) {
         return {
             phase: "stretch",
-            timeLeft: dynamicStretchDuration - elapsed
+            timeLeft: (cursor + dynamicStretchDuration) - elapsed
         };
     }
-    elapsed -= dynamicStretchDuration;
+    cursor += dynamicStretchDuration;
 
     // 3️⃣ WORKOUT LOOP
     for (let i = 0; i < window.workoutData.length; i++) {
@@ -654,8 +655,8 @@ function rotateQuadrantColors() {
 
                 const work = item.workSec || getWorkDuration();
 
-                // 🔥 WORK PHASE
-                if (elapsed < work) {
+                // WORK
+                if (elapsed < cursor + work) {
                     return {
                         phase: "work",
                         setIndex: i,
@@ -663,45 +664,40 @@ function rotateQuadrantColors() {
                             .slice(0, i + 1)
                             .filter(x => x.type === "set").length,
                         rotation: r,
-                        timeLeft: work - elapsed
+                        timeLeft: (cursor + work) - elapsed
                     };
                 }
+                cursor += work;
 
-                elapsed -= work;
-
-                // 🔥 ROTATE PHASE (ALWAYS RUN — no skipping)
+                // ROTATE (always exists)
                 const rest = Math.max(1, item.rotateSec || getRestDuration());
 
-                if (elapsed < rest) {
+                if (elapsed < cursor + rest) {
                     return {
                         phase: "rotate",
                         setIndex: i,
                         rotation: r,
-                        timeLeft: rest - elapsed
+                        timeLeft: (cursor + rest) - elapsed
                     };
                 }
-
-                elapsed -= rest;
+                cursor += rest;
             }
         }
 
-        // 🔥 BREAK PHASE
         if (item.type === "break") {
             const b = item.breakSec || breakDuration;
 
-            if (elapsed < b) {
+            if (elapsed < cursor + b) {
                 return {
                     phase: "break",
                     setIndex: i,
-                    timeLeft: b - elapsed
+                    timeLeft: (cursor + b) - elapsed
                 };
             }
-
-            elapsed -= b;
+            cursor += b;
         }
     }
 
-    // 🔥 DONE
     return { phase: "done", timeLeft: 0 };
 }
 
