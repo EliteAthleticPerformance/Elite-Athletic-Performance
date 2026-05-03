@@ -372,7 +372,12 @@ box-shadow: 0 10px 25px var(--primaryLight)
 }
 
 .header-left,
-.header-center,
+.header-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
 .header-right {
     position:relative;
     z-index:2;
