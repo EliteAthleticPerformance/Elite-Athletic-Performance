@@ -726,17 +726,17 @@ h1 {
 
 /* ===== TABLE FONT SIZE ===== */
 .table {
-  font-size: 24px;   /* 🔥 base size */
+  font-size: 16px;   /* 🔥 base size */
 }
 
 .table th {
-  font-size: 18px;   /* slightly bigger headers */
+  font-size: 16px;   /* slightly bigger headers */
   font-weight: 700;
   letter-spacing: 0.5px;
 }
 
 .table td {
-  font-size: 24px;
+  font-size: 18px;
 }
 
 .table th,
