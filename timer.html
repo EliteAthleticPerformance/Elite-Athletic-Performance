@@ -43,7 +43,7 @@ Object.defineProperty(window, "workoutData", {
 
 <style>
 :root {
-  --header-height: 90px;  
+  --header-height: 110px;  
     --primary: #505152;
     --primaryLight: #B0B7BE;
     --primaryDark: #222;
@@ -104,7 +104,7 @@ html, body {
 
 body {
     margin:0;
-    background:var(--background, #000);
+    background:#000;
     color:#fff;
     font-family:'Arial Black', sans-serif;
 }
@@ -134,8 +134,9 @@ main {
     align-items:center;
     text-align:center;
 
-    border:3px solid #aaa;
+    border:4px solid #cfcfcf;
     box-shadow: inset 0 0 10px rgba(255,255,255,0.05);
+    outline: 2px solid #222;
 }
 
 .quad-title { font-size:3.5vh; }
@@ -231,7 +232,7 @@ main {
 
 </head>
 
-<body>
+<body class="timer-page">
 
 <div id="headerContainer"></div>
 
@@ -292,6 +293,11 @@ main {
 <script src="js/workoutLoader.js"></script>
 <script src="js/main.js"></script>
   <script>
+  // 🔥 LOAD HEADER
+  loadHeader();
+
+
+    
 function openCoachPanel() {
     const code = prompt("Enter coach access code:");
 
