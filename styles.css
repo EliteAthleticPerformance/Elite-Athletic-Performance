@@ -186,7 +186,7 @@ box-shadow: 0 10px 25px var(--primaryLight)
     justify-items: center; /* 🔥 ADD THIS */
 
     padding: 10px 30px;   /* 🔥 reduce padding */
-    height: 90px;         /* 🔥 slightly tighter */
+    height: var(--header-height);
 
     position: relative;
 
