@@ -1,43 +1,46 @@
-<div id="headerContainer"></div>
+<div id="schoolHeader">
 
   <!-- LEFT -->
   <div class="header-left">
     <img id="schoolLogo" class="logo" alt="Logo">
   </div>
 
+  <!-- CENTER -->
   <div class="header-center">
-  
-  <!-- 🔥 NEW: SCHOOL NAME -->
-  <div class="school-name" id="schoolName"></div>
+    
+    <div class="school-name" id="schoolName"></div>
 
-  <!-- EXISTING TITLE -->
-  <div class="title elite-header elite-lg" id="pageTitle">
-    Elite Athletic Performance
+    <div class="title elite-header elite-lg" id="pageTitle">
+      Elite Athletic Performance
+    </div>
+
+  </div>
+
+  <!-- RIGHT -->
+  <div class="header-right">
+
+    <!-- 🔥 TIMER (for timer page) -->
+    <div id="headerTimer" style="display:none;">00:00</div>
+
+    <!-- 🔥 NORMAL MENU -->
+    <div id="headerMenu">
+      <button class="logout-btn" onclick="logout()">Logout</button>
+
+      <div class="menu-wrapper">
+        <div id="menuToggle" class="menu-toggle">☰</div>
+
+        <div id="dropdownMenu" class="dropdown">
+          <a href="index.html">🏠 Home</a>
+          <a href="timer.html">⏱ Timer</a>
+          <a href="testing.html">📋 Testing</a>
+          <a href="athletes.html">👥 Athletes</a>
+          <a href="leaderboard.html">🏆 Leaderboard</a>
+          <a href="howitworks.html">How It Works Video</a>        
+          <a href="about.html">About</a>        
+        </div>
+      </div>
+    </div>
+
   </div>
 
 </div>
-
-  <!-- RIGHT -->
- <div class="header-right">
-
-  <!-- 🔥 TIMER (only shows on timer page) -->
-  <div id="headerTimer" style="display:none;">00:00</div>
-
-  <!-- NORMAL NAV -->
-  <div id="headerMenu">
-    <button class="logout-btn" onclick="logout()">Logout</button>
-
-    <div class="menu-wrapper">
-      <div id="menuToggle" class="menu-toggle">☰</div>
-
-      <div id="dropdownMenu" class="dropdown">
-        <a href="index.html">🏠 Home</a>
-        <a href="timer.html">⏱ Timer</a>
-        <a href="testing.html">📋 Testing</a>
-        <a href="athletes.html">👥 Athletes</a>
-        <a href="leaderboard.html">🏆 Leaderboard</a>
-        <a href="howitworks.html">How It Works Video</a>        
-        <a href="about.html">About</a>        
-      </div>
-    </div>
-  </div>
