@@ -713,7 +713,7 @@ h1 {
   background: #111;
   border-radius: var(--radius);
   overflow: hidden;
-  table-layout: auto;
+  table-layout: fixed;
 }
 
 /* ===== TABLE WRAPPER FIX ===== */
@@ -730,8 +730,9 @@ h1 {
 }
 
 .table th {
-  font-size: 26px;   /* slightly bigger headers */
+  font-size: 18px;   /* slightly bigger headers */
   font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
 .table td {
