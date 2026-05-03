@@ -206,6 +206,24 @@ function syncClockOffset() {
 
 /* ===================== UTIL ===================== */
 
+async function loadHeader() {
+    const res = await fetch("header.html");
+    const html = await res.text();
+
+    const container = document.getElementById("headerContainer");
+    if (!container) return;
+
+    container.innerHTML = html;
+
+    // 🔥 TIMER MODE
+    const timer = document.getElementById("headerTimer");
+    const menu = document.getElementById("headerMenu");
+
+    if (timer) timer.style.display = "block";
+    if (menu) menu.style.display = "none";
+}
+
+
 function goFullscreen() {
     document.documentElement.requestFullscreen();
 }
@@ -1280,6 +1298,8 @@ window.addEventListener("keydown", (e) => {
 
 window.addEventListener("DOMContentLoaded", async () => {
 
+    await loadHeader(); // 🔥 MUST BE FIRST
+  
     try {
 
         if (!window.APP_READY) {
@@ -1297,7 +1317,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
         console.log("✅ SCHOOL CONFIG READY:", config);
 
-      document.documentElement.style.setProperty('--secondary-color', config.theme.secondary);
+      document.documentElement.style.setProperty('--secondary', config.theme.secondary);
 
         applyQuadrantColors();
 
