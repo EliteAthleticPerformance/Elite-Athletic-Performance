@@ -163,7 +163,7 @@ let selectedVoice = null;
 let displaySetNumber = 0;
 
  function updateTotalDisplay() {
-    const el = document.getElementById("totalTime");
+    const el = document.getElementById("headerTimer"); // 🔥 NEW TARGET
     if (!el) return;
 
     const minutes = Math.floor(totalSeconds / 60);
