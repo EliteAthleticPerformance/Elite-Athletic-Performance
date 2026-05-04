@@ -2,7 +2,7 @@
 console.log("🔥 MAIN.JS LOADED"); 
   console.log("STEP 1");
 
-  
+   
 /* ===================== STATE ===================== */
 console.log("STEP 2");
 let timer = null;
