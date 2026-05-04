@@ -163,32 +163,106 @@ main {
     height:clamp(180px, 24vmin, 420px);
     border:clamp(6px, 1vmin, 16px) solid var(--silver);
     border-radius:50%;
+
+    /* 🔥 BASE (IDLE LOOK) */
     background:radial-gradient(
         circle at center,
         color-mix(in srgb, var(--primary) 25%, #111),
         #000 70%
     );
+
     display:flex;
     flex-direction:column;
     justify-content:center;
     align-items:center;
+
+    transition: all 0.35s ease;
+
+    /* subtle base pulse */
     animation:centerPulse 1.6s ease-in-out infinite;
 }
+
+/* ===================== CLOCK TEXT ===================== */
 
 #clock {
     font-size:clamp(48px, 8vmin, 140px);
     font-weight:900;
+    letter-spacing:2px;
 }
+
+/* ===================== PHASE TEXT ===================== */
 
 #phase {
-    font-size:clamp(14px, 2.2vmin, 36px);
+    font-size:clamp(14px, 2.2vmin, 32px);
     font-weight:900;
     text-align:center;
+    line-height:1.2;
+    margin-top:6px;
 }
 
+/* ===================== WORK MODE (GREEN) ===================== */
+
+#center.workMode {
+    background:radial-gradient(circle at center,#32CD32 0%,#0a2 60%,#000 100%) !important;
+    border-color:#32CD32 !important;
+
+    box-shadow:
+        0 0 30px #32CD32,
+        0 0 80px #32CD32,
+        0 0 140px #32CD32;
+
+    animation:workPulse 1s ease-in-out infinite;
+}
+
+/* ===================== ROTATE MODE (YELLOW) ===================== */
+
+#center.rotateMode {
+    background:radial-gradient(circle at center,#FFD700 0%,#b8860b 60%,#000 100%) !important;
+    border-color:#FFD700 !important;
+
+    box-shadow:
+        0 0 30px #FFD700,
+        0 0 80px #FFD700;
+}
+
+/* ===================== BREAK MODE (RED) ===================== */
+
+#center.breakMode {
+    background:radial-gradient(circle at center,#FF1A1A 0%,#8B0000 60%,#000 100%) !important;
+    border-color:#FF0000 !important;
+
+    box-shadow:
+        0 0 40px #FF0000,
+        0 0 100px #FF0000;
+}
+
+/* ===================== DRESS MODE (CYAN) ===================== */
+
+#center.dressMode {
+    background:radial-gradient(circle at center,#00E5FF 0%,#008B9A 60%,#000 100%) !important;
+    border-color:#00E5FF !important;
+}
+
+/* ===================== STRETCH MODE (ORANGE) ===================== */
+
+#center.stretchMode {
+    background:radial-gradient(circle at center,#FFA500 0%,#CC7000 60%,#000 100%) !important;
+    border-color:#FFA500 !important;
+}
+
+/* ===================== ANIMATIONS ===================== */
+
+/* Base pulse (idle/low intensity) */
 @keyframes centerPulse {
     0% { transform:translate(-50%, -50%) scale(1); }
-    50% { transform:translate(-50%, -50%) scale(1.06); }
+    50% { transform:translate(-50%, -50%) scale(1.04); }
+    100% { transform:translate(-50%, -50%) scale(1); }
+}
+
+/* 🔥 WORK pulse (stronger + more energy) */
+@keyframes workPulse {
+    0% { transform:translate(-50%, -50%) scale(1); }
+    50% { transform:translate(-50%, -50%) scale(1.08); }
     100% { transform:translate(-50%, -50%) scale(1); }
 }
 
