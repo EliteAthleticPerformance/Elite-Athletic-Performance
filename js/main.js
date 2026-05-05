@@ -1157,7 +1157,7 @@ function updatePhaseDisplay() {
         <div>WORK</div>
         <div style="font-size:0.7em; margin-top:6px;">
             Set ${displaySetNumber} of ${getTotalSets()}
-        </div>
+        </div> 
         <div style="font-size:0.65em; opacity:0.85;">
             Rotation ${rotationCount + 1} of ${maxRotations}
         </div>
