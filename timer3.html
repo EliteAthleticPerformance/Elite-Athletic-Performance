@@ -1,0 +1,273 @@
+console.log("🔥 MAIN.JS LOADED");
+
+/* ===================== STATE ===================== */
+let timer = null;
+let timeLeft = 0;
+let totalSeconds = 0;
+let originalTotalSeconds = 0;
+let isRunning = false;
+let currentPhase = "idle";
+let nextTickTime = null;
+
+let workoutData = [];
+let timeOffset = 0;
+let lastControlSignature = null;
+
+/* ===================== SETS ===================== */
+let currentSet = 1;
+let rotationCount = 0;
+const maxRotations = 4;
+let displaySetNumber = 1;
+
+/* ===================== SCHEDULE ===================== */
+let autoStartEnabled = true;
+let monTimes = [], tueTimes = [], wedTimes = [], thurTimes = [], friTimes = [];
+let autoStartTimer = null;
+
+/* ===================== DURATIONS ===================== */
+let classBlockLength = 45 * 60;
+let dressOutDuration = 0;
+let dynamicStretchDuration = 0;
+let breakDuration = 0;
+
+/* ===================== HELPERS ===================== */
+
+Object.defineProperty(window, "workoutData", {
+    get: () => workoutData
+});
+
+function getTotalSets() {
+    return workoutData.filter(x => x.type === "set").length;
+}
+
+/* ===================== TIMER ===================== */
+
+function startTimer() {
+    if (!workoutData.length) return;
+
+    stopAllTimers();
+
+    isRunning = true;
+    currentPhase = "dress";
+    timeLeft = dressOutDuration;
+
+    totalSeconds = classBlockLength;
+    originalTotalSeconds = classBlockLength;
+
+    displaySetNumber = 1;
+    rotationCount = 0;
+    currentSet = 1;
+
+    updatePhaseDisplay();
+    updateClock();
+    updateTotalDisplay();
+
+    nextTickTime = Date.now() + 1000;
+    timer = setTimeout(preciseTick, 1000);
+}
+
+function preciseTick() {
+    if (!isRunning) return;
+
+    const now = Date.now();
+
+    while (nextTickTime <= now) {
+        tick();
+        nextTickTime += 1000;
+    }
+
+    timer = setTimeout(preciseTick, nextTickTime - now);
+}
+
+function tick() {
+
+    if (!isRunning) return;
+
+    totalSeconds = Math.max(0, totalSeconds - 1);
+    timeLeft = Math.max(0, timeLeft - 1);
+
+    updateClock();
+    updateTotalDisplay();
+
+    if (timeLeft > 0) return;
+
+    switch (currentPhase) {
+
+        case "dress":
+            currentPhase = "stretch";
+            timeLeft = dynamicStretchDuration;
+            break;
+
+        case "stretch":
+            currentPhase = "work";
+            currentSet = 1;
+            rotationCount = 0;
+            displaySetNumber = 1;
+            loadSetData(1);
+            timeLeft = getWorkDuration();
+            break;
+
+        case "work":
+            rotateQuadrantColors();
+            rotationCount++;
+
+            currentPhase = "rotate";
+            timeLeft = getRestDuration();
+            break;
+
+        case "rotate":
+
+            if (rotationCount >= maxRotations) {
+                rotationCount = 0;
+                currentSet++;
+                displaySetNumber++;
+
+                const next = workoutData[currentSet - 1];
+
+                if (!next) {
+                    stopAllTimers();
+                    return;
+                }
+
+                if (next.type === "break") {
+                    currentPhase = "break";
+                    timeLeft = next.breakSec || breakDuration;
+                    break;
+                }
+
+                loadSetData(currentSet);
+            }
+
+            currentPhase = "work";
+            timeLeft = getWorkDuration();
+            break;
+
+        case "break":
+            currentPhase = "work";
+            timeLeft = getWorkDuration();
+            break;
+    }
+
+    updatePhaseDisplay();
+}
+
+/* ===================== DISPLAY ===================== */
+
+function updateClock() {
+    const el = document.getElementById("clock");
+    if (!el) return;
+
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+
+    el.textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
+function updateTotalDisplay() {
+    const el = document.getElementById("headerTimer");
+    if (!el) return;
+
+    const m = Math.floor(totalSeconds / 60);
+    const s = totalSeconds % 60;
+
+    el.textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
+/* ===================== PHASE UI ===================== */
+
+function updatePhaseDisplay() {
+
+    const center = document.getElementById("center");
+    const phaseEl = document.getElementById("phase");
+
+    if (!center || !phaseEl) return;
+
+    center.className = "";
+
+    if (currentPhase === "work") {
+        center.classList.add("workMode");
+
+        phaseEl.innerHTML = `
+            <div>WORK</div>
+            <div>Set ${displaySetNumber} of ${getTotalSets()}</div>
+            <div>Rotation ${rotationCount + 1} of ${maxRotations}</div>
+        `;
+        return;
+    }
+
+    if (currentPhase === "rotate") {
+        center.classList.add("rotateMode");
+        phaseEl.innerHTML = `<div>ROTATE</div>`;
+        return;
+    }
+
+    if (currentPhase === "break") {
+        center.classList.add("breakMode");
+        phaseEl.innerHTML = `<div>BREAK</div>`;
+        return;
+    }
+
+    if (currentPhase === "dress") {
+        phaseEl.innerHTML = `<div>DRESS</div>`;
+        return;
+    }
+
+    if (currentPhase === "stretch") {
+        phaseEl.innerHTML = `<div>STRETCH</div>`;
+        return;
+    }
+}
+
+/* ===================== DATA ===================== */
+
+function loadSetData(i) {
+    const item = workoutData[i - 1];
+    if (!item || item.type !== "set") return;
+
+    document.querySelector("#q1 .quad-text").innerText = item.core;
+    document.querySelector("#q2 .quad-text").innerText = item.aux;
+    document.querySelector("#q4 .quad-text").innerText = item.move;
+}
+
+function getWorkDuration() {
+    const val = parseInt(document.getElementById("workTime").value, 10);
+    return isNaN(val) ? 30 : val;
+}
+
+function getRestDuration() {
+    const val = parseInt(document.getElementById("restTime").value, 10);
+    return isNaN(val) ? 15 : val;
+}
+
+/* ===================== ROTATION ===================== */
+
+function rotateQuadrantColors() {
+    const q1 = document.getElementById("q1");
+    const q2 = document.getElementById("q2");
+    const q3 = document.getElementById("q3");
+    const q4 = document.getElementById("q4");
+
+    const c1 = q1.className;
+    const c2 = q2.className;
+    const c3 = q3.className;
+    const c4 = q4.className;
+
+    q2.className = c1;
+    q4.className = c2;
+    q3.className = c4;
+    q1.className = c3;
+}
+
+/* ===================== CONTROL ===================== */
+
+function stopAllTimers() {
+    clearTimeout(timer);
+    timer = null;
+    isRunning = false;
+}
+
+/* ===================== INIT ===================== */
+
+window.addEventListener("DOMContentLoaded", () => {
+    console.log("✅ READY");
+});
