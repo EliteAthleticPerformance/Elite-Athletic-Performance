@@ -40,7 +40,7 @@ try {
   const school = params.get("school") || sessionStorage.getItem("school") || "harrisonville";
   sessionStorage.setItem("school", school);
 
-  let theme = null;
+  let logo = null;
 
 try {
   const raw = sessionStorage.getItem("logo-" + school);
