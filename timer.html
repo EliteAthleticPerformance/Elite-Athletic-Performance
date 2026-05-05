@@ -107,6 +107,9 @@ body {
     background:#000;
     color:#fff;
     font-family:'Arial Black', sans-serif;
+   height:100vh;
+    display:flex;
+    flex-direction:column;
 }
 
 
@@ -117,14 +120,16 @@ main {
 }
   
 #display {
-    width:100%;
-    height:100%;
+    position:absolute;
+    top:120px;
+    bottom:0;
+    left:0;
+    right:0;
     display:grid;
     grid-template-columns:1fr 1fr;
     grid-template-rows:1fr 1fr;
-
-    gap:0;              /* 🔥 REMOVE spacing */
-    padding:0;          /* 🔥 REMOVE spacing */
+    gap:2vh;
+    padding:2vh;
 }
 
 .quad {
@@ -133,19 +138,16 @@ main {
     justify-content:center;
     align-items:center;
     text-align:center;
-
-    border:4px solid #cfcfcf;
-    box-shadow: inset 0 0 10px rgba(255,255,255,0.05);
-    outline: 2px solid #222;
+  padding:10px;
 }
 
 .quad-title { font-size:3.5vh; }
 .quad-text  { font-size:6.5vh; font-weight:900; }
 
-.blackQuad { background:#000; color:#fff; }
-.whiteQuad { background:#fff; color:#000; }
-.blueQuad  { background:var(--primary); color:#fff; } 
-.greyQuad  { background:#555555d5; color:#fff; }
+.blackQuad { background:#000;color:#fff;border:8px solid var(--silver);}
+.whiteQuad { background:#fff;color:#000;border:8px solid var(--silver);}
+.blueQuad  {background:var(--primary);color:#fff;border:8px solid var(--secondaryLight);}
+.greyQuad  {background:#555555d5;color:#fff;border:8px solid var(--silver);}
 
   .schoolPrimary {
     background-color: var(--primary);
@@ -174,12 +176,6 @@ main {
     flex-direction:column;
     justify-content:center;
     align-items:center;
-
-    text-align:center;
-
-    /* 🔥 KEY FIX */
-    overflow:visible;
-
     transition: all 0.35s ease;
     animation:centerPulse 1.6s ease-in-out infinite;
 }
@@ -190,23 +186,20 @@ main {
     font-size:clamp(42px, 7vmin, 120px); /* 🔥 slightly smaller */
     font-weight:900;
     letter-spacing:2px;
-    line-height:1;
+    font-variant-numeric:tabular-nums;
 }
 
 /* ===================== PHASE ===================== */
 
 #phase {
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-
+    font-size:clamp(14px, 2.2vmin, 36px);
     font-weight:900;
-    margin-top:8px;
-
-    font-size:clamp(12px, 2vmin, 26px);
-    line-height:1.25;
+    text-align:center;
+    margin-top:0.5vh;
+    white-space:pre-line;
 }
+
+.smallPhase { font-size:1.4vh !important; }
 
 /* 🔥 Sub text (Set / Rotation) */
 #phase div:nth-child(2),
