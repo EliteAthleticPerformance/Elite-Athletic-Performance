@@ -16,6 +16,10 @@ let lastCountdownSpoken = null;
 let phaseJustChanged = false;
 let nextTickTime = null;
 let workoutData = [];
+let timeOffset = 0;
+let lastControlSignature = null;
+
+
 
 /* ✅ safer global access (no desync risk) */
 Object.defineProperty(window, "workoutData", {
@@ -573,23 +577,39 @@ for (const r of rows) {
     /* ---------- SCHEDULE TIMES ---------- */
 
     if (firstCell === "monday_times") {
-        mondayTimes = clean(r[1] || "")
+        monTimes = clean(r[1] || "")
             .split(",")
             .map(s => s.trim())
             .filter(Boolean);
         continue;
     }
 
-    if (firstCell === "tuewed_times") {
-        tueWedTimes = clean(r[1] || "")
+    if (firstCell === "tuesday_times") {
+        tueTimes = clean(r[1] || "")
             .split(",")
             .map(s => s.trim())
             .filter(Boolean);
         continue;
     }
 
-    if (firstCell === "thufri_times") {
-        thuFriTimes = clean(r[1] || "")
+   if (firstCell === "wednesday_times") {
+        wedTimes = clean(r[1] || "")
+            .split(",")
+            .map(s => s.trim())
+            .filter(Boolean);
+        continue;
+    }
+
+    if (firstCell === "thursday_times") {
+        thurTimes = clean(r[1] || "")
+            .split(",")
+            .map(s => s.trim())
+            .filter(Boolean);
+        continue;
+    }
+
+   if (firstCell === "friday_times") {
+        friTimes = clean(r[1] || "")
             .split(",")
             .map(s => s.trim())
             .filter(Boolean);
@@ -626,47 +646,39 @@ for (const r of rows) {
         if (v !== null) breakDuration = v;
         continue;
     }
-}
-
-          
+        
             /* =================================================
                FLEXIBLE SET DETECTION
             ================================================= */
 
-            const looksLikeSetNumber =
-                /^\d+$/.test(firstCell) ||
-                /^\d+\.$/.test(firstCell) ||
-                /^set\s*\d*$/i.test(firstRaw);
+            // INSIDE LOOP
+const looksLikeSetNumber =
+    /^\d+$/.test(firstCell) ||
+    /^\d+\.$/.test(firstCell) ||
+    /^set\s*\d*$/i.test(firstRaw);
 
-            if (looksLikeSetNumber) {
+if (looksLikeSetNumber) {
 
-                const workSec = parseSheetNumber(r[8]);
-                const rotateSec = parseSheetNumber(r[9]);
-                const breakSec = parseSheetNumber(r[10], breakDuration);
+    const workSec = parseSheetNumber(r[8]);
+    const rotateSec = parseSheetNumber(r[9]);
+    const breakSec = parseSheetNumber(r[10], breakDuration);
 
-                workoutData.push({
-                    type: "set",
-                    core: clean(r[1]),
-                    percent: clean(r[2]),
-                    reps: clean(r[3]),
-                    aux: clean(r[4]),
-                    auxReps: clean(r[5]),
-                    move: clean(r[6]),
-                    moveReps: clean(r[7]),
-                    workSec,
-                    rotateSec,
-                    breakSec
-                });
+    workoutData.push({
+        type: "set",
+        core: clean(r[1]),
+        percent: clean(r[2]),
+        reps: clean(r[3]),
+        aux: clean(r[4]),
+        auxReps: clean(r[5]),
+        move: clean(r[6]),
+        moveReps: clean(r[7]),
+        workSec,
+        rotateSec,
+        breakSec
+    });
 
-                console.log("📥 Set parsed:", {
-                    set: firstRaw,
-                    workSec,
-                    rotateSec,
-                    breakSec
-                });
-
-                continue;
-            }
+    continue;
+}
         }
 
         console.log("✅ Workout rows:", workoutData.length);
@@ -690,7 +702,7 @@ updateTotalDisplay();
     } catch (err) {
         console.error("❌ Failed to load workout:", err);
     }
-}
+}}
 
 
 /* ======================================================
@@ -1458,7 +1470,7 @@ function tick() {
 
         // 🔴 no more items
         if (!nextItem) {
-            workoutComplete();
+            workoutFinishScreen();
             return;
         }
 
@@ -1502,7 +1514,7 @@ function tick() {
             const nextItem = workoutData[currentSet] ?? null;
 
             if (!nextItem) {
-                workoutComplete();
+                workoutFinishScreen();
                 return;
             }
 
@@ -1793,24 +1805,6 @@ function loadSetData(setNumber) {
 
 
 /* ======================================================
-   SPACEBAR CONTROL
-====================================================== */
-
-window.addEventListener("keydown", (e) => {
-
-    const tag = document.activeElement?.tagName;
-    if (tag === "INPUT" || tag === "TEXTAREA") return;
-
-    if (e.repeat) return;
-
-    if (e.code === "Space") {
-        e.preventDefault();
-        startTimer();
-    }
-});
-
-
-/* ======================================================
    INITIAL PAGE LOAD
 ====================================================== */
 
@@ -1818,20 +1812,7 @@ window.addEventListener("unhandledrejection", e => {
     console.warn("Unhandled promise:", e.reason);
 });
 
-window.addEventListener("DOMContentLoaded", () => {
 
-    applyDaySpecificClassLength();
-
-    totalSeconds = classBlockLength;
-    originalTotalSeconds = classBlockLength;
-    updateTotalDisplay();
-
-    loadWorkout();
-
-    // auto detect if class already started
-    setTimeout(autoDetectActiveClass, 2000);
-
-});
 
 
 /* ======================================================
