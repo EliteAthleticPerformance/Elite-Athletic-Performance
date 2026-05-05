@@ -842,7 +842,12 @@ friTimes = [];
 }
 
             const firstRaw = clean(r[0]);
-            const firstCell = firstRaw.toLowerCase(); // ⭐ REQUIRED
+            const firstCell = firstRaw
+    .toLowerCase()
+    .replace(/\s+/g, "")
+    .trim();
+
+              console.log("🔍 Row key:", firstCell);
 
 // ---------- BULLETPROOF BLANK ROW ----------
 if (isEffectivelyBlankRow(r)) {
@@ -906,6 +911,7 @@ if (isEffectivelyBlankRow(r)) {
                     .split(",")
                     .map(s => s.trim())
                     .filter(Boolean);
+                  console.log("📅 Parsed Tuesday times:", tueTimes);
                 continue;
             }
 
