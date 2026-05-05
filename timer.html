@@ -14,7 +14,14 @@ console.log("🔥 SCRIPT LOADED");
   const school = params.get("school") || sessionStorage.getItem("school") || "harrisonville";
   sessionStorage.setItem("school", school);
 
-  const theme = JSON.parse(sessionStorage.getItem("theme-" + school));
+  let theme = null;
+
+try {
+  const raw = sessionStorage.getItem("theme-" + school);
+  theme = raw ? JSON.parse(raw) : null;
+} catch (e) {
+  console.warn("Theme parse failed:", e);
+}
   if (theme) {
     const root = document.documentElement;
     root.style.setProperty("--primary", theme.primary);
@@ -33,7 +40,14 @@ console.log("🔥 SCRIPT LOADED");
   const school = params.get("school") || sessionStorage.getItem("school") || "harrisonville";
   sessionStorage.setItem("school", school);
 
-  const logo = sessionStorage.getItem("logo-" + school);
+  let theme = null;
+
+try {
+  const raw = sessionStorage.getItem("logo-" + school);
+  logo = raw ? JSON.parse(raw) : null;
+} catch (e) {
+  console.warn("Logo parse failed:", e);
+}
   if (logo) {
     document.addEventListener("DOMContentLoaded", () => {
       const el = document.getElementById("schoolLogo");
