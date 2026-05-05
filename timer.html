@@ -5,8 +5,10 @@
 <meta charset="UTF-8">
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-console.log("🔥 SCRIPT LOADED");
+
 <script>
+console.log("🔥 SCRIPT LOADED");
+      
 (function () {
   const params = new URLSearchParams(window.location.search);
   const school = params.get("school") || sessionStorage.getItem("school") || "harrisonville";
