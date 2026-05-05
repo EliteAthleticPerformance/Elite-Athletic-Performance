@@ -702,7 +702,7 @@ updateTotalDisplay();
     } catch (err) {
         console.error("❌ Failed to load workout:", err);
     }
-}}
+}
 
 
 /* ======================================================
