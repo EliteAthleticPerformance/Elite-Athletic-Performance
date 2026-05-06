@@ -415,9 +415,11 @@ body {
 
 .phase-work {
     background: #000;
+
     box-shadow:
-        0 0 20px var(--primary),
-        0 0 40px var(--primaryLight);
+        0 0 10px #39ff14,
+        0 0 24px #00ff88,
+        0 0 50px rgba(57,255,20,0.85);
 }
 
 .phase-rotate {
@@ -1847,22 +1849,32 @@ function buildSegmentTimeline() {
     // WORKOUT
     window.workoutData.forEach((item, index) => {
 
-        if (item.type === "set") {
-            for (let r = 0; r < maxRotations; r++) {
+       if (item.type === "set") {
 
-                timelineData.push({
-                    phase: "work",
-                    duration: item.workSec || sheetWorkDuration || safeGet("workTime", 30)
-                });
+    // WORK
+    timelineData.push({
+        phase: "work",
+        duration:
+            item.workSec ||
+            sheetWorkDuration ||
+            safeGet("workTime", 30)
+    });
 
-                if (r < maxRotations - 1) {
-                    timelineData.push({
-                        phase: "rotate",
-                        duration: item.rotateSec || sheetRotateDuration || safeGet("restTime", 10)
-                    });
-                }
-            }
-        }
+    // LOOK AHEAD
+    const next = window.workoutData[index + 1];
+
+    // ONLY add rotate between consecutive sets
+    if (next && next.type === "set") {
+
+        timelineData.push({
+            phase: "rotate",
+            duration:
+                item.rotateSec ||
+                sheetRotateDuration ||
+                safeGet("restTime", 10)
+        });
+    }
+} 
 
         if (item.type === "break") {
             timelineData.push({
