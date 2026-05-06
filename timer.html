@@ -2138,8 +2138,15 @@ function updateSegmentHighlight() {
 
     if (!window.classStartTime) return;
 
-    const now = getEffectiveNow().getTime();
-    let elapsed = (now - window.classStartTime) / 1000;
+    /* ===================== TRUE ELAPSED ===================== */
+
+const totalTimelineDuration = timelineData.reduce(
+    (sum, seg) => sum + seg.duration,
+    0
+);
+
+let elapsed =
+    totalTimelineDuration - totalSeconds;
 
     let currentIndex = 0;
     let segmentElapsed = 0;
