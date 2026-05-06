@@ -785,6 +785,7 @@ function getTotalSets() {
 ====================================================== */
 displaySetNumber = 1;
 rotationCount = 0;
+      applyRotationState(rotationCount);
 currentSet = 1;
 
 
@@ -900,6 +901,7 @@ document.getElementById("startBtn").innerText = "STOP";
     // FULL RESET
     displaySetNumber = 1;
     rotationCount = 0;
+      applyRotationState(rotationCount);
     currentSet = 1;
     dressWarningSpoken = false;
     lastAutoStartMinute = null;
@@ -1137,6 +1139,7 @@ if (state) {
     }
 
     rotationCount = state.rotation || 0;
+      applyRotationState(rotationCount);
 
     
 
@@ -1733,8 +1736,14 @@ function tick() {
     }
 
     if (state.rotation !== undefined) {
+
+    if (rotationCount !== state.rotation) {
+
         rotationCount = state.rotation;
+
+        applyRotationState(rotationCount);
     }
+}
 
     /* ===================== TOTAL TIMER ===================== */
     const elapsed = Math.floor((now - window.classStartTime) / 1000);
@@ -2040,6 +2049,8 @@ if (window.classStartTime && isRunning) {
         }
 
         rotationCount = state.rotation || 0;
+          applyRotationState(rotationCount);
+          
 
         updateClock();
         
@@ -2080,12 +2091,15 @@ if (window.classStartTime && isRunning) {
 
     // 🔥 ROTATE CHECK (optional but good)
     if (
-        state.phase === "rotate" &&
-        state.rotation !== rotationCount
-    ) {
-        console.log("🔁 ROTATING QUADRANTS (COACH SYNC)");
-        rotateQuadrantColors();
-    }
+    state.phase === "rotate" &&
+    state.rotation !== rotationCount
+) {
+    console.log("🔁 ROTATING QUADRANTS (COACH SYNC)");
+
+    rotationCount = state.rotation;
+
+    applyRotationState(rotationCount);
+}
 
     currentPhase = state.phase;
     timeLeft = state.timeLeft;
@@ -2156,30 +2170,88 @@ function updateTotalDisplay() {
         `${seconds.toString().padStart(2, "0")}`;
 }
 
-/* -------------------- ROTATE QUADRANTS -------------------- */
-function rotateQuadrants() {
+/* ======================================================
+   DETERMINISTIC QUADRANT ROTATION
+====================================================== */
 
-    const mapping = {
-        q1: "q2",
-        q2: "q4",
-        q4: "q3",
-        q3: "q1"
+function applyRotationState(rotation) {
+
+    const q1 = document.getElementById("q1");
+    const q2 = document.getElementById("q2");
+    const q3 = document.getElementById("q3");
+    const q4 = document.getElementById("q4");
+
+    if (!q1 || !q2 || !q3 || !q4) return;
+
+    const base = {
+
+        q1: {
+            bg: "#000",
+            color: "#fff"
+        },
+
+        q2: {
+            bg: "#f4f4f4",
+            color: "#000"
+        },
+
+        q3: {
+            bg: "var(--primary)",
+            color: "#fff"
+        },
+
+        q4: {
+            bg: "#555",
+            color: "#fff"
+        }
     };
 
-    const colors = {};
-    const textColors = {};
+    const layouts = [
 
-    for (let id in mapping) {
+        // ROTATION 0
+        {
+            q1: base.q1,
+            q2: base.q2,
+            q3: base.q3,
+            q4: base.q4
+        },
+
+        // ROTATION 1
+        {
+            q1: base.q3,
+            q2: base.q1,
+            q3: base.q4,
+            q4: base.q2
+        },
+
+        // ROTATION 2
+        {
+            q1: base.q4,
+            q2: base.q3,
+            q3: base.q2,
+            q4: base.q1
+        },
+
+        // ROTATION 3
+        {
+            q1: base.q2,
+            q2: base.q4,
+            q3: base.q1,
+            q4: base.q3
+        }
+    ];
+
+    const layout = layouts[rotation % 4];
+
+    Object.keys(layout).forEach(id => {
+
         const el = document.getElementById(id);
-        colors[id] = window.getComputedStyle(el).backgroundColor;
-        textColors[id] = window.getComputedStyle(el).color;
-    }
 
-    for (let id in mapping) {
-        const target = mapping[id];
-        document.getElementById(target).style.backgroundColor = colors[id];
-        document.getElementById(target).style.color = textColors[id];
-    }
+        if (!el) return;
+
+        el.style.background = layout[id].bg;
+        el.style.color = layout[id].color;
+    });
 }
 
 /* ======================================================
