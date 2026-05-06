@@ -417,7 +417,9 @@ body {
         90deg,
         rgba(255,255,255,0.2),
         rgba(255,255,255,0.9)
+          );
     transition:width 0.2s linear;
+      
 }
 
 /* active segment */
@@ -497,7 +499,7 @@ body {
   <input id="workTime" value="30">
   <input id="restTime" value="10">
   <button id="startBtn" onclick="startTimer()">START</button>
-</div>div>
+</div>
 
 <script>
 
@@ -574,6 +576,18 @@ function goFullscreen() {
 function safeGet(id, fallback = 0) {
     const el = document.getElementById(id);
     return el ? parseInt(el.value, 10) || fallback : fallback;
+}
+
+function updateClock() {
+    const el = document.getElementById("clock"); // ✅ FIXED
+
+    if (!el) return;
+
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+
+    el.textContent =
+        minutes + ":" + String(seconds).padStart(2, "0");
 }
       
 /* ---------- COUNT TOTAL SETS ---------- */
@@ -943,7 +957,7 @@ if (state) {
 
     // ✅ Force UI refresh
     updateClock();
-    updatePhaseDisplay();
+    
 }
 
             /* ============================================================= */
@@ -1890,28 +1904,28 @@ if (window.classStartTime && isRunning) {
     rotationCount = state.rotation || 0;
 
     updateClock();
-    updatePhaseDisplay();
+    
     updateTotalDisplay();
 break;
 
         case "STOP":
     stopAllTimers();
     window.classStartTime = null;
-        updatePhaseDisplay();
+        
 updateClock();
 updateTotalDisplay();
     break;
 
         case "PAUSE":
             isRunning = false;
-        updatePhaseDisplay();
+        
 updateClock();
 updateTotalDisplay();
             break;
 
         case "RESUME":
             isRunning = true;
-        updatePhaseDisplay();
+        
 updateClock();
 updateTotalDisplay();
             break;
@@ -1925,7 +1939,7 @@ updateTotalDisplay();
             );
 
             window.classStartTime = now - (offset * 1000);
-        updatePhaseDisplay();
+        
 updateClock();
 updateTotalDisplay();
             break;
