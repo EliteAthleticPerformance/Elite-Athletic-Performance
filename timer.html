@@ -239,6 +239,123 @@ body {
     height:75px;
 }
 
+      #headerRight {
+    position:absolute;
+    right:20px;
+
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+/* ===================== GLASS NAV DROPDOWN ===================== */
+
+#navDropdown {
+
+    appearance:none;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+
+    min-width:170px;
+    height:46px;
+
+    padding:0 46px 0 18px;
+
+    border-radius:14px;
+
+    border:1px solid rgba(255,255,255,0.12);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.08),
+            rgba(255,255,255,0.02)
+        );
+
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+
+    color:#fff;
+
+    font-weight:800;
+    font-size:14px;
+    letter-spacing:0.5px;
+
+    outline:none;
+    cursor:pointer;
+
+    box-shadow:
+        0 0 10px rgba(0,255,136,0.18),
+        inset 0 0 10px rgba(255,255,255,0.03);
+
+    transition:
+        border-color 0.22s ease,
+        box-shadow 0.22s ease,
+        transform 0.18s ease,
+        background 0.22s ease;
+}
+
+/* hover */
+#navDropdown:hover {
+
+    transform:translateY(-1px);
+
+    border-color:#00ff88;
+
+    box-shadow:
+        0 0 14px rgba(0,255,136,0.55),
+        0 0 28px rgba(57,255,20,0.18);
+}
+
+/* focus */
+#navDropdown:focus {
+
+    border-color:#39ff14;
+
+    box-shadow:
+        0 0 18px rgba(57,255,20,0.7),
+        0 0 36px rgba(0,255,136,0.22);
+}
+
+/* dropdown options */
+#navDropdown option {
+    background:#111;
+    color:#fff;
+}
+
+      /* custom dropdown arrow */
+
+#headerRight {
+    position:absolute;
+    right:20px;
+
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+#headerRight::after {
+
+    content:"⌄";
+
+    position:absolute;
+
+    right:16px;
+    top:50%;
+
+    transform:translateY(-52%);
+
+    color:#39ff14;
+
+    font-size:18px;
+    font-weight:900;
+
+    pointer-events:none;
+
+    text-shadow:
+        0 0 8px rgba(57,255,20,0.7);
+}
+
 /* ===================== GRID ===================== */
 
       
@@ -572,6 +689,7 @@ body {
 </div>
 
 <div id="schoolHeader">
+
     <span id="totalTime">00:00</span>
 
     <div id="headerCenter">
@@ -579,7 +697,21 @@ body {
         <div id="headerMotto">Elite Athletic Performance</div>
     </div>
 
-    <img id="schoolLogo">
+    <!-- RIGHT SIDE -->
+    <div id="headerRight">
+
+        <img id="schoolLogo">
+
+        <select id="navDropdown">
+            <option value="">Navigate</option>
+            <option value="timer.html">Timer</option>
+            <option value="builder.html">Workout Builder</option>
+            <option value="dashboard.html">Dashboard</option>
+            <option value="settings.html">Settings</option>
+        </select>
+
+    </div>
+
 </div>
 
 <div id="display">
@@ -2561,6 +2693,32 @@ document.getElementById("schoolLogo")?.classList.add("logoDefault");
 window.addEventListener("unhandledrejection", e => {
     console.warn("Unhandled promise:", e.reason);
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const nav = document.getElementById("navDropdown");
+
+    if (!nav) return;
+
+    nav.addEventListener("change", (e) => {
+
+        const value = e.target.value;
+
+        if (!value) return;
+
+        // preserve school parameter
+        const params = new URLSearchParams(window.location.search);
+
+        const school =
+            params.get("school") ||
+            sessionStorage.getItem("school") ||
+            "harrisonville";
+
+        window.location.href =
+            `${value}?school=${school}`;
+    });
+});
+      
 
 window.addEventListener("DOMContentLoaded", () => {
 
