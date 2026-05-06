@@ -721,7 +721,7 @@ document.getElementById("startBtn").innerText = "STOP";
 totalSeconds = finalTotal;
 originalTotalSeconds = finalTotal;
 
-    updatePhaseDisplay();
+    
     updateClock();
     updateTotalDisplay();
       updateSegmentHighlight();
@@ -1585,7 +1585,7 @@ function tick() {
 
     /* ===================== UI ===================== */
     updateClock();
-    updatePhaseDisplay();
+    
     updateTotalDisplay();
       updatePhaseGlow(globalTheme);
 
@@ -1839,7 +1839,7 @@ if (window.classStartTime && isRunning) {
         rotationCount = state.rotation || 0;
 
         updateClock();
-        updatePhaseDisplay();
+        
         updateTotalDisplay();
     }
 }
