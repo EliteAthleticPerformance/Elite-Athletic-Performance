@@ -273,7 +273,7 @@ body {
     background:rgba(255,255,255,0.1);
     border-radius:12px;
     overflow:hidden;
-    z-index:3;
+    z-index:1;
 }
 
 #timelineSegments {
@@ -326,6 +326,19 @@ body {
 /* active segment */
 .timeline-segment.active {
     opacity:1;
+}
+
+      .segment-label {
+    position:absolute;
+    width:100%;
+    top:-22px;
+    text-align:center;
+    font-size:10px;
+    font-weight:900;
+    color:#fff;
+    opacity:0.7;
+    pointer-events:none;
+    text-shadow:0 0 5px #000;
 }
 
       
@@ -548,6 +561,7 @@ function preciseTick() {
     const delay = Math.max(0, nextTickTime - now);
     timer = setTimeout(preciseTick, delay);
 
+      
 }
 
 function startTimer() {
@@ -611,6 +625,11 @@ originalTotalSeconds = finalTotal;
 
     nextTickTime = Date.now() + 1000;
     timer = setTimeout(preciseTick, 1000);
+animateTimeline(); // 👈 ADD THIS LINE RIGHT HERE
+      if (!window.timelineAnimating) {
+    window.timelineAnimating = true;
+    animateTimeline();
+}
 }
 
 /* ---------- AUTO START ---------- */
@@ -1536,11 +1555,38 @@ function renderTimeline() {
         const div = document.createElement("div");
 div.classList.add("timeline-segment", `seg-${seg.phase}`);
 
-// 🔥 inner fill element
+// 🔤 LABEL
+const label = document.createElement("div");
+label.classList.add("segment-label");
+
+// Auto naming
+let labelText = seg.phase.toUpperCase();
+
+if (seg.phase === "work") {
+    labelText = `SET`;
+}
+if (seg.phase === "rotate") {
+    labelText = `ROTATE`;
+}
+if (seg.phase === "break") {
+    labelText = `BREAK`;
+}
+if (seg.phase === "stretch") {
+    labelText = `STRETCH`;
+}
+if (seg.phase === "dress") {
+    labelText = `DRESS`;
+}
+
+label.innerText = labelText;
+
+// 🔥 fill layer
 const fill = document.createElement("div");
 fill.classList.add("segment-fill");
 
 div.appendChild(fill);
+div.appendChild(label);
+
 
         const percent = (seg.duration / total) * 100;
         div.style.width = percent + "%";
@@ -1591,7 +1637,8 @@ function updateSegmentHighlight() {
             const segDuration = timelineData[i].duration;
             const percent = Math.min((segmentElapsed / segDuration) * 100, 100);
 
-            fill.style.width = percent + "%";
+            fill.style.transition = "width 0.3s linear";
+fill.style.width = percent + "%";
         }
 
         // COMPLETED segments
@@ -1608,7 +1655,10 @@ function updateSegmentHighlight() {
     });
 }
 
-
+function animateTimeline() {
+    updateSegmentHighlight();
+    requestAnimationFrame(animateTimeline);
+}
       
 function applyCoachControl() {
 
