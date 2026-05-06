@@ -319,25 +319,32 @@ body {
     top:50%;
     left:50%;
     transform:translate(-50%, -50%);
+
     width:220px;
     height:220px;
+
     border:10px solid #ccc;
     border-radius:50%;
-    background:#000;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
+
     z-index:2;
 }
 
       #centerInner {
+    width:100%;
+    height:100%;
+
+    border-radius:50%;
+    background:#000;
+
     display:flex;
     flex-direction:column;
     justify-content:center;
     align-items:center;
-    width:100%;
-    height:100%;
+
+    transition:
+        background 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.2s ease;
 }
 
 #clock {
@@ -353,9 +360,7 @@ body {
     opacity:0.8;
 }
 
-👉 That won’t animate.
 
-✅ ADD THIS CSS (below your center styles)
 #phaseContainer {
     margin-top: 6px;
     height: 24px;
@@ -442,7 +447,7 @@ body {
     100% { box-shadow: 0 0 10px red; }
 }
 
-.pulse #centerInner {
+#centerInner.pulse {
     animation: clockPulse 1s infinite;
 }
 
@@ -727,7 +732,7 @@ function updateClock() {
 }
 
       function updateCenterVisuals() {
-    const center = document.getElementById("center");
+    const center = document.getElementById("centerInner");
     if (!center) return;
 
     // reset classes
@@ -745,7 +750,7 @@ function updateClock() {
 }
 
       function updateUrgencyEffects() {
-    const center = document.getElementById("center");
+    const center = document.getElementById("centerInner");
 
     if (!center) return;
 
@@ -758,13 +763,15 @@ function updateClock() {
 }
 
       function updateClockPulse() {
-    const clock = document.getElementById("clock");
-    if (!clock) return;
 
-    clock.classList.remove("pulse");
+    const centerInner = document.getElementById("centerInner");
+
+    if (!centerInner) return;
+
+    centerInner.classList.remove("pulse");
 
     if (timeLeft <= 5 && currentPhase === "work") {
-        clock.classList.add("pulse");
+        centerInner.classList.add("pulse");
     }
 }
       
