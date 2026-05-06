@@ -1735,13 +1735,21 @@ function tick() {
         }
     }
 
-    if (state.rotation !== undefined) {
+    /* ===================== ROTATION CONTROL ===================== */
 
-    if (rotationCount !== state.rotation) {
+if (state.rotation !== undefined) {
 
-        rotationCount = state.rotation;
+    // ONLY rotate when entering ROTATE phase
+    if (
+        currentPhase !== prevPhase &&
+        state.phase === "rotate"
+    ) {
+
+        rotationCount = state.rotation + 1;
 
         applyRotationState(rotationCount);
+
+        console.log("🔁 Quadrants rotated:", rotationCount);
     }
 }
 
