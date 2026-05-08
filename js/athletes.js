@@ -16,14 +16,27 @@ document.addEventListener("headerLoaded", async () => {
     const data = await loadAthleteData();
 
     // ✅ KEEP ALL ENTRIES (NO COLLAPSING)
-    athletes = data
-  .map((a, i) => ({
-    id: i,
-    name: a.name,
-    score: Number(a.score)
-  }))
-  // 🔥 REMOVE athletes with no valid score
-  .filter(a => !isNaN(a.score) && a.score > 0);
+   const athleteMap = {};
+
+data.forEach((a, i) => {
+  const name = a.name?.trim();
+  const score = Number(a.score);
+
+  // ❌ skip invalid
+  if (!name || isNaN(score) || score <= 0) return;
+
+  // ✅ keep BEST score only
+  if (!athleteMap[name] || score > athleteMap[name].score) {
+    athleteMap[name] = {
+      id: i,
+      name,
+      score
+    };
+  }
+});
+
+// ✅ final clean list
+athletes = Object.values(athleteMap);
 
     // ✅ SORT BY SCORE
     athletes.sort((a, b) => b.score - a.score);
