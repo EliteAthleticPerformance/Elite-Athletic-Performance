@@ -840,6 +840,8 @@ let lastCountdownSpoken = null;
 let phaseJustChanged = false;
 let nextTickTime = null;
 let workoutData = [];
+let phaseSequence = [];
+let phaseMeta = [];      
 window.workoutData = workoutData;
 window.classStartTime = null;
 let phaseStartTime = null;
@@ -851,7 +853,7 @@ let phaseStartTime = null;
 let currentSet = 1;
 let maxSets = 1;
 let rotationCount = 0;
-const maxRotations = 4;
+let maxRotations = 4;
 
 /* ===================== PERIOD AUTO START ===================== */
 
@@ -1169,6 +1171,65 @@ function getEffectiveNow() {
     return new Date();
 }
 
+function buildWorkoutTimeline() {
+
+    phaseSequence = [];
+    phaseMeta = [];
+
+    workoutData.forEach((item, setIndex) => {
+
+        if (item.type === "set") {
+
+            for (let r = 0; r < maxRotations; r++) {
+
+                // WORK
+                phaseSequence.push("work");
+
+                phaseMeta.push({
+                    phase: "work",
+                    setIndex: setIndex + 1,
+                    rotation: r,
+                    duration:
+                        item.workSec ||
+                        sheetWorkDuration ||
+                        safeGet("workTime", 30)
+                });
+
+                // ROTATE
+                if (r < maxRotations - 1) {
+
+                    phaseSequence.push("rotate");
+
+                    phaseMeta.push({
+                        phase: "rotate",
+                        setIndex: setIndex + 1,
+                        rotation: r,
+                        duration:
+                            item.rotateSec ||
+                            sheetRotateDuration ||
+                            safeGet("restTime", 10)
+                    });
+                }
+            }
+        }
+
+        // BREAK
+        if (item.type === "break") {
+
+            phaseSequence.push("break");
+
+            phaseMeta.push({
+                phase: "break",
+                duration:
+                    item.breakSec ||
+                    breakDuration
+            });
+        }
+    });
+
+    console.log("🔥 PHASE SEQUENCE:", phaseSequence);
+}
+      
 
       function computeWorkoutState(nowMs) {
 
@@ -1177,115 +1238,59 @@ function getEffectiveNow() {
 
     let elapsed = Math.floor((nowMs - startTime) / 1000);
 
-    /* ===================== DRESS ===================== */
+    // DRESS
     if (elapsed < dressOutDuration) {
         return {
             phase: "dress",
-            timeLeft: Math.max(dressOutDuration - elapsed, 0),
-            originalDuration: dressOutDuration
+            timeLeft: dressOutDuration - elapsed
         };
     }
 
     elapsed -= dressOutDuration;
 
-    /* ===================== STRETCH ===================== */
+    // STRETCH
     if (elapsed < dynamicStretchDuration) {
         return {
             phase: "stretch",
-            timeLeft: Math.max(dynamicStretchDuration - elapsed, 0),
-            originalDuration: dynamicStretchDuration
+            timeLeft: dynamicStretchDuration - elapsed
         };
     }
 
     elapsed -= dynamicStretchDuration;
 
-    /* ===================== WORK / ROTATIONS ===================== */
+    // 🔥 TRUE SEQUENCE ENGINE
+    for (let i = 0; i < phaseMeta.length; i++) {
 
-    let setIndex = 0;
+        const seg = phaseMeta[i];
 
-    while (setIndex < workoutData.length) {
+        if (elapsed < seg.duration) {
 
-        const item = workoutData[setIndex];
-
-        /* ---------- BREAK ---------- */
-        if (item.type === "break") {
-
-            const breakTime = item.breakSec || breakDuration;
-
-            if (elapsed < breakTime) {
-                return {
-                    phase: "break",
-                    timeLeft: Math.max(breakTime - elapsed, 0),
-                    originalDuration: breakTime
-                };
-            }
-
-            elapsed -= breakTime;
-            setIndex++;
-            continue;
+            return {
+                phase: seg.phase,
+                timeLeft: seg.duration - elapsed,
+                setIndex: seg.setIndex,
+                setNumber: seg.setIndex,
+                rotation: seg.rotation,
+                sequenceIndex: i
+            };
         }
 
-        /* ---------- SET ---------- */
-        if (item.type === "set") {
-
-            const workTime = item.workSec || sheetWorkDuration || safeGet("workTime", 30);
-            const rotateTime = item.rotateSec || sheetRotateDuration || safeGet("restTime", 10);
-
-            for (let rotation = 0; rotation < maxRotations; rotation++) {
-
-                // 🟥 WORK
-                if (elapsed < workTime) {
-                    return {
-                        phase: "work",
-                        timeLeft: Math.max(workTime - elapsed, 0),
-                        originalDuration: workTime,
-                        setIndex: setIndex + 1,
-                        setNumber: setIndex + 1,
-                        rotation: rotation
-                    };
-                }
-
-                elapsed -= workTime;
-
-                // 🟪 ROTATE
-                if (rotation < maxRotations - 1) {
-                    if (elapsed < rotateTime) {
-                        return {
-                            phase: "rotate",
-                            timeLeft: Math.max(rotateTime - elapsed, 0),
-                            originalDuration: rotateTime,
-                            setIndex: setIndex + 1,
-                            setNumber: setIndex + 1,
-                            rotation: rotation
-                        };
-                    }
-
-                    elapsed -= rotateTime;
-                }
-            }
-
-            setIndex++;
-        }
+        elapsed -= seg.duration;
     }
 
-    /* ===================== COOLDOWN ===================== */
-if (elapsed < cooldownDuration) {
+    // COOLDOWN
+    if (elapsed < cooldownDuration) {
+        return {
+            phase: "cooldown",
+            timeLeft: cooldownDuration - elapsed
+        };
+    }
+
     return {
-        phase: "cooldown",
-        timeLeft: Math.max(cooldownDuration - elapsed, 0),
-        originalDuration: cooldownDuration
+        phase: "done",
+        timeLeft: 0
     };
 }
-
-elapsed -= cooldownDuration;
-
-/* ===================== DONE ===================== */
-return {
-    phase: "done",
-    timeLeft: 0,
-    originalDuration: 0
-};
-      }
       
 
 function autoDetectActiveClass() {
@@ -1602,7 +1607,7 @@ const response = await fetch(
 
         console.log("CSV length:", text.length);
         console.log("CSV preview:", text.slice(0,200));
-
+        
         const rows = parseCSV(text);
 
         console.log("Rows parsed:", rows.length);
@@ -1630,18 +1635,11 @@ friTimes = [];
         /* =============================
            PROCESS ROWS
         ============================= */
+          let detectedSets = 0;
         for (const r of rows) {
-
-            // ---------- TRUE EMPTY ROW ----------
-            if (!r || r.length === 0) {
-            workoutData.push({
-            type: "break",
-            breakSec: breakDuration
-    });
-            console.log("📥 Empty CSV row → break inserted");
-            continue;
+            if (!r || r.every(cell => !String(cell).trim())) {
+    continue;
 }
-
             const firstRaw = clean(r[0]);
             const firstCell = firstRaw
     .toLowerCase()
@@ -1650,14 +1648,7 @@ friTimes = [];
 
               console.log("🔍 Row key:", firstCell);
 
-// ---------- BULLETPROOF BLANK ROW ----------
-if (isEffectivelyBlankRow(r)) {
-    workoutData.push({
-        type: "break",
-        breakSec: breakDuration
-    });
-    continue;
-}
+
 
 
             // ---------- EXPLICIT BREAK ----------
@@ -1815,41 +1806,53 @@ if (firstCell === "rotate_seconds" || firstCell === "rest") {
 
             if (looksLikeSetNumber) {
 
-                const workSec = parseSheetNumber(r[8]);
-                const rotateSec = parseSheetNumber(r[9]);
-                const breakSec = parseSheetNumber(r[10]);
+    // 🔥 dynamically count sets
+    detectedSets++;
 
-                workoutData.push({
-                    type: "set",
-                    core: clean(r[1]),
-                    percent: clean(r[2]),
-                    reps: clean(r[3]),
-                    aux: clean(r[4]),
-                    auxReps: clean(r[5]),
-                    move: clean(r[6]),
-                    moveReps: clean(r[7]),
-                    workSec,
-                    rotateSec,
-                    breakSec
-                });
+    const workSec = parseSheetNumber(r[8]);
+    const rotateSec = parseSheetNumber(r[9]);
+    const breakSec = parseSheetNumber(r[10]);
 
-                console.log("📥 Set parsed:", {
-                    set: firstRaw,
-                    workSec,
-                    rotateSec,
-                    breakSec
-                });
+    workoutData.push({
+        type: "set",
+        core: clean(r[1]),
+        percent: clean(r[2]),
+        reps: clean(r[3]),
+        aux: clean(r[4]),
+        auxReps: clean(r[5]),
+        move: clean(r[6]),
+        moveReps: clean(r[7]),
+        workSec,
+        rotateSec,
+        breakSec
+    });
 
-                continue;
-            }
+    console.log("📥 Set parsed:", {
+        set: firstRaw,
+        workSec,
+        rotateSec,
+        breakSec
+    });
+
+    continue;
+}
         }
 
         console.log("✅ Workout rows:", workoutData.length);
-        console.log("✅ Auto start:", autoStartEnabled);
+console.log("✅ Auto start:", autoStartEnabled);
 
-       loadSetData(currentSet);
+// 🔥 dynamic rotation count from worksheet
+maxRotations = detectedSets;
+
+console.log("🔥 Dynamic rotations:", maxRotations);
+
+buildWorkoutTimeline();
+
+loadSetData(currentSet);
+
 startAutoScheduler();
-          buildSegmentTimeline();
+
+buildSegmentTimeline();
 
 
 // ⭐ Recalculate preview total
