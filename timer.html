@@ -1026,13 +1026,15 @@ const rest = sheetRotateDuration ?? safeGet("restTime", 10);
 
         if (item.type === "set") {
 
-            for (let i = 0; i < maxRotations; i++) {
-                workoutTotal += work;
+            workoutTotal +=
+    item.workSec ||
+    sheetWorkDuration ||
+    work;
 
-                if (i < maxRotations - 1) {
-                    workoutTotal += rest;
-                }
-            }
+workoutTotal +=
+    item.rotateSec ||
+    sheetRotateDuration ||
+    rest;
         }
 
         if (item.type === "break") {
@@ -1199,20 +1201,31 @@ function buildWorkoutTimeline() {
 
         if (item.type === "set") {
 
-            for (let r = 0; r < maxRotations; r++) {
+           // WORK
+phaseSequence.push("work");
 
-                // WORK
-                phaseSequence.push("work");
+phaseMeta.push({
+    phase: "work",
+    setIndex: setIndex + 1,
+    rotation: setIndex % 4,
+    duration:
+        item.workSec ||
+        sheetWorkDuration ||
+        safeGet("workTime", 30)
+});
 
-                phaseMeta.push({
-                    phase: "work",
-                    setIndex: setIndex + 1,
-                    rotation: r,
-                    duration:
-                        item.workSec ||
-                        sheetWorkDuration ||
-                        safeGet("workTime", 30)
-                });
+// ROTATE
+phaseSequence.push("rotate");
+
+phaseMeta.push({
+    phase: "rotate",
+    setIndex: setIndex + 1,
+    rotation: setIndex % 4,
+    duration:
+        item.rotateSec ||
+        sheetRotateDuration ||
+        safeGet("restTime", 10)
+});
 
                 // ROTATE
                 if (r < maxRotations - 1) {
@@ -1347,7 +1360,7 @@ function autoDetectActiveClass() {
             // Calculate elapsed time
             const elapsed = Math.floor((now - start) / 1000);
 
-            totalSeconds = Math.max(classBlockLength - elapsed, 1);
+            totalSeconds = Math.max(originalTotalSeconds - elapsed, 0);
             originalTotalSeconds = totalSeconds;
 
             updateTotalDisplay();
@@ -2018,7 +2031,7 @@ if (state.rotation !== undefined) {
 
     /* ===================== TOTAL TIMER ===================== */
     const elapsed = Math.floor((now - window.classStartTime) / 1000);
-    totalSeconds = Math.max(classBlockLength - elapsed, 0);
+    totalSeconds = Math.max(originalTotalSeconds - elapsed, 0);
 
     /* ===================== AUDIO ===================== */
 
