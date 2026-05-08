@@ -832,7 +832,7 @@ let timer = null;
 let timeLeft = 0;
 let totalSeconds = 0;
 let originalTotalSeconds = 0;
-let classBlockLength = 3600; // default = 60 minutes
+let classBlockLength = null;
 let isRunning = false;
 let currentPhase = "idle";
 let audioCtx = null;
@@ -1098,52 +1098,71 @@ function startTimer() {
 
     /* ---------- START STATE ---------- */
     isRunning = true;
-      window.classStartTime = getEffectiveNow().getTime();
-    
 
-// ⭐ Force fresh class time calculation
-totalSeconds = classBlockLength;
-originalTotalSeconds = classBlockLength;
-updateTotalDisplay();
+    window.classStartTime = getEffectiveNow().getTime();
 
-document.getElementById("startBtn").innerText = "STOP";
+    // 🔥 Calculate total ONLY ONCE
+    if (!totalSeconds || totalSeconds <= 0) {
 
-    // FULL RESET
+        const planned = calculateTotalTime();
+
+        totalSeconds =
+            classBlockLength && classBlockLength > 0
+                ? Math.min(planned, classBlockLength)
+                : planned;
+
+        originalTotalSeconds = totalSeconds;
+    }
+
+    updateTotalDisplay();
+
+    document.getElementById("startBtn").innerText = "STOP";
+
+    /* ---------- FULL RESET ---------- */
+
     displaySetNumber = 1;
     rotationCount = 0;
-      applyRotationState(rotationCount);
+
+    applyRotationState(rotationCount);
+
     currentSet = 1;
+
     dressWarningSpoken = false;
+
     lastAutoStartMinute = null;
 
+    // 🔥 Load first set immediately
     loadSetData(currentSet);
 
     /* ---------- START WITH DRESS PHASE ---------- */
+
     currentPhase = "dress";
+
     timeLeft = dressOutDuration;
 
-    const plannedWorkoutTime = calculateTotalTime();
-
-    const classLimit = classBlockLength;
-    const finalTotal = Math.min(plannedWorkoutTime, classLimit);
-
-   // Only update preview if workout loaded
-// ⭐ Correct total class time
-totalSeconds = finalTotal;
-originalTotalSeconds = finalTotal;
-
-    
     updateClock();
+
     updateTotalDisplay();
-      updateSegmentHighlight();
+
+    updateSegmentHighlight();
+
+    /* ---------- TIMER LOOP ---------- */
 
     nextTickTime = Date.now() + 1000;
+
     timer = setTimeout(preciseTick, 1000);
 
-      if (!window.timelineAnimating) {
-    window.timelineAnimating = true;
-    animateTimeline();
-}
+    /* ---------- TIMELINE ---------- */
+
+    if (!window.timelineAnimating) {
+
+        window.timelineAnimating = true;
+
+        animateTimeline();
+    }
+
+    console.log("✅ Timer started");
+    console.log("⏱️ Total Seconds:", totalSeconds);
 }
 
 /* ---------- AUTO START ---------- */
@@ -1857,7 +1876,10 @@ buildSegmentTimeline();
 
 // ⭐ Recalculate preview total
 const planned = calculateTotalTime();
-const finalTotal = Math.min(planned, classBlockLength);
+const finalTotal =
+    classBlockLength && classBlockLength > 0
+        ? Math.min(planned, classBlockLength)
+        : planned;
 
 totalSeconds = finalTotal;
 originalTotalSeconds = finalTotal;
@@ -2866,8 +2888,17 @@ window.addEventListener("DOMContentLoaded", () => {
 
     // applyDaySpecificClassLength(); // 🔒 TEMP DISABLED
 
-    totalSeconds = classBlockLength;
-    originalTotalSeconds = classBlockLength;
+   if (!totalSeconds || totalSeconds <= 0) {
+
+    const planned = calculateTotalTime();
+
+    totalSeconds =
+        classBlockLength && classBlockLength > 0
+            ? Math.min(planned, classBlockLength)
+            : planned;
+
+    originalTotalSeconds = totalSeconds;
+}
     updateTotalDisplay();
 
     loadWorkout();
