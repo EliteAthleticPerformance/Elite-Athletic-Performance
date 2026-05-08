@@ -853,7 +853,7 @@ let phaseStartTime = null;
 let currentSet = 1;
 let maxSets = 1;
 let rotationCount = 0;
-let maxRotations = 4;
+
 
 /* ===================== PERIOD AUTO START ===================== */
 
@@ -1102,22 +1102,16 @@ function startTimer() {
     isRunning = true;
 
     window.classStartTime = getEffectiveNow().getTime();
+// 🔥 Fresh total recalculation
+const planned = calculateTotalTime();
 
-    // 🔥 Calculate total ONLY ONCE
-    if (!totalSeconds || totalSeconds <= 0) {
+totalSeconds =
+    classBlockLength && classBlockLength > 0
+        ? Math.min(planned, classBlockLength)
+        : planned;
 
-        const planned = calculateTotalTime();
-
-        totalSeconds =
-            classBlockLength && classBlockLength > 0
-                ? Math.min(planned, classBlockLength)
-                : planned;
-
-        originalTotalSeconds = totalSeconds;
-    }
-
-    updateTotalDisplay();
-
+originalTotalSeconds = totalSeconds;
+   
     document.getElementById("startBtn").innerText = "STOP";
 
     /* ---------- FULL RESET ---------- */
@@ -1201,33 +1195,36 @@ function buildWorkoutTimeline() {
 
         if (item.type === "set") {
 
-           // WORK
-phaseSequence.push("work");
+            // WORK
+            phaseSequence.push("work");
 
-phaseMeta.push({
-    phase: "work",
-    setIndex: setIndex + 1,
-    rotation: setIndex % 4,
-    duration:
-        item.workSec ||
-        sheetWorkDuration ||
-        safeGet("workTime", 30)
-});
+            phaseMeta.push({
+                phase: "work",
+                setIndex: setIndex + 1,
+                rotation: setIndex % 4,
+                duration:
+                    item.workSec ||
+                    sheetWorkDuration ||
+                    safeGet("workTime", 30)
+            });
 
-// ROTATE
-phaseSequence.push("rotate");
+            // ROTATE (skip after final set before break)
+            const nextItem = workoutData[setIndex + 1];
 
-phaseMeta.push({
-    phase: "rotate",
-    setIndex: setIndex + 1,
-    rotation: setIndex % 4,
-    duration:
-        item.rotateSec ||
-        sheetRotateDuration ||
-        safeGet("restTime", 10)
-});
+            if (!nextItem || nextItem.type !== "break") {
 
-                
+                phaseSequence.push("rotate");
+
+                phaseMeta.push({
+                    phase: "rotate",
+                    setIndex: setIndex + 1,
+                    rotation: setIndex % 4,
+                    duration:
+                        item.rotateSec ||
+                        sheetRotateDuration ||
+                        safeGet("restTime", 10)
+                });
+            }
         }
 
         // BREAK
@@ -1312,6 +1309,11 @@ phaseMeta.push({
 
 function autoDetectActiveClass() {
 
+    // 🔥 Prevent sync before workout fully loads
+    if (!originalTotalSeconds || !phaseMeta.length) {
+        return;
+    }
+
     if (!autoStartEnabled || isRunning) return;
 
     const now = getEffectiveNow();
@@ -1332,55 +1334,72 @@ function autoDetectActiveClass() {
         const start = new Date(now);
         start.setHours(h, m, 0, 0);
 
-       const end = new Date(
-    start.getTime() + originalTotalSeconds * 1000
-);
+        const end = new Date(
+            start.getTime() + originalTotalSeconds * 1000
+        );
 
         if (now >= start && now < end) {
 
             console.log("⚡ Class already in progress. Auto syncing timer.");
 
-            // Start system
+            // 🔥 Start system
             startTimer();
-              window.classStartTime = start.getTime();
 
-            // Calculate elapsed time
+            // 🔥 Force official class start time
+            window.classStartTime = start.getTime();
+
+            // 🔥 Calculate elapsed time
             const elapsed = Math.floor((now - start) / 1000);
 
-            totalSeconds = Math.max(originalTotalSeconds - elapsed, 0);
-            
+            // 🔥 Sync remaining total time
+            totalSeconds = Math.max(
+                originalTotalSeconds - elapsed,
+                0
+            );
 
             updateTotalDisplay();
 
-            /* ===================== 🔥 PHASE SYNC (NEW) ===================== */
+            /* ===================== 🔥 PHASE SYNC ===================== */
 
-            const state = computeWorkoutState(start.getTime() + (elapsed * 1000));
+            const state = computeWorkoutState(
+                start.getTime() + (elapsed * 1000)
+            );
 
-if (state) {
+            if (state) {
 
-    console.log("🔄 Applying synced state:", state);
+                console.log("🔄 Applying synced state:", state);
 
-    // ✅ HARD override ALL runtime values
-    currentPhase = state.phase;
-    timeLeft = state.timeLeft;
+                // 🔥 HARD override runtime state
+                currentPhase = state.phase;
 
-    if (state.setIndex !== undefined) {
-        currentSet = state.setIndex;
-        displaySetNumber = state.setNumber;
-        loadSetData(currentSet);
-    }
+                timeLeft = state.timeLeft;
 
-    rotationCount = state.rotation || 0;
-      applyRotationState(rotationCount);
+                if (state.setIndex !== undefined) {
 
-    
+                    currentSet = state.setIndex;
 
-    // ✅ Force UI refresh
-    updateClock();
-    
-}
+                    displaySetNumber = state.setNumber;
 
-            /* ============================================================= */
+                    loadSetData(currentSet);
+                }
+
+                rotationCount = state.rotation || 0;
+
+                applyRotationState(rotationCount);
+
+                // 🔥 Force ALL UI refreshes
+                updateClock();
+
+                updatePhaseDisplay();
+
+                updateCenterVisuals();
+
+                updateSegmentHighlight();
+
+                updateTotalDisplay();
+            }
+
+            /* ====================================================== */
 
             break;
         }
@@ -2120,32 +2139,25 @@ function buildSegmentTimeline() {
 
         if (item.type === "set") {
 
-            // ALL station rotations
-            for (let r = 0; r < maxRotations; r++) {
+           /* WORK */
 
-                /* WORK */
+timelineData.push({
+    phase: "work",
+    duration:
+        item.workSec ||
+        sheetWorkDuration ||
+        safeGet("workTime", 30)
+});
 
-                timelineData.push({
-                    phase: "work",
-                    duration:
-                        item.workSec ||
-                        sheetWorkDuration ||
-                        safeGet("workTime", 30)
-                });
+/* ROTATE */
 
-                /* ROTATE */
-
-                if (r < maxRotations - 1) {
-
-                    timelineData.push({
-                        phase: "rotate",
-                        duration:
-                            item.rotateSec ||
-                            sheetRotateDuration ||
-                            safeGet("restTime", 10)
-                    });
-                }
-            }
+timelineData.push({
+    phase: "rotate",
+    duration:
+        item.rotateSec ||
+        sheetRotateDuration ||
+        safeGet("restTime", 10)
+});
         }
 
         /* ---------- BREAK ---------- */
@@ -2886,21 +2898,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     console.log("📦 DOM READY");
 
-    // applyDaySpecificClassLength(); // 🔒 TEMP DISABLED
-
-   if (!totalSeconds || totalSeconds <= 0) {
-
-    const planned = calculateTotalTime();
-
-    totalSeconds =
-        classBlockLength && classBlockLength > 0
-            ? Math.min(planned, classBlockLength)
-            : planned;
-
-    originalTotalSeconds = totalSeconds;
-}
-    updateTotalDisplay();
-
+    
     loadWorkout();
 
     setInterval(autoDetectActiveClass, 5000);
