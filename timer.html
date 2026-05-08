@@ -1006,54 +1006,26 @@ currentSet = 1;
 ====================================================== */
 function calculateTotalTime() {
 
-    if (!workoutData.length) {
-        console.warn("Workout still loading...");
-        return;
-    }
+    let total = 0;
 
-    const work = sheetWorkDuration ?? safeGet("workTime", 30);
-const rest = sheetRotateDuration ?? safeGet("restTime", 10);
+    // Dress
+    total += dressOutDuration || 0;
 
-    let prepTotal = 0;
-    let workoutTotal = 0;
-    let breakTotal = 0;
+    // Stretch
+    total += dynamicStretchDuration || 0;
 
-    /* ---------- PREP BLOCKS ---------- */
-    prepTotal += dressOutDuration;
-    prepTotal += dynamicStretchDuration;
-
-    workoutData.forEach(item => {
-
-        if (item.type === "set") {
-
-            workoutTotal +=
-    item.workSec ||
-    sheetWorkDuration ||
-    work;
-
-workoutTotal +=
-    item.rotateSec ||
-    sheetRotateDuration ||
-    rest;
-        }
-
-        if (item.type === "break") {
-            breakTotal += item.breakSec || breakDuration;
-        }
-
+    // ALL generated timeline segments
+    phaseMeta.forEach(seg => {
+        total += Number(seg.duration || 0);
     });
 
-    /* ---------- TOTAL WORKOUT BEFORE COOLDOWN ---------- */
-    const workoutBlock = prepTotal + workoutTotal + breakTotal;
+    // Cooldown
+    total += cooldownDuration || 0;
 
-   /* ---------- FINAL TOTAL ---------- */
+    console.log("🧮 PhaseMeta Count:", phaseMeta.length);
+    console.log("🧮 Total workout time:", total);
 
-const total =
-    workoutBlock + cooldownDuration;
-
-console.log("🧮 Total workout time:", total);
-
-return total;
+    return total;
 }
       
 
