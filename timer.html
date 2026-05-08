@@ -1114,7 +1114,7 @@ document.getElementById("startBtn").innerText = "STOP";
     dressWarningSpoken = false;
     lastAutoStartMinute = null;
 
-    preloadFirstSet();
+    loadSetData(currentSet);
 
     /* ---------- START WITH DRESS PHASE ---------- */
     currentPhase = "dress";
@@ -1847,7 +1847,7 @@ if (firstCell === "rotate_seconds" || firstCell === "rest") {
         console.log("✅ Workout rows:", workoutData.length);
         console.log("✅ Auto start:", autoStartEnabled);
 
-        preloadFirstSet();
+       loadSetData(currentSet);
 startAutoScheduler();
           buildSegmentTimeline();
 
