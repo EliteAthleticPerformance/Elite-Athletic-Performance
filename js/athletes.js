@@ -16,11 +16,14 @@ document.addEventListener("headerLoaded", async () => {
     const data = await loadAthleteData();
 
     // ✅ KEEP ALL ENTRIES (NO COLLAPSING)
-    athletes = data.map((a, i) => ({
-      id: i, // ensures uniqueness
-      name: a.name,
-      score: Number(a.score) || 0
-    }));
+    athletes = data
+  .map((a, i) => ({
+    id: i,
+    name: a.name,
+    score: Number(a.score)
+  }))
+  // 🔥 REMOVE athletes with no valid score
+  .filter(a => !isNaN(a.score) && a.score > 0);
 
     // ✅ SORT BY SCORE
     athletes.sort((a, b) => b.score - a.score);
