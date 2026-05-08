@@ -1191,45 +1191,63 @@ function buildWorkoutTimeline() {
     phaseSequence = [];
     phaseMeta = [];
 
-    workoutData.forEach((item, setIndex) => {
+    const stationCount = 4;
+
+    let currentBlock = [];
+
+    workoutData.forEach(item => {
+
+        // =============================
+        // BUILD BLOCK
+        // =============================
 
         if (item.type === "set") {
-
-            // WORK
-            phaseSequence.push("work");
-
-            phaseMeta.push({
-                phase: "work",
-                setIndex: setIndex + 1,
-                rotation: setIndex % 4,
-                duration:
-                    item.workSec ||
-                    sheetWorkDuration ||
-                    safeGet("workTime", 30)
-            });
-
-            // ROTATE (skip after final set before break)
-            const nextItem = workoutData[setIndex + 1];
-
-            if (!nextItem || nextItem.type !== "break") {
-
-                phaseSequence.push("rotate");
-
-                phaseMeta.push({
-                    phase: "rotate",
-                    setIndex: setIndex + 1,
-                    rotation: setIndex % 4,
-                    duration:
-                        item.rotateSec ||
-                        sheetRotateDuration ||
-                        safeGet("restTime", 10)
-                });
-            }
+            currentBlock.push(item);
         }
 
-        // BREAK
+        // =============================
+        // BREAK = END OF BLOCK
+        // =============================
+
         if (item.type === "break") {
 
+            // 🔥 Repeat full block for each station rotation
+            for (let station = 0; station < stationCount; station++) {
+
+                currentBlock.forEach((setItem, setIdx) => {
+
+                    // WORK
+                    phaseSequence.push("work");
+
+                    phaseMeta.push({
+                        phase: "work",
+                        station,
+                        setIndex: setIdx + 1,
+                        duration:
+                            setItem.workSec ||
+                            sheetWorkDuration ||
+                            safeGet("workTime", 30)
+                    });
+
+                    // ROTATE
+                    if (setIdx < currentBlock.length - 1) {
+
+                        phaseSequence.push("rotate");
+
+                        phaseMeta.push({
+                            phase: "rotate",
+                            station,
+                            setIndex: setIdx + 1,
+                            duration:
+                                setItem.rotateSec ||
+                                sheetRotateDuration ||
+                                safeGet("restTime", 10)
+                        });
+                    }
+                });
+            }
+
+            // 🔥 THEN BREAK
             phaseSequence.push("break");
 
             phaseMeta.push({
@@ -1238,10 +1256,14 @@ function buildWorkoutTimeline() {
                     item.breakSec ||
                     breakDuration
             });
+
+            // reset block
+            currentBlock = [];
         }
     });
 
     console.log("🔥 PHASE SEQUENCE:", phaseSequence);
+    console.log("🔥 TOTAL SEGMENTS:", phaseMeta.length);
 }
       
 
