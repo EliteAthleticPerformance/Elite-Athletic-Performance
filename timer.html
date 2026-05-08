@@ -1414,18 +1414,21 @@ else if (day === 5) todaySchedule = friTimes;
    LOAD WORKOUT FROM GOOGLE SHEETS — CLEAN + BULLETPROOF
 ====================================================== */
 
-function preloadFirstSet() {
-    if (!workoutData.length) return;
-    loadSetData(1);
-}
-
 function previewNextSet() {
     if (!workoutData.length) return;
 
-    const nextItem = workoutData[currentSet]; // look ahead safely
+    const nextIndex = getNextSetIndex(); // 🔥 use your existing helper
+
+    if (!nextIndex) return;
+
+    const nextItem = workoutData[nextIndex - 1];
 
     if (nextItem && nextItem.type === "set") {
-        loadSetData(currentSet + 1); // loadSetData is 1-based
+
+        // 👇 visually mark preview mode
+        document.body.classList.add("preview-mode");
+
+        loadSetData(nextIndex);
     }
 }
 
@@ -1992,6 +1995,13 @@ if (state.rotation !== undefined) {
                 previewNextSet();
                 break;
         }
+          // 🔥 EXIT PREVIEW MODE WHEN LEAVING BREAK
+if (prevPhase === "break" && currentPhase !== "break") {
+    document.body.classList.remove("preview-mode");
+
+    // reload current set (not preview)
+    loadSetData(currentSet);
+}
     }
 
     // Dress warning
