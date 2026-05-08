@@ -1685,7 +1685,10 @@ friTimes = [];
 
             // ---------- EXPLICIT BREAK ----------
             if (firstCell.replace(/\s+/g, "") === "break") {
-                const breakSec = parseSheetNumber(r[10]);
+                const breakSec =
+    parseSheetNumber(r[11]) ||
+    parseSheetNumber(r[10]) ||
+    90;
 
                 workoutData.push({
                     type: "break",
