@@ -2108,8 +2108,21 @@ if (currentPhase !== prevPhase) {
                 speakLift();
                 break;
             case "rotate":
-                speakRotate();
-                break;
+
+    speakRotate();
+
+    // 🔥 Detect final rotate before break
+    const nextSegment =
+        phaseMeta[currentPhaseIndex + 1];
+
+    if (
+        nextSegment &&
+        nextSegment.phase === "break"
+    ) {
+        previewNextSet();
+    }
+
+    break;
             case "break":
                 speakBreakPrep();
                 previewNextSet();
