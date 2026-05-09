@@ -2019,16 +2019,24 @@ console.log({
 if (state.rotation !== undefined) {
 
     // ONLY rotate when entering ROTATE phase
+    if (currentPhase !== prevPhase) {
+
+    // 🔥 Rotate colors on BOTH rotate + break
     if (
-        currentPhase !== prevPhase &&
-        state.phase === "rotate"
+        state.phase === "rotate" ||
+        state.phase === "break"
     ) {
 
-        rotationCount = state.rotation + 1;
+        rotationCount++;
 
         applyRotationState(rotationCount);
 
-        console.log("🔁 Quadrants rotated:", rotationCount);
+        console.log(
+            "🔁 Quadrants rotated:",
+            rotationCount,
+            "phase:",
+            state.phase
+        );
     }
 }
 
