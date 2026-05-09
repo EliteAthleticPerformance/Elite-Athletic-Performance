@@ -2187,31 +2187,52 @@ function buildSegmentTimeline() {
 
     /* ===================== WORKOUT ===================== */
 
-    window.workoutData.forEach((item) => {
+    window.workoutData.forEach((item, index) => {
 
         /* ---------- SETS ---------- */
 
         if (item.type === "set") {
 
-           /* WORK */
+            const nextItem = workoutData[index + 1];
 
-timelineData.push({
-    phase: "work",
-    duration:
-        item.workSec ||
-        sheetWorkDuration ||
-        safeGet("workTime", 30)
-});
+            const isLastSetBeforeBreak =
+                nextItem &&
+                nextItem.type === "break";
 
-/* ROTATE */
+            // 🔥 4 station rotations
+            for (let station = 0; station < 4; station++) {
 
-timelineData.push({
-    phase: "rotate",
-    duration:
-        item.rotateSec ||
-        sheetRotateDuration ||
-        safeGet("restTime", 10)
-});
+                /* WORK */
+
+                timelineData.push({
+                    phase: "work",
+                    duration:
+                        item.workSec ||
+                        sheetWorkDuration ||
+                        safeGet("workTime", 30)
+                });
+
+                const isFinalStation =
+                    station === 3;
+
+                // 🔥 skip final rotate before break
+                if (
+                    isLastSetBeforeBreak &&
+                    isFinalStation
+                ) {
+                    continue;
+                }
+
+                /* ROTATE */
+
+                timelineData.push({
+                    phase: "rotate",
+                    duration:
+                        item.rotateSec ||
+                        sheetRotateDuration ||
+                        safeGet("restTime", 30)
+                });
+            }
         }
 
         /* ---------- BREAK ---------- */
@@ -2225,7 +2246,6 @@ timelineData.push({
                     breakDuration
             });
         }
-
     });
 
     /* ===================== COOLDOWN ===================== */
@@ -2238,11 +2258,7 @@ timelineData.push({
         });
     }
 
-    /* ===================== DEBUG ===================== */
-
     console.log("🧩 Timeline Data:", timelineData);
-
-    /* ===================== RENDER ===================== */
 
     renderTimeline();
 }
