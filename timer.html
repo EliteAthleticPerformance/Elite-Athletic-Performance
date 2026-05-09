@@ -1584,22 +1584,48 @@ function isEffectivelyBlankRow(row) {
    AUTO-DETECT WORKOUT BY DAY (ELITE)
 ====================================================== */
 function getSheetGid() {
+
     const params = new URLSearchParams(window.location.search);
 
-    // URL override still allowed
+    // URL override allowed
     const urlGid = params.get("gid");
-    if (urlGid) return urlGid;
 
-    // Auto by day only
+    if (urlGid) {
+        return urlGid;
+    }
+
+    // Auto-select sheet by current day
     const today = new Date().getDay();
 
-      if (today === 1) return "0";
-if (today === 2) return "766025525";
-if (today === 3) return "1645988521";
-if (today === 4) return "1404677519";
-if (today === 5) return "1799243756";
+    // 0 = Sunday
+    // 1 = Monday
+    // 2 = Tuesday
+    // etc.
 
-    return "MON_GID";
+    switch (today) {
+
+        case 1:
+            return "0";
+
+        case 2:
+            return "766025525";
+
+        case 3:
+            return "1645988521";
+
+        case 4:
+            return "1404677519";
+
+        case 5:
+            return "1799243756";
+
+        case 6:
+            return "1400877965"; 
+
+        default:
+            // Sunday fallback
+            return "0";
+    }
 }
 
 /* ===================== SCHOOL DATA SOURCES ===================== */
