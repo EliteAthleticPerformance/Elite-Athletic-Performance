@@ -841,7 +841,8 @@ let phaseJustChanged = false;
 let nextTickTime = null;
 let workoutData = [];
 let phaseSequence = [];
-let phaseMeta = [];      
+let phaseMeta = [];   
+let stationCount = 4;      
 window.workoutData = workoutData;
 window.classStartTime = null;
 let phaseStartTime = null;
@@ -1164,7 +1165,7 @@ function buildWorkoutTimeline() {
     phaseSequence = [];
     phaseMeta = [];
 
-    const stationCount = 4;
+   
 
     let currentBlock = [];
 
