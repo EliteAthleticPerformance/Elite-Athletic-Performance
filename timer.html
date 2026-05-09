@@ -842,7 +842,7 @@ let nextTickTime = null;
 let workoutData = [];
 let phaseSequence = [];
 let phaseMeta = [];   
-let stationCount = 4;      
+      
 window.workoutData = workoutData;
 window.classStartTime = null;
 let phaseStartTime = null;
@@ -1165,63 +1165,80 @@ function buildWorkoutTimeline() {
     phaseSequence = [];
     phaseMeta = [];
 
-   
+    workoutData.forEach((item, index) => {
 
-    let currentBlock = [];
-
-    workoutData.forEach(item => {
-
-        // =============================
-        // BUILD BLOCK
-        // =============================
+        /* =============================
+           SET ROW
+        ============================= */
 
         if (item.type === "set") {
-            currentBlock.push(item);
+
+            const nextItem = workoutData[index + 1];
+
+            const isLastSetBeforeBreak =
+                nextItem &&
+                nextItem.type === "break";
+
+            // ------------------------------------------------
+            // 4 STATION ROTATIONS
+            // ------------------------------------------------
+
+            for (let station = 0; station < 4; station++) {
+
+                /* ---------- WORK ---------- */
+
+                phaseSequence.push("work");
+
+                phaseMeta.push({
+                    phase: "work",
+                    setIndex: index + 1,
+                    station,
+                    duration:
+                        item.workSec ||
+                        sheetWorkDuration ||
+                        safeGet("workTime", 30)
+                });
+
+                // ------------------------------------------------
+                // FINAL STATION BEFORE BREAK
+                // ------------------------------------------------
+
+                const isFinalStation =
+                    station === 3;
+
+                if (
+                    isLastSetBeforeBreak &&
+                    isFinalStation
+                ) {
+
+                    // DO NOT ADD ROTATE
+                    // Break will occur naturally next
+
+                    continue;
+                }
+
+                /* ---------- ROTATE ---------- */
+
+                phaseSequence.push("rotate");
+
+                phaseMeta.push({
+                    phase: "rotate",
+                    setIndex: index + 1,
+                    station,
+                    duration:
+                        item.rotateSec ||
+                        sheetRotateDuration ||
+                        safeGet("restTime", 30)
+                });
+            }
         }
 
-        // =============================
-        // BREAK = END OF BLOCK
-        // =============================
+        /* =============================
+           BREAK ROW
+        ============================= */
 
         if (item.type === "break") {
 
-            // 🔥 Repeat full block for each station rotation
-            for (let station = 0; station < stationCount; station++) {
-
-                currentBlock.forEach((setItem, setIdx) => {
-
-                    // WORK
-                    phaseSequence.push("work");
-
-                    phaseMeta.push({
-                        phase: "work",
-                        station,
-                        setIndex: setIdx + 1,
-                        duration:
-                            setItem.workSec ||
-                            sheetWorkDuration ||
-                            safeGet("workTime", 30)
-                    });
-
-                    // ROTATE
-                    if (setIdx < currentBlock.length - 1) {
-
-                        phaseSequence.push("rotate");
-
-                        phaseMeta.push({
-                            phase: "rotate",
-                            station,
-                            setIndex: setIdx + 1,
-                            duration:
-                                setItem.rotateSec ||
-                                sheetRotateDuration ||
-                                safeGet("restTime", 10)
-                        });
-                    }
-                });
-            }
-
-            // 🔥 THEN BREAK
             phaseSequence.push("break");
 
             phaseMeta.push({
@@ -1230,9 +1247,6 @@ function buildWorkoutTimeline() {
                     item.breakSec ||
                     breakDuration
             });
-
-            // reset block
-            currentBlock = [];
         }
     });
 
@@ -1916,7 +1930,6 @@ if (firstCell === "rotate_seconds" || firstCell === "rest") {
 console.log("✅ Auto start:", autoStartEnabled);
 
 // 🔥 dynamic rotation count from worksheet
-maxRotations = detectedSets;
 
 console.log("🔥 Station rotations:", stationCount);
 
