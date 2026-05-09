@@ -863,6 +863,7 @@ window.tueTimes = [];
 window.wedTimes = [];
 window.thuTimes = [];
 window.friTimes = [];
+window.satTimes = [];      
 let autoStartTimer = null;
 let lastAutoStartMinute = null;
 let todayOnlyMode = false;
@@ -1320,6 +1321,7 @@ function autoDetectActiveClass() {
     else if (day === 3) todaySchedule = wedTimes;
     else if (day === 4) todaySchedule = thuTimes;
     else if (day === 5) todaySchedule = friTimes;
+    else if (day === 6) todaySchedule = satTimes;  
 
     for (const timeStr of todaySchedule) {
 
@@ -1428,6 +1430,7 @@ else if (day === 2) todaySchedule = tueTimes;
 else if (day === 3) todaySchedule = wedTimes;
 else if (day === 4) todaySchedule = thuTimes;
 else if (day === 5) todaySchedule = friTimes;
+else if (day === 6) todaySchedule = satTimes;      
         else return; // weekend
 
         for (const timeStr of todaySchedule) {
@@ -1652,11 +1655,12 @@ const response = await fetch(
         ============================= */
         workoutData.length = 0;
         autoStartEnabled = false;
-        monTimes = [];
+monTimes = [];
 tueTimes = [];
 wedTimes = [];
 thuTimes = [];
 friTimes = [];
+satTimes = [];          
 
         const clean = v =>
             String(v || "")
@@ -1760,6 +1764,14 @@ friTimes = [];
 
               if (firstCell === "friday_times") {
                 friTimes = clean(r[1])
+                    .split(",")
+                    .map(s => s.trim())
+                    .filter(Boolean);
+                continue;
+            }
+
+              if (firstCell === "saturday_times") {
+                satTimes = clean(r[1])
                     .split(",")
                     .map(s => s.trim())
                     .filter(Boolean);
