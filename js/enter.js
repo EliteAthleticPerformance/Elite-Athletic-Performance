@@ -122,29 +122,57 @@ function buildEntry() {
   const group = getWeightClass(weight); // 🔥 FIX
 
   const entry = {
-    school,
+  school,
 
-    name: normalizeName(getValue("name")),
-    date: getValue("date") || todayISO(),
-    gender: getValue("gender"),
-    grade: getValue("grade"),
-    weight,
+  name: normalizeName(getValue("name")),
+  date: getValue("date") || todayISO(),
+  gender: getValue("gender"),
+  grade: getValue("grade"),
+  weight,
 
-    group, // 🔥 THIS IS THE FIX
+  group,
 
-    bench: toNumber(getValue("bench")),
-    squat: toNumber(getValue("squat")),
-    clean: toNumber(getValue("clean")),
+  // =========================
+  // SPORTS
+  // =========================
 
-    vertical: toNumber(getValue("vertical")),
-    broad: toNumber(getValue("broad")),
-    medball: toNumber(getValue("medball")),
+  primarySport: getValue("primarySport"),
+  primaryPosition: getValue("primaryPosition"),
+  primaryPosition2: getValue("primaryPosition2"),
 
-    agility: toNumber(getValue("agility")),
-    ten: toNumber(getValue("ten")),
-    forty: toNumber(getValue("forty")),
-    situps: toNumber(getValue("situps"))
-  };
+  secondarySport: getValue("secondarySport"),
+  secondaryPosition: getValue("secondaryPosition"),
+  secondaryPosition2: getValue("secondaryPosition2"),
+
+  thirdSport: getValue("thirdSport"),
+  thirdPosition: getValue("thirdPosition"),
+  thirdPosition2: getValue("thirdPosition2"),
+
+  // =========================
+  // STRENGTH
+  // =========================
+
+  bench: toNumber(getValue("bench")),
+  squat: toNumber(getValue("squat")),
+  clean: toNumber(getValue("clean")),
+
+  // =========================
+  // EXPLOSIVE
+  // =========================
+
+  vertical: toNumber(getValue("vertical")),
+  broad: toNumber(getValue("broad")),
+  medball: toNumber(getValue("medball")),
+
+  // =========================
+  // SPEED
+  // =========================
+
+  agility: toNumber(getValue("agility")),
+  ten: toNumber(getValue("ten")),
+  forty: toNumber(getValue("forty")),
+  situps: toNumber(getValue("situps"))
+};
 
   console.log("📦 BUILT ENTRY:", entry);
 
