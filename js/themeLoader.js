@@ -182,7 +182,7 @@ const DEV_API =
 const config = {
   ...selected,
 
-  dataURL: "https://script.google.com/macros/s/AKfycbyT3weWxCL1blgkrsILw73NIf1qvgGS8K8PyoHooab3yMCTvf9GRm8YyGHPMusdoh8P/exec"
+  dataURL: "https://script.google.com/macros/s/AKfycbyT3weWxCL1blgkrsILw73NIf1qvgGS8K8PyoHooab3yMCTvf9GRm8YyGHPMusdoh8P/exec",
   submitURL: "https://script.google.com/macros/s/AKfycbyT3weWxCL1blgkrsILw73NIf1qvgGS8K8PyoHooab3yMCTvf9GRm8YyGHPMusdoh8P/exec"
 };
 
