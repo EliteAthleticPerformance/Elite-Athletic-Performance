@@ -183,7 +183,7 @@ function getComparisonData(type, athlete) {
     speedPoints: avg("speedPoints")
   };
 }
-}
+
 
 /* ========================================
    RADAR
