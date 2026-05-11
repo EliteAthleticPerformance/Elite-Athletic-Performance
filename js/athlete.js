@@ -144,6 +144,18 @@ function getComparisonData(type, athlete) {
     explosivePoints: avg("explosivePoints"),
     speedPoints: avg("speedPoints")
   };
+  if (type === "sport") {
+  group = DATA.filter(a =>
+    a.primarySport === athlete.primarySport
+  );
+}
+
+if (type === "position") {
+  group = DATA.filter(a =>
+    a.primarySport === athlete.primarySport &&
+    a.primaryPosition === athlete.primaryPosition
+  );
+}
 }
 
 /* ========================================
