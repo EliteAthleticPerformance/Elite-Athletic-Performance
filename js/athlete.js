@@ -130,51 +130,119 @@ function getComparisonData(type, athlete) {
 
   let group = [];
 
+  // 🔥 normalize helper
+  const norm = v =>
+    String(v || "")
+      .trim()
+      .toLowerCase();
+
   // 🔥 TOP 5
   if (type === "top5") {
+
     group = [...DATA]
-      .sort((a, b) => b.score - a.score)
+      .sort((a, b) => (b.score || 0) - (a.score || 0))
       .slice(0, 5);
   }
 
-  // 🔥 FULL TEAM
+  // 🔥 TEAM
   else if (type === "team") {
-    group = DATA;
-  }
 
-  // 🔥 WEIGHT CLASS
-  else if (type === "weight") {
-    group = DATA.filter(a =>
-      a.weightClass === athlete.weightClass
-    );
+    group = DATA;
   }
 
   // 🔥 GRADE
   else if (type === "grade") {
+
     group = DATA.filter(a =>
-      a.grade === athlete.grade
+      norm(a.grade) === norm(athlete.grade)
+    );
+  }
+
+  // 🔥 WEIGHT CLASS
+  else if (type === "weight") {
+
+    group = DATA.filter(a =>
+      norm(a.weightClass) === norm(athlete.weightClass)
     );
   }
 
   // 🔥 SPORT
   else if (type === "sport") {
-    group = DATA.filter(a =>
-      a.primarySport === athlete.primarySport
-    );
+
+    const athleteSport =
+      athlete.primarySport ||
+      athlete.sport ||
+      athlete.primary_sport;
+
+    group = DATA.filter(a => {
+
+      const sport =
+        a.primarySport ||
+        a.sport ||
+        a.primary_sport;
+
+      return norm(sport) === norm(athleteSport);
+    });
   }
 
   // 🔥 POSITION
   else if (type === "position") {
-    group = DATA.filter(a =>
-      a.primarySport === athlete.primarySport &&
-      a.primaryPosition === athlete.primaryPosition
-    );
+
+    const athleteSport =
+      athlete.primarySport ||
+      athlete.sport ||
+      athlete.primary_sport;
+
+    const athletePosition =
+      athlete.primaryPosition ||
+      athlete.position ||
+      athlete.primary_position;
+
+    group = DATA.filter(a => {
+
+      const sport =
+        a.primarySport ||
+        a.sport ||
+        a.primary_sport;
+
+      const position =
+        a.primaryPosition ||
+        a.position ||
+        a.primary_position;
+
+      return (
+        norm(sport) === norm(athleteSport) &&
+        norm(position) === norm(athletePosition)
+      );
+    });
   }
 
-  if (!group.length) return null;
+  // 🔥 SIMILAR ATHLETE
+  else if (type === "similar") {
+
+    group = DATA.filter(a => {
+
+      if (a.name === athlete.name) return false;
+
+      const scoreDiff = Math.abs(
+        (a.score || 0) - (athlete.score || 0)
+      );
+
+      return scoreDiff <= 8;
+    });
+  }
+
+  console.log("🔥 COMPARISON:", type, group);
+
+  if (!group.length) {
+    console.warn("⚠️ No comparison group found:", type);
+    return null;
+  }
 
   const avg = key =>
-    group.reduce((sum, a) => sum + (a[key] || 0), 0) / group.length;
+    group.reduce((sum, a) =>
+      sum + Number(a[key] || 0), 0
+    ) / group.length;
 
   return {
     strengthPoints: avg("strengthPoints"),
