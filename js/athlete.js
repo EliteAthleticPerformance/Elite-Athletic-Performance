@@ -125,18 +125,56 @@ function setComparison(type) {
 ======================================== */
 
 function getComparisonData(type, athlete) {
+
   if (!type || type === "none") return null;
 
   let group = [];
 
-  if (type === "top5") group = [...DATA].sort((a,b)=>b.score-a.score).slice(0,5);
-  if (type === "team") group = DATA;
-  if (type === "weight") group = DATA.filter(a => a.weightClass === athlete.weightClass);
-  if (type === "grade") group = DATA.filter(a => a.grade === athlete.grade);
+  // 🔥 TOP 5
+  if (type === "top5") {
+    group = [...DATA]
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5);
+  }
+
+  // 🔥 FULL TEAM
+  else if (type === "team") {
+    group = DATA;
+  }
+
+  // 🔥 WEIGHT CLASS
+  else if (type === "weight") {
+    group = DATA.filter(a =>
+      a.weightClass === athlete.weightClass
+    );
+  }
+
+  // 🔥 GRADE
+  else if (type === "grade") {
+    group = DATA.filter(a =>
+      a.grade === athlete.grade
+    );
+  }
+
+  // 🔥 SPORT
+  else if (type === "sport") {
+    group = DATA.filter(a =>
+      a.primarySport === athlete.primarySport
+    );
+  }
+
+  // 🔥 POSITION
+  else if (type === "position") {
+    group = DATA.filter(a =>
+      a.primarySport === athlete.primarySport &&
+      a.primaryPosition === athlete.primaryPosition
+    );
+  }
 
   if (!group.length) return null;
 
-  const avg = k => group.reduce((s,a)=>s+(a[k]||0),0)/group.length;
+  const avg = key =>
+    group.reduce((sum, a) => sum + (a[key] || 0), 0) / group.length;
 
   return {
     strengthPoints: avg("strengthPoints"),
@@ -144,17 +182,6 @@ function getComparisonData(type, athlete) {
     explosivePoints: avg("explosivePoints"),
     speedPoints: avg("speedPoints")
   };
-  if (type === "sport") {
-  group = DATA.filter(a =>
-    a.primarySport === athlete.primarySport
-  );
-}
-
-if (type === "position") {
-  group = DATA.filter(a =>
-    a.primarySport === athlete.primarySport &&
-    a.primaryPosition === athlete.primaryPosition
-  );
 }
 }
 
@@ -178,7 +205,10 @@ function renderRadar(a, comparison=null) {
       a.speedPoints
     ],
     borderWidth: 2,
-    backgroundColor: "rgba(54,162,235,0.3)"
+   backgroundColor: "rgba(54,162,235,0.18)",
+borderColor: "#4da6ff",
+pointBackgroundColor: "#4da6ff",
+pointRadius: 4
   }];
 
   if (comparison) {
@@ -453,7 +483,10 @@ function renderInsights(a) {
 ======================================== */
 
 function fmt2(v){ return v || v===0 ? Number(v).toFixed(2) : "-"; }
-function set(id,v){ document.getElementById(id).textContent = v || "-"; }
+function set(id, v) {
+  document.getElementById(id).textContent =
+    (v === 0 || v) ? v : "-";
+}
 function avg(a,b,c){ const v=[a,b,c].filter(x=>x>0); return v.length?Math.round(v.reduce((x,y)=>x+y)/v.length):"-"; }
 
 function formatName(name){
