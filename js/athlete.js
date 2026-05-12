@@ -305,7 +305,8 @@ function setComparison(type) {
 
   populateComparisonDropdowns();
 
-  return;
+  // STOP NORMAL COMPARISON FLOW
+  return false;
 }
 
   const comparison = getComparisonData(type, CURRENT_ATHLETE);
