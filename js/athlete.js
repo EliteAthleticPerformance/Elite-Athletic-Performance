@@ -325,12 +325,13 @@ function populateComparisonDropdowns() {
   selectA.innerHTML = "";
   selectB.innerHTML = "";
 
-  DATA
-    .slice()
-    .sort((a, b) =>
-      a.name.localeCompare(b.name)
-    )
-    .forEach(athlete => {
+ [...new Map(
+  DATA.map(a => [a.name, a])
+).values()]
+  .sort((a, b) =>
+    a.name.localeCompare(b.name)
+  )
+  .forEach(athlete => {
 
       const optionA =
         document.createElement("option");
@@ -847,6 +848,8 @@ document
 });
 
 function renderHeadToHead(a, b) {
+
+  CURRENT_COMPARISON = "headtohead";
 
   renderRadar(a);
 
