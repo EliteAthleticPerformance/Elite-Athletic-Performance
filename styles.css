@@ -542,6 +542,51 @@ h1 {
   padding: 10px 16px; /* ⬆️ slightly bigger buttons */
 }
 
+.compare-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.75);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 9999;
+}
+
+.compare-modal.hidden {
+  display: none;
+}
+
+.compare-box {
+  width: 400px;
+  max-width: 90%;
+
+  background: #111;
+  border: 2px solid #7c3aed;
+
+  border-radius: 18px;
+
+  padding: 24px;
+
+  box-shadow:
+    0 0 20px rgba(124,58,237,.5);
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.compare-box h2 {
+  text-align: center;
+}
+
+.compare-box select,
+.compare-box button {
+  padding: 12px;
+  border-radius: 10px;
+}
+
 /* ===== MINI CARDS (STATS) ===== */
 .card-mini {
     background: transparent;
