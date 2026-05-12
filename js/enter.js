@@ -413,7 +413,7 @@ const SPORT_POSITIONS = {
      "PV"
   ],
 
-  TF_Grils: [
+  TF_Girls: [
     "Sprints",
     "Distance",
     "Hurdles",
