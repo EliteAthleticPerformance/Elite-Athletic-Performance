@@ -8,6 +8,9 @@ let progressChart = null;
 let CURRENT_ATHLETE = null;
 let CURRENT_COMPARISON = "none";
 
+let comparisonAthleteA = null;
+let comparisonAthleteB = null;
+
 let ACTIVE_PROGRESS_KEYS = new Set([
   "strengthPoints",
   "speedPoints",
@@ -294,8 +297,64 @@ function setComparison(type) {
     `#comparisonButtons button[data-type="${type}"]`
   )?.classList.add("active");
 
+  if (type === "headtohead") {
+
+  document
+    .getElementById("compareModal")
+    .classList.remove("hidden");
+
+  populateComparisonDropdowns();
+
+  return;
+}
+
   const comparison = getComparisonData(type, CURRENT_ATHLETE);
   renderRadar(CURRENT_ATHLETE, comparison);
+}
+
+function populateComparisonDropdowns() {
+
+  const selectA =
+    document.getElementById("athleteSelectA");
+
+  const selectB =
+    document.getElementById("athleteSelectB");
+
+  if (!selectA || !selectB) return;
+
+  selectA.innerHTML = "";
+  selectB.innerHTML = "";
+
+  DATA
+    .slice()
+    .sort((a, b) =>
+      a.name.localeCompare(b.name)
+    )
+    .forEach(athlete => {
+
+      const optionA =
+        document.createElement("option");
+
+      optionA.value = athlete.name;
+      optionA.textContent = athlete.name;
+
+      const optionB = optionA.cloneNode(true);
+
+      selectA.appendChild(optionA);
+      selectB.appendChild(optionB);
+    });
+
+  // default selections
+  selectA.value = CURRENT_ATHLETE.name;
+
+  const secondAthlete =
+    DATA.find(a =>
+      a.name !== CURRENT_ATHLETE.name
+    );
+
+  if (secondAthlete) {
+    selectB.value = secondAthlete.name;
+  }
 }
 
 /* ========================================
@@ -321,6 +380,9 @@ function getComparisonData(type, athlete) {
       .sort((a, b) => (b.score || 0) - (a.score || 0))
       .slice(0, 5);
   }
+
+
+  
 
   // 🔥 TEAM
   else if (type === "team") {
@@ -746,4 +808,78 @@ function formatDate(dateStr) {
 function formatNumber(val) {
   if (val === null || val === undefined) return "-";
   return Number(val).toLocaleString();
+}
+
+
+document
+  .getElementById("runComparison")
+  ?.addEventListener("click", () => {
+
+    const athleteAName =
+      document.getElementById("athleteSelectA").value;
+
+    const athleteBName =
+      document.getElementById("athleteSelectB").value;
+
+    const athleteA =
+      DATA.find(a => a.name === athleteAName);
+
+    const athleteB =
+      DATA.find(a => a.name === athleteBName);
+
+    if (!athleteA || !athleteB) {
+      return;
+    }
+
+    comparisonAthleteA = athleteA;
+    comparisonAthleteB = athleteB;
+
+    renderHeadToHead(athleteA, athleteB);
+
+    document
+      .getElementById("compareModal")
+      .classList.add("hidden");
+});
+
+function renderHeadToHead(a, b) {
+
+  if (!radarChart) return;
+
+  radarChart.data.datasets = [
+
+    {
+      label: a.name,
+
+      data: [
+        a.strengthPoints,
+        a.powerPoints,
+        a.explosivePoints,
+        a.speedPoints
+      ],
+
+      borderColor: "#3b82f6",
+      backgroundColor: "rgba(59,130,246,.25)",
+      borderWidth: 2
+    },
+
+    {
+      label: b.name,
+
+      data: [
+        b.strengthPoints,
+        b.powerPoints,
+        b.explosivePoints,
+        b.speedPoints
+      ],
+
+      borderColor: "#ff4d6d",
+      backgroundColor: "rgba(255,77,109,.25)",
+      borderDash: [6,4],
+      borderWidth: 2
+    }
+  ];
+
+  radarChart.update();
+
+  console.log("🔥 HEAD TO HEAD:", a.name, b.name);
 }
