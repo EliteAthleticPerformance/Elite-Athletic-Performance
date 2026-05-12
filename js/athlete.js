@@ -365,6 +365,11 @@ function getComparisonData(type, athlete) {
 
   if (!type || type === "none") return null;
 
+  // 🔥 HEAD TO HEAD handled separately
+  if (type === "headtohead") {
+    return null;
+  }
+
   let group = [];
 
   // 🔥 normalize helper
@@ -842,6 +847,8 @@ document
 });
 
 function renderHeadToHead(a, b) {
+
+  renderRadar(a);
 
   if (!radarChart) return;
 
