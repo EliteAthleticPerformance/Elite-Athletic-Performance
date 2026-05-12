@@ -121,6 +121,11 @@
     Similar Athlete
   </button>
 
+         <button data-type="headtohead"
+          onclick="setComparison('headtohead')">
+    Athlete vs Athlete
+  </button>
+
 </div>
 
       <div class="chart-wrapper">
@@ -129,6 +134,25 @@
 
     </div>
   </section>
+
+  <!-- HEAD TO HEAD MODAL -->
+  <div id="compareModal" class="compare-modal hidden">  
+    
+    <div class="compare-box">    
+      
+      <h2>Athlete Comparison</h2>    
+      
+      <select id="athleteSelectA"></select>    
+      
+      <select id="athleteSelectB"></select>    
+      
+      <button id="runComparison">      
+        Compare Athletes    
+      </button>  
+    </div>
+  </div>
+
+
 
   <!-- AI INSIGHTS -->
   <section class="section">
