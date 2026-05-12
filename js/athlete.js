@@ -38,6 +38,18 @@ async function init() {
 }
 
 /* ========================================
+   SAFE SCORE
+======================================== */
+
+function safeScore(value) {
+  if (value === "" || value == null) return null;
+
+  const num = Number(value);
+
+  return isNaN(num) ? null : num;
+}
+
+/* ========================================
    MAIN RENDER
 ======================================== */
 
