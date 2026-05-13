@@ -465,12 +465,9 @@ else if (type === "similar") {
   group = [match];
 }
 
-  console.log("🔥 COMPARISON:", type, group);
-
   if (!group.length) {
-    console.warn("⚠️ No comparison group found:", type);
-    return null;
-  }
+  return null;
+}
 
   const avg = key =>
     group.reduce((sum, a) =>
