@@ -459,7 +459,7 @@ else if (type === "similar") {
     );
 
   if (!match) {
-    return null;
+    return null; 
   }
 
   group = [match];
