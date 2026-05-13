@@ -244,7 +244,7 @@ function renderAthlete(name) {
 
   set("verticalScore", latest.vertical);
   set("broadScore", fmt2(latest.broad));
-  set("medballScore", fmt2(latest.medBall || latest.medball));
+  set("medballScore", fmt2(latest.med));
 
   set("proagility", fmt2(latest.agility));
   set("situps", latest.situps);
@@ -674,7 +674,7 @@ function renderTable(history) {
       <td>${formatNumber(avg(h.bench,h.squat,h.clean))}</td>
       <td>${formatNumber(h.vertical)}</td>
       <td>${fmt2(h.broad)}</td>
-      <td>${fmt2(h.medBall || h.medball)}</td>
+      <td>${fmt2(h.med)}</td>
       <td>${fmt2(h.agility)}</td>
       <td>${formatNumber(h.situps)}</td>
       <td>${fmt2(h.ten)}</td>
