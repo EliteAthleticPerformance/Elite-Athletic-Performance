@@ -118,6 +118,21 @@ console.log("🧪 ROW DATA:", row);
         weight: num(row.weight || row["Actual Weight"]),
         group: clean(row.group || row["Weight Group"]),
 
+
+// 🏅 SPORTS / POSITIONS
+primarySport: clean(row.primarySport || row["Primary Sport"]),
+primaryPosition: clean(row.primaryPosition || row["Primary Position"]),
+primaryPosition2: clean(row.primaryPosition2 || row["Primary Position 2"]),
+
+secondarySport: clean(row.secondarySport || row["Secondary Sport"]),
+secondaryPosition: clean(row.secondaryPosition || row["Secondary Position"]),
+secondaryPosition2: clean(row.secondaryPosition2 || row["Secondary Position 2"]),
+
+thirdSport: clean(row.thirdSport || row["Third Sport"]),
+thirdPosition: clean(row.thirdPosition || row["Third Position"]),
+thirdPosition2: clean(row.thirdPosition2 || row["Third Position 2"]),
+         
+
         // 🏋️ STRENGTH
         bench: num(row.bench || row["Bench Press"]),
         squat: num(row.squat || row["Squat"]),

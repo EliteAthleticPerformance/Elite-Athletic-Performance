@@ -157,13 +157,34 @@ window.APP_READY = new Promise(async (resolve, reject) => {
 
     const selected = CONFIG_MAP[school] || CONFIG_MAP[Object.keys(CONFIG_MAP)[0]];
 
-    const config = {
-      ...selected,
+    // ========================================
+// 🌎 ENVIRONMENT DETECTION
+// ========================================
 
-      // 🔥 SAME API FOR ALL SCHOOLS
-      dataURL: "https://script.google.com/macros/s/AKfycbwnSjmwlod_AoqmTEoownI1CsWhjpTu9ubLrb78DsLBTaH0WDnYxXNiXEyJmY1J0Uh2/exec",
-      submitURL: "https://script.google.com/macros/s/AKfycbwnSjmwlod_AoqmTEoownI1CsWhjpTu9ubLrb78DsLBTaH0WDnYxXNiXEyJmY1J0Uh2/exec"
-    };
+const isDev =
+  window.location.hostname.includes("dev") ||
+  window.location.hostname.includes("netlify.app");
+
+// ========================================
+// 🌐 URLS
+// ========================================
+
+const PROD_API =
+  "https://script.google.com/macros/s/YOUR_PROD_SCRIPT/exec";
+
+const DEV_API =
+  "https://script.google.com/macros/s/YOUR_DEV_SCRIPT/exec";
+
+// ========================================
+// 🔥 FINAL CONFIG
+// ========================================
+
+const config = {
+  ...selected,
+
+  dataURL: "https://script.google.com/macros/s/AKfycbyT3weWxCL1blgkrsILw73NIf1qvgGS8K8PyoHooab3yMCTvf9GRm8YyGHPMusdoh8P/exec",
+  submitURL: "https://script.google.com/macros/s/AKfycbyT3weWxCL1blgkrsILw73NIf1qvgGS8K8PyoHooab3yMCTvf9GRm8YyGHPMusdoh8P/exec"
+};
 
     window.SCHOOL_CONFIG = config;
 

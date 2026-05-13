@@ -122,29 +122,57 @@ function buildEntry() {
   const group = getWeightClass(weight); // 🔥 FIX
 
   const entry = {
-    school,
+  school,
 
-    name: normalizeName(getValue("name")),
-    date: getValue("date") || todayISO(),
-    gender: getValue("gender"),
-    grade: getValue("grade"),
-    weight,
+  name: normalizeName(getValue("name")),
+  date: getValue("date") || todayISO(),
+  gender: getValue("gender"),
+  grade: getValue("grade"),
+  weight,
 
-    group, // 🔥 THIS IS THE FIX
+  group,
 
-    bench: toNumber(getValue("bench")),
-    squat: toNumber(getValue("squat")),
-    clean: toNumber(getValue("clean")),
+  // =========================
+  // SPORTS
+  // =========================
 
-    vertical: toNumber(getValue("vertical")),
-    broad: toNumber(getValue("broad")),
-    medball: toNumber(getValue("medball")),
+  primarySport: getValue("primarySport"),
+  primaryPosition: getValue("primaryPosition"),
+  primaryPosition2: getValue("primaryPosition2"),
 
-    agility: toNumber(getValue("agility")),
-    ten: toNumber(getValue("ten")),
-    forty: toNumber(getValue("forty")),
-    situps: toNumber(getValue("situps"))
-  };
+  secondarySport: getValue("secondarySport"),
+  secondaryPosition: getValue("secondaryPosition"),
+  secondaryPosition2: getValue("secondaryPosition2"),
+
+  thirdSport: getValue("thirdSport"),
+  thirdPosition: getValue("thirdPosition"),
+  thirdPosition2: getValue("thirdPosition2"),
+
+  // =========================
+  // STRENGTH
+  // =========================
+
+  bench: toNumber(getValue("bench")),
+  squat: toNumber(getValue("squat")),
+  clean: toNumber(getValue("clean")),
+
+  // =========================
+  // EXPLOSIVE
+  // =========================
+
+  vertical: toNumber(getValue("vertical")),
+  broad: toNumber(getValue("broad")),
+  medball: toNumber(getValue("medball")),
+
+  // =========================
+  // SPEED
+  // =========================
+
+  agility: toNumber(getValue("agility")),
+  ten: toNumber(getValue("ten")),
+  forty: toNumber(getValue("forty")),
+  situps: toNumber(getValue("situps"))
+};
 
   console.log("📦 BUILT ENTRY:", entry);
 
@@ -322,3 +350,161 @@ function focusFirstInput() {
 ======================================== */
 
 window.saveAthlete = saveAthlete;
+
+// ========================================
+// 🏈 SPORT POSITION MAP
+// ========================================
+
+const SPORT_POSITIONS = {
+
+  Football: [
+    "OL", "QB", "RB", "TE",
+    "WR", "DL", "ILB", "OLB", "CB", "S"
+  ],
+
+  Basketball_Boys: [
+    "PG", "SG", "F", "C"
+  ],
+
+    Basketball_Girls: [
+    "PG", "SG", "F", "C"
+  ],
+
+  Baseball: [
+    "P", "C", "IF", "OF", "DH"
+  ],
+
+  Softball: [
+     "P", "C", "IF", "OF", "DH"
+  ],
+
+  Volleyball: [
+    "Setter",
+    "Outside Hitter",
+    "Middle Hitter",
+    "Libero",
+    "RS",
+  ],
+
+  Soccer_Boys: [
+    "GK",
+    "Defender",
+    "Midfielder",
+    "Striker"
+  ],
+
+  Soccer_Girls: [
+    "GK",
+    "Defender",
+    "Midfielder",
+    "Striker"
+  ],
+
+  TF_Boys: [
+    "Sprints",
+    "Distance",
+    "Hurdles",
+    "LJ",
+    "TJ",
+     "HJ",
+     "SP",
+     "Discus",
+     "Jav",
+     "PV"
+  ],
+
+  TF_Girls: [
+    "Sprints",
+    "Distance",
+    "Hurdles",
+    "LJ",
+    "TJ",
+     "HJ",
+     "SP",
+     "Discus",
+     "Jav",
+     "PV"
+  ], 
+};
+
+// ========================================
+// 🔥 POSITION DROPDOWNS
+// ========================================
+
+function setupPositionDropdowns() {
+
+  connectSportToPositions(
+    "primarySport",
+    "primaryPosition",
+    "primaryPosition2"
+  );
+
+  connectSportToPositions(
+    "secondarySport",
+    "secondaryPosition",
+    "secondaryPosition2"
+  );
+
+  connectSportToPositions(
+    "thirdSport",
+    "thirdPosition",
+    "thirdPosition2"
+  );
+}
+
+function connectSportToPositions(
+  sportId,
+  pos1Id,
+  pos2Id
+) {
+
+  const sportSelect = document.getElementById(sportId);
+
+  if (!sportSelect) return;
+
+  sportSelect.addEventListener("change", () => {
+
+    const sport = sportSelect.value;
+
+    populatePositionDropdown(pos1Id, sport);
+    populatePositionDropdown(pos2Id, sport);
+
+  });
+}
+
+function populatePositionDropdown(id, sport) {
+
+  const select = document.getElementById(id);
+
+  if (!select) return;
+
+  select.innerHTML = "";
+
+  const defaultOption = document.createElement("option");
+
+  defaultOption.value = "";
+  defaultOption.textContent = "Select Position";
+
+  select.appendChild(defaultOption);
+
+  const positions = SPORT_POSITIONS[sport] || [];
+
+  positions.forEach(position => {
+
+    const option = document.createElement("option");
+
+    option.value = position;
+    option.textContent = position;
+
+    select.appendChild(option);
+
+  });
+}
+
+// ========================================
+// 🚀 INIT POSITION SYSTEM
+// ========================================
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupPositionDropdowns();
+});

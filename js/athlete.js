@@ -8,6 +8,9 @@ let progressChart = null;
 let CURRENT_ATHLETE = null;
 let CURRENT_COMPARISON = "none";
 
+let comparisonAthleteA = null;
+let comparisonAthleteB = null;
+
 let ACTIVE_PROGRESS_KEYS = new Set([
   "strengthPoints",
   "speedPoints",
@@ -38,6 +41,184 @@ async function init() {
 }
 
 /* ========================================
+   SAFE SCORE
+======================================== */
+
+function safeScore(value) {
+  if (value === "" || value == null) return null;
+
+  const num = Number(value);
+
+  return isNaN(num) ? null : num;
+}
+
+
+/* ========================================
+   MULTI-SPORT HELPERS
+======================================== */
+
+function athleteSports(a) {
+  return [
+    a.primarySport,
+    a.secondarySport,
+    a.thirdSport
+  ]
+  .filter(Boolean)
+  .map(v => String(v).trim().toLowerCase());
+}
+
+function athletePositions(a) {
+  return [
+    a.primaryPosition,
+    a.primaryPosition2,
+
+    a.secondaryPosition,
+    a.secondaryPosition2,
+
+    a.thirdPosition,
+    a.thirdPosition2
+  ]
+  .filter(Boolean)
+  .map(v => String(v).trim().toLowerCase());
+}
+
+function athleteHasSport(a, sport) {
+  return athleteSports(a).includes(
+    String(sport || "")
+      .trim()
+      .toLowerCase()
+  );
+}
+
+function athleteHasPosition(a, position) {
+  return athletePositions(a).includes(
+    String(position || "")
+      .trim()
+      .toLowerCase()
+  );
+}
+
+
+/* ========================================
+   MOST SIMILAR MULTI-SPORT ATHLETE
+======================================== */
+
+function findMostSimilarMultiSportAthlete(
+  athlete,
+  athletes
+) {
+
+  if (!athlete || !athletes?.length) {
+    return null;
+  }
+
+  let bestMatch = null;
+  let bestScore = Infinity;
+
+  athletes.forEach(candidate => {
+
+    // skip self
+    if (candidate.name === athlete.name) {
+      return;
+    }
+
+    const similarity = calculateMultiSportSimilarity(
+      athlete,
+      candidate
+    );
+
+    if (similarity < bestScore) {
+      bestScore = similarity;
+      bestMatch = candidate;
+    }
+
+  });
+
+  return bestMatch;
+}
+
+
+/* ========================================
+   CALCULATE MULTI-SPORT SIMILARITY
+======================================== */
+
+function calculateMultiSportSimilarity(a, b) {
+
+  let score = 0;
+
+  /* =============================
+     SPORTS MATCH
+  ============================= */
+
+  const aSports = athleteSports(a);
+  const bSports = athleteSports(b);
+
+  const sharedSports =
+    aSports.filter(s => bSports.includes(s));
+
+  // reward shared sports heavily
+  score -= sharedSports.length * 20;
+
+  /* =============================
+     POSITION MATCH
+  ============================= */
+
+  const aPositions = athletePositions(a);
+  const bPositions = athletePositions(b);
+
+  const sharedPositions =
+    aPositions.filter(p => bPositions.includes(p));
+
+  // reward shared positions
+  score -= sharedPositions.length * 15;
+
+  /* =============================
+     PERFORMANCE PROFILE
+  ============================= */
+
+  const categories = [
+    "strengthPoints",
+    "powerPoints",
+    "explosivePoints",
+    "speedPoints"
+  ];
+
+  categories.forEach(category => {
+
+    const aValue = safeScore(a[category]);
+    const bValue = safeScore(b[category]);
+
+    if (aValue == null || bValue == null) {
+      return;
+    }
+
+    score += Math.abs(aValue - bValue);
+  });
+
+  /* =============================
+     BODYWEIGHT
+  ============================= */
+
+  score += Math.abs(
+    Number(a.weight || 0) -
+    Number(b.weight || 0)
+  ) * 0.35;
+
+  /* =============================
+     GRADE
+  ============================= */
+
+  score += Math.abs(
+    Number(a.grade || 0) -
+    Number(b.grade || 0)
+  ) * 3;
+
+  return score;
+}
+
+
+
+/* ========================================
    MAIN RENDER
 ======================================== */
 
@@ -63,7 +244,7 @@ function renderAthlete(name) {
 
   set("verticalScore", latest.vertical);
   set("broadScore", fmt2(latest.broad));
-  set("medballScore", fmt2(latest.med));
+  set("medballScore", fmt2(latest.medBall || latest.medball));
 
   set("proagility", fmt2(latest.agility));
   set("situps", latest.situps);
@@ -116,8 +297,66 @@ function setComparison(type) {
     `#comparisonButtons button[data-type="${type}"]`
   )?.classList.add("active");
 
+  if (type === "headtohead") {
+
+  document
+    .getElementById("compareModal")
+    .classList.remove("hidden");
+
+  populateComparisonDropdowns();
+
+  // STOP NORMAL COMPARISON FLOW
+  return false;
+}
+
   const comparison = getComparisonData(type, CURRENT_ATHLETE);
   renderRadar(CURRENT_ATHLETE, comparison);
+}
+
+function populateComparisonDropdowns() {
+
+  const selectA =
+    document.getElementById("athleteSelectA");
+
+  const selectB =
+    document.getElementById("athleteSelectB");
+
+  if (!selectA || !selectB) return;
+
+  selectA.innerHTML = "";
+  selectB.innerHTML = "";
+
+ [...new Map(
+  DATA.map(a => [a.name, a])
+).values()]
+  .sort((a, b) =>
+    a.name.localeCompare(b.name)
+  )
+  .forEach(athlete => {
+
+      const optionA =
+        document.createElement("option");
+
+      optionA.value = athlete.name;
+      optionA.textContent = athlete.name;
+
+      const optionB = optionA.cloneNode(true);
+
+      selectA.appendChild(optionA);
+      selectB.appendChild(optionB);
+    });
+
+  // default selections
+  selectA.value = CURRENT_ATHLETE.name;
+
+  const secondAthlete =
+    DATA.find(a =>
+      a.name !== CURRENT_ATHLETE.name
+    );
+
+  if (secondAthlete) {
+    selectB.value = secondAthlete.name;
+  }
 }
 
 /* ========================================
@@ -125,18 +364,115 @@ function setComparison(type) {
 ======================================== */
 
 function getComparisonData(type, athlete) {
+
   if (!type || type === "none") return null;
+
+  // 🔥 HEAD TO HEAD handled separately
+  if (type === "headtohead") {
+    return null;
+  }
 
   let group = [];
 
-  if (type === "top5") group = [...DATA].sort((a,b)=>b.score-a.score).slice(0,5);
-  if (type === "team") group = DATA;
-  if (type === "weight") group = DATA.filter(a => a.weightClass === athlete.weightClass);
-  if (type === "grade") group = DATA.filter(a => a.grade === athlete.grade);
+  // 🔥 normalize helper
+  const norm = v =>
+    String(v || "")
+      .trim()
+      .toLowerCase();
 
-  if (!group.length) return null;
+  // 🔥 TOP 5
+  if (type === "top5") {
 
-  const avg = k => group.reduce((s,a)=>s+(a[k]||0),0)/group.length;
+    group = [...DATA]
+      .sort((a, b) => (b.score || 0) - (a.score || 0))
+      .slice(0, 5);
+  }
+
+
+  
+
+  // 🔥 TEAM
+  else if (type === "team") {
+
+    group = DATA;
+  }
+
+  // 🔥 GRADE
+  else if (type === "grade") {
+
+    group = DATA.filter(a =>
+      norm(a.grade) === norm(athlete.grade)
+    );
+  }
+
+  // 🔥 WEIGHT CLASS
+  else if (type === "weight") {
+
+    group = DATA.filter(a =>
+     norm(a.group) === norm(athlete.group)
+    );
+  }
+
+  // 🔥 SPORT
+else if (type === "sport") {
+
+  const athleteSport =
+    athlete.primarySport ||
+    athlete.sport ||
+    athlete.primary_sport;
+
+  group = DATA.filter(a =>
+    athleteHasSport(a, athleteSport)
+  );
+}
+
+  // 🔥 POSITION
+else if (type === "position") {
+
+  const athleteSport =
+    athlete.primarySport ||
+    athlete.sport ||
+    athlete.primary_sport;
+
+  const athletePosition =
+    athlete.primaryPosition ||
+    athlete.position ||
+    athlete.primary_position;
+
+  group = DATA.filter(a => {
+
+    return (
+      athleteHasSport(a, athleteSport) &&
+      athleteHasPosition(a, athletePosition)
+    );
+  });
+}
+
+  
+  // 🔥 MOST SIMILAR MULTI-SPORT ATHLETE
+else if (type === "similar") {
+
+  const match =
+    findMostSimilarMultiSportAthlete(
+      athlete,
+      DATA
+    );
+
+  if (!match) {
+    return null; 
+  }
+
+  group = [match];
+}
+
+  if (!group.length) {
+  return null;
+}
+
+  const avg = key =>
+    group.reduce((sum, a) =>
+      sum + Number(a[key] || 0), 0
+    ) / group.length;
 
   return {
     strengthPoints: avg("strengthPoints"),
@@ -145,6 +481,9 @@ function getComparisonData(type, athlete) {
     speedPoints: avg("speedPoints")
   };
 }
+
+  
+
 
 /* ========================================
    RADAR
@@ -166,7 +505,10 @@ function renderRadar(a, comparison=null) {
       a.speedPoints
     ],
     borderWidth: 2,
-    backgroundColor: "rgba(54,162,235,0.3)"
+   backgroundColor: "rgba(54,162,235,0.18)",
+borderColor: "#4da6ff",
+pointBackgroundColor: "#4da6ff",
+pointRadius: 4
   }];
 
   if (comparison) {
@@ -332,7 +674,7 @@ function renderTable(history) {
       <td>${formatNumber(avg(h.bench,h.squat,h.clean))}</td>
       <td>${formatNumber(h.vertical)}</td>
       <td>${fmt2(h.broad)}</td>
-      <td>${fmt2(h.med)}</td>
+      <td>${fmt2(h.medBall || h.medball)}</td>
       <td>${fmt2(h.agility)}</td>
       <td>${formatNumber(h.situps)}</td>
       <td>${fmt2(h.ten)}</td>
@@ -441,7 +783,10 @@ function renderInsights(a) {
 ======================================== */
 
 function fmt2(v){ return v || v===0 ? Number(v).toFixed(2) : "-"; }
-function set(id,v){ document.getElementById(id).textContent = v || "-"; }
+function set(id, v) {
+  document.getElementById(id).textContent =
+    (v === 0 || v) ? v : "-";
+}
 function avg(a,b,c){ const v=[a,b,c].filter(x=>x>0); return v.length?Math.round(v.reduce((x,y)=>x+y)/v.length):"-"; }
 
 function formatName(name){
@@ -467,4 +812,82 @@ function formatDate(dateStr) {
 function formatNumber(val) {
   if (val === null || val === undefined) return "-";
   return Number(val).toLocaleString();
+}
+
+
+document
+  .getElementById("runComparison")
+  ?.addEventListener("click", () => {
+
+    const athleteAName =
+      document.getElementById("athleteSelectA").value;
+
+    const athleteBName =
+      document.getElementById("athleteSelectB").value;
+
+    const athleteA =
+      DATA.find(a => a.name === athleteAName);
+
+    const athleteB =
+      DATA.find(a => a.name === athleteBName);
+
+    if (!athleteA || !athleteB) {
+      return;
+    }
+
+    comparisonAthleteA = athleteA;
+    comparisonAthleteB = athleteB;
+
+    renderHeadToHead(athleteA, athleteB);
+
+    document
+      .getElementById("compareModal")
+      .classList.add("hidden");
+});
+
+function renderHeadToHead(a, b) {
+
+  CURRENT_COMPARISON = "headtohead";
+
+  renderRadar(a);
+
+  if (!radarChart) return;
+
+  radarChart.data.datasets = [
+
+    {
+      label: a.name,
+
+      data: [
+        a.strengthPoints,
+        a.powerPoints,
+        a.explosivePoints,
+        a.speedPoints
+      ],
+
+      borderColor: "#3b82f6",
+      backgroundColor: "rgba(59,130,246,.25)",
+      borderWidth: 2
+    },
+
+    {
+      label: b.name,
+
+      data: [
+        b.strengthPoints,
+        b.powerPoints,
+        b.explosivePoints,
+        b.speedPoints
+      ],
+
+      borderColor: "#ff4d6d",
+      backgroundColor: "rgba(255,77,109,.25)",
+      borderDash: [6,4],
+      borderWidth: 2
+    }
+  ];
+
+  radarChart.update();
+
+  console.log("🔥 HEAD TO HEAD:", a.name, b.name);
 }
