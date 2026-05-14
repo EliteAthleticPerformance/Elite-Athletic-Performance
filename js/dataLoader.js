@@ -4,6 +4,53 @@
 
 let APP_DATA = [];
 
+// ========================================
+// SCHOOL ACCESS VALIDATION
+// ========================================
+
+function validateSchoolAccess(schoolSlug) {
+
+  const config =
+    window.SCHOOL_CONFIG?.[schoolSlug];
+
+  // no config found
+  if (!config) {
+    window.location.href = "/invalid-school.html";
+    return false;
+  }
+
+  // manually disabled
+  if (!config.active) {
+    window.location.href = "/expired.html";
+    return false;
+  }
+
+  // trial validation
+  if (
+    config.trial &&
+    config.trialEnd
+  ) {
+
+    const today = new Date();
+
+    const endDate =
+      new Date(config.trialEnd);
+
+    // expired
+    if (today > endDate) {
+
+      window.location.href =
+        "/expired.html";
+
+      return false;
+    }
+  }
+
+  return true;
+}
+
+
+
 /* ========================================
    MAIN LOAD FUNCTION
 ======================================== */
@@ -32,6 +79,9 @@ if (!school) {
 
 // normalize
 school = school.toLowerCase().replace(/\s+/g, "");
+
+   // 🔥 VALIDATE SCHOOL ACCESS
+validateSchoolAccess(school);  
 
     if (!school) {
       throw new Error("❌ Missing school parameter (URL or config)");
