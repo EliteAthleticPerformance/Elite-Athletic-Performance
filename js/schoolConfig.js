@@ -4,6 +4,15 @@
 
 window.SCHOOL_CONFIG = {
 
+  harrisonville: {
+
+    active: true,
+
+    trial: false,
+
+    subscriptionStatus: "paid"
+  },
+  
   jefferson: {
     school: "Jefferson",
 
