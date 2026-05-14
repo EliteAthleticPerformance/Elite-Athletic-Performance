@@ -244,9 +244,12 @@ async function submitToGoogle(entry, url) {
 ======================================== */
 
 async function getSubmitURL() {
-  await window.APP_READY;
 
-  const url = window.SCHOOL_CONFIG?.submitURL;
+  const config = await window.APP_READY;
+
+  console.log("🔥 APP_READY CONFIG:", config);
+
+  const url = config?.submitURL;
 
   console.log("🔥 FINAL SUBMIT URL:", url);
 
