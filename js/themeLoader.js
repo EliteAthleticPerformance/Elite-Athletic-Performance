@@ -264,7 +264,7 @@ const config = {
 };
 
     
-    applyTheme(config.theme, school);
+    applyTheme(config.theme, school, config);
     applyBaseTheme(config);
 
     await waitForHeader();
@@ -282,7 +282,7 @@ const config = {
    🎨 APPLY THEME
 ======================================== */
 
-function applyTheme(theme, school) {
+function applyTheme(theme, school, fullConfig) {
   if (!theme) return;
 
   const root = document.documentElement;
@@ -293,7 +293,11 @@ function applyTheme(theme, school) {
   root.style.setProperty("--secondary", theme.secondary);
   root.style.setProperty("--secondaryLight", theme.secondaryLight);
 
-  sessionStorage.setItem("theme-" + school, JSON.stringify(theme));
+  // 🔥 STORE FULL CONFIG (NOT JUST COLORS)
+  sessionStorage.setItem(
+    "theme-" + school,
+    JSON.stringify(fullConfig)
+  );
 
   console.log("🎨 THEME APPLIED:", theme);
 }
