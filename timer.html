@@ -2109,13 +2109,15 @@ if (currentPhase !== prevPhase) {
             case "work":
                 speakLift();
                 break;
-            case "rotate":
+
+                    
+          case "rotate":
 
     speakRotate();
 
     // 🔥 Detect final rotate before break
     const nextSegment =
-        phaseMeta[currentPhaseIndex + 1];
+        phaseMeta[state.sequenceIndex + 1];
 
     if (
         nextSegment &&
@@ -2125,6 +2127,8 @@ if (currentPhase !== prevPhase) {
     }
 
     break;
+
+                    
             case "break":
                 speakBreakPrep();
                 previewNextSet();
