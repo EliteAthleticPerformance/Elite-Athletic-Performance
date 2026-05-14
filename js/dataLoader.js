@@ -50,6 +50,91 @@ function validateSchoolAccess(schoolSlug) {
 }
 
 
+// ========================================
+// TRIAL DAYS REMAINING
+// ========================================
+
+function getTrialDaysRemaining(config) {
+
+  if (!config?.trialEnd) {
+    return null;
+  }
+
+  const today = new Date();
+
+  const endDate =
+    new Date(config.trialEnd);
+
+  const diff =
+    endDate - today;
+
+  return Math.ceil(
+    diff / (1000 * 60 * 60 * 24)
+  );
+}
+
+
+// ========================================
+// TRIAL BANNER
+// ========================================
+
+function renderTrialBanner(schoolSlug) {
+
+  const config =
+    window.SCHOOL_CONFIG?.[schoolSlug];
+
+  if (!config) return;
+
+  // only show for trial schools
+  if (!config.trial) return;
+
+  const daysRemaining =
+    getTrialDaysRemaining(config);
+
+  if (daysRemaining == null) return;
+
+  // prevent duplicates
+  if (
+    document.getElementById(
+      "trialBanner"
+    )
+  ) {
+    return;
+  }
+
+  const banner =
+    document.createElement("div");
+
+  banner.id = "trialBanner";
+
+  banner.innerHTML = `
+    ⏳ FREE TRIAL:
+    <strong>
+      ${daysRemaining} day${daysRemaining !== 1 ? "s" : ""}
+      remaining
+    </strong>
+  `;
+
+  banner.style.position = "fixed";
+  banner.style.top = "0";
+  banner.style.left = "0";
+  banner.style.width = "100%";
+  banner.style.padding = "10px";
+  banner.style.textAlign = "center";
+  banner.style.background = "#f59e0b";
+  banner.style.color = "#111";
+  banner.style.fontWeight = "700";
+  banner.style.zIndex = "9999";
+  banner.style.boxShadow =
+    "0 2px 8px rgba(0,0,0,.35)";
+
+  document.body.appendChild(banner);
+
+  // push page down slightly
+  document.body.style.paddingTop = "50px";
+}
+
+
 
 /* ========================================
    MAIN LOAD FUNCTION
@@ -82,6 +167,9 @@ school = school.toLowerCase().replace(/\s+/g, "");
 
    // 🔥 VALIDATE SCHOOL ACCESS
 validateSchoolAccess(school);  
+
+    // 🔥 RENDER TRIAL BANNER
+renderTrialBanner(school);
 
     if (!school) {
       throw new Error("❌ Missing school parameter (URL or config)");
