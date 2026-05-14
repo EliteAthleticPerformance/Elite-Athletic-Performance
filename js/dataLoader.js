@@ -166,9 +166,14 @@ if (!school) {
 school = school.toLowerCase().replace(/\s+/g, "");
 
    // 🔥 VALIDATE SCHOOL ACCESS
-validateSchoolAccess(school);  
+const accessAllowed =
+  validateSchoolAccess(school);
 
-    // 🔥 RENDER TRIAL BANNER
+if (!accessAllowed) {
+  return [];
+}
+
+// 🔥 RENDER TRIAL BANNER
 renderTrialBanner(school);
 
     if (!school) {
