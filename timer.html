@@ -1645,13 +1645,7 @@ function getSheetGid() {
 
 /* ===================== SCHOOL DATA SOURCES ===================== */
 
-const SHEET_URLS = {
-    harrisonville: "https://docs.google.com/spreadsheets/d/e/2PACX-1vToY3ergZlbG9lSEUTygnBxjjVkR5qPPmR4THLxMYgCgilFaK_7-hmm7OdM_F-e62z5ZsSFf0zB-JO-/pub",
 
-    // future schools
-    liberty: "https://docs.google.com/spreadsheets/d/e/2PACX-LIBERTY_ID/pub",
-    bluevalley: "https://docs.google.com/spreadsheets/d/e/2PACX-BV_ID/pub"
-};
 
 console.log("💥 MAIN SCRIPT RUNNING");  
 
@@ -1665,10 +1659,18 @@ async function loadWorkout() {
 const params = new URLSearchParams(window.location.search);
 const school = params.get("school") || "harrisonville";
 
-const baseUrl = SHEET_URLS[school];
+const themeRaw = sessionStorage.getItem("theme-" + school);
+
+if (!themeRaw) {
+    throw new Error("❌ No theme config found for school: " + school);
+}
+
+const schoolConfig = JSON.parse(themeRaw);
+
+const baseUrl = schoolConfig.dataURL;
 
 if (!baseUrl) {
-    throw new Error("❌ No sheet URL configured for school: " + school);
+    throw new Error("❌ No dataURL configured for school: " + school);
 }
 
 const response = await fetch(
