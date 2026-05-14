@@ -63,6 +63,19 @@ const CONFIG_MAP = (() => {
         secondaryLight: "#E6E6E6"
       }
     },
+
+     jeffersony: {
+      key: "jefferson",
+      name: "Jefferson Blue Jays",
+      logo: base + "images/jeffersonbluejays-logo.png",
+       theme: {
+        primary: "#0A3B9E",
+        primaryLight: "#5DA9E9",
+        primaryDark: "#061F52",
+        secondary: "#E5E5E5",
+        secondaryLight: "#FFFFFF"
+      }
+    },
      
      pleasanthill: {
       key: "pleasanthill",
