@@ -1805,3 +1805,92 @@ MOBILE (RESPONSIVE)
     grid-template-columns: 1fr;
   }
 }
+
+/* ========================================
+MOBILE (RESPONSIVE)
+======================================== */
+
+@media (max-width: 768px) {
+
+    .header-right {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .menu-toggle {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+    }
+
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+    main {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 900px) {
+  .leaderboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .card {
+    min-height: auto;
+    padding: 18px;
+  }
+
+  .card h2 {
+    font-size: 1.5rem;
+  }
+
+  .card p {
+    font-size: 1rem;
+  }
+
+  .card-icon {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  #radarChart,
+  #progressChart {
+    height: 320px !important;
+    max-height: 320px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.15s !important;
+  }
+
+  .card,
+  .leaderboard-card,
+  .metric-card {
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.4);
+  }
+}
+
+@media (max-width: 768px) {
+
+  button,
+  .btn,
+  .menu-toggle,
+  select,
+  input {
+    min-height: 48px;
+  }
+}
+
