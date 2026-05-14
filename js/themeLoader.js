@@ -26,21 +26,36 @@ const CONFIG_MAP = (() => {
   return {
     
     harrisonville: {
-      key: "harrisonville",
-      name: "Harrisonville Wildcats",
-      logo: base + "images/wildcats-logo.png",
-       theme: {
-        primary: "#1e3a8a",
-        primaryLight: "#3b82f6",
-        primaryDark: "#1e40af",
-        secondary: "#60a5fa",
-        secondaryLight: "#93c5fd"
-      }
-    },
+  key: "harrisonville",
+  name: "Harrisonville Wildcats",
+
+  active: true,
+
+  trial: false,
+
+  subscriptionStatus: "paid",
+
+  logo: base + "images/wildcats-logo.png",
+
+  theme: {
+    primary: "#1e3a8a",
+    primaryLight: "#3b82f6",
+    primaryDark: "#1e40af",
+    secondary: "#60a5fa",
+    secondaryLight: "#93c5fd"
+  }
+},
 
       harrisonvillemiddle: {
       key: "harrisonvillemiddle",
       name: "Harrisonville Middle School Wildcats",
+
+          active: true,
+
+  trial: false,
+
+  subscriptionStatus: "paid",
+         
       logo: base + "images/wildcats-logo.png",
        theme: {
         primary: "#1e3a8a",
@@ -54,6 +69,13 @@ const CONFIG_MAP = (() => {
      cassmidway: {
       key: "cassmidway",
       name: "Cass Midway Vikings",
+
+         active: true,
+
+  trial: false,
+
+  subscriptionStatus: "paid",
+        
       logo: base + "images/vikings-logo.png",
        theme: {
         primary: "#4B0082",
@@ -65,21 +87,40 @@ const CONFIG_MAP = (() => {
     },
 
      jefferson: {
-      key: "jefferson",
-      name: "Jefferson Blue Jays",
-      logo: base + "images/jeffersonbluejays-logo.png",
-       theme: {
-        primary: "#0A3B9E",
-        primaryLight: "#5DA9E9",
-        primaryDark: "#061F52",
-        secondary: "#E5E5E5",
-        secondaryLight: "#FFFFFF"
-      }
-    },
+  key: "jefferson",
+  name: "Jefferson Blue Jays",
+
+  active: true,
+
+  trial: true,
+
+  subscriptionStatus: "trial",
+
+  trialStart: "2026-05-14",
+
+  trialEnd: "2026-05-28",
+
+  logo: base + "images/jeffersonbluejays-logo.png",
+
+  theme: {
+    primary: "#0A3B9E",
+    primaryLight: "#5DA9E9",
+    primaryDark: "#061F52",
+    secondary: "#E5E5E5",
+    secondaryLight: "#FFFFFF"
+  }
+},
      
      pleasanthill: {
       key: "pleasanthill",
       name: "Pleasant Hill Roosters",
+
+         active: true,
+
+  trial: false,
+
+  subscriptionStatus: "paid",
+        
       logo: base + "images/roosters-logo.png",
        theme: {
         primary: "#5a2ca0",
@@ -93,6 +134,13 @@ const CONFIG_MAP = (() => {
      raypec: {
       key: "raypec",
       name: "Ray-Pec Panthers",
+
+         active: true,
+
+  trial: false,
+
+  subscriptionStatus: "paid",
+        
       logo: base + "images/panthers-logo.png",
        theme: {
         primary: "#C9A646",
@@ -107,6 +155,13 @@ const CONFIG_MAP = (() => {
 springhill: {
       key: "springhill",
       name: "Spring Hill Broncos",
+
+    active: true,
+
+  trial: false,
+
+  subscriptionStatus: "paid",
+   
       logo: base + "images/broncos-logo.png", 
        theme: {
         primary: "#5A2D91",
@@ -121,6 +176,13 @@ springhill: {
      warrensburg: {
       key: "warrensburg",
       name: "Warrensburg Tigers",
+
+         active: false,
+
+  trial: false,
+
+  subscriptionStatus: "inactive",
+        
       logo: base + "images/tigers-logo.png", 
        theme: {
         primary: "#C8102E",
