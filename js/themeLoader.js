@@ -2,7 +2,7 @@
 // 🔥 ELITE THEME + CONFIG ENGINE (DYNAMIC)
 // ========================================
 
-window.SCHOOL_CONFIG = null;
+window.SCHOOL_CONFIG = {};
 
 /* ========================================
    🌐 BASE PATH
@@ -64,7 +64,7 @@ const CONFIG_MAP = (() => {
       }
     },
 
-     jeffersony: {
+     jefferson: {
       key: "jefferson",
       name: "Jefferson Blue Jays",
       logo: base + "images/jeffersonbluejays-logo.png",
@@ -111,7 +111,7 @@ springhill: {
        theme: {
         primary: "#5A2D91",
         primaryLight: "#6A3FB0",
-        primaryDark: "#3F166",
+        primaryDark: "#3F1660",
         secondary: "#FDBB30",
         secondaryLight: "#FFD166"
       }
@@ -133,6 +133,8 @@ springhill: {
 
   };
 })();
+
+window.SCHOOL_CONFIG = CONFIG_MAP;
 
 /* ========================================
    🌐 GET SCHOOL (FINAL FIXED VERSION)
@@ -199,10 +201,7 @@ const config = {
   submitURL: "https://script.google.com/macros/s/AKfycbyT3weWxCL1blgkrsILw73NIf1qvgGS8K8PyoHooab3yMCTvf9GRm8YyGHPMusdoh8P/exec"
 };
 
-    window.SCHOOL_CONFIG = config;
-
-    console.log("🏫 CONFIG LOADED:", config);
-
+    
     applyTheme(config.theme, school);
     applyBaseTheme(config);
 
