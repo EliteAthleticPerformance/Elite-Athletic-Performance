@@ -5,7 +5,7 @@
 window.SCHOOL_CONFIG = {
 
   harrisonville: {
-
+    school: "Harrisonville",
     active: true,
 
     trial: false,
