@@ -3130,8 +3130,33 @@ function jumpToSet(setNumber) {
     console.log("⏩ Jumped to set:", setNumber);
 }
 
-       function buildCoachButtons() { const container = document.getElementById("coachSetButtons"); if (!container) return; container.innerHTML = ""; // count actual workout sets const sets = workoutData.filter( item => item.type === "set" ); sets.forEach((set, index) => { const btn = document.createElement("button"); const setNumber = index + 1; btn.innerText = `Set ${setNumber}`; btn.onclick = () => jumpToSet(setNumber); container.appendChild(btn); }); }
+       function buildCoachButtons() {
 
+    const container =
+        document.getElementById("coachSetButtons");
+
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    // ONLY workout sets
+    const sets = workoutData.filter(
+        item => item.type === "set"
+    );
+
+    sets.forEach((set, index) => {
+
+        const btn = document.createElement("button");
+
+        const setNumber = index + 1;
+
+        btn.innerText = `Set ${setNumber}`;
+
+        btn.onclick = () => jumpToSet(setNumber);
+
+        container.appendChild(btn);
+    });
+}
 
       
 window.addEventListener("unhandledrejection", e => {
