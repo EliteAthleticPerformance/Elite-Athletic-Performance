@@ -8,6 +8,7 @@ let progressChart = null;
 let CURRENT_ATHLETE = null;
 let CURRENT_COMPARISON = "none";
 let SELECTED_SPORT_COMPARISON = null;
+let SELECTED_POSITION_COMPARISON = null;
 let comparisonAthleteA = null;
 let comparisonAthleteB = null;
 
@@ -254,6 +255,7 @@ function renderAthlete(name) {
   renderRadar(latest, null);
   renderInsights(latest); // ✅ ADD THIS LINE
   populateSportDropdown();
+  populatePositionDropdown();
   initProgressToggles(history);
   renderProgress(history);
 
@@ -300,6 +302,55 @@ function populateSportDropdown() {
 
       option.value = sport;
       option.textContent = sport;
+
+      select.appendChild(option);
+    });
+}
+
+function populatePositionDropdown() {
+
+  const select =
+    document.getElementById(
+      "positionComparisonSelect"
+    );
+
+  if (!select) return;
+
+  const positions = new Set();
+
+  DATA.forEach(a => {
+
+    [
+      a.primaryPosition,
+      a.primaryPosition2,
+
+      a.secondaryPosition,
+      a.secondaryPosition2,
+
+      a.thirdPosition,
+      a.thirdPosition2
+    ]
+    .filter(Boolean)
+    .forEach(position => {
+
+      positions.add(
+        String(position).trim()
+      );
+    });
+  });
+
+  select.innerHTML =
+    '<option value="">Select Position</option>';
+
+  [...positions]
+    .sort()
+    .forEach(position => {
+
+      const option =
+        document.createElement("option");
+
+      option.value = position;
+      option.textContent = position;
 
       select.appendChild(option);
     });
@@ -383,6 +434,38 @@ function setSportComparison(sport) {
   const comparison =
     getComparisonData(
       "sport",
+      CURRENT_ATHLETE
+    );
+
+  renderRadar(
+    CURRENT_ATHLETE,
+    comparison
+  );
+}
+
+function setPositionComparison(position) {
+
+  if (!position) return;
+
+  SELECTED_POSITION_COMPARISON =
+    position;
+
+  CURRENT_COMPARISON = "position";
+
+  document.querySelectorAll(
+    "#comparisonButtons button"
+  )
+  .forEach(btn =>
+    btn.classList.remove("active")
+  );
+
+  document.querySelector(
+    '#positionCompareBtn'
+  )?.classList.add("active");
+
+  const comparison =
+    getComparisonData(
+      "position",
       CURRENT_ATHLETE
     );
 
@@ -510,12 +593,14 @@ else if (type === "sport") {
   // 🔥 POSITION
 else if (type === "position") {
 
-  const athleteSport =
+  const selectedSport =
+    SELECTED_SPORT_COMPARISON ||
     athlete.primarySport ||
     athlete.sport ||
     athlete.primary_sport;
 
-  const athletePosition =
+  const selectedPosition =
+    SELECTED_POSITION_COMPARISON ||
     athlete.primaryPosition ||
     athlete.position ||
     athlete.primary_position;
@@ -523,8 +608,8 @@ else if (type === "position") {
   group = DATA.filter(a => {
 
     return (
-      athleteHasSport(a, athleteSport) &&
-      athleteHasPosition(a, athletePosition)
+      athleteHasSport(a, selectedSport) &&
+      athleteHasPosition(a, selectedPosition)
     );
   });
 }
