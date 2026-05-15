@@ -2031,6 +2031,7 @@ loadSetData(currentSet);
 startAutoScheduler();
 
 buildSegmentTimeline();
+          buildCoachButtons();
 
 
 // ⭐ Recalculate preview total
@@ -3121,6 +3122,8 @@ function jumpToSet(setNumber) {
         offset += seg.duration;
     }
 
+      function buildCoachButtons() { const container = document.getElementById("coachSetButtons"); if (!container) return; container.innerHTML = ""; // count actual workout sets const sets = workoutData.filter( item => item.type === "set" ); sets.forEach((set, index) => { const btn = document.createElement("button"); const setNumber = index + 1; btn.innerText = `Set ${setNumber}`; btn.onclick = () => jumpToSet(setNumber); container.appendChild(btn); }); }
+
     window.classStartTime = now - (offset * 1000);
 
     updateClock();
@@ -3184,22 +3187,7 @@ window.addEventListener("DOMContentLoaded", () => {
     ⚙
 </div>
 
-<div id="coachPanel">
-
-    <button onclick="jumpToSection('dress')">Dress</button>
-
-    <button onclick="jumpToSection('stretch')">Stretch</button>
-
-    <button onclick="jumpToSet(1)">Set 1</button>
-    <button onclick="jumpToSet(2)">Set 2</button>
-    <button onclick="jumpToSet(3)">Set 3</button>
-    <button onclick="jumpToSet(4)">Set 4</button>
-
-    <button onclick="jumpToSection('break')">Break</button>
-
-    <button onclick="jumpToSection('cooldown')">Cooldown</button>
-
-</div>
+<div id="coachPanel"> <button onclick="jumpToSection('dress')">Dress</button> <button onclick="jumpToSection('stretch')">Stretch</button> <!-- AUTO GENERATED SET BUTTONS --> <div id="coachSetButtons"></div> <button onclick="jumpToSection('break')">Break</button> <button onclick="jumpToSection('cooldown')">Cooldown</button> </div>
       
 </body>
 </html>      
