@@ -122,10 +122,23 @@
 
 </div>
 
+  <div class="comparison-dropdown-wrap">
+
   <button data-type="position"
-          onclick="setComparison('position')">
-    Position
+          id="positionCompareBtn">
+    Position ▼
   </button>
+
+  <select id="positionComparisonSelect"
+          onchange="setPositionComparison(this.value)">
+
+    <option value="">
+      Select Position
+    </option>
+
+  </select>
+
+</div>
 
   
          <button data-type="headtohead"
