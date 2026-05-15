@@ -730,6 +730,95 @@ body.preview-mode .quad::after {
     text-shadow: 0 0 8px #39ff14;
 }
 
+      /* ========================================
+HIDDEN COACH PANEL
+======================================== */
+
+#coachJumpBtn {
+
+    position: fixed;
+    right: 12px;
+    bottom: 12px;
+
+    width: 42px;
+    height: 42px;
+
+    border-radius: 50%;
+
+    background: rgba(0,0,0,0.35);
+
+    color: rgba(255,255,255,0.18);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 18px;
+    font-weight: 900;
+
+    cursor: pointer;
+
+    z-index: 9999;
+
+    transition: all 0.25s ease;
+}
+
+#coachJumpBtn:hover {
+
+    color: #39ff14;
+
+    background: rgba(0,0,0,0.75);
+
+    box-shadow:
+        0 0 10px #39ff14;
+}
+
+#coachPanel {
+
+    position: fixed;
+
+    right: 12px;
+    bottom: 62px;
+
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+
+    padding: 12px;
+
+    border-radius: 14px;
+
+    background: rgba(0,0,0,0.92);
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    z-index: 9999;
+}
+
+#coachPanel button {
+
+    background: #111;
+    color: white;
+
+    border: 1px solid #333;
+
+    padding: 10px 14px;
+
+    border-radius: 10px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+#coachPanel button:hover {
+
+    border-color: #39ff14;
+
+    box-shadow:
+        0 0 10px #39ff14;
+}
+
       
 </style>
 </head>
@@ -2953,6 +3042,94 @@ document.getElementById("schoolLogo")?.classList.add("logoDefault");
    INITIAL PAGE LOAD
 ====================================================== */
 
+      /* ========================================
+COACH JUMP CONTROLS
+======================================== */
+
+function toggleCoachPanel() {
+
+    const panel = document.getElementById("coachPanel");
+
+    if (!panel) return;
+
+    panel.style.display =
+        panel.style.display === "flex"
+            ? "none"
+            : "flex";
+}
+
+function jumpToSection(targetPhase) {
+
+    const now = getEffectiveNow().getTime();
+
+    let offset = 0;
+
+    // DRESS
+    if (targetPhase === "dress") {
+        offset = 0;
+    }
+
+    // STRETCH
+    else if (targetPhase === "stretch") {
+        offset = dressOutDuration;
+    }
+
+    // BREAK
+    else if (targetPhase === "break") {
+
+        for (const seg of phaseMeta) {
+
+            if (seg.phase === "break") {
+                break;
+            }
+
+            offset += seg.duration;
+        }
+
+        offset += dressOutDuration + dynamicStretchDuration;
+    }
+
+    // COOLDOWN
+    else if (targetPhase === "cooldown") {
+
+        offset = calculateTotalTime() - cooldownDuration;
+    }
+
+    window.classStartTime = now - (offset * 1000);
+
+    updateClock();
+    updateTotalDisplay();
+
+    console.log("⏩ Jumped to:", targetPhase);
+}
+
+function jumpToSet(setNumber) {
+
+    const now = getEffectiveNow().getTime();
+
+    let offset = dressOutDuration + dynamicStretchDuration;
+
+    for (const seg of phaseMeta) {
+
+        if (
+            seg.phase === "work" &&
+            seg.setIndex === setNumber
+        ) {
+            break;
+        }
+
+        offset += seg.duration;
+    }
+
+    window.classStartTime = now - (offset * 1000);
+
+    updateClock();
+    updateTotalDisplay();
+
+    console.log("⏩ Jumped to set:", setNumber);
+}
+
+      
 window.addEventListener("unhandledrejection", e => {
     console.warn("Unhandled promise:", e.reason);
 });
@@ -3002,5 +3179,27 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 
 </script>
+
+      <div id="coachJumpBtn" onclick="toggleCoachPanel()">
+    ⚙
+</div>
+
+<div id="coachPanel">
+
+    <button onclick="jumpToSection('dress')">Dress</button>
+
+    <button onclick="jumpToSection('stretch')">Stretch</button>
+
+    <button onclick="jumpToSet(1)">Set 1</button>
+    <button onclick="jumpToSet(2)">Set 2</button>
+    <button onclick="jumpToSet(3)">Set 3</button>
+    <button onclick="jumpToSet(4)">Set 4</button>
+
+    <button onclick="jumpToSection('break')">Break</button>
+
+    <button onclick="jumpToSection('cooldown')">Cooldown</button>
+
+</div>
+      
 </body>
 </html>      
