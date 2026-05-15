@@ -312,6 +312,9 @@ async function init() {
     DATA = await loadAthleteData();
 
       console.log(Object.keys(DATA[0]));
+      console.log(
+        [...new Set(DATA.map(a => a.gender))]
+    );
 
         buildPage();
 }
