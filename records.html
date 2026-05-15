@@ -232,7 +232,7 @@ MOBILE
 
 </div>
 
-  <main>      
+  </main>      
 
         
 <script src="./js/themeLoader.js"></script>
@@ -429,6 +429,7 @@ function buildRecordCard(event) {
 TOP ATHLETES
 ======================================== */
 
+
 function getTopAthletes(
     stat,
     gender,
@@ -439,17 +440,29 @@ function getTopAthletes(
 
         .filter(a => {
 
-    const value = Number(a[stat]);
+            const value = Number(a[stat]);
 
-    return (
-        a.gender === gender &&
-        !isNaN(value) &&
-        value > 0
-    );
-})
+            return (
+                a.gender === gender &&
+                !isNaN(value) &&
+                value > 0
+            );
+        })
 
-        .slice(0,5);
+        .sort((a, b) => {
+
+            const aVal = Number(a[stat]);
+            const bVal = Number(b[stat]);
+
+            return ascending
+                ? aVal - bVal
+                : bVal - aVal;
+        })
+
+        .slice(0, 5);
 }
+
+
 
 /* ========================================
 ROW
