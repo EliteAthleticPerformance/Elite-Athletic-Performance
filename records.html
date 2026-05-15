@@ -1,0 +1,488 @@
+```html id="jlwmqo"
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Strength & Speed Records</title>
+
+<link rel="stylesheet" href="styles.css">
+
+<style>
+
+/* ========================================
+PAGE
+======================================== */
+
+body {
+
+    margin: 0;
+    padding: 30px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #071224,
+            #0d1f3a
+        );
+
+    color: white;
+
+    font-family: Arial, sans-serif;
+}
+
+/* ========================================
+HEADER
+======================================== */
+
+.records-header {
+
+    text-align: center;
+
+    margin-bottom: 40px;
+}
+
+.records-logo {
+
+    width: 120px;
+
+    margin-bottom: 14px;
+}
+
+.records-title {
+
+    font-size: 52px;
+    font-weight: 900;
+
+    text-shadow:
+        0 0 18px rgba(255,255,255,0.35);
+}
+
+.records-subtitle {
+
+    font-size: 24px;
+
+    color: #8fb7ff;
+
+    margin-top: 8px;
+}
+
+/* ========================================
+GRID
+======================================== */
+
+.records-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(420px, 1fr));
+
+    gap: 26px;
+}
+
+/* ========================================
+CARD
+======================================== */
+
+.record-card {
+
+    background:
+        rgba(255,255,255,0.05);
+
+    border-radius: 24px;
+
+    overflow: hidden;
+
+    border:
+        1px solid rgba(255,255,255,0.08);
+
+    box-shadow:
+        0 0 25px rgba(0,0,0,0.4);
+}
+
+.record-header {
+
+    background:
+        linear-gradient(
+            90deg,
+            #1d4ed8,
+            #2563eb
+        );
+
+    padding: 16px;
+
+    text-align: center;
+
+    font-size: 28px;
+    font-weight: 900;
+
+    letter-spacing: 1px;
+}
+
+/* ========================================
+TABLES
+======================================== */
+
+.record-sections {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+}
+
+.record-column {
+
+    padding: 18px;
+}
+
+.record-column h3 {
+
+    text-align: center;
+
+    margin-bottom: 16px;
+
+    color: #9bc1ff;
+}
+
+.record-list {
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+.record-row {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    background:
+        rgba(255,255,255,0.04);
+
+    border-radius: 10px;
+
+    padding: 10px 14px;
+}
+
+.record-name {
+
+    font-weight: 700;
+}
+
+.record-value {
+
+    color: #39ff14;
+
+    font-weight: 900;
+}
+
+/* ========================================
+MOBILE
+======================================== */
+
+@media (max-width: 768px) {
+
+    .record-sections {
+
+        grid-template-columns: 1fr;
+    }
+
+    .records-title {
+
+        font-size: 34px;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="records-header">
+
+    <img id="schoolLogo"
+         class="records-logo">
+
+    <div id="schoolName"
+         class="records-title">
+
+        School Records
+
+    </div>
+
+    <div class="records-subtitle">
+
+        Strength & Speed Leaderboards
+
+    </div>
+
+</div>
+
+<!-- GRID -->
+<div id="recordsGrid"
+     class="records-grid">
+
+</div>
+
+<script src="js/dataLoader.js"></script>
+
+<script>
+
+/* ========================================
+EVENTS TO TRACK
+======================================== */
+
+const EVENTS = [
+
+    {
+        key: "bench",
+        label: "Bench"
+    },
+
+    {
+        key: "squat",
+        label: "Squat"
+    },
+
+    {
+        key: "hangClean",
+        label: "Clean"
+    },
+
+    {
+        key: "verticalJump",
+        label: "Vertical"
+    },
+
+    {
+        key: "broadJump",
+        label: "Broad Jump"
+    },
+
+    {
+        key: "medBallToss",
+        label: "Med Ball Toss"
+    },
+
+    {
+        key: "sitUps",
+        label: "Sit Ups"
+    },
+
+    {
+        key: "tenYdDash",
+        label: "10 Yard Dash",
+        ascending: true
+    },
+
+    {
+        key: "fortyYdDash",
+        label: "40 Yard Dash",
+        ascending: true
+    },
+
+    {
+        key: "proAgility",
+        label: "Pro Agility",
+        ascending: true
+    }
+];
+
+let DATA = [];
+
+/* ========================================
+INIT
+======================================== */
+
+async function init() {
+
+    DATA = await loadAthleteData();
+
+    buildPage();
+}
+
+/* ========================================
+BUILD PAGE
+======================================== */
+
+function buildPage() {
+
+    const grid =
+        document.getElementById(
+            "recordsGrid"
+        );
+
+    grid.innerHTML = "";
+
+    // school branding
+    const schoolName =
+        sessionStorage.getItem(
+            "schoolName"
+        ) || "School";
+
+    const schoolLogo =
+        sessionStorage.getItem(
+            "schoolLogo"
+        );
+
+    document.getElementById(
+        "schoolName"
+    ).textContent =
+        `${schoolName} Records`;
+
+    if (schoolLogo) {
+
+        document.getElementById(
+            "schoolLogo"
+        ).src = schoolLogo;
+    }
+
+    EVENTS.forEach(event => {
+
+        const card =
+            buildRecordCard(event);
+
+        grid.appendChild(card);
+    });
+}
+
+/* ========================================
+BUILD CARD
+======================================== */
+
+function buildRecordCard(event) {
+
+    const card =
+        document.createElement("div");
+
+    card.className =
+        "record-card";
+
+    const boys =
+        getTopAthletes(
+            event.key,
+            "Male",
+            event.ascending
+        );
+
+    const girls =
+        getTopAthletes(
+            event.key,
+            "Female",
+            event.ascending
+        );
+
+    card.innerHTML = `
+
+        <div class="record-header">
+            ${event.label}
+        </div>
+
+        <div class="record-sections">
+
+            <div class="record-column">
+
+                <h3>BOYS TOP 5</h3>
+
+                <div class="record-list">
+
+                    ${boys.map(a => buildRow(a, event.key)).join("")}
+
+                </div>
+
+            </div>
+
+            <div class="record-column">
+
+                <h3>GIRLS TOP 5</h3>
+
+                <div class="record-list">
+
+                    ${girls.map(a => buildRow(a, event.key)).join("")}
+
+                </div>
+
+            </div>
+
+        </div>
+    `;
+
+    return card;
+}
+
+/* ========================================
+TOP ATHLETES
+======================================== */
+
+function getTopAthletes(
+    stat,
+    gender,
+    ascending = false
+) {
+
+    return DATA
+
+        .filter(a =>
+            a.gender === gender &&
+            a[stat]
+        )
+
+        .sort((a,b) => {
+
+            const aVal =
+                Number(a[stat]);
+
+            const bVal =
+                Number(b[stat]);
+
+            return ascending
+                ? aVal - bVal
+                : bVal - aVal;
+        })
+
+        .slice(0,5);
+}
+
+/* ========================================
+ROW
+======================================== */
+
+function buildRow(a, stat) {
+
+    return `
+
+        <div class="record-row">
+
+            <div class="record-name">
+                ${a.name}
+            </div>
+
+            <div class="record-value">
+                ${a[stat]}
+            </div>
+
+        </div>
+    `;
+}
+
+
+
+init();
+
+</script>
+
+</body>
+</html>
+```

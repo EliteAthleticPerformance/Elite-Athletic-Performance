@@ -48,6 +48,17 @@
     </div>
   </section>
 
+  <div style="margin-top:12px;">
+
+  <button id="generateCardBtn">
+
+    📱 Generate Player Card
+
+  </button>
+
+</div>
+  
+
   <!-- STATS -->
   <section class="section">
     <div class="athlete-stats">
@@ -106,21 +117,41 @@
     Grade
   </button>
 
+  <div class="comparison-dropdown-wrap">
+
   <button data-type="sport"
-          onclick="setComparison('sport')">
-    Sport
+          id="sportCompareBtn">
+    Sport ▼
   </button>
+
+  <select id="sportComparisonSelect"
+          onchange="setSportComparison(this.value)">
+
+    <option value="">Select Sport</option>
+
+  </select>
+
+</div>
+
+  <div class="comparison-dropdown-wrap">
 
   <button data-type="position"
-          onclick="setComparison('position')">
-    Position
+          id="positionCompareBtn">
+    Position ▼
   </button>
 
-  <button data-type="similar"
-          onclick="setComparison('similar')">
-    Similar Athlete
-  </button>
+  <select id="positionComparisonSelect"
+          onchange="setPositionComparison(this.value)">
 
+    <option value="">
+      Select Position
+    </option>
+
+  </select>
+
+</div>
+
+  
          <button data-type="headtohead"
           onclick="setComparison('headtohead')">
     Athlete vs Athlete

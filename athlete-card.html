@@ -1,0 +1,541 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Player Card</title>
+
+<link rel="stylesheet" href="styles.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<style>
+
+body {
+
+    margin: 0;
+    padding: 20px;
+
+    background: #0a0a0a;
+
+    font-family: Arial, sans-serif;
+
+    display: flex;
+    justify-content: center;
+}
+
+#card {
+
+    width: 390px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #111,
+            #1b1b1b
+        );
+
+    border-radius: 24px;
+
+    overflow: hidden;
+
+    border: 2px solid rgba(255,255,255,0.08);
+
+    box-shadow:
+        0 0 40px rgba(0,0,0,0.5);
+}
+
+/* ========================================
+HEADER
+======================================== */
+
+.card-header {
+
+    padding: 24px;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #1e3a8a,
+            #2563eb
+        );
+
+    color: white;
+}
+
+.school-logo {
+
+    width: 80px;
+    height: 80px;
+
+    object-fit: contain;
+
+    margin-bottom: 12px;
+}
+
+.athlete-name {
+
+    font-size: 34px;
+    font-weight: 900;
+
+    margin-bottom: 6px;
+}
+
+.athlete-meta {
+
+    font-size: 18px;
+
+    opacity: 0.92;
+}
+
+/* ========================================
+SCORE
+======================================== */
+
+.score-section {
+
+    padding: 24px;
+
+    text-align: center;
+}
+
+.overall-score {
+
+    font-size: 72px;
+    font-weight: 900;
+
+    color: #39ff14;
+
+    text-shadow:
+        0 0 20px #39ff14;
+}
+
+.score-label {
+
+    color: #aaa;
+
+    font-size: 14px;
+
+    margin-top: -8px;
+}
+
+/* ========================================
+STATS
+======================================== */
+
+.stats-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 14px;
+
+    padding: 20px;
+}
+
+.stat-box {
+
+    background: rgba(255,255,255,0.04);
+
+    border-radius: 16px;
+
+    padding: 16px;
+
+    text-align: center;
+}
+
+.stat-label {
+
+    color: #aaa;
+
+    font-size: 14px;
+
+    margin-bottom: 6px;
+}
+
+.stat-value {
+
+    color: white;
+
+    font-size: 28px;
+    font-weight: 800;
+}
+
+/* ========================================
+CHART
+======================================== */
+
+.chart-wrap {
+
+    height: 280px;
+
+    padding: 20px;
+}
+
+/* ========================================
+FOOTER
+======================================== */
+
+.card-footer {
+
+    padding: 20px;
+
+    text-align: center;
+
+    color: #888;
+
+    font-size: 13px;
+}
+
+/* ========================================
+BUTTONS
+======================================== */
+
+.controls {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 12px;
+
+    margin-top: 20px;
+}
+
+button {
+
+    padding: 14px 22px;
+
+    border: none;
+
+    border-radius: 14px;
+
+    background: #2563eb;
+
+    color: white;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    font-size: 15px;
+}
+
+button:hover {
+
+    opacity: 0.92;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div>
+
+<div id="card">
+
+    <!-- HEADER -->
+    <div class="card-header">
+
+        <img id="schoolLogo"
+             class="school-logo">
+
+        <div id="athleteName"
+             class="athlete-name">
+            Athlete
+        </div>
+
+        <div id="athleteMeta"
+             class="athlete-meta">
+            Sport • Position
+        </div>
+
+    </div>
+
+    <!-- SCORE -->
+    <div class="score-section">
+
+        <div id="overallScore"
+             class="overall-score">
+            95
+        </div>
+
+        <div class="score-label">
+            Overall Performance Score
+        </div>
+
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+
+        <div class="stat-box">
+            <div class="stat-label">Bench</div>
+            <div id="bench"
+                 class="stat-value">
+                0
+            </div>
+        </div>
+
+        <div class="stat-box">
+            <div class="stat-label">Squat</div>
+            <div id="squat"
+                 class="stat-value">
+                0
+            </div>
+        </div>
+
+        <div class="stat-box">
+            <div class="stat-label">Vertical</div>
+            <div id="vertical"
+                 class="stat-value">
+                0
+            </div>
+        </div>
+
+        <div class="stat-box">
+            <div class="stat-label">40 Yard</div>
+            <div id="forty"
+                 class="stat-value">
+                0
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RADAR -->
+    <div class="chart-wrap">
+        <canvas id="radarChart"></canvas>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="card-footer">
+
+        Elite Athletic Performance
+
+    </div>
+
+</div>
+
+<div class="controls">
+
+    <button onclick="downloadCard()">
+        Download Card
+    </button>
+
+</div>
+
+</div>
+
+<script src="js/dataLoader.js"></script>
+
+<script>
+
+let DATA = [];
+
+async function init() {
+
+    DATA = await loadAthleteData();
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const athleteName =
+        params.get("name");
+
+    if (!athleteName) return;
+
+    const athlete =
+        DATA
+        .filter(a =>
+            a.name === athleteName
+        )
+        .sort((a,b)=>
+            new Date(b.date) -
+            new Date(a.date)
+        )[0];
+
+    if (!athlete) return;
+
+    buildCard(athlete);
+}
+
+function buildCard(a) {
+
+    document.getElementById(
+        "athleteName"
+    ).textContent = a.name;
+
+    document.getElementById(
+        "athleteMeta"
+    ).textContent =
+        `${a.primarySport || ""} • ${a.primaryPosition || ""}`;
+
+    document.getElementById(
+        "overallScore"
+    ).textContent =
+        Math.round(a.score || 0);
+
+    document.getElementById(
+        "bench"
+    ).textContent =
+        a.bench || "-";
+
+    document.getElementById(
+        "squat"
+    ).textContent =
+        a.squat || "-";
+
+    document.getElementById(
+        "vertical"
+    ).textContent =
+        a.vertical || "-";
+
+    document.getElementById(
+        "forty"
+    ).textContent =
+        a.forty || "-";
+
+    // school logo
+    const logo =
+        sessionStorage.getItem(
+            "schoolLogo"
+        );
+
+    if (logo) {
+
+        document.getElementById(
+            "schoolLogo"
+        ).src = logo;
+    }
+
+    renderRadar(a);
+}
+
+function renderRadar(a) {
+
+    new Chart(
+        document.getElementById(
+            "radarChart"
+        ),
+        {
+            type: "radar",
+
+            data: {
+
+                labels: [
+                    "Strength",
+                    "Power",
+                    "Explosive",
+                    "Speed"
+                ],
+
+                datasets: [{
+
+                    data: [
+
+                        a.strengthPoints,
+                        a.powerPoints,
+                        a.explosivePoints,
+                        a.speedPoints
+                    ],
+
+                    borderColor: "#39ff14",
+
+                    backgroundColor:
+                        "rgba(57,255,20,0.2)",
+
+                    borderWidth: 2
+                }]
+            },
+
+            options: {
+
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+
+                scales: {
+
+                    r: {
+
+                        min: 0,
+                        max: 100,
+
+                        pointLabels: {
+
+                            color: "#fff",
+
+                            font: {
+                                size: 14
+                            }
+                        },
+
+                        ticks: {
+
+                            color: "#aaa",
+
+                            backdropColor:
+                                "transparent"
+                        },
+
+                        grid: {
+
+                            color:
+                                "rgba(255,255,255,0.1)"
+                        },
+
+                        angleLines: {
+
+                            color:
+                                "rgba(255,255,255,0.15)"
+                        }
+                    }
+                }
+            }
+        }
+    );
+}
+
+async function downloadCard() {
+
+    const canvas =
+        await html2canvas(
+            document.getElementById("card")
+        );
+
+    const link =
+        document.createElement("a");
+
+    link.download =
+        "player-card.png";
+
+    link.href =
+        canvas.toDataURL();
+
+    link.click();
+}
+
+init();
+
+</script>
+
+</body>
+</html>
+```
