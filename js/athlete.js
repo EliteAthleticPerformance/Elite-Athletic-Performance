@@ -307,7 +307,7 @@ function populateSportDropdown() {
     });
 }
 
-```javascript
+
 function populatePositionDropdown() {
 
   const select =
@@ -367,7 +367,6 @@ function populatePositionDropdown() {
       select.appendChild(option);
     });
 }
-```
 
 
 
