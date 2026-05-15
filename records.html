@@ -21,7 +21,7 @@ PAGE
 body {
 
     margin: 0;
-    padding: 30px;
+    padding: 140px 30px 30px 30px;
 
     background:
         linear-gradient(
@@ -35,41 +35,6 @@ body {
     font-family: Arial, sans-serif;
 }
 
-/* ========================================
-HEADER
-======================================== */
-
-.records-header {
-
-    text-align: center;
-
-    margin-bottom: 40px;
-}
-
-.records-logo {
-
-    width: 120px;
-
-    margin-bottom: 14px;
-}
-
-.records-title {
-
-    font-size: 52px;
-    font-weight: 900;
-
-    text-shadow:
-        0 0 18px rgba(255,255,255,0.35);
-}
-
-.records-subtitle {
-
-    font-size: 24px;
-
-    color: #8fb7ff;
-
-    margin-top: 8px;
-}
 
 /* ========================================
 GRID
@@ -78,6 +43,8 @@ GRID
 .records-grid {
 
     display: grid;
+      max-width: 1600px;
+margin: 0 auto;
 
     grid-template-columns:
         repeat(auto-fit, minmax(420px, 1fr));
@@ -103,6 +70,19 @@ CARD
 
     box-shadow:
         0 0 25px rgba(0,0,0,0.4);
+
+      transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+      .record-card:hover {
+
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 0 20px rgba(0,140,255,0.45),
+        0 0 40px rgba(0,140,255,0.18);
 }
 
 .record-header {
@@ -211,6 +191,27 @@ MOBILE
       <!-- ===== HEADER ===== -->
 <div id="header-placeholder"></div>   
 
+  <!-- HERO -->
+<section class="section"
+         style="
+            text-align:center;
+            margin-bottom:40px;
+         ">
+
+    <h1 id="recordsTitle">
+        School Records
+    </h1>
+
+    <p style="
+        opacity:0.8;
+        font-size:20px;
+        margin-top:10px;
+    ">
+        Strength & Speed Leaderboards
+    </p>
+
+</section>    
+
 <!-- GRID -->
 <div id="recordsGrid"
      class="records-grid">
@@ -314,22 +315,10 @@ function buildPage() {
             "schoolName"
         ) || "School";
 
-    const schoolLogo =
-        sessionStorage.getItem(
-            "schoolLogo"
-        );
-
     document.getElementById(
-        "schoolName"
-    ).textContent =
-        `${schoolName} Records`;
-
-    if (schoolLogo) {
-
-        document.getElementById(
-            "schoolLogo"
-        ).src = schoolLogo;
-    }
+    "recordsTitle"
+).textContent =
+    `${schoolName} Records`;
 
     EVENTS.forEach(event => {
 
