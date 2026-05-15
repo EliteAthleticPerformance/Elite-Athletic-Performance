@@ -982,6 +982,20 @@ function formatNumber(val) {
 
 
 document
+  .getElementById("generateCardBtn")
+  ?.addEventListener("click", () => {
+
+    if (!CURRENT_ATHLETE) return;
+
+    const url =
+      `athlete-card.html?name=${encodeURIComponent(CURRENT_ATHLETE.name)}`;
+
+    window.open(url, "_blank");
+});
+
+
+
+document
   .getElementById("runComparison")
   ?.addEventListener("click", () => {
 
