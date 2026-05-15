@@ -718,17 +718,8 @@ SPORT COMPARISON DROPDOWN
 }
 
 .card-grid {
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(auto-fit, minmax(280px, 1fr));
-
-    gap: 28px;
-
-    max-width: 1400px;
-
-    margin: 0 auto;
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
 }
 
 @media (max-width: 900px) {
