@@ -369,7 +369,13 @@ function buildRecordCard(event) {
 
                 <div class="record-list">
 
-                    ${boys.map(a => buildRow(a, event.key)).join("")}
+                    ${
+    boys.length
+        ? boys.map(a => buildRow(a, event.key)).join("")
+        : `<div class="empty-record">
+              No Records Yet
+           </div>`
+}
 
                 </div>
 
@@ -381,7 +387,13 @@ function buildRecordCard(event) {
 
                 <div class="record-list">
 
-                    ${girls.map(a => buildRow(a, event.key)).join("")}
+                    ${
+    girls.length
+        ? girls.map(a => buildRow(a, event.key)).join("")
+        : `<div class="empty-record">
+              No Records Yet
+           </div>`
+}
 
                 </div>
 
