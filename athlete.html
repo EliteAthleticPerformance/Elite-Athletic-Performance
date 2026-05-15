@@ -106,10 +106,21 @@
     Grade
   </button>
 
+  <div class="comparison-dropdown-wrap">
+
   <button data-type="sport"
-          onclick="setComparison('sport')">
-    Sport
+          id="sportCompareBtn">
+    Sport ▼
   </button>
+
+  <select id="sportComparisonSelect"
+          onchange="setSportComparison(this.value)">
+
+    <option value="">Select Sport</option>
+
+  </select>
+
+</div>
 
   <button data-type="position"
           onclick="setComparison('position')">
