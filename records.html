@@ -311,7 +311,20 @@ async function init() {
 
     DATA = await loadAthleteData();
 
-       console.log(DATA[0]);
+    console.log(
+        "medBall",
+        DATA.map(a => a.medBall)
+    );
+
+    console.log(
+        "dash10",
+        DATA.map(a => a.dash10)
+    );
+
+    console.log(
+        "dash40",
+        DATA.map(a => a.dash40)
+    );
 
     buildPage();
 }
