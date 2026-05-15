@@ -437,23 +437,16 @@ function getTopAthletes(
 
     return DATA
 
-        .filter(a =>
-            a.gender === gender &&
-            a[stat]
-        )
+        .filter(a => {
 
-        .sort((a,b) => {
+    const value = Number(a[stat]);
 
-            const aVal =
-                Number(a[stat]);
-
-            const bVal =
-                Number(b[stat]);
-
-            return ascending
-                ? aVal - bVal
-                : bVal - aVal;
-        })
+    return (
+        a.gender === gender &&
+        !isNaN(value) &&
+        value > 0
+    );
+})
 
         .slice(0,5);
 }
