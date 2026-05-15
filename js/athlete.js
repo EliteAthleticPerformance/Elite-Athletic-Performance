@@ -307,6 +307,7 @@ function populateSportDropdown() {
     });
 }
 
+```javascript
 function populatePositionDropdown() {
 
   const select =
@@ -319,6 +320,17 @@ function populatePositionDropdown() {
   const positions = new Set();
 
   DATA.forEach(a => {
+
+    // FILTER BY SELECTED SPORT
+    if (
+      SELECTED_SPORT_COMPARISON &&
+      !athleteHasSport(
+        a,
+        SELECTED_SPORT_COMPARISON
+      )
+    ) {
+      return;
+    }
 
     [
       a.primaryPosition,
@@ -355,6 +367,8 @@ function populatePositionDropdown() {
       select.appendChild(option);
     });
 }
+```
+
 
 
 /* ========================================
@@ -418,6 +432,11 @@ function setSportComparison(sport) {
 
   SELECTED_SPORT_COMPARISON = sport;
 
+SELECTED_POSITION_COMPARISON = null;
+
+populatePositionDropdown();
+
+
   CURRENT_COMPARISON = "sport";
 
   document.querySelectorAll(
@@ -427,11 +446,7 @@ function setSportComparison(sport) {
     btn.classList.remove("active")
   );
 
-  document.querySelector(
-    '#sportCompareBtn'
-  )?.classList.add("active");
-
-  const comparison =
+    const comparison =
     getComparisonData(
       "sport",
       CURRENT_ATHLETE
@@ -459,11 +474,7 @@ function setPositionComparison(position) {
     btn.classList.remove("active")
   );
 
-  document.querySelector(
-    '#positionCompareBtn'
-  )?.classList.add("active");
-
-  const comparison =
+   const comparison =
     getComparisonData(
       "position",
       CURRENT_ATHLETE
