@@ -587,6 +587,49 @@ h1 {
   border-radius: 10px;
 }
 
+
+/* ========================================
+SPORT COMPARISON DROPDOWN
+======================================== */
+
+.comparison-dropdown-wrap {
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+#sportComparisonSelect {
+
+    background:#111;
+    color:white;
+
+    border:1px solid rgba(255,255,255,0.15);
+
+    border-radius:10px;
+
+    padding:8px 12px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    outline:none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+#sportComparisonSelect:hover,
+#sportComparisonSelect:focus {
+
+    border-color:#39ff14;
+
+    box-shadow:
+        0 0 10px rgba(57,255,20,0.45);
+}
+
+
 /* ===== MINI CARDS (STATS) ===== */
 .card-mini {
     background: transparent;
