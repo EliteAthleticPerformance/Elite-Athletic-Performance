@@ -452,6 +452,13 @@ populatePositionDropdown();
       CURRENT_ATHLETE
     );
 
+
+document.getElementById(
+  "comparisonLabel"
+).textContent =
+  `${SELECTED_SPORT_COMPARISON || ""} ${SELECTED_POSITION_COMPARISON || ""}`.trim();
+
+  
   renderRadar(
     CURRENT_ATHLETE,
     comparison
@@ -479,6 +486,13 @@ function setPositionComparison(position) {
       "position",
       CURRENT_ATHLETE
     );
+
+
+document.getElementById(
+  "comparisonLabel"
+).textContent =
+  `${SELECTED_SPORT_COMPARISON || ""} ${SELECTED_POSITION_COMPARISON || ""}`.trim();
+
 
   renderRadar(
     CURRENT_ATHLETE,
