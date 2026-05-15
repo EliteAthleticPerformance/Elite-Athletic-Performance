@@ -7,7 +7,7 @@ let radarChart = null;
 let progressChart = null;
 let CURRENT_ATHLETE = null;
 let CURRENT_COMPARISON = "none";
-
+let SELECTED_SPORT_COMPARISON = null;
 let comparisonAthleteA = null;
 let comparisonAthleteB = null;
 
@@ -253,11 +253,58 @@ function renderAthlete(name) {
 
   renderRadar(latest, null);
   renderInsights(latest); // ✅ ADD THIS LINE
+  populateSportDropdown();
   initProgressToggles(history);
   renderProgress(history);
 
   renderTable(history);
 }
+
+
+function populateSportDropdown() {
+
+  const select =
+    document.getElementById(
+      "sportComparisonSelect"
+    );
+
+  if (!select) return;
+
+  const sports = new Set();
+
+  DATA.forEach(a => {
+
+    [
+      a.primarySport,
+      a.secondarySport,
+      a.thirdSport
+    ]
+    .filter(Boolean)
+    .forEach(sport => {
+
+      sports.add(
+        String(sport).trim()
+      );
+    });
+  });
+
+  select.innerHTML =
+    '<option value="">Select Sport</option>';
+
+  [...sports]
+    .sort()
+    .forEach(sport => {
+
+      const option =
+        document.createElement("option");
+
+      option.value = sport;
+      option.textContent = sport;
+
+      select.appendChild(option);
+    });
+}
+
 
 /* ========================================
    RANKING
@@ -312,6 +359,39 @@ function setComparison(type) {
   const comparison = getComparisonData(type, CURRENT_ATHLETE);
   renderRadar(CURRENT_ATHLETE, comparison);
 }
+
+
+function setSportComparison(sport) {
+
+  if (!sport) return;
+
+  SELECTED_SPORT_COMPARISON = sport;
+
+  CURRENT_COMPARISON = "sport";
+
+  document.querySelectorAll(
+    "#comparisonButtons button"
+  )
+  .forEach(btn =>
+    btn.classList.remove("active")
+  );
+
+  document.querySelector(
+    '#sportCompareBtn'
+  )?.classList.add("active");
+
+  const comparison =
+    getComparisonData(
+      "sport",
+      CURRENT_ATHLETE
+    );
+
+  renderRadar(
+    CURRENT_ATHLETE,
+    comparison
+  );
+}
+
 
 function populateComparisonDropdowns() {
 
@@ -413,16 +493,17 @@ function getComparisonData(type, athlete) {
     );
   }
 
-  // 🔥 SPORT
+ // 🔥 SPORT
 else if (type === "sport") {
 
-  const athleteSport =
+  const selectedSport =
+    SELECTED_SPORT_COMPARISON ||
     athlete.primarySport ||
     athlete.sport ||
     athlete.primary_sport;
 
   group = DATA.filter(a =>
-    athleteHasSport(a, athleteSport)
+    athleteHasSport(a, selectedSport)
   );
 }
 
