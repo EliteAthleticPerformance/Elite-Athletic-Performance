@@ -381,6 +381,14 @@ function applyHeaderBranding(config) {
   }
 }
 
+
+function navigateTo(page) {
+  const school = sessionStorage.getItem("school");
+
+  window.location.href = `${page}?school=${school}`;
+}
+
+
 /* ========================================
    🔐 GLOBAL LOGOUT
 ======================================== */
