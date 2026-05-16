@@ -237,6 +237,45 @@ MOBILE
         
 <script src="./js/themeLoader.js"></script>
 <script src="./js/header.js"></script>
+
+<script>
+/* ========================================
+RESTORE SCHOOL CONTEXT
+======================================== */
+
+(function () {
+
+    const params =
+        new URLSearchParams(window.location.search);
+
+    let school =
+        params.get("school") ||
+        sessionStorage.getItem("school");
+
+    // fallback default
+    if (!school) {
+        school = "pleasanthill";
+    }
+
+    school = school
+        .toLowerCase()
+        .replace(/\s+/g, "");
+
+    sessionStorage.setItem(
+        "school",
+        school
+    );
+
+    console.log(
+        "🏫 RECORDS PAGE SCHOOL:",
+        school
+    );
+
+})();
+</script>
+
+
+      
 <script src="js/dataLoader.js"></script>
 
 <script>
