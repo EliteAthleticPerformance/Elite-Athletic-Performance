@@ -13,15 +13,43 @@ function validateSchoolAccess(schoolSlug) {
   const config =
     window.SCHOOL_CONFIG?.[schoolSlug];
 
+  const base = getBasePath();
+
+  console.log(
+    "🔍 VALIDATING SCHOOL:",
+    schoolSlug
+  );
+
+  console.log(
+    "📚 AVAILABLE CONFIGS:",
+    Object.keys(window.SCHOOL_CONFIG || {})
+  );
+
   // no config found
   if (!config) {
-    window.location.href = "/invalid-school.html";
+
+    console.error(
+      "❌ SCHOOL NOT FOUND:",
+      schoolSlug
+    );
+
+    window.location.href =
+      base + "invalid-school.html";
+
     return false;
   }
 
   // manually disabled
   if (!config.active) {
-    window.location.href = "/expired.html";
+
+    console.warn(
+      "⚠️ SCHOOL DISABLED:",
+      schoolSlug
+    );
+
+    window.location.href =
+      base + "expired.html";
+
     return false;
   }
 
@@ -31,16 +59,21 @@ function validateSchoolAccess(schoolSlug) {
     config.trialEnd
   ) {
 
-    const today = new Date();
+    const today =
+      new Date();
 
     const endDate =
       new Date(config.trialEnd);
 
-    // expired
     if (today > endDate) {
 
+      console.warn(
+        "⏳ TRIAL EXPIRED:",
+        schoolSlug
+      );
+
       window.location.href =
-        "/expired.html";
+        base + "expired.html";
 
       return false;
     }
@@ -48,6 +81,7 @@ function validateSchoolAccess(schoolSlug) {
 
   return true;
 }
+
 
 
 // ========================================
