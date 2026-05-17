@@ -12,6 +12,24 @@ window.SCHOOL_CONFIG = {
 
     subscriptionStatus: "paid"
   },
+
+   harrisonvillemiddle: {
+    school: "Harrisonville Middle",
+    active: true,
+
+    trial: false,
+
+    subscriptionStatus: "paid"
+  },
+
+   cassmidway: {
+    school: "Cass Midway",
+    active: true,
+
+    trial: false,
+
+    subscriptionStatus: "paid"
+  },
   
   jefferson: {
     school: "Jefferson",
@@ -35,6 +53,33 @@ window.SCHOOL_CONFIG = {
     trial: false,
 
     subscriptionStatus: "paid"
-  }
+  };
 
-};
+   raypec: {
+    school: "Ray-Pec",
+    active: true,
+
+    trial: false,
+
+    subscriptionStatus: "paid"
+  },
+
+ springhill: {
+    school: "Spring Hill",
+    active: true,
+
+    trial: false,
+
+    subscriptionStatus: "paid"
+  },
+
+ warrensburg: {
+    school: "Warrensburg",
+    active: true,
+
+    trial: false,
+
+    subscriptionStatus: "paid"
+  },
+
+}
