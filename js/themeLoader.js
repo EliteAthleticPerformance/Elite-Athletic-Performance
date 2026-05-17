@@ -231,6 +231,8 @@ window.APP_READY = new Promise(async (resolve, reject) => {
   try {
 
     const school = getSchool();
+     console.log("URL SCHOOL:", school);
+console.log("AVAILABLE SCHOOLS:", Object.keys(CONFIG_MAP));
 
     const selected = CONFIG_MAP[school] || CONFIG_MAP[Object.keys(CONFIG_MAP)[0]];
 
