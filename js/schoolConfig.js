@@ -53,7 +53,7 @@ window.SCHOOL_CONFIG = {
     trial: false,
 
     subscriptionStatus: "paid"
-  };
+  },
 
    raypec: {
     school: "Ray-Pec",
@@ -82,4 +82,4 @@ window.SCHOOL_CONFIG = {
     subscriptionStatus: "paid"
   },
 
-}
+};
