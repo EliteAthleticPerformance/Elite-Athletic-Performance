@@ -216,26 +216,47 @@
   </section>
 
   <!-- PROGRESS -->
-  <section class="section">
-    <div class="card">
-      
-      <h2 style="text-align:center; margin-bottom:10px;">
-        Progress Over Time
-      </h2>
+<section class="section progress-section">
 
-      <div id="progressToggles" class="progress-toggles">
-        <button data-key="strengthPoints" class="active">Strength</button>
-        <button data-key="speedPoints" class="active">Speed</button>
-        <button data-key="explosivePoints" class="active">Explosive</button>
-        <button data-key="powerPoints" class="active">Power</button>
-        <button data-key="score" class="active">Overall</button>
-      </div>
+  <div class="card">
+    
+    <h2 style="text-align:center; margin-bottom:10px;">
+      Progress Over Time
+    </h2>
 
-      <div class="chart-container progress-section"> 
-        <canvas id="progressChart"></canvas> </div>
+    <div id="progressToggles" class="progress-toggles">
+
+      <button data-key="strengthPoints" class="active">
+        Strength
+      </button>
+
+      <button data-key="speedPoints" class="active">
+        Speed
+      </button>
+
+      <button data-key="explosivePoints" class="active">
+        Explosive
+      </button>
+
+      <button data-key="powerPoints" class="active">
+        Power
+      </button>
+
+      <button data-key="score" class="active">
+        Overall
+      </button>
 
     </div>
-  </section>
+
+    <div class="chart-container">
+
+      <canvas id="progressChart"></canvas>
+
+    </div>
+
+  </div>
+
+</section>
 
   <!-- HISTORY -->
   <section class="section">
