@@ -1353,15 +1353,13 @@ text-shadow:
 
 
 /* ========================================
-CHART CONTAINERS
+CHART CONTAINER
 ======================================== */
 
 .chart-container {
-  position: relative;
-
   width: 100%;
 
-  height: 700px;
+  padding: 40px 20px;
 
   display: flex;
 
@@ -1370,9 +1368,8 @@ CHART CONTAINERS
   align-items: center;
 
   overflow: hidden;
-
-  padding: 20px;
 }
+
 
 /* ========================================
 RADAR CHART
@@ -1381,15 +1378,13 @@ RADAR CHART
 #radarChart {
   width: 100% !important;
 
-  max-width: 1000px;
+  max-width: 1050px;
 
-  height: 100% !important;
-
-  max-height: 650px;
-
-  margin: 0 auto;
+  height: 650px !important;
 
   display: block;
+
+  margin: 0 auto;
 }
 
 /* ========================================
