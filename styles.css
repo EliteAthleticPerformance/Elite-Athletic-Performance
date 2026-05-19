@@ -1882,6 +1882,10 @@ LEADERBOARD LAYOUT (CLEAN + BALANCED)
   overflow: hidden;
 }
 
+.top3-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
 
 .leaderboard-card h2 {
   position: sticky;
