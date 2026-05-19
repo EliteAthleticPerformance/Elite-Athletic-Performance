@@ -916,8 +916,11 @@ SPORT COMPARISON DROPDOWN
 
 .filter-container {
   width: 100%;
-  max-width: 1200px;
-  margin: 20px auto;
+
+  max-width: 1400px;
+
+  margin: 0 auto 25px auto;
+
   text-align: center;
 }
 
@@ -938,6 +941,14 @@ SPORT COMPARISON DROPDOWN
   background: #111;
   color: white;
   font-size: 1rem;
+}
+
+.performance-note {
+  font-size: 0.95rem;
+  opacity: 0.75;
+  text-align: center;
+  line-height: 1.4;
+  margin-bottom: 18px;
 }
 
 /* ========================================
@@ -1043,6 +1054,13 @@ SPORT COMPARISON DROPDOWN
 .stat-box p {
   font-size: 18px;
   font-weight: 800;
+}
+
+.athlete-grid {
+  grid-template-columns:
+    repeat(auto-fit, minmax(240px, 1fr));
+
+  max-width: 1800px;
 }
 
 /* ===== 7. TABLE ===== */
