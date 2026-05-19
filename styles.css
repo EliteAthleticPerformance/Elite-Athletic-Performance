@@ -2159,37 +2159,6 @@ PERFORMANCE TIERS
   color: #ef4444;
 }
 
-/* ========================================
-MOBILE (RESPONSIVE)
-======================================== */
-
-@media (max-width: 768px) {
-
-    .header-right {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    .menu-toggle {
-        position: absolute;
-        right: 15px;
-        top: 15px;
-    }
-
-    .grid-2 {
-        grid-template-columns: 1fr;
-    }
-
-    main {
-        padding: 10px;
-    }
-}
-
-@media (max-width: 900px) {
-  .leaderboard-grid {
-    grid-template-columns: 1fr;
-  }
-}
 
 /* ========================================
 MOBILE (RESPONSIVE)
