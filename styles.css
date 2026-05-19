@@ -42,7 +42,7 @@ letter-spacing: 1px;
 /* ===== 3. LAYOUT ===== */
 main {
   width: 100%;
-  max-width: 1700px;
+  max-width: 1900px;
   margin: 0 auto;
   padding: 30px 40px;
 }
@@ -594,15 +594,21 @@ box-shadow: 0 10px 25px var(--primaryLight)
         rgba(40,40,40,0.9)
     );
 
-    min-height: 2400px;
-    height: 100%;
-    border-radius: 16px;
+    min-height: 240px;
+    max-height: 260px;
 
-    padding: 20px 32px 32px 32px;
+    border-radius: 18px;
+
+    padding: 26px;
+
     cursor: pointer;
+
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+
+    text-align: center;
 
     text-decoration: none;
     color: white;
@@ -636,12 +642,12 @@ h1 {
 }
 
 .card h2 {
-    font-size: 2.6rem;
+    font-size: 2rem;
     font-weight: 800;
 }
 
 .card p {
-    font-size: 1.5rem;
+    font-size: 1.1rem;
     opacity: 0.8;
 }
 
@@ -663,7 +669,7 @@ h1 {
 
 /* ICON */
 .card-icon {
-    font-size: 48px;
+    font-size: 42px;
     margin-bottom: 14px;
     filter: drop-shadow(0 0 10px var(--primaryLight));
 }
@@ -837,19 +843,17 @@ SPORT COMPARISON DROPDOWN
 }
 
 .card-grid {
-    display:grid;
+    display: grid;
 
     grid-template-columns:
-      repeat(auto-fit, minmax(280px, 320px));
-
-    justify-content:center;
+      repeat(auto-fit, minmax(260px, 1fr));
 
     gap: 26px;
 
     width: 100%;
-    max-width: 1700px;
+    max-width: 1600px;
 
-    margin: 60px auto 0;
+    margin: 40px auto 0;
 }
 
 @media (max-width: 900px) {
