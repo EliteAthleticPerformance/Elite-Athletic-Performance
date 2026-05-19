@@ -1368,11 +1368,23 @@ PROGRESS SECTION
 ======================================== */
 
 .progress-section {
-  margin-top: 25px;
+  position: relative;
+
+  z-index: 2;
+
+  margin-top: 60px;
+}
+
+.progress-section h2 {
+  margin-bottom: 25px;
+}
+
+.progress-section .progress-toggles {
+  margin-bottom: 25px;
 }
 
 .progress-section .chart-container {
-  min-height: 420px;
+  padding-top: 40px;
 }
 
 /* ========================================
@@ -1682,7 +1694,8 @@ HISTORY / COMPARISON
 }
 
 .insights-section {
-  margin-top: 30px;
+  margin-top: 15px;
+  margin-bottom: 20px;
 }
 
 /* INDIVIDUAL INSIGHT CARD */
