@@ -1356,9 +1356,18 @@ text-shadow:
 CHART CONTAINERS
 ======================================== */
 
+/* ========================================
+CHART CONTAINERS
+======================================== */
+
 .chart-container {
   margin-top: 30px;
-  padding-top: 10px;
+
+  min-height: 760px;
+
+  padding: 30px 20px 20px;
+
+  overflow: visible;
 }
 
 /* ========================================
@@ -1372,7 +1381,7 @@ RADAR CHART
 
   height: 680px !important;
 
-  margin: 0 auto;
+  margin: -20px auto 0 auto;
 }
 
 /* ========================================
