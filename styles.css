@@ -121,126 +121,6 @@ margin: 24px auto;
 }
 
 
-
-/* ========================================
-ATHLETE PROFILE HERO
-======================================== */
-
-.athlete-hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  text-align: center;
-
-  gap: 14px;
-
-  margin-bottom: 40px;
-
-  padding-top: 10px;
-}
-
-.athlete-hero h1 {
-  font-size: clamp(2.8rem, 5vw, 4.2rem);
-
-  line-height: 1;
-
-  margin: 0;
-}
-
-.profile-subtitle {
-  font-size: 1.8rem;
-
-  font-weight: 700;
-
-  opacity: 0.95;
-
-  margin: 0;
-}
-
-.rank-text,
-.percentile-text {
-  font-size: 1rem;
-
-  font-weight: 700;
-
-  opacity: 0.85;
-
-  margin: 0;
-}
-
-
-.hero-section {
-    padding: 35px 20px 20px;
-}
-
-.hero-content {
-    display: grid;
-    grid-template-columns: minmax(0, 1.2fr) 320px;
-    gap: 60px;
-    align-items: center;
-
-    width: 100%;
-    max-width: 1500px;
-
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-.hero-left h1 {
-    font-size: clamp(3rem, 4vw, 4.8rem);
-    line-height: 0.95;
-    max-width: 700px;
-    margin-bottom: 18px;
-}
-
-.hero-subtitle {
-    font-size: 1.1rem;
-    opacity: 0.85;
-    max-width: 600px;
-    margin-bottom: 30px;
-}
-
-.hero-buttons {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-
-.secondary-btn {
-    background: transparent;
-    border: 2px solid gold;
-    color: gold;
-    padding: 12px 22px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.hero-right {
-    display: grid;
-    gap: 20px;
-}
-
-.hero-stat-card {
-    background: #111827;
-    border-radius: 16px;
-    padding: 25px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-}
-
-.hero-label {
-    display: block;
-    opacity: 0.7;
-    margin-bottom: 10px;
-}
-
-.hero-value {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #3b82f6;
-}
-
 /* ========================================
 MOBILE
 ======================================== */
@@ -1353,21 +1233,93 @@ text-shadow:
 
 
 /* ========================================
-CHART CONTAINER
+ATHLETE HERO
 ======================================== */
 
-.chart-container {
+.athlete-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+
+  gap: 10px;
+
   width: 100%;
 
-  padding: 40px 20px;
+  margin: 20px auto 30px auto;
+}
 
+.athlete-hero h1 {
+  font-size: clamp(2.8rem, 5vw, 4.5rem);
+
+  line-height: 1;
+
+  margin: 0;
+}
+
+.profile-subtitle {
+  font-size: 1.8rem;
+
+  font-weight: 700;
+
+  opacity: 0.92;
+
+  margin: 0;
+}
+
+.rank-text,
+.percentile-text {
+  font-size: 1rem;
+
+  font-weight: 700;
+
+  opacity: 0.82;
+
+  margin: 0;
+}
+
+
+/* ========================================
+PROFILE TOOLBAR
+======================================== */
+
+.profile-toolbar {
   display: flex;
 
   justify-content: center;
 
   align-items: center;
 
-  overflow: hidden;
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  width: 100%;
+
+  max-width: 1200px;
+
+  margin: 25px auto;
+}
+
+
+/* ========================================
+ATHLETE STATS
+======================================== */
+
+.athlete-stats {
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(110px, 1fr));
+
+  gap: 16px;
+
+  width: 100%;
+
+  max-width: 1300px;
+
+  margin: 20px auto 40px auto;
 }
 
 
@@ -1378,9 +1330,11 @@ CHART CONTAINER
 .chart-container {
   width: 100%;
 
-  padding: 40px 20px;
+  max-width: 1400px;
 
-  margin: 0 auto;
+  margin: 0 auto 40px auto;
+
+  padding: 40px 20px;
 
   text-align: center;
 }
@@ -1393,13 +1347,28 @@ RADAR CHART
 #radarChart {
   width: 100% !important;
 
-  max-width: 1150px;
+  max-width: 1100px;
 
-  height: 700px !important;
+  height: 650px !important;
 
   margin: 0 auto;
 
   display: block;
+}
+
+
+/* ========================================
+PROGRESS CHART
+======================================== */
+
+#progressChart {
+  width: 100% !important;
+
+  max-width: 1200px;
+
+  height: 350px !important;
+
+  margin: 0 auto;
 }
 
 /* ========================================
