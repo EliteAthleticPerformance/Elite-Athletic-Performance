@@ -121,6 +121,102 @@ text-align: center;
   transform: scale(1.05);
 }
 
+
+
+/* ========================================
+HERO SECTION
+======================================== */
+
+.hero-section {
+    padding: 80px 20px;
+}
+
+.hero-content {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 40px;
+    align-items: center;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.hero-left h1 {
+    font-size: 3rem;
+    line-height: 1.1;
+    margin-bottom: 20px;
+}
+
+.hero-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.85;
+    max-width: 600px;
+    margin-bottom: 30px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.secondary-btn {
+    background: transparent;
+    border: 2px solid gold;
+    color: gold;
+    padding: 12px 22px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.hero-right {
+    display: grid;
+    gap: 20px;
+}
+
+.hero-stat-card {
+    background: #111827;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+}
+
+.hero-label {
+    display: block;
+    opacity: 0.7;
+    margin-bottom: 10px;
+}
+
+.hero-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #3b82f6;
+}
+
+/* ========================================
+MOBILE
+======================================== */
+
+@media (max-width: 768px) {
+
+    .hero-content {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-left h1 {
+        font-size: 2.2rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+    }
+
+}
+
+
+
+
+
 /* Menu */
 .menu-toggle {
   display: block;
