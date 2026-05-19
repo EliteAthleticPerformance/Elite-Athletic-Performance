@@ -906,6 +906,14 @@ SPORT COMPARISON DROPDOWN
   margin: 0 auto;
 }
 
+.athletes-page main {
+  padding-top: 20px;
+}
+
+.section {
+  margin: 18px auto;
+}
+
 .filter-container {
   width: 100%;
   max-width: 1200px;
@@ -940,10 +948,14 @@ SPORT COMPARISON DROPDOWN
   width: 100%;
   max-width: 260px;
 
+  min-height: 150px;
+
   background: linear-gradient(145deg, #1a1a1a, #111);
+
   border-radius: 16px;
 
   padding: 20px;
+
   text-align: center;
 
   box-shadow:
@@ -951,16 +963,27 @@ SPORT COMPARISON DROPDOWN
     0 0 12px var(--primaryLight);
 
   cursor: pointer;
+
   transition: all 0.25s ease;
 
   display: block;
 }
 
+.athlete-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.athlete-score {
+  font-size: 2rem;
+}
+
 .athlete-card:hover {
-  transform: translateY(-6px) scale(1.03);
+  transform: translateY(-6px) scale(1.02);
+
   box-shadow:
-    0 15px 35px rgba(0,0,0,0.8),
-    0 0 20px var(--primaryLight);
+    0 18px 40px rgba(0,0,0,0.8),
+    0 0 25px var(--primaryLight);
 }
 
 .athlete-card-inner {
