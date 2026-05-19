@@ -33,32 +33,50 @@
 
 <main>
 
-  <!-- TITLE -->
-  <section class="section center">
-    <h1 class="page-title">👥 Athletes</h1>
-    <h2 class="athletes-subtitle">(Based on Overall Performance Scores Only - Does Not Take Into Account Attitude, Sport Specific Aptitude, and/or Sport Specific Skill(s) Mastery)</h2>
-  </section>
+  
+<!-- ATHLETES HEADER -->
+<section class="section">
 
-  <!-- A-Z FILTER -->
-  <section class="section">
+  <div class="athletes-header">
+
+    <h1 class="page-title">👥 Athletes</h1>
+
+    <div class="performance-note">
+      (Based on Overall Performance Scores Only - Does Not Take Into Account Attitude, Sport Specific Aptitude, and/or Sport Specific Skill(s) Mastery)
+    </div>
+
     <div id="alphabetBar" class="alphabet-bar"></div>
-  </section>
+
+  </div>
+
+</section>
+
+
 
   <!-- SEARCH -->
-  <section class="section">
+  
+<section class="section">
+
+  <div class="filter-container">
+
     <input 
       type="text" 
       id="search" 
-      class="search"
+      class="search-input"
       placeholder="Search athletes..."
       oninput="filterAthletes()"
       autocomplete="off"
     >
-  </section>
+
+  </div>
+
+</section>
+
+
 
   <!-- GRID -->
   <section class="section">
-    <div id="athleteGrid" class="grid grid-auto"></div>
+    <div id="athleteGrid" class="athlete-grid"></div>
   </section>
 
 </main>
