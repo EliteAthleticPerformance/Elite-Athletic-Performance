@@ -1364,6 +1364,176 @@ RADAR CHART
 }
 
 /* ========================================
+INSIGHTS SECTION
+======================================== */
+
+.insights-section {
+
+  width: 100%;
+
+  max-width: 1400px;
+
+  margin: 25px auto;
+
+  padding: 25px 30px 35px;
+
+  border-radius: 18px;
+}
+
+/* REMOVE chart sizing behavior */
+.insights-section .chart-container {
+
+  min-height: auto !important;
+
+  padding: 0 !important;
+
+  margin: 0 auto !important;
+}
+
+/* ========================================
+🧠 AI INSIGHTS (CLEAN + FINAL)
+======================================== */
+
+/* GRID LAYOUT (4 CARDS) */
+.insights-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(220px, 1fr));
+
+  gap: 20px;
+
+  align-items: start;
+
+  width: 100%;
+
+  max-width: 1200px;
+
+  margin: 0 auto;
+}
+
+
+/* INDIVIDUAL INSIGHT CARD */
+.insight-box {
+  background: rgba(255,255,255,0.04);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: left;
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  transition: all 0.25s ease;
+}
+
+/* HOVER EFFECT (SUBTLE GLOW) */
+.insight-box:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 0 12px rgba(139, 99, 181, 0.4);
+}
+
+.stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  margin-top: 10px;
+  padding: 14px 28px;
+  border-radius: 12px;
+
+  background: rgba(255,255,255,0.03);
+
+  box-shadow:
+    0 0 10px rgba(139,99,181,0.2);
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 42px;
+  font-weight: 800;
+}
+
+.stat-label {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.stat-icon {
+  font-size: 22px;
+  margin-bottom: 6px;
+}
+
+.primary-btn {
+  font-size: 16px;
+  padding: 12px 26px;
+
+  border-radius: 10px;
+
+  box-shadow:
+    0 0 12px var(--primaryLight),
+    0 0 25px rgba(139,99,181,0.5);
+
+  transition: all 0.2s ease;
+}
+
+.primary-btn:hover {
+  transform: scale(1.05);
+}
+
+/* TITLES */
+.insight-box h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: var(--primaryLight);
+
+  text-shadow:
+    0 0 6px var(--primary),
+    0 0 12px var(--primaryLight);
+}
+
+/* LIST STYLE */
+.insight-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.insight-box li {
+  font-size: 14px;
+  margin-bottom: 6px;
+  opacity: 0.9;
+}
+
+.insight-box li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* PARAGRAPH TEXT */
+.insight-box p {
+  font-size: 14px;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+/* OPTIONAL: COLOR CODING */
+.insight-box li.positive {
+  color: #22c55e; /* green */
+}
+
+.insight-box li.negative {
+  color: #ef4444; /* red */
+}
+
+.insight-box li.neutral {
+  color: #facc15; /* yellow */
+}
+
+
+/* ========================================
 PROGRESS SECTION
 ======================================== */
 
@@ -1372,7 +1542,7 @@ PROGRESS SECTION
 
   z-index: 2;
 
-  margin-top: 70px;
+  margin-top: 35px;
 
   width: 100%;
 }
@@ -1391,11 +1561,17 @@ PROGRESS SECTION
 }
 
 .progress-section .chart-container {
+
   width: 100%;
-  min-height: 750px;
+
   max-width: 1400px;
-  padding: 40px 30px 60px;
+
+  min-height: 620px;
+
+  padding: 30px 30px 40px;
+
   margin: 0 auto;
+
   position: relative;
 }
 
@@ -1683,151 +1859,7 @@ HISTORY / COMPARISON
   margin-top: 4px;
 }
 
-/* ========================================
-🧠 AI INSIGHTS (CLEAN + FINAL)
-======================================== */
 
-/* GRID LAYOUT (4 CARDS) */
-.insights-grid {
-  display: grid;
-
-  grid-template-columns:
-    repeat(auto-fit, minmax(220px, 1fr));
-
-  gap: 20px;
-
-  align-items: start;
-
-  width: 100%;
-
-  max-width: 1200px;
-
-  margin: 0 auto;
-}
-
-.insights-section {
-  margin-top: 15px;
-  margin-bottom: 20px;
-}
-
-/* INDIVIDUAL INSIGHT CARD */
-.insight-box {
-  background: rgba(255,255,255,0.04);
-  border-radius: 12px;
-  padding: 16px;
-  text-align: left;
-
-  border: 1px solid rgba(255,255,255,0.08);
-
-  transition: all 0.25s ease;
-}
-
-/* HOVER EFFECT (SUBTLE GLOW) */
-.insight-box:hover {
-  transform: translateY(-3px);
-  box-shadow:
-    0 0 12px rgba(139, 99, 181, 0.4);
-}
-
-.stats-row {
-  display: flex;
-  justify-content: center;
-  gap: 60px;
-  margin-top: 10px;
-  padding: 14px 28px;
-  border-radius: 12px;
-
-  background: rgba(255,255,255,0.03);
-
-  box-shadow:
-    0 0 10px rgba(139,99,181,0.2);
-}
-
-.stat-item {
-  text-align: center;
-}
-
-.stat-value {
-  font-size: 42px;
-  font-weight: 800;
-}
-
-.stat-label {
-  font-size: 14px;
-  opacity: 0.7;
-}
-
-.stat-icon {
-  font-size: 22px;
-  margin-bottom: 6px;
-}
-
-.primary-btn {
-  font-size: 16px;
-  padding: 12px 26px;
-
-  border-radius: 10px;
-
-  box-shadow:
-    0 0 12px var(--primaryLight),
-    0 0 25px rgba(139,99,181,0.5);
-
-  transition: all 0.2s ease;
-}
-
-.primary-btn:hover {
-  transform: scale(1.05);
-}
-
-/* TITLES */
-.insight-box h3 {
-  font-size: 16px;
-  margin-bottom: 8px;
-  color: var(--primaryLight);
-
-  text-shadow:
-    0 0 6px var(--primary),
-    0 0 12px var(--primaryLight);
-}
-
-/* LIST STYLE */
-.insight-box ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.insight-box li {
-  font-size: 14px;
-  margin-bottom: 6px;
-  opacity: 0.9;
-}
-
-.insight-box li {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* PARAGRAPH TEXT */
-.insight-box p {
-  font-size: 14px;
-  line-height: 1.5;
-  opacity: 0.9;
-}
-
-/* OPTIONAL: COLOR CODING */
-.insight-box li.positive {
-  color: #22c55e; /* green */
-}
-
-.insight-box li.negative {
-  color: #ef4444; /* red */
-}
-
-.insight-box li.neutral {
-  color: #facc15; /* yellow */
-}
 
 /* ========================================
 PODIUM ENGINE (FINAL)
