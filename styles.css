@@ -510,16 +510,16 @@ box-shadow: 0 10px 25px var(--primaryLight)
 
 
 /* ========================================
-HOMEPAGE HERO STATS
+HERO STATS BANNER
 ======================================== */
 
-.stats-row {
+.hero-stats-banner {
 
   display: flex;
 
-  justify-content: center;
-
   align-items: center;
+
+  justify-content: center;
 
   flex-wrap: wrap;
 
@@ -527,18 +527,18 @@ HOMEPAGE HERO STATS
 
   width: 100%;
 
-  max-width: 1200px;
+  max-width: 1100px;
 
-  margin: 35px auto;
+  margin-top: 40px;
 
-  padding: 28px 36px;
+  padding: 28px 34px;
 
   border-radius: 22px;
 
   background:
     linear-gradient(
       145deg,
-      rgba(20,20,20,0.92),
+      rgba(18,18,18,0.96),
       rgba(35,35,35,0.88)
     );
 
@@ -546,24 +546,24 @@ HOMEPAGE HERO STATS
 
   box-shadow:
     0 0 25px rgba(59,130,246,0.18),
-    0 12px 40px rgba(0,0,0,0.7);
+    0 15px 40px rgba(0,0,0,0.7);
 
   backdrop-filter: blur(10px);
 }
 
-.stat-item {
-  min-width: 160px;
+.hero-stat-block {
   text-align: center;
+  min-width: 140px;
 }
 
-.stat-icon {
+.hero-stat-icon {
   font-size: 24px;
   margin-bottom: 8px;
 }
 
-.stat-value {
+.hero-stat-number {
 
-  font-size: 3.2rem;
+  font-size: 3rem;
 
   font-weight: 900;
 
@@ -571,22 +571,24 @@ HOMEPAGE HERO STATS
 
   margin-bottom: 8px;
 
+  color: white;
+
   text-shadow:
     0 0 10px var(--primaryLight);
 }
 
-.stat-label {
+.hero-stat-text {
 
   font-size: 0.95rem;
 
-  opacity: 0.7;
+  opacity: 0.72;
 
   text-transform: uppercase;
 
   letter-spacing: 1px;
 }
 
-.stats-divider {
+.hero-divider {
 
   width: 1px;
 
@@ -595,18 +597,16 @@ HOMEPAGE HERO STATS
   background: rgba(255,255,255,0.08);
 }
 
-.records-column {
+.hero-records {
 
   display: flex;
 
   flex-direction: column;
 
-  gap: 10px;
-
-  text-align: left;
+  gap: 12px;
 }
 
-.record-item {
+.hero-record {
 
   font-size: 1rem;
 
@@ -615,7 +615,7 @@ HOMEPAGE HERO STATS
   opacity: 0.92;
 }
 
-.record-item span {
+.hero-record span {
 
   color: gold;
 
