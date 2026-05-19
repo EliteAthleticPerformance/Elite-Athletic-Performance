@@ -539,7 +539,7 @@ HERO STATS BANNER
     linear-gradient(
       145deg,
       rgba(18,18,18,0.96),
-      rgba(35,35,35,0.88)
+      rgba(25,35,55,0.92)
     );
 
   border: 1px solid rgba(255,255,255,0.06);
@@ -564,7 +564,9 @@ HERO STATS BANNER
     0 18px 50px rgba(0,0,0,0.8);
 }
 
-
+.hero-section {
+  position: relative;
+}
 
 .hero-stat-block {
 
@@ -655,6 +657,123 @@ HERO STATS BANNER
   margin-left: 8px;
 }
 
+/* ========================================
+TRIAL OFFER CARD
+======================================== */
+
+.trial-offer-card {
+
+  position: absolute;
+
+  top: 40px;
+
+  right: 40px;
+
+  width: 320px;
+
+  padding: 26px;
+
+  border-radius: 22px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(18,18,18,0.96),
+      rgba(35,35,35,0.88)
+    );
+
+  border: 1px solid rgba(255,255,255,0.06);
+
+  box-shadow:
+    0 0 25px rgba(59,130,246,0.22),
+    0 15px 40px rgba(0,0,0,0.7);
+
+  backdrop-filter: blur(12px);
+
+  z-index: 5;
+}
+
+.trial-badge {
+
+  display: inline-block;
+
+  margin-bottom: 12px;
+
+  padding: 5px 10px;
+
+  border-radius: 999px;
+
+  background: rgba(59,130,246,0.18);
+
+  color: #9bc1ff;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: 1px;
+}
+
+.trial-offer-card h3 {
+
+  font-size: 1.4rem;
+
+  line-height: 1.25;
+
+  margin-bottom: 14px;
+
+  color: white;
+}
+
+.trial-offer-card p {
+
+  opacity: 0.78;
+
+  line-height: 1.5;
+
+  margin-bottom: 20px;
+}
+
+.trial-btn {
+
+  width: 100%;
+
+  padding: 14px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #3b82f6,
+      #2563eb
+    );
+
+  color: white;
+
+  font-weight: 800;
+
+  font-size: 1rem;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.trial-btn:hover {
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 0 18px rgba(59,130,246,0.45);
+}
+
 
 @media (max-width: 768px) {
 
@@ -682,6 +801,20 @@ HERO STATS BANNER
   .hero-record {
 
     text-align: center;
+  }
+
+  .trial-offer-card {
+
+    position: relative;
+
+    top: auto;
+    right: auto;
+
+    width: 100%;
+
+    max-width: 500px;
+
+    margin: 30px auto 0;
   }
 }
 
