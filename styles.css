@@ -4,7 +4,7 @@
 
 /* ===== 1. VARIABLES ===== */
 :root {
-  --header-height: 110px; 
+  --header-height: 78px; 
   --background: #000;
   --card: #1a1a1a;
   --text: #ffffff;
@@ -42,9 +42,9 @@ letter-spacing: 1px;
 /* ===== 3. LAYOUT ===== */
 main {
   width: 100%;
-  max-width: 1400px;
+  max-width: 1700px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 30px 40px;
 }
 
 
@@ -58,7 +58,7 @@ text-align: center;
 ======================================== */
 
 .logo {
-  height: 175px;   
+  height: 82px;   
   width: auto;
   object-fit: contain;
 }
@@ -133,17 +133,21 @@ HERO SECTION
 
 .hero-content {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: 40px;
+    grid-template-columns: minmax(0, 1.4fr) minmax(320px, 420px);
+    gap: 60px;
     align-items: center;
-    max-width: 1200px;
-    margin: auto;
+
+    width: 100%;
+    max-width: 1500px;
+
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
 .hero-left h1 {
-    font-size: 3rem;
-    line-height: 1.1;
-    margin-bottom: 20px;
+    font-size: clamp(3.5rem, 5vw, 5.5rem);
+    line-height: 1;
+    max-width: 850px;
 }
 
 .hero-subtitle {
@@ -477,7 +481,8 @@ box-shadow: 0 10px 25px var(--primaryLight)
 
     white-space:nowrap;
 
-    font-size:120px;
+    font-size:72px;
+    opacity:0.05;
     font-weight:900;
     letter-spacing:8px;
 
@@ -540,7 +545,7 @@ box-shadow: 0 10px 25px var(--primaryLight)
 }
 
 #schoolLogo {
-  height: 75px;
+  height: 60px;
   width: auto;
 
   opacity: 0;                /* start hidden */
@@ -833,10 +838,16 @@ SPORT COMPARISON DROPDOWN
 
 .card-grid {
     display:grid;
-    grid-template-columns: repeat(5, 1fr);
+
+    grid-template-columns:
+      repeat(auto-fit, minmax(260px, 1fr));
+
     gap: 28px;
-    max-width: 1400px;
-    margin: 0 auto;
+
+    width: 100%;
+    max-width: 1700px;
+
+    margin: 60px auto 0;
 }
 
 @media (max-width: 900px) {
