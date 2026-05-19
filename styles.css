@@ -431,7 +431,7 @@ box-shadow: 0 10px 25px var(--primaryLight)
       0 0 10px var(--primary),
       0 0 20px var(--primaryLight),
       0 0 35px var(--primaryLight),
-      0 0 55px var(--secondaryLight);
+      0 0 28px var(--secondaryLight);
 
     background:linear-gradient(
         180deg,
@@ -1166,20 +1166,7 @@ transition:
 }
 
 /* ===== TABLE FONT SIZE ===== */
-.table {
-  width: max-content;
-  min-width: 100%;
 
-  border-collapse: collapse;
-
-  background: #111;
-
-  border-radius: 14px;
-
-  overflow: hidden;
-
-  table-layout: auto;
-}
 
 .table th {
   font-size: 13px;
@@ -2224,8 +2211,6 @@ MOBILE (RESPONSIVE)
 @media (max-width: 768px) {
 
   * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
     transition-duration: 0.15s !important;
   }
 
@@ -2235,6 +2220,7 @@ MOBILE (RESPONSIVE)
     box-shadow:
       0 4px 12px rgba(0,0,0,0.4);
   }
+
 }
 
 @media (max-width: 768px) {
