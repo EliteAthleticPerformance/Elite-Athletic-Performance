@@ -512,40 +512,29 @@ box-shadow: 0 10px 25px var(--primaryLight)
 
 .card {
 
-    background: linear-gradient(
-        145deg,
-        rgba(20,20,20,0.95),
-        rgba(40,40,40,0.9)
-    );
+  background: linear-gradient(
+    145deg,
+    rgba(20,20,20,0.95),
+    rgba(40,40,40,0.9)
+  );
 
-    min-height: 240px;
-    max-height: 260px;
+  border-radius: 18px;
 
-    border-radius: 18px;
+  padding: 26px;
 
-    padding: 26px;
+  text-align: center;
 
-    cursor: pointer;
+  position: relative;
 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  overflow: hidden;
 
-    text-align: center;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 
-    text-decoration: none;
-    color: white;
-
-    backdrop-filter: blur(6px);
-
-    box-shadow:
-        0 10px 30px rgba(0,0,0,0.6),
-        0 0 15px var(--primaryLight);
-
-    transition:
-        transform 0.25s ease,
-        box-shadow 0.25s ease;
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.6),
+    0 0 15px var(--primaryLight);
 }
 
 .card:active {
