@@ -1384,6 +1384,7 @@ PROGRESS SECTION
 }
 
 .progress-section .chart-container {
+  min-height: 620px;
   padding-top: 40px;
 }
 
@@ -1396,7 +1397,9 @@ PROGRESS CHART
 
   max-width: 1100px;
 
-  height: 460px !important;
+  height: 520px !important;
+
+  min-height: 520px;
 
   display: block;
 
