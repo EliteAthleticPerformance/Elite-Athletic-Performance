@@ -1084,7 +1084,8 @@ transition:
 }
 
 .athlete-card h3 {
-  font-size: 1.5rem;
+  font-size: 1.35rem;
+  line-height: 1.2;
   margin-bottom: 10px;
 }
 
@@ -1112,7 +1113,8 @@ transition:
 .athlete-score {
   font-size: 2rem;
   font-weight: 900;
-  margin-bottom: 6px;
+  margin-top: 4px;
+  margin-bottom: 10px;
 }
 
 .athlete-tag {
@@ -1162,6 +1164,8 @@ transition:
 
   grid-template-columns:
     repeat(auto-fit, minmax(240px, 1fr));
+
+  justify-items: center;
 
   gap: 24px;
 
@@ -1364,9 +1368,9 @@ RADAR CHART
 #radarChart {
   width: 100% !important;
 
-  max-width: 900px;
+  max-width: 1150px;
 
-  height: 520px !important;
+  height: 680px !important;
 
   margin: 0 auto;
 }
