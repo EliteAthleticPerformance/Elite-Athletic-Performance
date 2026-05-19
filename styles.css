@@ -747,14 +747,23 @@ SPORT COMPARISON DROPDOWN
 /* ===== CENTER CONTENT ===== */
 .card,
 .card-mini {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-
     opacity: 0;
-    animation: cardFadeUp 0.7s cubic-bezier(.2,.8,.2,1) forwards;
+
+    animation:
+      cardFadeUp 0.7s cubic-bezier(.2,.8,.2,1) forwards;
+}
+
+/* ONLY mini cards use flex centering */
+.card-mini {
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
 }
 
 .card {
