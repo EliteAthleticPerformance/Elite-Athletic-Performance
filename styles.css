@@ -628,9 +628,6 @@ box-shadow: 0 10px 25px var(--primaryLight)
   transform: scale(0.96);
 }
 
-.card {
-  backdrop-filter: blur(6px);
-}
 
 @keyframes glowPulse {
   0% { filter: brightness(1); }
@@ -830,14 +827,6 @@ SPORT COMPARISON DROPDOWN
   cursor: pointer;
 }
 
-.card:hover {
-  transform: translateY(-6px);
-  box-shadow:
-    0 20px 40px rgba(0,0,0,0.9),
-    0 0 25px var(--primaryLight);
-}
-
-
 .card:hover .card-icon {
   transform: scale(1.15);
 }
@@ -1000,6 +989,8 @@ ATHLETES HEADER
 
   gap: 12px;
 
+  width: 100%;
+
   margin: 18px auto 28px auto;
 
   max-width: 1400px;
@@ -1030,6 +1021,9 @@ ATHLETES HEADER
 
   cursor: pointer;
 
+  backdrop-filter: blur(6px); 
+  
+  border: 1px solid rgba(255,255,255,0.04);
  
 transition:
   transform 0.25s ease,
@@ -1308,6 +1302,11 @@ text-shadow:
 /* ========================================
 🔥 RADAR SIZE BOOST (1.5x)
 ======================================== */
+
+.chart-container {
+  margin-top: 45px;
+  padding-top: 20px;
+}
 
 #radarChart {
   width: 100% !important;
