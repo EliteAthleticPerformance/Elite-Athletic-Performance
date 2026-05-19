@@ -35,26 +35,43 @@
 <main>
 
   <!-- TITLE -->
-  <section class="section" style="text-align:center;">
-    <h1 id="athleteName">Athlete</h1>
-    <p id="rank"></p>
-    <p id="percentile"></p>
+  
+<section class="section athlete-hero" style="text-align:center;">
 
-    <!-- 🔥 BACK BUTTON (NOW DYNAMIC) -->
-    <div style="margin-top: 12px;">
-      <a id="backBtn" href="athletes.html" class="back-btn">
-        ← Back to Athletes
-      </a>
-    </div>
-  </section>
+  <h1 id="athleteName">Athlete</h1>
 
-  <div style="margin-top:12px;">
+  <h2 class="profile-subtitle">
+    Performance Profile
+  </h2>
 
-  <button id="generateCardBtn">
+  <p id="rank"></p>
 
-    📱 Generate Player Card
+  <p id="percentile"></p>
 
-  </button>
+  <!-- PLAYER CARD BUTTON -->
+  <div class="generate-btn-wrap">
+
+    <button id="generateCardBtn" class="generate-card-btn">
+      📱 Generate Player Card
+    </button>
+
+  </div>
+
+  <!-- BACK BUTTON -->
+  <div style="margin-top: 12px;">
+
+    <a id="backBtn"
+       href="athletes.html"
+       class="back-btn">
+
+      ← Back to Athletes
+
+    </a>
+
+  </div>
+
+</section>
+
 
 </div>
   
