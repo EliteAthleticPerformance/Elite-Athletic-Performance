@@ -94,16 +94,20 @@
   </section>
 
   <!-- PERFORMANCE PROFILE -->
-  <section class="section">
-    <div class="card" style="text-align:center;">
-      
-      <h2 style="margin-bottom:10px;">Athletic Evaluation</h2>
 
-      <div style="margin-bottom:10px; font-size:14px; color:#aaa;">
-        Compare To:
-      </div>
+<section class="section radar-section">
 
-      <div id="comparisonButtons" class="comparison-buttons">
+  <div class="card" style="text-align:center;">
+
+    <h2 style="margin-bottom:10px;">
+      Athletic Evaluation
+    </h2>
+
+    <div style="margin-bottom:10px; font-size:14px; color:#aaa;">
+      Compare To:
+    </div>
+
+   <div id="comparisonButtons" class="comparison-buttons">
 
   <button data-type="none"
           class="active"
@@ -134,47 +138,53 @@
   <div class="comparison-dropdown-wrap">
 
     <select id="sportComparisonSelect"
-          onchange="setSportComparison(this.value)">
+            onchange="setSportComparison(this.value)">
 
-    <option value="">Select Sport</option>
+      <option value="">Select Sport</option>
 
-  </select>
+    </select>
 
-</div>
+  </div>
 
   <div class="comparison-dropdown-wrap">
 
     <select id="positionComparisonSelect"
-          onchange="setPositionComparison(this.value)">
+            onchange="setPositionComparison(this.value)">
 
-    <option value="">
-      Select Position
-    </option>
+      <option value="">
+        Select Position
+      </option>
 
-  </select>
+    </select>
 
-</div>
+  </div>
 
-  
-         <button data-type="headtohead"
+  <button data-type="headtohead"
           onclick="setComparison('headtohead')">
+
     Athlete vs Athlete
+
   </button>
 
 </div>
 
 
-<div id="comparisonLabel"
-     class="comparison-label">
+    <div id="comparisonLabel"
+         class="comparison-label">
 
-  No Comparison Selected
-
-</div>
-      
-      <div class="chart-container radar-section"> <canvas id="radarChart"></canvas> </div>
+      No Comparison Selected
 
     </div>
-  </section>
+
+  </div>
+
+  <div class="chart-container">
+    <canvas id="radarChart"></canvas>
+  </div>
+
+</section>
+
+
 
   <!-- HEAD TO HEAD MODAL -->
   <div id="compareModal" class="compare-modal hidden">  
