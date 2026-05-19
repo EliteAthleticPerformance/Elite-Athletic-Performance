@@ -1852,20 +1852,23 @@ LEADERBOARD LAYOUT (CLEAN + BALANCED)
 }
 
 .leaderboard-grid {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  flex-wrap: wrap;
+  display: grid;
 
-  max-width: 1400px;   /* 🔥 wider */
-  margin: 20px auto 0 auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 28px;
+
+  width: 100%;
+  max-width: 1600px;
+
+  margin: 20px auto 0;
 }
 
 .leaderboard-card {
-  flex: 1 1 750px;
-  max-width: 850px;
+  width: 100%;
 
   padding: 25px;
+
   border-radius: 16px;
 
   background: linear-gradient(145deg, #1a1a1a, #111);
@@ -1875,15 +1878,13 @@ LEADERBOARD LAYOUT (CLEAN + BALANCED)
     0 0 15px var(--primaryLight);
 
   transition: all 0.25s ease;
+
+  overflow: hidden;
 }
 
 .leaderboard-card h2 {
   margin-bottom: 15px;
   font-size: 1.6rem;
-}
-
-.leaderboard-card {
-  transition: all 0.25s ease;
 }
 
 .leaderboard-card:hover {
@@ -1894,13 +1895,21 @@ LEADERBOARD LAYOUT (CLEAN + BALANCED)
 }
 
 .leaderboard-table th {
-  font-size: 16px;
+  font-size: 14px;
   opacity: 0.8;
 }
 
 .leaderboard-table td {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 700;
+}
+
+@media (max-width: 1100px) {
+
+  .leaderboard-grid {
+    grid-template-columns: 1fr;
+  }
+
 }
 
 
