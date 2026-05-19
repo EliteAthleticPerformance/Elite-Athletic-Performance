@@ -1315,15 +1315,13 @@ CHART CONTAINER
   width: 100%;
   max-width: 1400px;
 
-  min-height: 760px;
+  margin: 25px auto;
 
-  margin: 30px auto;
-
-  padding: 60px 20px 80px;
+  padding: 30px 20px 25px;
 
   border-radius: 18px;
 
-  overflow: visible;
+  overflow: hidden;
 
   position: relative;
 
@@ -1338,17 +1336,13 @@ RADAR CHART
 #radarChart {
   width: 100% !important;
 
-  max-width: 1100px;
+  max-width: 950px;
 
-  height: 620px !important;
+  height: 500px !important;
 
   display: block;
 
   margin: 0 auto;
-}
-
-canvas {
-  overflow: visible !important;
 }
 
 
