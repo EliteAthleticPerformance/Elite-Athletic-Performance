@@ -1372,35 +1372,34 @@ CHART CONTAINER
 
 
 /* ========================================
+CHART CONTAINER
+======================================== */
+
+.chart-container {
+  width: 100%;
+
+  padding: 40px 20px;
+
+  margin: 0 auto;
+
+  text-align: center;
+}
+
+
+/* ========================================
 RADAR CHART
 ======================================== */
 
 #radarChart {
   width: 100% !important;
 
-  max-width: 1050px;
+  max-width: 1150px;
 
-  height: 650px !important;
+  height: 700px !important;
+
+  margin: 0 auto;
 
   display: block;
-
-  margin: 0 auto;
-}
-
-/* ========================================
-PROGRESS CHART
-======================================== */
-
-#progressChart {
-  width: 100% !important;
-
-  max-width: 1200px;
-
-  height: 320px !important;
-
-  max-height: 320px;
-
-  margin: 0 auto;
 }
 
 /* ========================================
