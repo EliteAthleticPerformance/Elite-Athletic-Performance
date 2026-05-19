@@ -1313,19 +1313,22 @@ CHART CONTAINER
 
 .chart-container {
   width: 100%;
+
   max-width: 1400px;
 
-  margin: 25px auto;
+  margin: 45px auto;
 
-  padding: 30px 20px 25px;
+  padding: 50px 30px 70px;
 
   border-radius: 18px;
 
-  overflow: hidden;
+  overflow: visible;
 
   position: relative;
 
   text-align: center;
+
+  min-height: 760px;
 }
 
 
@@ -1336,13 +1339,17 @@ RADAR CHART
 #radarChart {
   width: 100% !important;
 
-  max-width: 950px;
+  max-width: 1000px;
 
-  height: 500px !important;
+  height: 640px !important;
 
   display: block;
 
   margin: 0 auto;
+}
+
+canvas {
+  overflow: visible !important;
 }
 
 
@@ -1378,7 +1385,27 @@ COMPARISON BUTTONS
   margin: 15px auto;
 }
 
+/* ========================================
+RADAR SECTION SPACING
+======================================== */
 
+.radar-section {
+  position: relative;
+
+  z-index: 1;
+
+  margin-top: 30px;
+
+  margin-bottom: 40px;
+}
+
+.radar-section .comparison-label {
+  margin-bottom: 20px;
+}
+
+.radar-section .comparison-buttons {
+  margin-bottom: 25px;
+}
 
 /* ========================================
 🏷️ PERFORMANCE TAGS
@@ -1419,9 +1446,6 @@ COMPARISON BUTTONS
 /* ========================================
 HISTORY / COMPARISON
 ======================================== */
-body {
-  font-size: 20px; /* 🔥 bump everything up */
-}
 
 .score {
   font-size: 32px;
@@ -1624,11 +1648,23 @@ body {
 /* GRID LAYOUT (4 CARDS) */
 .insights-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(220px, 1fr));
+
   gap: 20px;
 
+  align-items: start;
+
+  width: 100%;
+
   max-width: 1200px;
+
   margin: 0 auto;
+}
+
+.insights-section {
+  margin-top: 70px;
 }
 
 /* INDIVIDUAL INSIGHT CARD */
