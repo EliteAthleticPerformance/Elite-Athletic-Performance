@@ -519,7 +519,7 @@ HERO STATS BANNER
 
   align-items: center;
 
-  justify-content: center;
+  justify-content: space-evenly;
 
   flex-wrap: wrap;
 
@@ -529,7 +529,7 @@ HERO STATS BANNER
 
   max-width: 1100px;
 
-  margin-top: 40px;
+  margin: 40px auto 0;
 
   padding: 28px 34px;
 
@@ -567,8 +567,14 @@ HERO STATS BANNER
 
 
 .hero-stat-block {
-  text-align: center;
+
+  flex: 1;
+
+  max-width: 180px;
+
   min-width: 140px;
+
+  text-align: center;
 }
 
 .hero-stat-icon {
@@ -619,6 +625,8 @@ HERO STATS BANNER
   flex-direction: column;
 
   gap: 12px;
+
+  min-width: 260px;
 }
 
 .hero-record {
