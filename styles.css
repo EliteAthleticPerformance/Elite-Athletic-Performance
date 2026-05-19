@@ -133,7 +133,7 @@ ATHLETE PROFILE HERO
 
   text-align: center;
 
-  gap: 10px;
+  gap: 14px;
 
   margin-bottom: 40px;
 
@@ -1039,7 +1039,7 @@ ATHLETES HEADER
 
   width: 100%;
 
-  margin: 18px auto 28px auto;
+  margin: 22px auto 34px auto;
 
   max-width: 1400px;
 }
@@ -1128,7 +1128,7 @@ transition:
   /* 🔥 better layout */
   grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
 
-  gap: 12px;
+  gap: 18px;
 
   /* 🔥 REMOVE the narrow constraint */
   width: 100%;
