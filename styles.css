@@ -694,6 +694,10 @@ h1 {
 
     color: #9bc1ff;
 
+  margin-top: 10px; 
+  
+  margin-bottom: 14px;
+
     text-shadow:
         0 0 10px rgba(59,130,246,0.5);
 }
@@ -1309,101 +1313,150 @@ text-shadow:
   transform: translateY(-1px);
 }
 
+
 /* ========================================
-🔥 RADAR SIZE BOOST (1.5x)
+CHART CONTAINERS
 ======================================== */
 
 .chart-container {
-  margin-top: 45px;
-  padding-top: 20px;
+  margin-top: 30px;
+  padding-top: 10px;
 }
+
+/* ========================================
+RADAR CHART
+======================================== */
 
 #radarChart {
   width: 100% !important;
-  max-width: 1200px;   /* ⬆️ was ~700 */
-  height: 750px !important; /* ⬆️ increase height */
+
+  max-width: 900px;
+
+  height: 520px !important;
+
   margin: 0 auto;
 }
 
-/* 🔥 PROGRESS CHART FIX */
+/* ========================================
+PROGRESS CHART
+======================================== */
+
 #progressChart {
   width: 100% !important;
-  height: 750px !important; /* ⬅️ smaller, stable */
-  max-height: 750px;
-   margin: 0 auto;
+
+  max-width: 1200px;
+
+  height: 320px !important;
+
+  max-height: 320px;
+
+  margin: 0 auto;
 }
+
+/* ========================================
+PROGRESS TOGGLES
+======================================== */
 
 .progress-toggles {
   display: flex;
+
   justify-content: center;
+
   gap: 10px;
-  margin-bottom: 15px;
+
+  margin-bottom: 18px;
+
   flex-wrap: wrap;
 }
 
 .progress-toggles button {
   padding: 6px 12px;
+
   border-radius: 8px;
+
   border: 1px solid var(--border);
+
   background: var(--card-bg);
+
   color: #fff;
+
   cursor: pointer;
+
   font-size: 13px;
+
   transition: all 0.2s ease;
 }
 
 .progress-toggles button.active {
   box-shadow: 0 0 8px var(--accent);
+
   border-color: var(--accent);
 }
 
 .progress-toggles button:not(.active) {
-  opacity: 0.4;
+  opacity: 0.45;
 }
 
 /* ========================================
-🔥 COMPARISON BUTTONS (GLOW ACTIVE)
+COMPARISON BUTTONS
 ======================================== */
 
 .comparison-buttons {
   display: flex;
+
   justify-content: center;
-  gap: 10px;
+
+  align-items: center;
+
+  gap: 12px;
+
   flex-wrap: wrap;
+
+  margin-top: 8px;
+
+  margin-bottom: 10px;
 }
 
 .comparison-buttons button {
   background: #111;
+
   color: white;
+
   border: 1px solid rgba(255,255,255,0.15);
-  padding: 6px 12px;
+
+  padding: 8px 14px;
+
   border-radius: 8px;
+
   font-size: 13px;
+
   cursor: pointer;
+
   transition: all 0.2s ease;
 }
 
-/* hover effect */
+/* HOVER */
 .comparison-buttons button:hover {
   border-color: #8B63B5;
-  box-shadow: 0 0 6px rgba(139, 99, 181, 0.6);
+
+  box-shadow:
+    0 0 6px rgba(139,99,181,0.5);
 }
 
-/* 🔥 ACTIVE BUTTON (GLOW) */
+/* ACTIVE */
 .comparison-buttons button.active {
   background: #8B63B5;
+
   border-color: #8B63B5;
+
   color: white;
 
   box-shadow:
-    0 0 8px rgba(139, 99, 181, 0.8),
-    0 0 16px rgba(139, 99, 181, 0.6),
-    inset 0 0 4px rgba(255,255,255,0.2);
+    0 0 8px rgba(139,99,181,0.65),
+    0 0 14px rgba(139,99,181,0.45);
 }
 
-.comparison-buttons {
-  margin-top: 5px;
-}
+
 
 /* ========================================
 🏷️ PERFORMANCE TAGS
