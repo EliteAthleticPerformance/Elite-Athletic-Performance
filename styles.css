@@ -989,6 +989,23 @@ ATHLETES HEADER
 }
 
 
+.profile-toolbar {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin: 18px auto 28px auto;
+
+  max-width: 1400px;
+}
+
+
 /* ========================================
    ATHLETE CARDS (FIXED)
 ======================================== */
