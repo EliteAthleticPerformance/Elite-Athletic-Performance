@@ -1037,36 +1037,77 @@ SPORT COMPARISON DROPDOWN
 /* ===== TABLE WRAPPER FIX ===== */
 .table-wrapper {
   width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 12px;
+
+  overflow-x: auto;
+  overflow-y: visible;
+
+  border-radius: 16px;
+
+  background: rgba(15,15,15,0.95);
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.6);
+
+  padding: 10px;
+
+  margin: 20px auto;
+
+  -webkit-overflow-scrolling: touch;
 }
 
 /* ===== TABLE FONT SIZE ===== */
 .table {
-  font-size: 16px;   /* 🔥 base size */
+  width: max-content;
+  min-width: 100%;
+
+  border-collapse: collapse;
+
+  background: #111;
+
+  border-radius: 14px;
+
+  overflow: hidden;
+
+  table-layout: auto;
 }
 
 .table th {
-  font-size: 16px;   /* slightly bigger headers */
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  font-size: 13px;
+  padding: 10px 12px;
 }
 
 .table td {
-  font-size: 16px;
+  font-size: 13px;
+  padding: 10px 12px;
 }
 
-th, td {
-    padding: 6px 8px;
-    font-size: 13px;
+.table thead th {
+  position: sticky;
+  top: 0;
+
+  background: #0f172a;
+
+  z-index: 5;
+
+  box-shadow:
+    0 2px 6px rgba(0,0,0,0.4);
+}
+
+.testing-page main,
+.leaderboard-page main,
+.records-page main {
+    max-width: 1500px;
+}
+
+.table th,
+.table td {
     text-align: center;
     white-space: nowrap;
 }
 
 th.sort-asc::after {
   content: " ▲";
-  var(--primaryLight)
+  color: var(--primaryLight);
 }
 
 th.sort-desc::after {
@@ -1084,8 +1125,12 @@ text-shadow:
   0 0 12px var(--primaryLight);
 }
 
-.table tr:nth-child(even) {
-background: #1a1a1a;
+.table tbody tr:nth-child(odd) {
+    background: rgba(255,255,255,0.02);
+}
+
+.table tbody tr:nth-child(even) {
+    background: rgba(255,255,255,0.05);
 }
 
 /* ===== ROW HOVER EFFECT ===== */
