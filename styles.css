@@ -49,8 +49,7 @@ main {
 
 
 .section {
-margin: 40px auto;
-text-align: center;
+margin: 24px auto;
 }
 
 /* ========================================
@@ -128,12 +127,12 @@ HERO SECTION
 ======================================== */
 
 .hero-section {
-    padding: 80px 20px;
+    padding: 35px 20px 20px;
 }
 
 .hero-content {
     display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(320px, 420px);
+    grid-template-columns: minmax(0, 1.2fr) 320px;
     gap: 60px;
     align-items: center;
 
@@ -145,9 +144,10 @@ HERO SECTION
 }
 
 .hero-left h1 {
-    font-size: clamp(3.5rem, 5vw, 5.5rem);
-    line-height: 1;
-    max-width: 850px;
+    font-size: clamp(3rem, 4vw, 4.8rem);
+    line-height: 0.95;
+    max-width: 700px;
+    margin-bottom: 18px;
 }
 
 .hero-subtitle {
@@ -594,7 +594,7 @@ box-shadow: 0 10px 25px var(--primaryLight)
         rgba(40,40,40,0.9)
     );
 
-    min-height: 360px;
+    min-height: 2400px;
     height: 100%;
     border-radius: 16px;
 
@@ -840,9 +840,11 @@ SPORT COMPARISON DROPDOWN
     display:grid;
 
     grid-template-columns:
-      repeat(auto-fit, minmax(260px, 1fr));
+      repeat(auto-fit, minmax(280px, 320px));
 
-    gap: 28px;
+    justify-content:center;
+
+    gap: 26px;
 
     width: 100%;
     max-width: 1700px;
@@ -1521,10 +1523,9 @@ body {
 .stats-row {
   display: flex;
   justify-content: center;
-  gap: 80px;
-  margin-top: 30px;
-
-  padding: 20px 40px;
+  gap: 60px;
+  margin-top: 10px;
+  padding: 14px 28px;
   border-radius: 12px;
 
   background: rgba(255,255,255,0.03);
@@ -1812,8 +1813,8 @@ LEADERBOARD LAYOUT (CLEAN + BALANCED)
 }
 
 .leaderboard-card {
-  flex: 1 1 600px;     /* 🔥 bigger cards */
-  max-width: 700px;
+  flex: 1 1 750px;
+  max-width: 850px;
 
   padding: 25px;
   border-radius: 16px;
