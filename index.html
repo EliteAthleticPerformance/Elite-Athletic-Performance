@@ -195,79 +195,184 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("testCount").textContent = data.length;
 
 /* =========================
-   LIVE SCHOOL RECORDS
+   LIVE PERFORMANCE LEADERS
 ========================= */
 
-/* TOP BENCH ATHLETE */
-const topBenchAthlete = data.reduce((best, athlete) => {
+const leaderStats = [
 
-  const value = Number(athlete.bench);
+  {
+    label: "🏋️ Bench Press",
+    key: "bench",
+    suffix: " lbs",
+    best: "max"
+  },
 
-  if (isNaN(value)) return best;
+  {
+    label: "🏋️ Squat",
+    key: "squat",
+    suffix: " lbs",
+    best: "max"
+  },
 
-  return value > best.value
-    ? {
+  {
+    label: "🏋️ Power Clean",
+    key: "clean",
+    suffix: " lbs",
+    best: "max"
+  },
+
+  {
+    label: "🚀 Vertical Jump",
+    key: "vert",
+    suffix: " in",
+    best: "max"
+  },
+
+  {
+    label: "↔️ Broad Jump",
+    key: "broad",
+    suffix: " ft",
+    best: "max"
+  },
+
+  {
+    label: "💥 Med Ball Toss",
+    key: "med",
+    suffix: " ft",
+    best: "max"
+  },
+
+  {
+    label: "⚡ Agility",
+    key: "agility",
+    suffix: " sec",
+    best: "min"
+  },
+
+  {
+    label: "🔥 Sit-Ups",
+    key: "situps",
+    suffix: "",
+    best: "max"
+  },
+
+  {
+    label: "🏃 10 Yard Dash",
+    key: "10yd",
+    suffix: " sec",
+    best: "min"
+  },
+
+  {
+    label: "🏃 40 Yard Dash",
+    key: "40yd",
+    suffix: " sec",
+    best: "min"
+  }
+];
+
+const leaders = leaderStats.map(stat => {
+
+  let bestAthlete = null;
+
+  data.forEach(athlete => {
+
+    const value =
+      Number(athlete[stat.key]);
+
+    if (isNaN(value) || value <= 0)
+      return;
+
+    if (!bestAthlete) {
+
+      bestAthlete = {
         value,
         name: athlete.name
-      }
-    : best;
+      };
 
-}, { value: 0, name: "--" });
+      return;
+    }
 
-/* FASTEST 40 ATHLETE */
-const fastest40Athlete = data.reduce((best, athlete) => {
+    if (
+      stat.best === "max" &&
+      value > bestAthlete.value
+    ) {
 
-  const value = Number(
-    athlete["40yd"] || athlete.forty
-  );
-
-  if (isNaN(value) || value <= 0)
-    return best;
-
-  return value < best.value
-    ? {
+      bestAthlete = {
         value,
         name: athlete.name
-      }
-    : best;
+      };
+    }
 
-}, { value: Infinity, name: "--" });
+    if (
+      stat.best === "min" &&
+      value < bestAthlete.value
+    ) {
 
-/* BEST VERTICAL ATHLETE */
-const bestVerticalAthlete = data.reduce((best, athlete) => {
-
-  const value = Number(athlete.vert);
-
-  if (isNaN(value)) return best;
-
-  return value > best.value
-    ? {
+      bestAthlete = {
         value,
         name: athlete.name
-      }
-    : best;
+      };
+    }
 
-}, { value: 0, name: "--" });
+  });
 
-/* DISPLAY VALUES */
+  return {
+    label: stat.label,
+    value:
+      bestAthlete?.value +
+      stat.suffix,
+    athlete:
+      bestAthlete?.name || "--"
+  };
 
-document.getElementById("topBench").textContent =
-  topBenchAthlete.value + " lbs";
+});
 
-document.getElementById("topBenchAthlete").textContent =
-  topBenchAthlete.name;
+let leaderIndex = 0;
 
-document.getElementById("fastest40").textContent =
-  fastest40Athlete.value.toFixed(2) + " sec";
+function updateLeaderDisplay() {
 
-document.getElementById("fastest40Athlete").textContent =
-  fastest40Athlete.name;
+  const rotator =
+    document.querySelector(".leader-rotator");
 
-document.getElementById("bestVertical").textContent =
-  bestVerticalAthlete.value + " in";
+  rotator.classList.add("fade-out");
 
-document.getElementById("bestVerticalAthlete").textContent =
-  bestVerticalAthlete.name;
+  setTimeout(() => {
+
+    const leader =
+      leaders[leaderIndex];
+
+    document.getElementById(
+      "leaderEvent"
+    ).textContent = leader.label;
+
+    document.getElementById(
+      "leaderValue"
+    ).textContent = leader.value;
+
+    document.getElementById(
+      "leaderAthlete"
+    ).textContent = leader.athlete;
+
+    rotator.classList.remove(
+      "fade-out"
+    );
+
+    leaderIndex =
+      (leaderIndex + 1) %
+      leaders.length;
+
+  }, 300);
+}
+
+/* INITIAL LOAD */
+updateLeaderDisplay();
+
+/* ROTATE EVERY 3.5 SECONDS */
+setInterval(
+  updateLeaderDisplay,
+  3500
+);
 
   } catch (err) {
     console.error("❌ Dashboard load error:", err);
