@@ -615,6 +615,7 @@ HERO STATS BANNER
 
 .hero-section {
   position: relative;
+  padding-bottom: 40px;
 }
 
 .hero-stat-block {
@@ -723,8 +724,8 @@ BURST TRIAL BADGE
 
   position: absolute;
 
-  top: 10px;
-right: 70px;
+  top: -5px;
+right: 95px;
 
   padding: 12px 22px;
 
