@@ -707,21 +707,74 @@ HERO STATS BANNER
   margin-left: 8px;
 }
 
-/* Athlete Name Under Records */
+/* ========================================
+LIVE PERFORMANCE LEADER ROTATOR
+======================================== */
 
-.hero-record-athlete {
+.leader-rotator {
 
-  font-size: 0.82rem;
+  min-width: 260px;
 
-  opacity: 0.65;
+  display: flex;
 
-  margin-top: -6px;
+  flex-direction: column;
 
-  margin-bottom: 10px;
+  justify-content: center;
 
-  text-align: right;
+  align-items: flex-start;
+
+  gap: 6px;
+
+  padding-left: 10px;
+}
+
+.leader-event {
+
+  font-size: 1.1rem;
+
+  font-weight: 800;
+
+  color: white;
+
+  opacity: 0.92;
+}
+
+.leader-value {
+
+  font-size: 2rem;
+
+  font-weight: 900;
+
+  color: gold;
+
+  text-shadow:
+    0 0 10px rgba(255,215,0,0.25);
+}
+
+.leader-athlete {
+
+  font-size: 0.95rem;
 
   color: #bbb;
+
+  opacity: 0.8;
+}
+
+/* Smooth Fade Animation */
+
+.leader-rotator {
+
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease;
+}
+
+.leader-rotator.fade-out {
+
+  opacity: 0;
+
+  transform:
+    translateY(-10px);
 }
 
 
