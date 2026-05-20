@@ -707,6 +707,23 @@ HERO STATS BANNER
   margin-left: 8px;
 }
 
+/* Athlete Name Under Records */
+
+.hero-record-athlete {
+
+  font-size: 0.82rem;
+
+  opacity: 0.65;
+
+  margin-top: -6px;
+
+  margin-bottom: 10px;
+
+  text-align: right;
+
+  color: #bbb;
+}
+
 
 /* ========================================
 FLOATING TRIAL CTA
