@@ -724,8 +724,8 @@ BURST TRIAL BADGE
 
   position: absolute;
 
-  top: -5px;
-right: 95px;
+  top: 15px;
+right: 65px;
 
   padding: 12px 22px;
 
@@ -790,7 +790,7 @@ right: 95px;
 .trial-floating-pill:hover {
 
   transform:
-    rotate(-4deg)
+    rotate(5 deg)
     scale(1.04);
 
   box-shadow:
