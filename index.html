@@ -85,19 +85,33 @@
   <div class="hero-records">
 
     <div class="hero-record">
-      🏋️ Top Bench
-      <span>315 lbs</span>
-    </div>
+  🏋️ Top Bench
+  <span id="topBench">--</span>
+</div>
 
-    <div class="hero-record">
-      ⚡ Fastest 40
-      <span>4.51 sec</span>
-    </div>
+<div class="hero-record-athlete"
+     id="topBenchAthlete">
+</div>
 
-    <div class="hero-record">
-      🚀 Best Vertical
-      <span>38 in</span>
-    </div>
+
+<div class="hero-record">
+  ⚡ Fastest 40
+  <span id="fastest40">--</span>
+</div>
+
+<div class="hero-record-athlete"
+     id="fastest40Athlete">
+</div>
+
+
+<div class="hero-record">
+  🚀 Best Vertical
+  <span id="bestVertical">--</span>
+</div>
+
+<div class="hero-record-athlete"
+     id="bestVerticalAthlete">
+</div>
 
   </div>
 
@@ -189,6 +203,81 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.getElementById("athleteCount").textContent = athletes;
     document.getElementById("testCount").textContent = data.length;
+
+/* =========================
+   LIVE SCHOOL RECORDS
+========================= */
+
+/* TOP BENCH ATHLETE */
+const topBenchAthlete = data.reduce((best, athlete) => {
+
+  const value = Number(athlete.bench);
+
+  if (isNaN(value)) return best;
+
+  return value > best.value
+    ? {
+        value,
+        name: athlete.name
+      }
+    : best;
+
+}, { value: 0, name: "--" });
+
+/* FASTEST 40 ATHLETE */
+const fastest40Athlete = data.reduce((best, athlete) => {
+
+  const value = Number(
+    athlete["40yd"] || athlete.forty
+  );
+
+  if (isNaN(value) || value <= 0)
+    return best;
+
+  return value < best.value
+    ? {
+        value,
+        name: athlete.name
+      }
+    : best;
+
+}, { value: Infinity, name: "--" });
+
+/* BEST VERTICAL ATHLETE */
+const bestVerticalAthlete = data.reduce((best, athlete) => {
+
+  const value = Number(athlete.vert);
+
+  if (isNaN(value)) return best;
+
+  return value > best.value
+    ? {
+        value,
+        name: athlete.name
+      }
+    : best;
+
+}, { value: 0, name: "--" });
+
+/* DISPLAY VALUES */
+
+document.getElementById("topBench").textContent =
+  topBenchAthlete.value + " lbs";
+
+document.getElementById("topBenchAthlete").textContent =
+  topBenchAthlete.name;
+
+document.getElementById("fastest40").textContent =
+  fastest40Athlete.value.toFixed(2) + " sec";
+
+document.getElementById("fastest40Athlete").textContent =
+  fastest40Athlete.name;
+
+document.getElementById("bestVertical").textContent =
+  bestVerticalAthlete.value + " in";
+
+document.getElementById("bestVerticalAthlete").textContent =
+  bestVerticalAthlete.name;
 
   } catch (err) {
     console.error("❌ Dashboard load error:", err);
