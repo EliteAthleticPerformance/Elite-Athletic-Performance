@@ -725,7 +725,7 @@ BURST TRIAL BADGE
   position: absolute;
 
   top: 15px;
-right: 65px;
+right: 45px;
 
   padding: 12px 22px;
 
@@ -751,7 +751,7 @@ right: 65px;
   border-radius: 18px;
 
   transform:
-    rotate(5 deg)
+    rotate(-5 deg)
 
   box-shadow:
     0 0 20px rgba(59,130,246,0.35),
