@@ -721,7 +721,9 @@ LIVE PERFORMANCE LEADER ROTATOR
 
   justify-content: center;
 
-  align-items: flex-start;
+  align-items: center;
+
+  text-align: center;
 
   gap: 6px;
 
