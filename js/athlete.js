@@ -239,18 +239,18 @@ function renderAthlete(name) {
   applyRanking(name, latest.score);
   
 
-  set("bench", latest.bench);
-  set("squat", latest.squat);
-  set("clean", latest.clean);
+  set("bench", cleanNumber(latest.bench));
+set("squat", cleanNumber(latest.squat));
+set("clean", cleanNumber(latest.clean));
 
-  set("verticalScore", latest.vertical);
-  set("broadScore", fmt2(latest.broad));
-  set("medballScore", fmt2(latest.med));
+set("verticalScore", cleanNumber(latest.vertical));
+set("broadScore", fmt2(cleanNumber(latest.broad)));
+set("medballScore", fmt2(cleanNumber(latest.med)));
 
-  set("proagility", fmt2(latest.agility));
-  set("situps", latest.situps);
-  set("tenyard", fmt2(latest.ten));
-  set("forty", fmt2(latest.forty));
+set("proagility", fmt2(cleanNumber(latest.agility)));
+set("situps", cleanNumber(latest.situps));
+set("tenyard", fmt2(cleanNumber(latest.ten)));
+set("forty", fmt2(cleanNumber(latest.forty)));
 
   renderRadar(latest, null);
   renderInsights(latest); // ✅ ADD THIS LINE
@@ -971,6 +971,20 @@ function renderInsights(a) {
 /* ========================================
    HELPERS
 ======================================== */
+
+/* ========================================
+   HELPERS
+======================================== */
+
+function cleanNumber(value) {
+  if (value === null || value === undefined) return 0;
+
+  return Number(
+    String(value)
+      .trim()
+      .replace(/[^\d.-]/g, "")
+  ) || 0;
+}
 
 function fmt2(v){ return v || v===0 ? Number(v).toFixed(2) : "-"; }
 function set(id, v) {
