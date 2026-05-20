@@ -509,6 +509,55 @@ box-shadow: 0 10px 25px var(--primaryLight)
 }
 
 
+
+/* ========================================
+HERO SECTION
+======================================== */
+
+.hero-content {
+
+  width: 100%;
+
+  max-width: 1600px;
+
+  margin: 0 auto;
+
+  position: relative;
+}
+
+.hero-left {
+
+  width: 100%;
+
+  text-align: center;
+
+  padding-top: 20px;
+}
+
+.hero-left h1 {
+
+  max-width: 1200px;
+
+  margin: 0 auto 20px;
+
+  line-height: 1.08;
+
+  text-align: center;
+}
+
+.hero-subtitle {
+
+  max-width: 1000px;
+
+  margin: 0 auto;
+
+  text-align: center;
+
+  line-height: 1.5;
+}
+
+
+
 /* ========================================
 HERO STATS BANNER
 ======================================== */
