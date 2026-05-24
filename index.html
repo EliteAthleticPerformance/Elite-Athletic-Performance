@@ -45,7 +45,8 @@
     
 <a href="#"
    onclick="goToPage('pricing.html')"
-   class="trial-floating-pill">
+   class="trial-floating-pill"
+   id="freeTrialBtn">
 
   🔥 FREE 14-DAY TRIAL
 
@@ -184,6 +185,16 @@ function goToPage(page) {
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     await window.APP_READY;
+
+    document
+  .getElementById("freeTrialBtn")
+  ?.addEventListener("click", () => {
+
+    trackEvent("free_trial_click", {
+      page: window.location.pathname
+    });
+
+});
 
     const data = await loadAthleteData();
 
