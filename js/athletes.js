@@ -114,9 +114,18 @@ function render(list) {
     const [tagClass, tagText] = getTag(a.score);
 
     const card = document.createElement("div");
-    card.className = `athlete-card ${tagClass}`;
+card.className = `athlete-card ${tagClass}`;
 
-    card.onclick = () => goToAthlete(a.name);
+card.onclick = () => {
+
+  trackEvent("athlete_card_clicked", {
+  athlete_name: a.name,
+  athlete_score: a.score,
+  page: window.location.pathname
+});
+
+  goToAthlete(a.name);
+};
 
     card.innerHTML = `
       <div class="athlete-card-inner">
