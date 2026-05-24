@@ -196,6 +196,8 @@ function setActive(letter) {
    SEARCH
 ======================================== */
 
+let lastSearch = "";
+
 function filterAthletes() {
 
   const searchValue =
@@ -203,8 +205,13 @@ function filterAthletes() {
       ?.value
       ?.trim();
 
-  // 🔥 Track searches
-  if (searchValue) {
+  if (
+    searchValue &&
+    searchValue !== lastSearch
+  ) {
+
+    lastSearch = searchValue;
+
     trackEvent("athlete_search", {
       search_term: searchValue
     });
