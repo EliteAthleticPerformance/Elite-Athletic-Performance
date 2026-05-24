@@ -197,6 +197,19 @@ function setActive(letter) {
 ======================================== */
 
 function filterAthletes() {
+
+  const searchValue =
+    document.getElementById("search")
+      ?.value
+      ?.trim();
+
+  // 🔥 Track searches
+  if (searchValue) {
+    trackEvent("athlete_search", {
+      search_term: searchValue
+    });
+  }
+
   applyFilters();
 }
 
