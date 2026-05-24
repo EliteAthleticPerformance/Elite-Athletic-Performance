@@ -779,6 +779,16 @@ LIVE PERFORMANCE LEADER ROTATOR
     translateY(-10px);
 }
 
+.feature-card {
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 0 35px rgba(0,140,255,.65);
+}
+
 
 /* ========================================
 FLOATING TRIAL CTA
