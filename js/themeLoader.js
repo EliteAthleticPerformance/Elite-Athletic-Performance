@@ -198,6 +198,13 @@ springhill: {
 
 window.SCHOOL_CONFIG = CONFIG_MAP;
 
+// 🔥 GA4 EVENT TRACKING
+function trackEvent(eventName, params = {}) {
+  if (typeof gtag !== "undefined") {
+    gtag("event", eventName, params);
+  }
+}
+
 /* ========================================
    🌐 GET SCHOOL (FINAL FIXED VERSION)
 ======================================== */
@@ -231,8 +238,18 @@ window.APP_READY = new Promise(async (resolve, reject) => {
   try {
 
     const school = getSchool();
-     console.log("URL SCHOOL:", school);
+
+console.log("URL SCHOOL:", school);
 console.log("AVAILABLE SCHOOLS:", Object.keys(CONFIG_MAP));
+
+// 🔥 Track school page views
+if (school) {
+
+  trackEvent("school_page_view", {
+    school_name: school
+  });
+
+}
 
     const selected = CONFIG_MAP[school] || CONFIG_MAP[Object.keys(CONFIG_MAP)[0]];
 
