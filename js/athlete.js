@@ -406,6 +406,10 @@ function setComparison(type) {
 
   CURRENT_COMPARISON = type;
 
+  trackEvent("comparison_used", {
+  comparison_type: type
+});
+
   document.querySelectorAll("#comparisonButtons button")
     .forEach(btn => btn.classList.remove("active"));
 
