@@ -194,6 +194,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       page: window.location.pathname
     });
 
+    trackEvent("trial_signup_started");
+
 });
 
     const data = await loadAthleteData();
