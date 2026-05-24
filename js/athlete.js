@@ -235,6 +235,10 @@ function renderAthlete(name) {
   console.log("Cole Data:", latest);
   CURRENT_ATHLETE = latest;
 
+  trackEvent("athlete_profile_view", {
+  athlete_name: name
+});
+
   document.getElementById("athleteName").textContent = formatName(name);
 
   applyRanking(name, latest.score);
