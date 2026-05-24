@@ -2,6 +2,12 @@
 console.log("🔥 MAIN.JS LOADED"); 
   console.log("STEP 1");
 
+function trackEvent(eventName, params = {}) {
+  if (typeof gtag !== "undefined") {
+    gtag("event", eventName, params);
+  }
+}
+
    
 /* ===================== STATE ===================== */
 console.log("STEP 2");
