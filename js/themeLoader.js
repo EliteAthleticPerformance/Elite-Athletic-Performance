@@ -246,8 +246,9 @@ console.log("AVAILABLE SCHOOLS:", Object.keys(CONFIG_MAP));
 if (school) {
 
   trackEvent("school_page_view", {
-    school_name: school
-  });
+  school_name: school,
+  page: window.location.pathname
+});
 
 }
 
