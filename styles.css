@@ -898,6 +898,20 @@ right: 45px;
     display: none;
   }
 
+  .top-performers-title{
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: white;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+
+  text-shadow:
+    0 0 5px #3b82f6,
+    0 0 10px #3b82f6;
+}
+
   .hero-records {
 
     width: 100%;
