@@ -1,1 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link id="dynamicFavicon" rel="icon" type="image/png">
+
+<title>Leaderboard | Elite Athletic Performance</title>
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TGRNFWTPJ5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TGRNFWTPJ5');
+  </script>
+
+<link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+
+<!-- ===== HEADER ===== -->
+<div id="header-placeholder"></div>
+
+<!-- 🔥 LOAD ORDER (CRITICAL) -->
+<script src="js/themeLoader.js"></script>
+<script src="js/header.js"></script>
+
+<!-- ===== MAIN ===== -->
+<main>
+
+  <!-- TITLE -->
+  <section class="section" style="text-align:center;">
+    <h1 class="leaderboard-title">🏆 Team Leaderboard</h1>
+  </section>
+
+  <!-- ===== PODIUM + KEY ===== -->
+  <section class="section">
+
+   <!-- PODIUM -->
+<div class="podium-wrapper">
+
+  <h2 id="podiumTitle" class="podium-title top3-title">
+    Top 3 Athletes
+  </h2>
+
+  <div id="podium" class="podium-container"></div>
+
+</div>
+
+    <!-- KEY -->
+    <div class="leaderboard-card key-card">
+      <div class="key-content">
+        <div class="key-labels">
+          <span class="elite">Elite</span>
+          <span class="above">Above Average</span>
+          <span class="average">Average</span>
+          <span class="needs">Needs Work</span>
+        </div>
+
+        <div class="key-description">
+          Correlation of Athletic Movement Skills Compared to Weight Lifted
+        </div>
+      </div>
+    </div>
+
+
+<!-- 🔎 FILTER BAR -->
+<div class="filter-container">
+
+  <!-- Alphabet Filter -->
+  <div id="alphabetBar" class="alphabet-bar"></div>
+
+  <!-- Search -->
+  <input 
+    type="text" 
+    id="searchInput" 
+    placeholder="Search athlete name..." 
+    class="search-input"
+  >
+
+</div>
+    
+    
+    <!-- ===== TABLE GRID ===== -->
+    <div class="leaderboard-grid">
+
+      <!-- LIFT TABLE -->
+<div class="leaderboard-card">
+
+  <h2>🏋️ 3 Lift Max Totals</h2>
+
+  <div class="table-scroll">
+    <table id="liftTable" class="leaderboard-table">
+
+
+
+        <div class="table-scroll">
+          <table id="liftTable" class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Total</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SCORE TABLE -->
+      <div class="leaderboard-card">
+        <h2>⚡ Athletic Performance Scores</h2>
+
+        <div class="table-scroll">
+          <table id="scoreTable" class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Score</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===== MOBILE ===== -->
+    <div id="mobileLift" class="mobile-cards"></div>
+    <div id="mobileScore" class="mobile-cards"></div>
+
+  </section>
+
+</main>
+
+<!-- ===== DATA + LOGIC ===== -->
+
+<!-- 🔥 ORDER MATTERS -->
+
+<script src="js/schoolConfig.js"></script>  
+<script src="js/dataLoader.js"></script>
+<script src="js/leaderboard.js"></script>
+
+<!-- FOOTER -->
+<div style="text-align:center; padding:30px; color:#aaa; font-size:14px;">
+  © 2026 Elite Athletic Performance<br>
+  Missouri, USA<br><br>
+
+  <a href="privacy.html" style="color:gold; text-decoration:none;">Privacy Policy</a> |
+  <a href="terms.html" style="color:gold; text-decoration:none;">Terms of Service</a>
+</div>
+  
+</body>
+</html>
