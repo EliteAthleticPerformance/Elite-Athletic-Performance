@@ -7,7 +7,7 @@
 
 <link id="dynamicFavicon" rel="icon" type="image/png">
 
-<title>Leaderboard | Elite Athletic Performance</title>
+<title>Speed / MPH | Elite Athletic Performance</title>
 
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-TGRNFWTPJ5"></script>
@@ -35,39 +35,95 @@
 <main>
 
   <!-- TITLE -->
-  <section class="section" style="text-align:center;">
-    <h1 class="leaderboard-title">🏆 Team Leaderboard</h1>
-  </section>
+  <section class="hero-section">
 
-  <!-- ===== PODIUM + KEY ===== -->
-  <section class="section">
+  <div class="hero-content">
 
-   <!-- PODIUM -->
-<div class="podium-wrapper">
+    <div class="hero-left">
 
-  <h2 id="podiumTitle" class="podium-title top3-title">
-    Top 3 Athletes
-  </h2>
+      <h1 class="elite-header">
+        ⚡ SPEED / MPH
+      </h1>
 
-  <div id="podium" class="podium-container"></div>
+      <p class="hero-subtitle">
+        Weekly athlete velocity rankings and sprint performance.
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+      <div class="hero-stats-banner">
+
+  <!-- Fastest Athlete -->
+  <div class="hero-records">
+
+    <div class="top-performers-title">
+      ⚡ Fastest Athlete This Week
+    </div>
+
+    <div class="leader-rotator">
+
+      <div id="fastestMPH" class="leader-value">
+        22.34 MPH
+      </div>
+
+      <div id="fastestAthlete" class="leader-athlete">
+        Malik Johnson
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="hero-divider"></div>
+
+  <!-- Top MPH -->
+  <div class="hero-stat-block">
+    <div class="hero-stat-icon">⚡</div>
+    <div id="topMPH" class="hero-stat-number">
+      22.34
+    </div>
+    <div class="hero-stat-text">
+      Top MPH
+    </div>
+  </div>
+
+  <div class="hero-divider"></div>
+
+  <!-- Athletes Tested -->
+  <div class="hero-stat-block">
+    <div class="hero-stat-icon">🏃</div>
+    <div id="athletesTested" class="hero-stat-number">
+      18
+    </div>
+    <div class="hero-stat-text">
+      Athletes Tested
+    </div>
+  </div>
+
+  <div class="hero-divider"></div>
+
+  <!-- Testing Week -->
+  <div class="hero-stat-block">
+    <div class="hero-stat-icon">📅</div>
+    <div id="weekDate" class="hero-stat-number">
+      Week 1
+    </div>
+    <div class="hero-stat-text">
+      Testing Week
+    </div>
+  </div>
 
 </div>
 
-    <!-- KEY -->
-    <div class="leaderboard-card key-card">
-      <div class="key-content">
-        <div class="key-labels">
-          <span class="elite">Elite</span>
-          <span class="above">Above Average</span>
-          <span class="average">Average</span>
-          <span class="needs">Needs Work</span>
-        </div>
+  
 
-        <div class="key-description">
-          Correlation of Athletic Movement Skills Compared to Weight Lifted
-        </div>
-      </div>
-    </div>
+   
+
+       
 
 
 <!-- 🔎 FILTER BAR -->
@@ -86,61 +142,40 @@
 
 </div>
     
-    
-    <!-- ===== TABLE GRID ===== -->
-    <div class="leaderboard-grid">
+    <section class="section">
 
-      <!-- LIFT TABLE -->
-<div class="leaderboard-card">
+  <div class="leaderboard-card mph-card">
 
-  <h2>🏋️ 3 Lift Max Totals</h2>
+    <h2>⚡ Weekly MPH Rankings</h2>
 
-  <div class="table-scroll">
-    <table id="liftTable" class="leaderboard-table">
+    <div class="table-scroll">
 
+      <table id="mphTable" class="leaderboard-table">
 
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Athlete</th>
+            <th>MPH</th>
+            <th>Sport</th>
+            <th>Date</th>
+          </tr>
+        </thead>
 
-        <div class="table-scroll">
-          <table id="liftTable" class="leaderboard-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Total</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
+        <tbody id="mphTableBody">
 
-      <!-- SCORE TABLE -->
-      <div class="leaderboard-card">
-        <h2>⚡ Athletic Performance Scores</h2>
+        </tbody>
 
-        <div class="table-scroll">
-          <table id="scoreTable" class="leaderboard-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Score</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
+      </table>
 
     </div>
 
-    <!-- ===== MOBILE ===== -->
-    <div id="mobileLift" class="mobile-cards"></div>
-    <div id="mobileScore" class="mobile-cards"></div>
+  </div>
 
-  </section>
+</section>
+   
+
+    
 
 </main>
 
