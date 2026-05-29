@@ -2483,6 +2483,12 @@ KEY (IDENTIFIER)
 LEADERBOARD LAYOUT (CLEAN + BALANCED)
 ======================================== */
 
+.testing-date {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  letter-spacing: 0.5px;
+}
+
 .leaderboard-title {
   font-size: 2.4rem;
   text-shadow:
