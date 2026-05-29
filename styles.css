@@ -678,7 +678,7 @@ HERO STATS BANNER
 
   gap: 12px;
 
-  min-width: 260px;
+  min-width: 320px;
 }
 
 .hero-record {
@@ -900,7 +900,7 @@ right: 45px;
 
   .top-performers-title{
   text-align: center;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: 700;
   letter-spacing: 1px;
   color: white;
