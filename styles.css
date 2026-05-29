@@ -2571,6 +2571,11 @@ LEADERBOARD LAYOUT (CLEAN + BALANCED)
 
 }
 
+.mph-card {
+  max-width: 1600px;
+  border: 1px solid rgba(59,130,246,.25);
+}
+
 
 /* ========================================
 TABLE SCROLL (FIXED)
