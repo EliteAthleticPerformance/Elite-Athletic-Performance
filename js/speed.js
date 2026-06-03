@@ -2,6 +2,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const data = await loadAthleteData();
 
+  console.log("Sample MPH Values:");
+console.log(data.slice(0,10).map(a => ({
+  name: a.name,
+  mph: a.mph
+})));
+
   if (!data?.length) return;
 
   // Only athletes with MPH data
@@ -9,7 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   console.log("Total Records:", data.length);
 console.log("MPH Records:", mphRows.length);
-console.log("First Record:", data[0]);
+console.log("First Record Full:", JSON.stringify(data[0], null, 2));
 
   // Group athletes
   const athleteMap = {};
