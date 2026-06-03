@@ -325,6 +325,9 @@ thirdPosition2: clean(row.thirdPosition2 || row["Third Position 2"]),
         ten: num(row.dash10 || row["10 yd Dash"]),
         forty: num(row.dash40 || row["40 yd Dash"]),
 
+        // 💨 VELOCITY
+        mph: num(row.mph || row["MPH"]),
+
         // 🔁 CORE
         situps: num(row.situps || row["Sit-Ups"]),
 
