@@ -2603,6 +2603,16 @@ LEADERBOARD LAYOUT (CLEAN + BALANCED)
   min-width: 150px;
 }
 
+.positive-change{
+  color:#22c55e;
+  font-weight:700;
+}
+
+.negative-change{
+  color:#ef4444;
+  font-weight:700;
+}
+
 
 /* ========================================
 TABLE SCROLL (FIXED)
