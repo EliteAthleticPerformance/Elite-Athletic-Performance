@@ -7,6 +7,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Only athletes with MPH data
   const mphRows = data.filter(a => a.mph > 0);
 
+  console.log("Total Records:", data.length);
+console.log("MPH Records:", mphRows.length);
+console.log("First Record:", data[0]);
+
   // Group athletes
   const athleteMap = {};
 
@@ -61,7 +65,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ====================================
 
   const fastestOverall =
-    mphRows.sort((a,b)=>b.mph-a.mph)[0];
+  mphRows.sort((a,b)=>b.mph-a.mph)[0];
+
+if (!fastestOverall) {
+  console.error("No MPH data found");
+  return;
+}
 
   document.getElementById("fastestMPH")
     .textContent =
