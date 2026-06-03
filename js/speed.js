@@ -2,6 +2,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const data = await loadAthleteData();
 
+  console.log(
+  data.filter(a =>
+    a.name.includes("Alvarez")
+  )
+);
+
   console.log("Sample MPH Values:");
 console.log(data.slice(0,10).map(a => ({
   name: a.name,
