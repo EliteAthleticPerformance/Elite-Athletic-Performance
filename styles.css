@@ -2579,28 +2579,39 @@ LEADERBOARD LAYOUT (CLEAN + BALANCED)
 
 .mph-card {
   max-width: 1600px;
+  margin: 0 auto;
   border: 1px solid rgba(59,130,246,.25);
 }
 
+#mphTable {
+  width: 100%;
+}
+
+#mphTable th,
+#mphTable td {
+  text-align: center;
+}
+
+.week-filter {
+  width: 400px;
+  margin: 20px auto;
+  text-align: center;
+}
+
 .week-selector {
+  width: 100%;
+  max-width: 400px;
 
-  background: rgba(255,255,255,.08);
-
-  border: 1px solid rgba(255,255,255,.15);
-
+  background: #111;
   color: white;
 
-  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 10px;
 
-  padding: 8px 12px;
+  padding: 12px;
 
-  margin-top: 8px;
-
-  font-weight: 700;
-
-  text-align: center;
-
-  min-width: 150px;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .positive-change{
