@@ -2582,6 +2582,27 @@ LEADERBOARD LAYOUT (CLEAN + BALANCED)
   border: 1px solid rgba(59,130,246,.25);
 }
 
+.week-selector {
+
+  background: rgba(255,255,255,.08);
+
+  border: 1px solid rgba(255,255,255,.15);
+
+  color: white;
+
+  border-radius: 8px;
+
+  padding: 8px 12px;
+
+  margin-top: 8px;
+
+  font-weight: 700;
+
+  text-align: center;
+
+  min-width: 150px;
+}
+
 
 /* ========================================
 TABLE SCROLL (FIXED)
