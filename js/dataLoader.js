@@ -282,6 +282,9 @@ console.log("🧪 ROW DATA:", row);
         activeRaw === "" ||
         activeRaw === undefined;
 
+      console.log("HEADERS:", Object.keys(row));
+console.log("ROW:", row);
+
       console.log("MPH CHECK:", {
   mph: row.mph,
   MPH: row["MPH"],
