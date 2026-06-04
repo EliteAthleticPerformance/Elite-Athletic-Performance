@@ -142,6 +142,65 @@
   >
 
 </div>
+
+  <!-- SPEED SIMULATOR -->
+
+<div class="leaderboard-card speed-simulator-card">
+
+  <h2>🏁 Speed Simulator</h2>
+
+  <p style="margin-bottom:20px;">
+    Select up to 3 athletes and simulate a Flying 20 race using their actual MPH.
+  </p>
+
+  <div class="sim-controls">
+
+    <select id="athlete1" class="week-selector">
+      <option value="">Select Athlete 1</option>
+    </select>
+
+    <select id="athlete2" class="week-selector">
+      <option value="">Select Athlete 2</option>
+    </select>
+
+    <select id="athlete3" class="week-selector">
+      <option value="">Select Athlete 3</option>
+    </select>
+
+    <button id="startRaceBtn" class="elite-btn">
+      🏁 Start Race
+    </button>
+
+  </div>
+
+  <div id="raceTrack">
+
+    <div class="race-lane">
+      <div id="runner1" class="runner">
+        🔴
+      </div>
+      <div class="finish-line">🏁</div>
+    </div>
+
+    <div class="race-lane">
+      <div id="runner2" class="runner">
+        🟡
+      </div>
+      <div class="finish-line">🏁</div>
+    </div>
+
+    <div class="race-lane">
+      <div id="runner3" class="runner">
+        🟢
+      </div>
+      <div class="finish-line">🏁</div>
+    </div>
+
+  </div>
+
+  <div id="raceResults"></div>
+
+</div>
     
     <section class="section">
 
