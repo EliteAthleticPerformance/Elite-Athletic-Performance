@@ -15,10 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (!data?.length) return;
 
-  // Only athletes with MPH data
-  const mphRows = data.filter(a => a.mph > 0);
-
-  // Only athletes with MPH data
+    // Only athletes with MPH data
 const mphRows = data.filter(a => a.mph > 0);
 
 // ====================================
