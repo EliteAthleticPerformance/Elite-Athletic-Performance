@@ -186,11 +186,11 @@ console.log(
 
 if (athlete1 && athlete2 && athlete3) {
 
-  athleteDevelopment
-    .sort((a,b)=>
-      a.name.localeCompare(b.name)
-    )
-    .forEach(a => {
+  [...athleteDevelopment]
+  .sort((a,b)=>
+    a.name.localeCompare(b.name)
+  )
+  .forEach(a => {
 
       const html = `
         <option value="${a.name}">
