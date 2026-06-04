@@ -2636,11 +2636,6 @@ LEADERBOARD LAYOUT (CLEAN + BALANCED)
   left:0;
   top:5px;
 
-  display:flex;
-  align-items:center;
-
-  gap:10px;
-
   transition:transform linear;
 
 }
@@ -2650,14 +2645,24 @@ LEADERBOARD LAYOUT (CLEAN + BALANCED)
   width:50px;
   height:50px;
 
+  display:block;
+
 }
 
 .runner-name{
 
-  font-size:14px;
-  font-weight:600;
+  position:absolute;
+
+  top:-28px;
+  left:-50px;
+
+  width:150px;
+
+  text-align:center;
 
   color:white;
+  font-weight:700;
+  font-size:14px;
 
   white-space:nowrap;
 
