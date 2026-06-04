@@ -174,6 +174,16 @@ const athlete1 = document.getElementById("athlete1");
 const athlete2 = document.getElementById("athlete2");
 const athlete3 = document.getElementById("athlete3");
 
+  console.log("ATHLETE DROPDOWNS:");
+console.log(athlete1);
+console.log(athlete2);
+console.log(athlete3);
+
+console.log(
+  "ATHLETE DEVELOPMENT COUNT:",
+  athleteDevelopment.length
+);
+
 if (athlete1 && athlete2 && athlete3) {
 
   athleteDevelopment
@@ -193,6 +203,16 @@ if (athlete1 && athlete2 && athlete3) {
       athlete3.innerHTML += html;
 
     });
+
+  console.log(
+  "ATHLETE 1 OPTIONS:",
+  athlete1.options.length
+);
+
+  console.log(
+  "ATHLETE DEVELOPMENT COUNT:",
+  athleteDevelopment.length
+);
 
 }
 
