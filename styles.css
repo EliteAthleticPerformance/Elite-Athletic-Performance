@@ -2601,11 +2601,18 @@ LEADERBOARD LAYOUT (CLEAN + BALANCED)
 }
 
 .runner{
+
   position:absolute;
   left:0;
-  top:10px;
-  font-size:32px;
-  transition:transform linear;
+  top:5px;
+
+  display:flex;
+  align-items:center;
+
+  gap:10px;
+
+  flex-direction:row-reverse;
+
 }
 
 .finish-line{
