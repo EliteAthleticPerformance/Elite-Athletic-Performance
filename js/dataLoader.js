@@ -368,6 +368,13 @@ thirdPosition2: clean(row.thirdPosition2 || row["Third Position 2"]),
       a.active
     );
 
+    console.log(
+  "ALVAREZ RECORDS:",
+  APP_DATA.filter(a =>
+    a.name.includes("Alvarez")
+  )
+);
+    
     console.log("🔥 CLEAN DATA:", APP_DATA);
     console.log("✅ ATHLETES LOADED:", APP_DATA.length);
 
