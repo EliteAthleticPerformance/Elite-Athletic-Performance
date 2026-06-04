@@ -2577,6 +2577,52 @@ LEADERBOARD LAYOUT (CLEAN + BALANCED)
 
 }
 
+
+/* =========================
+   SPEED SIMULATOR
+========================= */
+
+.speed-simulator-card{
+  margin-bottom:25px;
+}
+
+.sim-controls{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:25px;
+}
+
+.race-lane{
+  position:relative;
+  height:60px;
+  margin-bottom:12px;
+  border-bottom:2px dashed rgba(255,255,255,.25);
+}
+
+.runner{
+  position:absolute;
+  left:0;
+  top:10px;
+  font-size:32px;
+  transition:transform linear;
+}
+
+.finish-line{
+  position:absolute;
+  right:0;
+  top:8px;
+  font-size:26px;
+}
+
+#raceResults{
+  margin-top:20px;
+  font-size:18px;
+  line-height:1.8;
+  font-weight:600;
+}
+
+
 .mph-card {
   max-width: 1600px;
   margin: 0 auto;
