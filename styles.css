@@ -2622,6 +2622,40 @@ LEADERBOARD LAYOUT (CLEAN + BALANCED)
   font-weight:600;
 }
 
+.runner{
+
+  position:absolute;
+
+  left:0;
+  top:5px;
+
+  display:flex;
+  align-items:center;
+
+  gap:10px;
+
+  transition:transform linear;
+
+}
+
+.runner-svg{
+
+  width:50px;
+  height:50px;
+
+}
+
+.runner-name{
+
+  font-size:14px;
+  font-weight:600;
+
+  color:white;
+
+  white-space:nowrap;
+
+}
+
 
 .mph-card {
   max-width: 1600px;
