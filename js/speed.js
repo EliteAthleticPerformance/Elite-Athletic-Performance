@@ -432,10 +432,11 @@ function startRace() {
   }
 
   const racers =
-    athleteDevelopment.filter(
-      a =>
-        selections.includes(a.name)
-    );
+  selections.map(name =>
+    athleteDevelopment.find(
+      a => a.name === name
+    )
+  );
 
   const runners = [
 
@@ -478,16 +479,19 @@ runners.forEach(runner => {
     const raceTime =
       60 / fps;
 
-    runner.querySelector(
-  ".runner-name"
-).textContent =
-  athlete.name;
+    const nameEl =
+  runner.querySelector(".runner-name");
+
+if (nameEl) {
+  nameEl.textContent =
+    athlete.name;
+}
 
     runner.style.transition =
       `transform ${raceTime}s linear`;
 
     runner.style.transform =
-  "translateX(85%)";
+  `translateX(${laneWidth - 250}px)`;
 
   });
 
