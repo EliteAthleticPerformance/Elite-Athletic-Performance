@@ -251,8 +251,8 @@ console.log("🔗 FINAL URL:", url);
   "RAW ALVAREZ",
   raw.filter(
     r =>
-      r["Student-Athlete"] &&
-      r["Student-Athlete"].includes("Alvarez")
+      r.name &&
+      r.name.includes("Alvarez")
   )
 );
 
@@ -276,9 +276,9 @@ console.log("🧪 ROW DATA:", row);
 
       console.log(
   "ALVAREZ RAW:",
-  row["Student-Athlete"],
-  row["Test Date"],
-  row["MPH"]
+  row.name,
+  row.date,
+  row.mph
 );
 
       if (
@@ -313,6 +313,13 @@ console.log("ROW:", row);
   MPH: row["MPH"],
   keys: Object.keys(row)
 });
+
+      console.log(
+  "MPH BEFORE RETURN:",
+  row.name,
+  row.mph,
+  row["MPH"]
+);
 
       return {
         id: clean(row.id || row.ID),
