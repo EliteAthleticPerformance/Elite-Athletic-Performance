@@ -117,6 +117,16 @@ if (!fastestOverall) {
 // FASTEST ATHLETE (LATEST TEST DATE)
 // ====================================
 
+console.log(
+  "FASTEST WEEK OBJECT",
+  fastestWeek
+);
+
+console.log(
+  "LATEST WEEK ROWS",
+  latestWeekRows
+);
+  
 if (fastestWeek) {
 
   document.getElementById("weeklyMPH")
