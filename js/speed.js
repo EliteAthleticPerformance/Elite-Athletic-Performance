@@ -445,10 +445,21 @@ function startRace() {
 
 ];
 
-runners.forEach((runner, i) => {
+runners.forEach(runner => {
 
-  runner.textContent =
-    ["🔴","🟡","🟢"][i];
+  // Reset position
+  runner.style.transition = "none";
+  runner.style.transform = "translateX(0)";
+
+  // Clear athlete name
+  const nameEl =
+    runner.querySelector(
+      ".runner-name"
+    );
+
+  if (nameEl) {
+    nameEl.textContent = "";
+  }
 
 });
 
@@ -467,8 +478,10 @@ runners.forEach((runner, i) => {
     const raceTime =
       60 / fps;
 
-    runner.textContent =
-      athlete.name;
+    runner.querySelector(
+  ".runner-name"
+).textContent =
+  athlete.name;
 
     runner.style.transition =
       `transform ${raceTime}s linear`;
