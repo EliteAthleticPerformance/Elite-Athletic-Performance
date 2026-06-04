@@ -166,6 +166,48 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   );
 
+  // =========================
+// POPULATE SIMULATOR
+// =========================
+
+const athlete1 = document.getElementById("athlete1");
+const athlete2 = document.getElementById("athlete2");
+const athlete3 = document.getElementById("athlete3");
+
+if (athlete1 && athlete2 && athlete3) {
+
+  athleteDevelopment
+    .sort((a,b)=>
+      a.name.localeCompare(b.name)
+    )
+    .forEach(a => {
+
+      const html = `
+        <option value="${a.name}">
+          ${a.name}
+        </option>
+      `;
+
+      athlete1.innerHTML += html;
+      athlete2.innerHTML += html;
+      athlete3.innerHTML += html;
+
+    });
+
+}
+
+    const html = `
+      <option value="${a.name}">
+        ${a.name}
+      </option>
+    `;
+
+    athlete1.innerHTML += html;
+    athlete2.innerHTML += html;
+    athlete3.innerHTML += html;
+
+  });
+
   // ====================================
   // ATHLETES TESTED
   // ====================================
@@ -349,4 +391,138 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     });
 
+  // =========================
+// SPEED SIMULATOR
+// =========================
+
+document
+  .getElementById("startRaceBtn")
+  ?.addEventListener(
+    "click",
+    startRace
+  );
+
+function startRace() {
+
+  const selections = [
+
+    athlete1.value,
+    athlete2.value,
+    athlete3.value
+
+  ].filter(Boolean);
+
+  if (selections.length < 2) {
+
+    alert(
+      "Select at least 2 athletes."
+    );
+
+    return;
+
+  }
+
+  const racers =
+    athleteDevelopment.filter(
+      a =>
+        selections.includes(a.name)
+    );
+
+  const runners = [
+
+    runners.forEach((runner, i) => {
+
+  runner.textContent =
+    ["🔴","🟡","🟢"][i];
+
 });
+
+    document.getElementById("runner1"),
+    document.getElementById("runner2"),
+    document.getElementById("runner3")
+
+  ];
+
+  runners.forEach(r => {
+
+    r.style.transition = "none";
+    r.style.transform = "translateX(0)";
+
+  });
+
+  void document.body.offsetWidth;
+
+  racers.forEach((athlete,index)=>{
+
+    const runner =
+      runners[index];
+
+    // Flying 20 Physics
+
+    const fps =
+      athlete.bestMPH * 1.46667;
+
+    const raceTime =
+      60 / fps;
+
+    runner.textContent =
+      athlete.name;
+
+    runner.style.transition =
+      `transform ${raceTime}s linear`;
+
+    runner.style.transform =
+  "translateX(85%)";
+
+  });
+
+  const results =
+    [...racers]
+      .sort(
+        (a,b)=>
+          b.bestMPH-a.bestMPH
+      );
+
+  const slowestTime =
+    Math.max(
+      ...racers.map(a =>
+        60 /
+        (a.bestMPH * 1.46667)
+      )
+    );
+
+  setTimeout(()=>{
+
+    document
+      .getElementById(
+        "raceResults"
+      )
+      .innerHTML = `
+
+        🥇 ${results[0].name}
+        (${results[0].bestMPH.toFixed(2)} MPH)
+
+        <br>
+
+        🥈 ${results[1]?.name ?? ""}
+        (${results[1]?.bestMPH?.toFixed(2) ?? ""} MPH)
+
+        <br>
+
+        ${
+          results[2]
+            ? `🥉 ${results[2].name}
+               (${results[2].bestMPH.toFixed(2)} MPH)`
+            : ""
+        }
+
+      `;
+
+  }, slowestTime * 1000 + 200);
+
+}
+
+});
+
+
+
