@@ -2600,6 +2600,19 @@ LEADERBOARD LAYOUT (CLEAN + BALANCED)
   border-bottom:2px dashed rgba(255,255,255,.25);
 }
 
+.lane-name{
+
+  position:absolute;
+
+  left:10px;
+  top:12px;
+
+  color:white;
+  font-weight:700;
+  font-size:16px;
+
+}
+
 .runner{
 
   position:absolute;
