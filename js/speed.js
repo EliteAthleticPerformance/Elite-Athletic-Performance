@@ -36,15 +36,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   uniqueDates.forEach(date => {
 
-    const option =
-      document.createElement("option");
+  const option =
+    document.createElement("option");
 
-    option.value = date;
-    option.textContent = date;
+  option.value = date;
 
-    weekSelector.appendChild(option);
+  const displayDate =
+    new Date(date).toLocaleDateString(
+      "en-US",
+      {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      }
+    );
 
-  });
+  option.textContent = displayDate;
+
+  weekSelector.appendChild(option);
+
+});
 
   // ====================================
   // FASTEST OVERALL
