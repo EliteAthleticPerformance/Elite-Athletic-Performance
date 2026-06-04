@@ -2601,31 +2601,29 @@ LEADERBOARD LAYOUT (CLEAN + BALANCED)
 }
 
 .lane-name{
-
   position:absolute;
-
   left:10px;
   top:12px;
+
+  width:190px;
 
   color:white;
   font-weight:700;
   font-size:16px;
-
 }
 
 .runner{
-
   position:absolute;
-  left:0;
+  left:220px;
   top:5px;
 
-  display:flex;
-  align-items:center;
+  transition:transform linear;
+}
 
-  gap:10px;
-
-  flex-direction:row-reverse;
-
+.runner-svg{
+  width:50px;
+  height:50px;
+  display:block;
 }
 
 .finish-line{
@@ -2640,45 +2638,6 @@ LEADERBOARD LAYOUT (CLEAN + BALANCED)
   font-size:18px;
   line-height:1.8;
   font-weight:600;
-}
-
-.runner{
-
-  position:absolute;
-
-  left:0;
-  top:5px;
-
-  transition:transform linear;
-
-}
-
-.runner-svg{
-
-  width:50px;
-  height:50px;
-
-  display:block;
-
-}
-
-.runner-name{
-
-  position:absolute;
-
-  top:-28px;
-  left:-50px;
-
-  width:150px;
-
-  text-align:center;
-
-  color:white;
-  font-weight:700;
-  font-size:14px;
-
-  white-space:nowrap;
-
 }
 
 
