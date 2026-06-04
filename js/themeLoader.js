@@ -279,8 +279,8 @@ const DEV_API =
 const config = {
   ...selected,
 
-  dataURL: "https://script.google.com/macros/s/AKfycbyT3weWxCL1blgkrsILw73NIf1qvgGS8K8PyoHooab3yMCTvf9GRm8YyGHPMusdoh8P/exec",
-  submitURL: "https://script.google.com/macros/s/AKfycbyT3weWxCL1blgkrsILw73NIf1qvgGS8K8PyoHooab3yMCTvf9GRm8YyGHPMusdoh8P/exec"
+  dataURL: "https://script.google.com/macros/s/AKfycbwnSjmwlod_AoqmTEoownI1CsWhjpTu9ubLrb78DsLBTaH0WDnYxXNiXEyJmY1J0Uh2/exec",
+  submitURL: "https://script.google.com/macros/s/AKfycbwnSjmwlod_AoqmTEoownI1CsWhjpTu9ubLrb78DsLBTaH0WDnYxXNiXEyJmY1J0Uh2/exec"
 };
 
     
