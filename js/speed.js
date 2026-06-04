@@ -421,6 +421,19 @@ function startRace() {
 
   ].filter(Boolean);
 
+  if (
+  new Set(selections).size !==
+  selections.length
+) {
+
+  alert(
+    "Please select different athletes."
+  );
+
+  return;
+
+}
+
   if (selections.length < 2) {
 
     alert(
@@ -446,21 +459,19 @@ function startRace() {
 
 ];
 
+  const laneNames =
+  document.querySelectorAll(".lane-name");
+
 runners.forEach(runner => {
 
-  // Reset position
   runner.style.transition = "none";
   runner.style.transform = "translateX(0)";
 
-  // Clear athlete name
-  const nameEl =
-    runner.querySelector(
-      ".runner-name"
-    );
+});
 
-  if (nameEl) {
-    nameEl.textContent = "";
-  }
+laneNames.forEach(name => {
+
+  name.textContent = "";
 
 });
 
@@ -477,23 +488,22 @@ runners.forEach(runner => {
   const raceTime =
     60 / fps;
 
-  const nameEl =
-    runner.querySelector(".runner-name");
+  laneNames[index].textContent =
+  athlete.name;
 
-  if (nameEl) {
-    nameEl.textContent =
-      athlete.name;
-  }
-
-  // Width of this lane
-  const laneWidth =
-    runner.parentElement.offsetWidth;
-
-  runner.style.transition =
+    runner.style.transition =
     `transform ${raceTime}s linear`;
 
-  runner.style.transform =
-    `translateX(${laneWidth - 350}px)`;
+  const finishLine =
+  runner.parentElement.querySelector(
+    ".finish-line"
+  );
+
+const finishX =
+  finishLine.offsetLeft - 80;
+
+runner.style.transform =
+  `translateX(${finishX}px)`;
 
 });
 
@@ -523,6 +533,33 @@ setTimeout(() => {
 
   `;
 
+if (
+  results.length >= 2 &&
+  results[0].bestMPH === results[1].bestMPH
+) {
+
+  resultsHTML += `
+
+    🥇 ${results[1].name}
+    (${results[1].bestMPH.toFixed(2)} MPH)
+
+  `;
+
+  if (results[2]) {
+
+    resultsHTML += `
+
+      <br>
+
+      🥉 ${results[2].name}
+      (${results[2].bestMPH.toFixed(2)} MPH)
+
+    `;
+
+  }
+
+}
+  
   // 2nd & 3rd tie
   if (
     results.length >= 3 &&
