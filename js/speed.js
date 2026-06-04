@@ -216,18 +216,7 @@ if (athlete1 && athlete2 && athlete3) {
 
 }
 
-    const html = `
-      <option value="${a.name}">
-        ${a.name}
-      </option>
-    `;
-
-    athlete1.innerHTML += html;
-    athlete2.innerHTML += html;
-    athlete3.innerHTML += html;
-
-  });
-
+    
   // ====================================
   // ATHLETES TESTED
   // ====================================
@@ -450,25 +439,18 @@ function startRace() {
 
   const runners = [
 
-    runners.forEach((runner, i) => {
+  document.getElementById("runner1"),
+  document.getElementById("runner2"),
+  document.getElementById("runner3")
+
+];
+
+runners.forEach((runner, i) => {
 
   runner.textContent =
     ["🔴","🟡","🟢"][i];
 
 });
-
-    document.getElementById("runner1"),
-    document.getElementById("runner2"),
-    document.getElementById("runner3")
-
-  ];
-
-  runners.forEach(r => {
-
-    r.style.transition = "none";
-    r.style.transform = "translateX(0)";
-
-  });
 
   void document.body.offsetWidth;
 
