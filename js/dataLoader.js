@@ -247,6 +247,15 @@ console.log("🔗 FINAL URL:", url);
 
     console.log("🧪 RAW API:", raw);
 
+    console.log(
+  "RAW ALVAREZ",
+  raw.filter(
+    r =>
+      r["Student-Athlete"] &&
+      r["Student-Athlete"].includes("Alvarez")
+  )
+);
+
     if (!Array.isArray(raw)) {
       console.warn("⚠️ API did not return an array");
       return [];
