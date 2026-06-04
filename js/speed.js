@@ -468,32 +468,33 @@ runners.forEach(runner => {
 
   racers.forEach((athlete,index)=>{
 
-    const runner =
-      runners[index];
+  const runner =
+    runners[index];
 
-    // Flying 20 Physics
+  const fps =
+    athlete.bestMPH * 1.46667;
 
-    const fps =
-      athlete.bestMPH * 1.46667;
+  const raceTime =
+    60 / fps;
 
-    const raceTime =
-      60 / fps;
+  const nameEl =
+    runner.querySelector(".runner-name");
 
-    const nameEl =
-  runner.querySelector(".runner-name");
+  if (nameEl) {
+    nameEl.textContent =
+      athlete.name;
+  }
 
-if (nameEl) {
-  nameEl.textContent =
-    athlete.name;
-}
+  const laneWidth =
+    runner.parentElement.offsetWidth;
 
-    runner.style.transition =
-      `transform ${raceTime}s linear`;
+  runner.style.transition =
+    `transform ${raceTime}s linear`;
 
-    runner.style.transform =
-  `translateX(${laneWidth - 250}px)`;
+  runner.style.transform =
+    `translateX(${laneWidth - 250}px)`;
 
-  });
+});
 
   const results =
     [...racers]
