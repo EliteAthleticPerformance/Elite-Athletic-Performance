@@ -18,6 +18,35 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Only athletes with MPH data
 const mphRows = data.filter(a => a.mph > 0);
 
+  const weekSelector =
+  document.getElementById("weekSelector");
+
+const uniqueDates = [
+  ...new Set(
+    mphRows
+      .filter(r => r.date)
+      .map(r => r.date)
+  )
+]
+.sort()
+.reverse();
+
+weekSelector.innerHTML = "";
+
+uniqueDates.forEach(date => {
+
+  const option =
+    document.createElement("option");
+
+  option.value = date;
+  option.textContent = date;
+
+  weekSelector.appendChild(option);
+
+});
+
+console.log("DATES:", uniqueDates);
+
 // ====================================
 // LATEST TEST DATE
 // ====================================
