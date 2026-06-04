@@ -264,6 +264,20 @@ console.log("🔗 FINAL URL:", url);
     APP_DATA = raw.map(row => {
 
 console.log("🧪 ROW DATA:", row);
+
+      console.log(
+  "ALVAREZ RAW:",
+  row["Student-Athlete"],
+  row["Test Date"],
+  row["MPH"]
+);
+
+      if (
+  row["Student-Athlete"] &&
+  row["Student-Athlete"].includes("Alvarez")
+) {
+  console.log("FULL ALVAREZ ROW:", row);
+}
        
       const name =
         row.name ||
