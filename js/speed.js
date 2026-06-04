@@ -466,7 +466,7 @@ runners.forEach(runner => {
 
   void document.body.offsetWidth;
 
-  racers.forEach((athlete,index)=>{
+ racers.forEach((athlete,index)=>{
 
   const runner =
     runners[index];
@@ -485,6 +485,7 @@ runners.forEach(runner => {
       athlete.name;
   }
 
+  // Width of this lane
   const laneWidth =
     runner.parentElement.offsetWidth;
 
@@ -492,7 +493,7 @@ runners.forEach(runner => {
     `transform ${raceTime}s linear`;
 
   runner.style.transform =
-    `translateX(${laneWidth - 250}px)`;
+    `translateX(${laneWidth - 350}px)`;
 
 });
 
