@@ -18,9 +18,34 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Only athletes with MPH data
   const mphRows = data.filter(a => a.mph > 0);
 
-  console.log("Total Records:", data.length);
-console.log("MPH Records:", mphRows.length);
-console.log("First Record Full:", JSON.stringify(data[0], null, 2));
+  // Only athletes with MPH data
+const mphRows = data.filter(a => a.mph > 0);
+
+// ====================================
+// LATEST TEST DATE
+// ====================================
+
+const latestDate = new Date(
+  Math.max(
+    ...mphRows.map(a => new Date(a.date))
+  )
+);
+
+const latestWeekRows = mphRows.filter(row => {
+
+  const rowDate = new Date(row.date);
+
+  return (
+    rowDate.toDateString() ===
+    latestDate.toDateString()
+  );
+
+});
+
+const fastestWeek =
+  latestWeekRows.sort(
+    (a, b) => b.mph - a.mph
+  )[0];
 
   // Group athletes
   const athleteMap = {};
@@ -90,6 +115,22 @@ if (!fastestOverall) {
   document.getElementById("fastestAthlete")
     .textContent =
       fastestOverall.name;
+
+  // ====================================
+// FASTEST ATHLETE (LATEST TEST DATE)
+// ====================================
+
+if (fastestWeek) {
+
+  document.getElementById("weeklyMPH")
+    .textContent =
+      fastestWeek.mph.toFixed(2) + " MPH";
+
+  document.getElementById("weeklyAthlete")
+    .textContent =
+      fastestWeek.name;
+
+}
 
   // ====================================
   // ATHLETES TESTED
