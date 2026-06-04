@@ -498,48 +498,78 @@ runners.forEach(runner => {
 });
 
   const results =
-    [...racers]
-      .sort(
-        (a,b)=>
-          b.bestMPH-a.bestMPH
-      );
-
-  const slowestTime =
-    Math.max(
-      ...racers.map(a =>
-        60 /
-        (a.bestMPH * 1.46667)
-      )
+  [...racers]
+    .sort(
+      (a,b)=>
+        b.bestMPH-a.bestMPH
     );
 
-  setTimeout(()=>{
+const slowestTime =
+  Math.max(
+    ...racers.map(a =>
+      60 /
+      (a.bestMPH * 1.46667)
+    )
+  );
 
-    document
-      .getElementById(
-        "raceResults"
-      )
-      .innerHTML = `
+setTimeout(() => {
 
-        🥇 ${results[0].name}
-        (${results[0].bestMPH.toFixed(2)} MPH)
+  let resultsHTML = `
 
-        <br>
+    🥇 ${results[0].name}
+    (${results[0].bestMPH.toFixed(2)} MPH)
 
-        🥈 ${results[1]?.name ?? ""}
-        (${results[1]?.bestMPH?.toFixed(2) ?? ""} MPH)
+    <br>
 
-        <br>
+  `;
 
-        ${
-          results[2]
-            ? `🥉 ${results[2].name}
-               (${results[2].bestMPH.toFixed(2)} MPH)`
-            : ""
-        }
+  // 2nd & 3rd tie
+  if (
+    results.length >= 3 &&
+    results[1].bestMPH === results[2].bestMPH
+  ) {
 
-      `;
+    resultsHTML += `
 
-  }, slowestTime * 1000 + 200);
+      🥈 ${results[1].name}
+      (${results[1].bestMPH.toFixed(2)} MPH)
+
+      <br>
+
+      🥈 ${results[2].name}
+      (${results[2].bestMPH.toFixed(2)} MPH)
+
+    `;
+
+  } else {
+
+    resultsHTML += `
+
+      ${
+        results[1]
+          ? `🥈 ${results[1].name}
+             (${results[1].bestMPH.toFixed(2)} MPH)`
+          : ""
+      }
+
+      <br>
+
+      ${
+        results[2]
+          ? `🥉 ${results[2].name}
+             (${results[2].bestMPH.toFixed(2)} MPH)`
+          : ""
+      }
+
+    `;
+
+  }
+
+  document.getElementById(
+    "raceResults"
+  ).innerHTML = resultsHTML;
+
+}, slowestTime * 1000 + 200);
 
 }
 
