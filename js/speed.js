@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     a =>
       Number(a.mph) > 0 &&
       a.date &&
-      a.date.trim() !== ""
+      a.date.toString().trim() !== ""
   );
 
   if (!mphRows.length) return;
@@ -36,29 +36,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   uniqueDates.forEach(date => {
 
-  const option =
-    document.createElement("option");
+    const option =
+      document.createElement("option");
 
-  option.value = date;
+    option.value = date;
 
-  const displayDate =
-    new Date(date).toLocaleDateString(
-      "en-US",
-      {
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-      }
-    );
+    option.textContent =
+      new Date(date).toLocaleDateString(
+        "en-US",
+        {
+          month: "short",
+          day: "numeric",
+          year: "numeric"
+        }
+      );
 
-  option.textContent = displayDate;
+    weekSelector.appendChild(option);
 
-  weekSelector.appendChild(option);
-
-});
+  });
 
   // ====================================
-  // FASTEST OVERALL
+  // FASTEST SPEED OVERALL
   // ====================================
 
   const fastestOverall =
@@ -74,7 +72,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       fastestOverall.name;
 
   // ====================================
-  // UPDATE WEEK LEADER
+  // FASTEST ATHLETE THIS WEEK
   // ====================================
 
   function updateWeekLeader(selectedDate) {
@@ -98,29 +96,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       .textContent =
         fastestWeek.name;
 
-    console.log(
-      "Selected Week:",
-      selectedDate,
-      fastestWeek
-    );
-
   }
-
-  // Default to newest week
 
   updateWeekLeader(uniqueDates[0]);
 
-  // Change week
-
   weekSelector.addEventListener(
     "change",
-    () => updateWeekLeader(
-      weekSelector.value
-    )
+    () =>
+      updateWeekLeader(
+        weekSelector.value
+      )
   );
 
   // ====================================
-  // ATHLETE DEVELOPMENT
+  // ATHLETE DEVELOPMENT DATA
   // ====================================
 
   const athleteMap = {};
@@ -137,39 +126,45 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const athleteDevelopment = [];
 
-  Object.entries(athleteMap).forEach(([name, tests]) => {
+  Object.entries(athleteMap).forEach(
+    ([name, tests]) => {
 
-    tests.sort(
-      (a, b) =>
-        new Date(a.date) -
-        new Date(b.date)
-    );
-
-    const firstMPH =
-      tests[0].mph;
-
-    const recentMPH =
-      tests[tests.length - 1].mph;
-
-    const bestMPH =
-      Math.max(
-        ...tests.map(t => t.mph)
+      tests.sort(
+        (a, b) =>
+          new Date(a.date) -
+          new Date(b.date)
       );
 
-    const change =
-      recentMPH - firstMPH;
+      const firstMPH =
+        Number(tests[0].mph);
 
-    athleteDevelopment.push({
+      const recentMPH =
+        Number(
+          tests[tests.length - 1].mph
+        );
 
-      name,
-      firstMPH,
-      recentMPH,
-      bestMPH,
-      change
+      const bestMPH =
+        Math.max(
+          ...tests.map(
+            t => Number(t.mph)
+          )
+        );
 
-    });
+      const change =
+        recentMPH - firstMPH;
 
-  });
+      athleteDevelopment.push({
+
+        name,
+        firstMPH,
+        recentMPH,
+        bestMPH,
+        change
+
+      });
+
+    }
+  );
 
   // ====================================
   // ATHLETES TESTED
@@ -181,57 +176,176 @@ document.addEventListener("DOMContentLoaded", async () => {
     athleteDevelopment.length;
 
   // ====================================
-  // TABLE
+  // TABLE RENDERER
   // ====================================
 
-  const tbody =
+  function renderTable(rows) {
+
+    const tbody =
+      document.getElementById(
+        "mphTableBody"
+      );
+
+    tbody.innerHTML = "";
+
+    rows
+      .sort(
+        (a, b) =>
+          b.bestMPH - a.bestMPH
+      )
+      .forEach(a => {
+
+        const sign =
+          a.change > 0
+            ? "+"
+            : "";
+
+        tbody.innerHTML += `
+          <tr>
+
+            <td>${a.name}</td>
+
+            <td>
+              ${a.firstMPH.toFixed(2)}
+            </td>
+
+            <td>
+              ${a.recentMPH.toFixed(2)}
+            </td>
+
+            <td>
+              ${a.bestMPH.toFixed(2)}
+            </td>
+
+            <td class="${
+              a.change > 0
+                ? "positive-change"
+                : a.change < 0
+                ? "negative-change"
+                : ""
+            }">
+
+              ${sign}${a.change.toFixed(2)}
+
+            </td>
+
+          </tr>
+        `;
+
+      });
+
+  }
+
+  renderTable(athleteDevelopment);
+
+  // ====================================
+  // SEARCH
+  // ====================================
+
+  const searchInput =
     document.getElementById(
-      "mphTableBody"
+      "searchInput"
     );
 
-  tbody.innerHTML = "";
+  searchInput.addEventListener(
+    "input",
+    () => {
 
-  athleteDevelopment
-    .sort(
-      (a, b) =>
-        b.bestMPH - a.bestMPH
-    )
-    .forEach(a => {
+      const term =
+        searchInput.value
+          .trim()
+          .toLowerCase();
 
-      const sign =
-        a.change > 0 ? "+" : "";
+      const filtered =
+        athleteDevelopment.filter(
+          athlete =>
+            athlete.name
+              .toLowerCase()
+              .includes(term)
+        );
 
-      tbody.innerHTML += `
-        <tr>
+      renderTable(filtered);
 
-          <td>${a.name}</td>
+    }
+  );
 
-          <td>
-            ${a.firstMPH.toFixed(2)}
-          </td>
+  // ====================================
+  // ALPHABET FILTER
+  // ====================================
 
-          <td>
-            ${a.recentMPH.toFixed(2)}
-          </td>
+  const alphabetBar =
+    document.getElementById(
+      "alphabetBar"
+    );
 
-          <td>
-            ${a.bestMPH.toFixed(2)}
-          </td>
+  alphabetBar.innerHTML = "";
 
-          <td class="${
-            a.change > 0
-              ? "positive-change"
-              : a.change < 0
-              ? "negative-change"
-              : ""
-          }">
+  const allBtn =
+    document.createElement(
+      "button"
+    );
 
-            ${sign}${a.change.toFixed(2)}
+  allBtn.textContent = "ALL";
 
-          </td>
+  allBtn.className =
+    "alphabet-btn active";
 
-        </tr>
-      `;
+  allBtn.addEventListener(
+    "click",
+    () =>
+      renderTable(
+        athleteDevelopment
+      )
+  );
+
+  alphabetBar.appendChild(allBtn);
+
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    .split("")
+    .forEach(letter => {
+
+      const btn =
+        document.createElement(
+          "button"
+        );
+
+      btn.textContent =
+        letter;
+
+      btn.className =
+        "alphabet-btn";
+
+      btn.addEventListener(
+        "click",
+        () => {
+
+          const filtered =
+            athleteDevelopment.filter(
+              athlete => {
+
+                const lastName =
+                  athlete.name
+                    .split(",")[0]
+                    .trim();
+
+                return (
+                  lastName
+                    .charAt(0)
+                    .toUpperCase() ===
+                  letter
+                );
+
+              }
+            );
+
+          renderTable(filtered);
+
+        }
+      );
+
+      alphabetBar.appendChild(
+        btn
+      );
 
     });
 
