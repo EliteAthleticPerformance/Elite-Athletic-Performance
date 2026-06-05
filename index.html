@@ -83,7 +83,6 @@
 
   <div class="hero-divider"></div>
 
-<!-- FEMALE TOP PERFORMER -->
 <div class="hero-records">
 
   <div class="top-performers-title">
@@ -113,7 +112,6 @@
 
 <div class="hero-divider"></div>
 
-<!-- MALE TOP PERFORMER -->
 <div class="hero-records">
 
   <div class="top-performers-title">
@@ -321,106 +319,138 @@ const leaderStats = [
   }
 ];
 
-const leaders = leaderStats.map(stat => {
+const females =
+  data.filter(
+    a =>
+      a.gender?.toLowerCase() ===
+      "female"
+  );
 
-  let bestAthlete = null;
+const males =
+  data.filter(
+    a =>
+      a.gender?.toLowerCase() ===
+      "male"
+  );
 
-  data.forEach(athlete => {
+function buildLeaders(groupData) {
 
-    const value =
-      Number(athlete[stat.key]);
+  return leaderStats.map(stat => {
 
-    if (isNaN(value) || value <= 0)
-      return;
+    let bestAthlete = null;
 
-    if (!bestAthlete) {
+    groupData.forEach(athlete => {
 
-      bestAthlete = {
-        value,
-        name: athlete.name
-      };
+      const value =
+        Number(athlete[stat.key]);
 
-      return;
-    }
+      if (
+        isNaN(value) ||
+        value <= 0
+      ) return;
 
-    if (
-      stat.best === "max" &&
-      value > bestAthlete.value
-    ) {
+      if (
+        !bestAthlete ||
+        (
+          stat.best === "max" &&
+          value > bestAthlete.value
+        ) ||
+        (
+          stat.best === "min" &&
+          value < bestAthlete.value
+        )
+      ) {
 
-      bestAthlete = {
-        value,
-        name: athlete.name
-      };
-    }
+        bestAthlete = {
+          value,
+          name: athlete.name
+        };
 
-    if (
-      stat.best === "min" &&
-      value < bestAthlete.value
-    ) {
+      }
 
-      bestAthlete = {
-        value,
-        name: athlete.name
-      };
-    }
+    });
+
+    return {
+
+      label: stat.label,
+
+      value:
+        bestAthlete
+          ? bestAthlete.value +
+            stat.suffix
+          : "--",
+
+      athlete:
+        bestAthlete?.name ||
+        "--"
+
+    };
 
   });
 
-  return {
-    label: stat.label,
-    value:
-      bestAthlete?.value +
-      stat.suffix,
-    athlete:
-      bestAthlete?.name || "--"
-  };
-
-});
-
-let leaderIndex = 0;
-
-function updateLeaderDisplay() {
-
-  const rotator =
-    document.querySelector(".leader-rotator");
-
-  rotator.classList.add("fade-out");
-
-  setTimeout(() => {
-
-    const leader =
-      leaders[leaderIndex];
-
-    document.getElementById(
-      "leaderEvent"
-    ).textContent = leader.label;
-
-    document.getElementById(
-      "leaderValue"
-    ).textContent = leader.value;
-
-    document.getElementById(
-      "leaderAthlete"
-    ).textContent = leader.athlete;
-
-    rotator.classList.remove(
-      "fade-out"
-    );
-
-    leaderIndex =
-      (leaderIndex + 1) %
-      leaders.length;
-
-  }, 300);
 }
 
-/* INITIAL LOAD */
-updateLeaderDisplay();
+const femaleLeaders =
+  buildLeaders(females);
 
-/* ROTATE EVERY 3.5 SECONDS */
+const maleLeaders =
+  buildLeaders(males);
+
+let femaleIndex = 0;
+let maleIndex = 0;
+
+function updateLeaderDisplays() {
+
+  const female =
+    femaleLeaders[femaleIndex];
+
+  const male =
+    maleLeaders[maleIndex];
+
+  document.getElementById(
+    "femaleLeaderEvent"
+  ).textContent =
+    female.label;
+
+  document.getElementById(
+    "femaleLeaderValue"
+  ).textContent =
+    female.value;
+
+  document.getElementById(
+    "femaleLeaderAthlete"
+  ).textContent =
+    female.athlete;
+
+  document.getElementById(
+    "maleLeaderEvent"
+  ).textContent =
+    male.label;
+
+  document.getElementById(
+    "maleLeaderValue"
+  ).textContent =
+    male.value;
+
+  document.getElementById(
+    "maleLeaderAthlete"
+  ).textContent =
+    male.athlete;
+
+  femaleIndex =
+    (femaleIndex + 1) %
+    femaleLeaders.length;
+
+  maleIndex =
+    (maleIndex + 1) %
+    maleLeaders.length;
+
+}
+
+updateLeaderDisplays();
+
 setInterval(
-  updateLeaderDisplay,
+  updateLeaderDisplays,
   3500
 );
 
