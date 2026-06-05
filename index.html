@@ -235,6 +235,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const data = await loadAthleteData();
 
+    console.log(data[0]);
+
     if (!data || !data.length) return;
 
     const athletes = new Set(data.map(d => d.name)).size;
