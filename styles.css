@@ -1574,6 +1574,11 @@ transition:
   text-align: center;
 }
 
+.leaderboard-table th,
+.leaderboard-table td {
+  text-align: center;
+}
+
 .leaderboard-card h2 {
   text-align: center;
 }
