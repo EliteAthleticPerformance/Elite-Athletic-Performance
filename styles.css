@@ -1569,6 +1569,11 @@ transition:
     max-width: 1500px;
 }
 
+/* Center all leaderboard table headers */
+.leaderboard-table th {
+  text-align: center;
+}
+
 .leaderboard-card h2 {
   text-align: center;
 }
