@@ -2357,6 +2357,20 @@ PODIUM ENGINE (FINAL)
   transform: translateY(-6px) scale(1.03);
 }
 
+.dual-podiums{
+  display:flex;
+  justify-content:center;
+  gap:80px;
+  flex-wrap:wrap;
+  margin-bottom:30px;
+}
+
+.dual-podiums .podium-wrapper{
+  flex:1;
+  min-width:450px;
+  max-width:650px;
+}
+
 /* 🥇 FIRST */
 .podium-item.first {
   height: 220px;
@@ -2895,6 +2909,20 @@ MOBILE (RESPONSIVE)
   .metric-card {
     box-shadow:
       0 4px 12px rgba(0,0,0,0.4);
+  }
+
+}
+
+@media (max-width:900px){
+
+  .dual-podiums{
+    flex-direction:column;
+    gap:40px;
+  }
+
+  .dual-podiums .podium-wrapper{
+    min-width:auto;
+    max-width:none;
   }
 
 }
