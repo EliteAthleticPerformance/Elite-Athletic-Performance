@@ -231,7 +231,10 @@ function initSearch() {
 ======================================== */
 
 function renderLiftTable(data) {
-  const tbody = document.querySelector("#liftTable tbody");
+
+  const tbody =
+    document.querySelector("#liftTable tbody");
+
   if (!tbody) return;
 
   const sorted = [...data]
@@ -241,14 +244,36 @@ function renderLiftTable(data) {
     }))
     .sort((a, b) => b.total - a.total);
 
-  tbody.innerHTML = sorted.map((a, i) => `
-    <tr>
-      <td>${i + 1}</td>
-      <td>${a.name}</td>
-      <td>${a.total}</td>
-      <td>${formatDate(a.date)}</td>
-    </tr>
-  `).join("");
+  tbody.innerHTML = sorted.map((a, i) => {
+
+    const gender =
+      a.gender?.toLowerCase() || "";
+
+    const genderDisplay =
+      gender === "male"
+        ? "👦 Male"
+        : gender === "female"
+        ? "👧 Female"
+        : "-";
+
+    return `
+      <tr>
+
+        <td>${i + 1}</td>
+
+        <td>${a.name}</td>
+
+        <td>${genderDisplay}</td>
+
+        <td>${a.total}</td>
+
+        <td>${formatDate(a.date)}</td>
+
+      </tr>
+    `;
+
+  }).join("");
+
 }
 
 /* ========================================
@@ -293,13 +318,26 @@ function renderScoreTable(data) {
 
     const tier = getPerformanceTier(a.score, total);
 
+    const gender =
+  a.gender?.toLowerCase() || "";
+
+const genderDisplay =
+  gender === "male"
+    ? "👦 Male"
+    : gender === "female"
+    ? "👧 Female"
+    : "-";
+
     return `
       <tr>
-        <td>${i + 1}</td>
-        <td>${a.name}</td>
+  <td>${i + 1}</td>
 
-        <td>
-          ${a.score || 0}
+  <td>${a.name}</td>
+
+  <td>${genderDisplay}</td>
+
+  <td>
+    ${a.score || 0}
           <span class="tier ${tier}">
             ${getTierLabel(tier)}
           </span>
@@ -333,8 +371,20 @@ function renderMobile(data) {
 
   lift.innerHTML = liftSorted.map((a, i) => `
     <div class="mobile-card">
-      <div>#${i + 1} ${a.name}</div>
-      <div>Total: ${a.total}</div>
+      <div>
+  #${i + 1}
+  ${a.name}
+</div>
+
+<div>
+  ${
+    a.gender?.toLowerCase() === "male"
+      ? "👦 Male"
+      : "👧 Female"
+  }
+</div>
+
+<div>Total: ${a.total}</div>
     </div>
   `).join("");
 
@@ -346,7 +396,18 @@ function renderMobile(data) {
 
     return `
       <div class="mobile-card">
-        <div>#${i + 1} ${a.name}</div>
+        <div>
+  #${i + 1}
+  ${a.name}
+</div>
+
+<div>
+  ${
+    a.gender?.toLowerCase() === "male"
+      ? "👦"
+      : "👧"
+  }
+</div>
         <div>
           Score: ${a.score}
           <span class="tier ${tier}">
@@ -365,7 +426,7 @@ function renderMobile(data) {
 function renderEmpty() {
   const tables = document.querySelectorAll("tbody");
   tables.forEach(t => t.innerHTML = `
-    <tr><td colspan="4" style="text-align:center; padding:20px;">
+    <tr><td colspan="5" style="text-align:center; padding:20px;">
       No data available
     </td></tr>
   `);
