@@ -2,6 +2,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const data = await loadAthleteData();
 
+  gtag("event", "speed_page_view", {
+    page_name: "Speed Development"
+  });
+
   if (!data?.length) return;
 
   // ====================================
@@ -101,12 +105,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   updateWeekLeader(uniqueDates[0]);
 
   weekSelector.addEventListener(
-    "change",
-    () =>
-      updateWeekLeader(
-        weekSelector.value
-      )
-  );
+  "change",
+  () => {
+
+    gtag("event", "speed_week_changed", {
+      week: weekSelector.value
+    });
+
+    updateWeekLeader(
+      weekSelector.value
+    );
+
+  }
+);
 
   // ====================================
   // ATHLETE DEVELOPMENT DATA
@@ -299,8 +310,12 @@ if (athlete1 && athlete2 && athlete3) {
     );
 
   searchInput.addEventListener(
-    "input",
-    () => {
+  "input",
+  () => {
+
+    gtag("event", "speed_search_used", {
+      search_term: searchInput.value
+    });
 
       const term =
         searchInput.value
@@ -443,6 +458,22 @@ function startRace() {
     return;
 
   }
+
+  if (selections.length < 2) {
+
+  alert(
+    "Select at least 2 athletes."
+  );
+
+  return;
+
+}
+
+gtag("event", "speed_race_started", {
+  athlete1: athlete1.value || "",
+  athlete2: athlete2.value || "",
+  athlete3: athlete3.value || ""
+});
 
   const racers =
   selections.map(name =>
