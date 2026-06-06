@@ -2330,6 +2330,14 @@ HISTORY / COMPARISON
 PODIUM ENGINE (FINAL)
 ======================================== */
 
+.podium-section h2,
+.female-podium-title,
+.male-podium-title {
+  text-align: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
 .podium-container {
   display: flex;
   justify-content: center;
