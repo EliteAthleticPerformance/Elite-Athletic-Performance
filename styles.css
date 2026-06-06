@@ -2368,15 +2368,21 @@ PODIUM ENGINE (FINAL)
 .dual-podiums{
   display:flex;
   justify-content:center;
+  align-items:flex-start;
   gap:80px;
   flex-wrap:wrap;
-  margin-bottom:30px;
 }
 
-.dual-podiums .podium-wrapper{
-  flex:1;
-  min-width:450px;
-  max-width:650px;
+.podium-wrapper{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.podium-wrapper .podium-title{
+  text-align:center;
+  width:100%;
+  margin-bottom:20px;
 }
 
 /* 🥇 FIRST */
