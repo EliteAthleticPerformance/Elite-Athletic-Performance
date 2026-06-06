@@ -4,6 +4,7 @@
 let allAthletes = [];
 let activeLetter = "ALL";
 let searchValue = "";
+let genderFilter = "all";
 
 
 // ========================================
@@ -242,9 +243,9 @@ function buildAlphabetFilter(data) {
 // 🔎 APPLY FILTERS (COMBINED)
 // ===============================
 function applyFilters() {
+
   let source = [...allAthletes];
 
-  // 🔥 IF SEARCHING → use FULL dataset (not just best)
   if (searchValue) {
     source = window.ALL_RAW_DATA || source;
   }
@@ -253,13 +254,22 @@ function applyFilters() {
 
   if (activeLetter !== "ALL") {
     filtered = filtered.filter(a =>
-      a.name && a.name.toUpperCase().startsWith(activeLetter)
+      a.name &&
+      a.name.toUpperCase().startsWith(activeLetter)
     );
   }
 
   if (searchValue) {
     filtered = filtered.filter(a =>
-      a.name && a.name.toLowerCase().includes(searchValue)
+      a.name &&
+      a.name.toLowerCase().includes(searchValue)
+    );
+  }
+
+  if (genderFilter !== "all") {
+    filtered = filtered.filter(a =>
+      a.gender &&
+      a.gender.toLowerCase() === genderFilter
     );
   }
 
@@ -271,6 +281,21 @@ function applyFilters() {
 // ===============================
 function filterByLetter(letter) {
   activeLetter = letter;
+  applyFilters();
+}
+
+function filterByGender(gender, btn) {
+
+  genderFilter = gender;
+
+  document
+    .querySelectorAll(".gender-btn")
+    .forEach(b =>
+      b.classList.remove("active")
+    );
+
+  btn.classList.add("active");
+
   applyFilters();
 }
 
@@ -486,16 +511,17 @@ function renderMobile(data) {
 ======================================== */
 
 function renderEmpty() {
-  const tables = document.querySelectorAll("tbody");
-  tables.forEach(t => t.innerHTML = `
-    <tr><td colspan="5" style="text-align:center; padding:20px;">
-      No data available
-    </td></tr>
-  `);
+  const femalePodium =
+  document.getElementById("femalePodium");
 
-  const podium = document.getElementById("podium");
-  if (podium) podium.innerHTML = "<p>No data</p>";
-}
+const malePodium =
+  document.getElementById("malePodium");
+
+if (femalePodium)
+  femalePodium.innerHTML = "<p>No data</p>";
+
+if (malePodium)
+  malePodium.innerHTML = "<p>No data</p>";
 
 /* ========================================
    📅 DATE FORMAT
