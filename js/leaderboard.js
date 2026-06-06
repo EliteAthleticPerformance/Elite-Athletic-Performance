@@ -102,19 +102,50 @@ function renderLeaderboard(data) {
   renderMobile(data);
 }
 
-/* ========================================
-   🥇 PODIUM (UNCHANGED - WORKING)
-======================================== */
-
 function renderPodium(data) {
-  const container = document.getElementById("podium");
+
+  const females = data.filter(
+    a => a.gender?.toLowerCase() === "female"
+  );
+
+  const males = data.filter(
+    a => a.gender?.toLowerCase() === "male"
+  );
+
+  renderGenderPodium(
+    females,
+    "femalePodium"
+  );
+
+  renderGenderPodium(
+    males,
+    "malePodium"
+  );
+
+}
+
+function renderGenderPodium(
+  athletes,
+  containerId
+) {
+
+  const container =
+    document.getElementById(containerId);
+
   if (!container) return;
 
-  const sorted = [...data].sort((a, b) => b.score - a.score);
-  const top3 = sorted.slice(0, 3);
+  const sorted = [...athletes]
+    .sort(
+      (a,b) => (b.score || 0) - (a.score || 0)
+    );
+
+  const top3 = sorted.slice(0,3);
 
   if (!top3.length) {
-    container.innerHTML = "<p style='opacity:0.6;'>No data available</p>";
+
+    container.innerHTML =
+      "<p>No athletes available</p>";
+
     return;
   }
 
@@ -123,30 +154,61 @@ function renderPodium(data) {
   const third = top3[2];
 
   const order = [
-    { athlete: second, className: "second", rank: 2 },
-    { athlete: first, className: "first", rank: 1 },
-    { athlete: third, className: "third", rank: 3 }
+
+    {
+      athlete: second,
+      className: "second",
+      rank: 2
+    },
+
+    {
+      athlete: first,
+      className: "first",
+      rank: 1
+    },
+
+    {
+      athlete: third,
+      className: "third",
+      rank: 3
+    }
+
   ].filter(item => item.athlete);
 
-  container.innerHTML = order.map(item => {
-    const a = item.athlete;
+  container.innerHTML =
+    order.map(item => {
 
-    return `
-      <div class="podium-item ${item.className} show"
-           onclick="goToAthlete('${encodeURIComponent(a.name)}')">
+      const a = item.athlete;
 
-        <div class="podium-rank">
-          ${item.rank === 1 ? "🥇" : item.rank === 2 ? "🥈" : "🥉"}
+      return `
+        <div
+          class="podium-item ${item.className} show"
+          onclick="goToAthlete('${encodeURIComponent(a.name)}')">
+
+          <div class="podium-rank">
+            ${
+              item.rank === 1
+                ? "🥇"
+                : item.rank === 2
+                ? "🥈"
+                : "🥉"
+            }
+          </div>
+
+          <div class="podium-name">
+            ${a.name}
+          </div>
+
+          <div class="podium-score">
+            ${a.score}
+          </div>
+
         </div>
+      `;
 
-        <div class="podium-name">${a.name}</div>
+    }).join("");
 
-        <div class="podium-score">${a.score}</div>
-      </div>
-    `;
-  }).join("");
 }
-
 
 // ===============================
 // 🔤 BUILD ALPHABET BAR
