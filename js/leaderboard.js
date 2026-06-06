@@ -511,17 +511,20 @@ function renderMobile(data) {
 ======================================== */
 
 function renderEmpty() {
+
   const femalePodium =
-  document.getElementById("femalePodium");
+    document.getElementById("femalePodium");
 
-const malePodium =
-  document.getElementById("malePodium");
+  const malePodium =
+    document.getElementById("malePodium");
 
-if (femalePodium)
-  femalePodium.innerHTML = "<p>No data</p>";
+  if (femalePodium)
+    femalePodium.innerHTML = "<p>No data</p>";
 
-if (malePodium)
-  malePodium.innerHTML = "<p>No data</p>";
+  if (malePodium)
+    malePodium.innerHTML = "<p>No data</p>";
+
+}
 
 /* ========================================
    📅 DATE FORMAT
