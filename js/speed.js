@@ -166,6 +166,23 @@ if (fastestFemale) {
 
   }
 
+    updateWeekLeader(uniqueDates[0]);
+
+weekSelector.addEventListener(
+  "change",
+  () => {
+
+    gtag("event", "speed_week_changed", {
+      week: weekSelector.value
+    });
+
+    updateWeekLeader(
+      weekSelector.value
+    );
+
+  }
+);
+
 }
 
   // ====================================
@@ -508,16 +525,7 @@ function startRace() {
 
   }
 
-  if (selections.length < 2) {
-
-  alert(
-    "Select at least 2 athletes."
-  );
-
-  return;
-
-}
-
+  
 gtag("event", "speed_race_started", {
   athlete1: athlete1.value || "",
   athlete2: athlete2.value || "",
