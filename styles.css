@@ -570,7 +570,7 @@ HERO STATS BANNER
 
   justify-content: space-evenly;
 
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 
   gap: 40px;
 
