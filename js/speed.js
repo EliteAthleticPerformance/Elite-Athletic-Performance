@@ -59,21 +59,51 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   });
 
-  // ====================================
-  // FASTEST SPEED OVERALL
-  // ====================================
+ // ====================================
+// FASTEST SPEED OVERALL
+// ====================================
 
-  const fastestOverall =
-    [...mphRows]
-      .sort((a, b) => b.mph - a.mph)[0];
+const maleRows =
+  mphRows.filter(
+    a => a.gender?.toLowerCase() === "male"
+  );
 
-  document.getElementById("fastestMPH")
+const femaleRows =
+  mphRows.filter(
+    a => a.gender?.toLowerCase() === "female"
+  );
+
+const fastestMale =
+  [...maleRows]
+    .sort((a,b) => b.mph - a.mph)[0];
+
+const fastestFemale =
+  [...femaleRows]
+    .sort((a,b) => b.mph - a.mph)[0];
+
+if (fastestMale) {
+
+  document.getElementById("fastestMaleMPH")
     .textContent =
-      fastestOverall.mph.toFixed(2) + " MPH";
+      fastestMale.mph.toFixed(2) + " MPH";
 
-  document.getElementById("fastestAthlete")
+  document.getElementById("fastestMaleAthlete")
     .textContent =
-      fastestOverall.name;
+      fastestMale.name;
+
+}
+
+if (fastestFemale) {
+
+  document.getElementById("fastestFemaleMPH")
+    .textContent =
+      fastestFemale.mph.toFixed(2) + " MPH";
+
+  document.getElementById("fastestFemaleAthlete")
+    .textContent =
+      fastestFemale.name;
+
+}
 
   // ====================================
   // FASTEST ATHLETE THIS WEEK
@@ -81,43 +111,62 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function updateWeekLeader(selectedDate) {
 
-    const weekRows =
-      mphRows.filter(
-        r => r.date === selectedDate
-      );
-
-    if (!weekRows.length) return;
-
-    const fastestWeek =
-      [...weekRows]
-        .sort((a, b) => b.mph - a.mph)[0];
-
-    document.getElementById("weeklyMPH")
-      .textContent =
-        fastestWeek.mph.toFixed(2) + " MPH";
-
-    document.getElementById("weeklyAthlete")
-      .textContent =
-        fastestWeek.name;
-
-  }
-
-  updateWeekLeader(uniqueDates[0]);
-
-  weekSelector.addEventListener(
-  "change",
-  () => {
-
-    gtag("event", "speed_week_changed", {
-      week: weekSelector.value
-    });
-
-    updateWeekLeader(
-      weekSelector.value
+  const weekRows =
+    mphRows.filter(
+      r => r.date === selectedDate
     );
 
+  const maleWeek =
+    weekRows.filter(
+      r => r.gender?.toLowerCase() === "male"
+    );
+
+  const femaleWeek =
+    weekRows.filter(
+      r => r.gender?.toLowerCase() === "female"
+    );
+
+  const fastestMale =
+    [...maleWeek]
+      .sort((a,b) => b.mph - a.mph)[0];
+
+  const fastestFemale =
+    [...femaleWeek]
+      .sort((a,b) => b.mph - a.mph)[0];
+
+  if (fastestMale) {
+
+    document.getElementById("weeklyMaleMPH")
+      .textContent =
+        fastestMale.mph.toFixed(2) + " MPH";
+
+    document.getElementById("weeklyMaleAthlete")
+      .textContent =
+        fastestMale.name;
+
   }
-);
+
+  if (fastestFemale) {
+
+    document.getElementById("weeklyFemaleMPH")
+      .textContent =
+        fastestFemale.mph.toFixed(2) + " MPH";
+
+    document.getElementById("weeklyFemaleAthlete")
+      .textContent =
+        fastestFemale.name;
+
+  } else {
+
+    document.getElementById("weeklyFemaleMPH")
+      .textContent = "--";
+
+    document.getElementById("weeklyFemaleAthlete")
+      .textContent = "No tests";
+
+  }
+
+}
 
   // ====================================
   // ATHLETE DEVELOPMENT DATA
