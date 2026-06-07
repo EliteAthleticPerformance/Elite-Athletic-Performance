@@ -165,6 +165,7 @@ if (fastestFemale) {
       .textContent = "No tests";
 
   }
+    }
 
     updateWeekLeader(uniqueDates[0]);
 
@@ -183,7 +184,7 @@ weekSelector.addEventListener(
   }
 );
 
-}
+
 
   // ====================================
   // ATHLETE DEVELOPMENT DATA
