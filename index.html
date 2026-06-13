@@ -500,11 +500,31 @@ Object.entries(athleteMap).forEach(([name, tests]) => {
 
   if (strengthTests.length >= 2) {
 
-    console.log(
-      name,
-      "strength tests:",
-      strengthTests.length
-    );
+    const latestStrength =
+  strengthTests[strengthTests.length - 1];
+
+const previousStrength =
+  strengthTests[strengthTests.length - 2];
+
+const latestTotal =
+  Number(latestStrength.bench || 0) +
+  Number(latestStrength.squat || 0) +
+  Number(latestStrength.clean || 0);
+
+const previousTotal =
+  Number(previousStrength.bench || 0) +
+  Number(previousStrength.squat || 0) +
+  Number(previousStrength.clean || 0);
+
+console.log(
+  name,
+  {
+    latestTotal,
+    previousTotal,
+    improvement:
+      latestTotal - previousTotal
+  }
+);
 
   }
 
