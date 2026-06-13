@@ -328,6 +328,12 @@ Object.values(athleteMap).forEach(tests => {
 
     if (totalImprovement > 0) {
 
+console.log(
+  "ADDING STRENGTH:",
+  latestStrength.name,
+  totalImprovement
+);
+      
       trending.push({
         type: "strength",
         name: latestStrength.name,
