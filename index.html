@@ -267,25 +267,52 @@ function buildTrendingAthletes(data) {
 
     if (improvement > 0) {
 
-      trending.push({
+     trending.push({
+  type: "mph",
+  name: tests[tests.length - 1].name,
+  improvement,
+  latest
+});
 
-        name:
-          tests[tests.length - 1].name,
+      const latestTotal =
+  (tests[tests.length - 1].bench || 0) +
+  (tests[tests.length - 1].squat || 0) +
+  (tests[tests.length - 1].clean || 0);
 
-        improvement,
+const previousTotal =
+  (tests[tests.length - 2].bench || 0) +
+  (tests[tests.length - 2].squat || 0) +
+  (tests[tests.length - 2].clean || 0);
 
-        latest
+const totalImprovement =
+  latestTotal - previousTotal;
 
-      });
+if (totalImprovement > 0) {
 
-    }
-
+  trending.push({
+    type: "strength",
+    name: tests[tests.length - 1].name,
+    improvement: totalImprovement,
+    latest: latestTotal
   });
 
-  trending.sort(
-    (a,b) =>
-      b.improvement - a.improvement
-  );
+}
+
+  trending.sort((a,b) => {
+
+  const aScore =
+    a.type === "mph"
+      ? a.improvement * 50
+      : a.improvement;
+
+  const bScore =
+    b.type === "mph"
+      ? b.improvement * 50
+      : b.improvement;
+
+  return bScore - aScore;
+
+});
 
   if (!trending.length) {
 
@@ -298,21 +325,39 @@ function buildTrendingAthletes(data) {
   feed.innerHTML = `
   <div class="trending-ticker">
     <div class="trending-track">
-      ${trending.map(a => `
-        <div class="trending-card">
-          <div class="trending-name">
-            ${a.name}
-          </div>
+     ${trending.map(a => `
 
-          <div class="trending-improvement">
-            📈 +${a.improvement.toFixed(2)} MPH
-          </div>
+  <div class="trending-card">
 
-          <div class="trending-current">
-            Current: ${a.latest.toFixed(2)} MPH
-          </div>
+    <div class="trending-name">
+      ${a.name}
+    </div>
+
+    ${
+      a.type === "mph"
+      ? `
+        <div class="trending-improvement">
+          📈 +${a.improvement.toFixed(2)} MPH
         </div>
-      `).join("")}
+
+        <div class="trending-current">
+          Current: ${a.latest.toFixed(2)} MPH
+        </div>
+      `
+      : `
+        <div class="trending-improvement">
+          🏋️ +${Math.round(a.improvement)} lbs
+        </div>
+
+        <div class="trending-current">
+          3-Lift Total: ${Math.round(a.latest)} lbs
+        </div>
+      `
+    }
+
+  </div>
+
+`).join("")}
 
       ${trending.map(a => `
         <div class="trending-card">
