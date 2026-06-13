@@ -280,41 +280,51 @@ function buildTrendingAthletes(data) {
 });
     }
 
-      const latestTotal =
-  (tests[tests.length - 1].bench || 0) +
-  (tests[tests.length - 1].squat || 0) +
-  (tests[tests.length - 1].clean || 0);
+      const strengthTests = tests.filter(t => {
 
-const previousTotal =
-  (tests[tests.length - 2].bench || 0) +
-  (tests[tests.length - 2].squat || 0) +
-  (tests[tests.length - 2].clean || 0);
+  const total =
+    Number(t.bench || 0) +
+    Number(t.squat || 0) +
+    Number(t.clean || 0);
 
-const totalImprovement =
-  latestTotal - previousTotal;
+  return total > 0;
 
-    console.log(
-  tests[tests.length - 1].name,
-  "latest:",
-  latestTotal,
-  "previous:",
-  previousTotal,
-  "improvement:",
-  totalImprovement
-);
+});
 
-if (totalImprovement > 0) {
+if (strengthTests.length >= 2) {
 
-  trending.push({
-    type: "strength",
-    name: tests[tests.length - 1].name,
-    gender: tests[tests.length - 1].gender,
-    improvement: totalImprovement,
-    latest: latestTotal
-  });
+  const latestStrength =
+    strengthTests[strengthTests.length - 1];
+
+  const previousStrength =
+    strengthTests[strengthTests.length - 2];
+
+  const latestTotal =
+    Number(latestStrength.bench || 0) +
+    Number(latestStrength.squat || 0) +
+    Number(latestStrength.clean || 0);
+
+  const previousTotal =
+    Number(previousStrength.bench || 0) +
+    Number(previousStrength.squat || 0) +
+    Number(previousStrength.clean || 0);
+
+  const totalImprovement =
+    latestTotal - previousTotal;
+
+  if (totalImprovement > 0) {
+
+    trending.push({
+      type: "strength",
+      name: latestStrength.name,
+      gender: latestStrength.gender,
+      improvement: totalImprovement,
+      latest: latestTotal
+    });
+
+  }
 
 }
-    });
 
   trending.sort((a,b) => {
 
