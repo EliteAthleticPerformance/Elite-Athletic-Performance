@@ -218,6 +218,128 @@ function goToPage(page) {
 <script src="./js/dataLoader.js?v=2"></script>
 
 <script>
+
+function buildTrendingAthletes(data) {
+
+  const feed =
+    document.getElementById("trendingFeed");
+
+  if (!feed) return;
+
+  const athleteMap = {};
+
+  data.forEach(row => {
+
+    if (!row.name || !row.mph || !row.date) return;
+
+    if (!athleteMap[row.name]) {
+      athleteMap[row.name] = [];
+    }
+
+    athleteMap[row.name].push(row);
+
+  });
+
+  const trending = [];
+
+  Object.values(athleteMap).forEach(tests => {
+
+    tests.sort(
+      (a,b) =>
+        new Date(a.date) -
+        new Date(b.date)
+    );
+
+    if (tests.length < 2) return;
+
+    const latest =
+      Number(
+        tests[tests.length - 1].mph
+      );
+
+    const previous =
+      Number(
+        tests[tests.length - 2].mph
+      );
+
+    const improvement =
+      latest - previous;
+
+    if (improvement > 0) {
+
+      trending.push({
+
+        name:
+          tests[tests.length - 1].name,
+
+        improvement,
+
+        latest
+
+      });
+
+    }
+
+  });
+
+  trending.sort(
+    (a,b) =>
+      b.improvement - a.improvement
+  );
+
+  if (!trending.length) {
+
+    feed.innerHTML =
+      "<p>No recent MPH improvements.</p>";
+
+    return;
+  }
+
+  let index = 0;
+
+  function rotateAthlete() {
+
+    const athlete =
+      trending[index];
+
+    feed.innerHTML = `
+
+      <div class="trending-card">
+
+        <div class="trending-name">
+          ${athlete.name}
+        </div>
+
+        <div class="trending-improvement">
+          📈 +${athlete.improvement.toFixed(2)} MPH
+        </div>
+
+        <div class="trending-current">
+          Current:
+          ${athlete.latest.toFixed(2)} MPH
+        </div>
+
+      </div>
+
+    `;
+
+    index++;
+
+    if (index >= trending.length) {
+      index = 0;
+    }
+
+  }
+
+  rotateAthlete();
+
+  setInterval(
+    rotateAthlete,
+    4000
+  );
+
+}
+  
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     await window.APP_READY;
@@ -456,6 +578,8 @@ setInterval(
   updateLeaderDisplays,
   3500
 );
+
+    buildTrendingAthletes(data);
 
   } catch (err) {
     console.error("❌ Dashboard load error:", err);
