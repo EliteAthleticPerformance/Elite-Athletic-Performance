@@ -242,91 +242,111 @@ function buildTrendingAthletes(data) {
 
   const trending = [];
 
-  Object.values(athleteMap).forEach(tests => {
+Object.values(athleteMap).forEach(tests => {
 
-    tests.sort(
-      (a,b) =>
-        new Date(a.date) -
-        new Date(b.date)
+  tests.sort(
+    (a,b) =>
+      new Date(a.date) -
+      new Date(b.date)
+  );
+
+  if (tests.length < 2) return;
+
+  /* =====================
+     MPH IMPROVEMENTS
+  ===================== */
+
+  const latest =
+    Number(
+      tests[tests.length - 1].mph
     );
 
-    if (tests.length < 2) return;
+  const previous =
+    Number(
+      tests[tests.length - 2].mph
+    );
 
-    const latest =
-      Number(
-        tests[tests.length - 1].mph
-      );
+  const improvement =
+    latest - previous;
 
-    const previous =
-      Number(
-        tests[tests.length - 2].mph
-      );
-
-    const improvement =
-      latest - previous;
-
-    if (
-  latest > 0 &&
-  previous > 0 &&
-  improvement > 0
-) {
-
-     trending.push({
-  type: "mph",
-  name: tests[tests.length - 1].name,
-  gender: tests[tests.length - 1].gender,     
-  improvement,
-  latest
-});
-    }
-
-      const strengthTests = tests.filter(t => {
-
-  const total =
-    Number(t.bench || 0) +
-    Number(t.squat || 0) +
-    Number(t.clean || 0);
-
-  return total > 0;
-
-});
-
-if (strengthTests.length >= 2) {
-
-  const latestStrength =
-    strengthTests[strengthTests.length - 1];
-
-  const previousStrength =
-    strengthTests[strengthTests.length - 2];
-
-  const latestTotal =
-    Number(latestStrength.bench || 0) +
-    Number(latestStrength.squat || 0) +
-    Number(latestStrength.clean || 0);
-
-  const previousTotal =
-    Number(previousStrength.bench || 0) +
-    Number(previousStrength.squat || 0) +
-    Number(previousStrength.clean || 0);
-
-  const totalImprovement =
-    latestTotal - previousTotal;
-
-  if (totalImprovement > 0) {
+  if (
+    latest > 0 &&
+    previous > 0 &&
+    improvement > 0
+  ) {
 
     trending.push({
-      type: "strength",
-      name: latestStrength.name,
-      gender: latestStrength.gender,
-      improvement: totalImprovement,
-      latest: latestTotal
+      type: "mph",
+      name: tests[tests.length - 1].name,
+      gender: tests[tests.length - 1].gender,
+      improvement,
+      latest
     });
 
   }
 
-}
+  /* =====================
+     STRENGTH IMPROVEMENTS
+  ===================== */
 
-  trending.sort((a,b) => {
+  const strengthTests =
+    tests.filter(t => {
+
+      const total =
+        Number(t.bench || 0) +
+        Number(t.squat || 0) +
+        Number(t.clean || 0);
+
+      return total > 0;
+
+    });
+
+  if (strengthTests.length >= 2) {
+
+    const latestStrength =
+      strengthTests[
+        strengthTests.length - 1
+      ];
+
+    const previousStrength =
+      strengthTests[
+        strengthTests.length - 2
+      ];
+
+    const latestTotal =
+      Number(latestStrength.bench || 0) +
+      Number(latestStrength.squat || 0) +
+      Number(latestStrength.clean || 0);
+
+    const previousTotal =
+      Number(previousStrength.bench || 0) +
+      Number(previousStrength.squat || 0) +
+      Number(previousStrength.clean || 0);
+
+    const totalImprovement =
+      latestTotal - previousTotal;
+
+    if (totalImprovement > 0) {
+
+      trending.push({
+        type: "strength",
+        name: latestStrength.name,
+        gender: latestStrength.gender,
+        improvement: totalImprovement,
+        latest: latestTotal
+      });
+
+    }
+
+  }
+
+}); // ← IMPORTANT: athlete loop ends here
+
+/* =====================
+   SORT RESULTS
+===================== */
+
+trending.sort((a,b) => {
 
   const aScore =
     a.type === "mph"
@@ -342,93 +362,103 @@ if (strengthTests.length >= 2) {
 
 });
 
-  if (!trending.length) {
-
-    feed.innerHTML =
-      "<p>No recent MPH improvements.</p>";
-
-    return;
-  }
-
 console.log("TRENDING:", trending);
-  
-  feed.innerHTML = `
+
+console.log(
+  "Strength:",
+  trending.filter(
+    t => t.type === "strength"
+  ).length,
+  "MPH:",
+  trending.filter(
+    t => t.type === "mph"
+  ).length
+);
+
+if (!trending.length) {
+
+  feed.innerHTML =
+    "<p>No recent improvements.</p>";
+
+  return;
+
+}
+
+feed.innerHTML = `
   <div class="trending-ticker">
     <div class="trending-track">
-    
-     ${trending.map(a => `
 
-  <div class="trending-card">
+      ${trending.map(a => `
 
-    <div class="trending-name">
-      ${a.name}
-    </div>
+        <div class="trending-card">
 
-    ${
-      a.type === "mph"
-      ? `
-        <div class="trending-improvement">
-          📈 +${a.improvement.toFixed(2)} MPH
+          <div class="trending-name">
+            ${a.name}
+          </div>
+
+          ${
+            a.type === "mph"
+            ? `
+              <div class="trending-improvement">
+                📈 +${a.improvement.toFixed(2)} MPH
+              </div>
+
+              <div class="trending-current">
+                Current: ${a.latest.toFixed(2)} MPH
+              </div>
+            `
+            : `
+              <div class="trending-improvement">
+                🏋️ +${Math.round(a.improvement)} lbs
+              </div>
+
+              <div class="trending-current">
+                3-Lift Total: ${Math.round(a.latest)} lbs
+              </div>
+            `
+          }
+
         </div>
 
-        <div class="trending-current">
-          Current: ${a.latest.toFixed(2)} MPH
-        </div>
-      `
-      : `
-        <div class="trending-improvement">
-          🏋️ +${Math.round(a.improvement)} lbs
-        </div>
+      `).join("")}
 
-        <div class="trending-current">
-          3-Lift Total: ${Math.round(a.latest)} lbs
-        </div>
-      `
-    }
+      ${trending.map(a => `
 
-  </div>
+        <div class="trending-card">
 
-`).join("")}
+          <div class="trending-name">
+            ${a.name}
+          </div>
 
-${trending.map(a => `
+          ${
+            a.type === "mph"
+            ? `
+              <div class="trending-improvement">
+                📈 +${a.improvement.toFixed(2)} MPH
+              </div>
 
-  <div class="trending-card">
+              <div class="trending-current">
+                Current: ${a.latest.toFixed(2)} MPH
+              </div>
+            `
+            : `
+              <div class="trending-improvement">
+                🏋️ +${Math.round(a.improvement)} lbs
+              </div>
 
-    <div class="trending-name">
-      ${a.name}
-    </div>
+              <div class="trending-current">
+                3-Lift Total: ${Math.round(a.latest)} lbs
+              </div>
+            `
+          }
 
-    ${
-      a.type === "mph"
-      ? `
-        <div class="trending-improvement">
-          📈 +${a.improvement.toFixed(2)} MPH
-        </div>
-
-        <div class="trending-current">
-          Current: ${a.latest.toFixed(2)} MPH
-        </div>
-      `
-      : `
-        <div class="trending-improvement">
-          🏋️ +${Math.round(a.improvement)} lbs
         </div>
 
-        <div class="trending-current">
-          3-Lift Total: ${Math.round(a.latest)} lbs
-        </div>
-      `
-    }
-
-  </div>
-
-`).join("")}
+      `).join("")}
 
     </div>
   </div>
 `;
-
-}
   
 document.addEventListener("DOMContentLoaded", async () => {
   try {
