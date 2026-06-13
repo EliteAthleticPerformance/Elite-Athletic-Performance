@@ -273,6 +273,7 @@ function buildTrendingAthletes(data) {
   improvement,
   latest
 });
+    }
 
       const latestTotal =
   (tests[tests.length - 1].bench || 0) +
@@ -297,6 +298,7 @@ if (totalImprovement > 0) {
   });
 
 }
+    });
 
   trending.sort((a,b) => {
 
@@ -325,6 +327,7 @@ if (totalImprovement > 0) {
   feed.innerHTML = `
   <div class="trending-ticker">
     <div class="trending-track">
+    
      ${trending.map(a => `
 
   <div class="trending-card">
@@ -359,21 +362,6 @@ if (totalImprovement > 0) {
 
 `).join("")}
 
-      ${trending.map(a => `
-        <div class="trending-card">
-          <div class="trending-name">
-            ${a.name}
-          </div>
-
-          <div class="trending-improvement">
-            📈 +${a.improvement.toFixed(2)} MPH
-          </div>
-
-          <div class="trending-current">
-            Current: ${a.latest.toFixed(2)} MPH
-          </div>
-        </div>
-      `).join("")}
     </div>
   </div>
 `;
