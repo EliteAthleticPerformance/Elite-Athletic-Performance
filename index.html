@@ -301,6 +301,13 @@ Object.values(athleteMap).forEach(tests => {
 
     });
 
+  console.log(
+  "BUILD TRENDING:",
+  tests[0].name,
+  "strength tests:",
+  strengthTests.length
+);
+
   if (strengthTests.length >= 2) {
 
     const latestStrength =
@@ -341,6 +348,17 @@ console.log(
   }
 );
 
+console.log(
+  "CHECKING:",
+  latestStrength.name,
+  totalImprovement
+);
+
+    console.log(
+  typeof totalImprovement,
+  totalImprovement
+);
+    
 if (totalImprovement > 0) {
 
   console.log(
