@@ -295,48 +295,43 @@ function buildTrendingAthletes(data) {
     return;
   }
 
-  let index = 0;
+  feed.innerHTML = `
+  <div class="trending-ticker">
+    <div class="trending-track">
+      ${trending.map(a => `
+        <div class="trending-card">
+          <div class="trending-name">
+            ${a.name}
+          </div>
 
-  function rotateAthlete() {
+          <div class="trending-improvement">
+            📈 +${a.improvement.toFixed(2)} MPH
+          </div>
 
-    const athlete =
-      trending[index];
-
-    feed.innerHTML = `
-
-      <div class="trending-card">
-
-        <div class="trending-name">
-          ${athlete.name}
+          <div class="trending-current">
+            Current: ${a.latest.toFixed(2)} MPH
+          </div>
         </div>
+      `).join("")}
 
-        <div class="trending-improvement">
-          📈 +${athlete.improvement.toFixed(2)} MPH
+      ${trending.map(a => `
+        <div class="trending-card">
+          <div class="trending-name">
+            ${a.name}
+          </div>
+
+          <div class="trending-improvement">
+            📈 +${a.improvement.toFixed(2)} MPH
+          </div>
+
+          <div class="trending-current">
+            Current: ${a.latest.toFixed(2)} MPH
+          </div>
         </div>
-
-        <div class="trending-current">
-          Current:
-          ${athlete.latest.toFixed(2)} MPH
-        </div>
-
-      </div>
-
-    `;
-
-    index++;
-
-    if (index >= trending.length) {
-      index = 0;
-    }
-
-  }
-
-  rotateAthlete();
-
-  setInterval(
-    rotateAthlete,
-    4000
-  );
+      `).join("")}
+    </div>
+  </div>
+`;
 
 }
   
