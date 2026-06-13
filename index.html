@@ -478,6 +478,38 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const data = await loadAthleteData();
 
+    const athleteMap = {};
+
+data.forEach(row => {
+  if (!athleteMap[row.name]) athleteMap[row.name] = [];
+  athleteMap[row.name].push(row);
+});
+
+Object.entries(athleteMap).forEach(([name, tests]) => {
+
+  const strengthTests = tests.filter(t => {
+
+    const total =
+      Number(t.bench || 0) +
+      Number(t.squat || 0) +
+      Number(t.clean || 0);
+
+    return total > 0;
+
+  });
+
+  if (strengthTests.length >= 2) {
+
+    console.log(
+      name,
+      "strength tests:",
+      strengthTests.length
+    );
+
+  }
+
+});
+
     console.log(
   data
     .filter(a => a.name === "Bliss, Micah")
