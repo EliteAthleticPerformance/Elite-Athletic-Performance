@@ -478,6 +478,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const data = await loadAthleteData();
 
+    console.log(
+  data
+    .filter(a => a.name === "Bliss, Micah")
+    .map(a => ({
+      date: a.date,
+      bench: a.bench,
+      squat: a.squat,
+      clean: a.clean
+    }))
+);
+
     console.log("FIRST ATHLETE:", data[0]);
     console.log("FIELDS:", Object.keys(data[0]));
 
