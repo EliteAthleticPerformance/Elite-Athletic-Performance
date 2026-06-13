@@ -324,25 +324,40 @@ Object.values(athleteMap).forEach(tests => {
       Number(previousStrength.clean || 0);
 
     const totalImprovement =
-      latestTotal - previousTotal;
-
-    if (totalImprovement > 0) {
+  latestTotal - previousTotal;
 
 console.log(
-  "ADDING STRENGTH:",
   latestStrength.name,
-  totalImprovement
+  {
+    latestTotal,
+    previousTotal,
+    totalImprovement,
+    latestBench: latestStrength.bench,
+    latestSquat: latestStrength.squat,
+    latestClean: latestStrength.clean,
+    previousBench: previousStrength.bench,
+    previousSquat: previousStrength.squat,
+    previousClean: previousStrength.clean
+  }
 );
-      
-      trending.push({
-        type: "strength",
-        name: latestStrength.name,
-        gender: latestStrength.gender,
-        improvement: totalImprovement,
-        latest: latestTotal
-      });
 
-    }
+if (totalImprovement > 0) {
+
+  console.log(
+    "ADDING STRENGTH:",
+    latestStrength.name,
+    totalImprovement
+  );
+
+  trending.push({
+    type: "strength",
+    name: latestStrength.name,
+    gender: latestStrength.gender,
+    improvement: totalImprovement,
+    latest: latestTotal
+  });
+
+}
 
   }
 
