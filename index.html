@@ -290,14 +290,7 @@ Object.values(athleteMap).forEach(tests => {
   ===================== */
 
   const strengthTests =
-    tests.filter(t => {
-
-      const total =
-        Number(t.bench || 0) +
-        Number(t.squat || 0) +
-        Number(t.clean || 0);
-
-      return total > 0;
+  tests.filter(t => Number(t.total) > 0);
 
     });
 
@@ -321,14 +314,10 @@ Object.values(athleteMap).forEach(tests => {
       ];
 
     const latestTotal =
-      Number(latestStrength.bench || 0) +
-      Number(latestStrength.squat || 0) +
-      Number(latestStrength.clean || 0);
+  Number(latestStrength.total);
 
-    const previousTotal =
-      Number(previousStrength.bench || 0) +
-      Number(previousStrength.squat || 0) +
-      Number(previousStrength.clean || 0);
+const previousTotal =
+  Number(previousStrength.total);
 
     const totalImprovement =
   latestTotal - previousTotal;
