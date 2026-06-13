@@ -293,6 +293,16 @@ const previousTotal =
 const totalImprovement =
   latestTotal - previousTotal;
 
+    console.log(
+  tests[tests.length - 1].name,
+  "latest:",
+  latestTotal,
+  "previous:",
+  previousTotal,
+  "improvement:",
+  totalImprovement
+);
+
 if (totalImprovement > 0) {
 
   trending.push({
