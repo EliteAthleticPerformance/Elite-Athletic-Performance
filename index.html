@@ -230,15 +230,15 @@ function buildTrendingAthletes(data) {
 
   data.forEach(row => {
 
-    if (!row.name || !row.mph || !row.date) return;
+  if (!row.name || !row.date) return;
 
-    if (!athleteMap[row.name]) {
-      athleteMap[row.name] = [];
-    }
+  if (!athleteMap[row.name]) {
+    athleteMap[row.name] = [];
+  }
 
-    athleteMap[row.name].push(row);
+  athleteMap[row.name].push(row);
 
-  });
+});
 
   const trending = [];
 
@@ -265,11 +265,16 @@ function buildTrendingAthletes(data) {
     const improvement =
       latest - previous;
 
-    if (improvement > 0) {
+    if (
+  latest > 0 &&
+  previous > 0 &&
+  improvement > 0
+) {
 
      trending.push({
   type: "mph",
   name: tests[tests.length - 1].name,
+  gender: tests[tests.length - 1].gender,     
   improvement,
   latest
 });
@@ -293,6 +298,7 @@ if (totalImprovement > 0) {
   trending.push({
     type: "strength",
     name: tests[tests.length - 1].name,
+    gender: tests[tests.length - 1].gender,
     improvement: totalImprovement,
     latest: latestTotal
   });
@@ -329,6 +335,40 @@ if (totalImprovement > 0) {
     <div class="trending-track">
     
      ${trending.map(a => `
+
+  <div class="trending-card">
+
+    <div class="trending-name">
+      ${a.name}
+    </div>
+
+    ${
+      a.type === "mph"
+      ? `
+        <div class="trending-improvement">
+          📈 +${a.improvement.toFixed(2)} MPH
+        </div>
+
+        <div class="trending-current">
+          Current: ${a.latest.toFixed(2)} MPH
+        </div>
+      `
+      : `
+        <div class="trending-improvement">
+          🏋️ +${Math.round(a.improvement)} lbs
+        </div>
+
+        <div class="trending-current">
+          3-Lift Total: ${Math.round(a.latest)} lbs
+        </div>
+      `
+    }
+
+  </div>
+
+`).join("")}
+
+${trending.map(a => `
 
   <div class="trending-card">
 
