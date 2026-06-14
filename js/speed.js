@@ -256,10 +256,10 @@ weekSelector.addEventListener(
 ==================================== */
 
 const currentRanks = {};
-const previousRanks = [];
+const previousRanks = {};
 
 [...athleteDevelopment]
-  .sort((a,b) => b.bestMPH - a.bestMPH)
+  .sort((a,b) => b.recentMPH - a.recentMPH)
   .forEach((athlete,index) => {
 
     currentRanks[athlete.name] =
@@ -376,36 +376,44 @@ if (athlete1 && athlete2 && athlete3) {
             : "";
 
         tbody.innerHTML += `
-          <tr>
+<tr>
 
-            <td>${a.name}</td>
+  <td>
+    ${
+      a.rankChange > 0
+        ? `🔼 ${a.rankChange}`
+        : a.rankChange < 0
+        ? `🔽 ${Math.abs(a.rankChange)}`
+        : `➖`
+    }
+  </td>
 
-            <td>
-              ${a.firstMPH.toFixed(2)}
-            </td>
+  <td>${a.name}</td>
 
-            <td>
-              ${a.recentMPH.toFixed(2)}
-            </td>
+  <td>
+    ${a.firstMPH.toFixed(2)}
+  </td>
 
-            <td>
-              ${a.bestMPH.toFixed(2)}
-            </td>
+  <td>
+    ${a.recentMPH.toFixed(2)}
+  </td>
 
-            <td class="${
-              a.change > 0
-                ? "positive-change"
-                : a.change < 0
-                ? "negative-change"
-                : ""
-            }">
+  <td>
+    ${a.bestMPH.toFixed(2)}
+  </td>
 
-              ${sign}${a.change.toFixed(2)}
+  <td class="${
+    a.change > 0
+      ? "positive-change"
+      : a.change < 0
+      ? "negative-change"
+      : ""
+  }">
+    ${sign}${a.change.toFixed(2)}
+  </td>
 
-            </td>
-
-          </tr>
-        `;
+</tr>
+`;
 
       });
 
