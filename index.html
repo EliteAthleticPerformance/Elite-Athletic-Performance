@@ -513,6 +513,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const data = await loadAthleteData();
 
+    console.log(
+  "TYSON FROM LOADER:",
+  data
+    .filter(a => a.name.includes("Tyson"))
+    .map(a => ({
+      name: a.name,
+      total: a.total,
+      bench: a.bench,
+      squat: a.squat,
+      clean: a.clean
+    }))
+);
+
     const athleteMap = {};
 
 data.forEach(row => {
