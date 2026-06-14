@@ -393,10 +393,10 @@ if (athlete1 && athlete2 && athlete3) {
 
   ${
     a.rankChange > 0
-      ? ` 🔼${a.rankChange}`
-      : a.rankChange < 0
-      ? ` 🔽${Math.abs(a.rankChange)}`
-      : ` ➖`
+    ? `<span class="rank-up-arrow">▲ ${a.rankChange}</span>`
+    : a.rankChange < 0
+    ? `<span class="rank-down-arrow">▼ ${Math.abs(a.rankChange)}</span>`
+    : `<span class="rank-neutral">➖</span>`
   }
 </td>
 
