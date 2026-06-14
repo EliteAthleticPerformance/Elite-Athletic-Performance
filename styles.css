@@ -2796,6 +2796,15 @@ LEADERBOARD LAYOUT (CLEAN + BALANCED)
   font-weight:600;
 }
 
+.rank-up {
+  color: #4CAF50;
+  font-weight: 700;
+}
+
+.rank-down {
+  color: #ff5252;
+  font-weight: 700;
+}
 
 .mph-card {
   max-width: 1600px;
