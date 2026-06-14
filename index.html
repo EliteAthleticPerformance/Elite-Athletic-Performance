@@ -247,6 +247,90 @@ if (!row.date) {
   
   const trending = [];
 
+  const trackedMetrics = [
+
+  {
+    type: "bench",
+    label: "🏋️ Bench Press",
+    key: "bench",
+    better: "higher",
+    suffix: " lbs"
+  },
+
+  {
+    type: "squat",
+    label: "🦵 Squat",
+    key: "squat",
+    better: "higher",
+    suffix: " lbs"
+  },
+
+  {
+    type: "clean",
+    label: "💥 Hang Clean",
+    key: "clean",
+    better: "higher",
+    suffix: " lbs"
+  },
+
+  {
+    type: "vertical",
+    label: "🚀 Vertical Jump",
+    key: "vertical",
+    better: "higher",
+    suffix: " in"
+  },
+
+  {
+    type: "broad",
+    label: "↔️ Broad Jump",
+    key: "broad",
+    better: "higher",
+    suffix: " ft"
+  },
+
+  {
+    type: "med",
+    label: "🏐 Med Ball Toss",
+    key: "med",
+    better: "higher",
+    suffix: " ft"
+  },
+
+  {
+    type: "situps",
+    label: "🔥 Sit-Ups",
+    key: "situps",
+    better: "higher",
+    suffix: ""
+  },
+
+  {
+    type: "agility",
+    label: "⚡ Agility",
+    key: "agility",
+    better: "lower",
+    suffix: " sec"
+  },
+
+  {
+    type: "ten",
+    label: "🏃 10 Yard Dash",
+    key: "ten",
+    better: "lower",
+    suffix: " sec"
+  },
+
+  {
+    type: "forty",
+    label: "🏃 40 Yard Dash",
+    key: "forty",
+    better: "lower",
+    suffix: " sec"
+  }
+
+];
+
 Object.values(athleteMap).forEach(tests => {
 
   tests.sort(
@@ -291,45 +375,86 @@ Object.values(athleteMap).forEach(tests => {
   }
 
   /* =====================
-     STRENGTH IMPROVEMENTS
-  ===================== */
+   STRENGTH IMPROVEMENTS
+===================== */
 
-  const strengthTests =
+const strengthTests =
   tests.filter(t => Number(t.total) > 0);
 
-   
+/* ----- 3-LIFT TOTAL ----- */
 
-    const latestStrength =
-      strengthTests[
-        strengthTests.length - 1
-      ];
+if (strengthTests.length >= 2) {
 
-    const previousStrength =
-      strengthTests[
-        strengthTests.length - 2
-      ];
+  const latestStrength =
+    strengthTests[strengthTests.length - 1];
 
-    const latestTotal =
-  Number(latestStrength.total);
+  const previousStrength =
+    strengthTests[strengthTests.length - 2];
 
-const previousTotal =
-  Number(previousStrength.total);
+  const latestTotal =
+    Number(latestStrength.total);
 
-    const totalImprovement =
-  latestTotal - previousTotal;
+  const previousTotal =
+    Number(previousStrength.total);
 
-    
-if (totalImprovement > 0) {
+  const totalImprovement =
+    latestTotal - previousTotal;
+
+  if (totalImprovement > 0) {
 
     trending.push({
-    type: "strength",
-    name: latestStrength.name,
-    gender: latestStrength.gender,
-    improvement: totalImprovement,
-    latest: latestTotal
-  });
+      type: "strength",
+      name: latestStrength.name,
+      gender: latestStrength.gender,
+      improvement: totalImprovement,
+      latest: latestTotal
+    });
+
+  }
 
 }
+
+/* ----- INDIVIDUAL TEST IMPROVEMENTS ----- */
+
+trackedMetrics.forEach(metric => {
+
+  const metricTests =
+    tests.filter(
+      t => Number(t[metric.key]) > 0
+    );
+
+  if (metricTests.length < 2) return;
+
+  const latestTest =
+    metricTests[metricTests.length - 1];
+
+  const previousTest =
+    metricTests[metricTests.length - 2];
+
+  const latestValue =
+    Number(latestTest[metric.key]);
+
+  const previousValue =
+    Number(previousTest[metric.key]);
+
+  const improvement =
+    metric.better === "higher"
+      ? latestValue - previousValue
+      : previousValue - latestValue;
+
+  if (improvement <= 0) return;
+
+  trending.push({
+    type: metric.type,
+    label: metric.label,
+    suffix: metric.suffix,
+    name: latestTest.name,
+    gender: latestTest.gender,
+    improvement,
+    latest: latestValue
+  });
+
+});
 
   }
 
@@ -346,15 +471,30 @@ if (totalImprovement > 0) {
 
 trending.sort((a,b) => {
 
+  const scoreWeights = {
+  mph: 50,
+  strength: 1,
+  bench: 5,
+  squat: 3,
+  clean: 4,
+  vertical: 15,
+  broad: 10,
+  med: 3,
+  situps: 1,
+  agility: 100,
+  ten: 100,
+  forty: 100
+};
+
+trending.sort((a,b) => {
+
   const aScore =
-    a.type === "mph"
-      ? a.improvement * 50
-      : a.improvement;
+    a.improvement *
+    (scoreWeights[a.type] || 1);
 
   const bScore =
-    b.type === "mph"
-      ? b.improvement * 50
-      : b.improvement;
+    b.improvement *
+    (scoreWeights[b.type] || 1);
 
   return bScore - aScore;
 
@@ -383,26 +523,36 @@ feed.innerHTML = `
           </div>
 
           ${
-            a.type === "mph"
-            ? `
-              <div class="trending-improvement">
-                📈 +${a.improvement.toFixed(2)} MPH
-              </div>
+  a.type === "mph"
+  ? `
+      <div class="trending-improvement">
+        📈 +${a.improvement.toFixed(2)} MPH
+      </div>
 
-              <div class="trending-current">
-                Current: ${a.latest.toFixed(2)} MPH
-              </div>
-            `
-            : `
-              <div class="trending-improvement">
-                🏋️ +${Math.round(a.improvement)} lbs
-              </div>
+      <div class="trending-current">
+        Current: ${a.latest.toFixed(2)} MPH
+      </div>
+    `
+  : a.type === "strength"
+  ? `
+      <div class="trending-improvement">
+        🏋️ +${Math.round(a.improvement)} lbs
+      </div>
 
-              <div class="trending-current">
-                3-Lift Total: ${Math.round(a.latest)} lbs
-              </div>
-            `
-          }
+      <div class="trending-current">
+        3-Lift Total: ${Math.round(a.latest)} lbs
+      </div>
+    `
+  : `
+      <div class="trending-improvement">
+        ${a.label}
+      </div>
+
+      <div class="trending-current">
+        +${a.improvement.toFixed(1)}${a.suffix}
+      </div>
+    `
+}
 
         </div>
 
@@ -417,26 +567,36 @@ feed.innerHTML = `
           </div>
 
           ${
-            a.type === "mph"
-            ? `
-              <div class="trending-improvement">
-                📈 +${a.improvement.toFixed(2)} MPH
-              </div>
+  a.type === "mph"
+  ? `
+      <div class="trending-improvement">
+        📈 +${a.improvement.toFixed(2)} MPH
+      </div>
 
-              <div class="trending-current">
-                Current: ${a.latest.toFixed(2)} MPH
-              </div>
-            `
-            : `
-              <div class="trending-improvement">
-                🏋️ +${Math.round(a.improvement)} lbs
-              </div>
+      <div class="trending-current">
+        Current: ${a.latest.toFixed(2)} MPH
+      </div>
+    `
+  : a.type === "strength"
+  ? `
+      <div class="trending-improvement">
+        🏋️ +${Math.round(a.improvement)} lbs
+      </div>
 
-              <div class="trending-current">
-                3-Lift Total: ${Math.round(a.latest)} lbs
-              </div>
-            `
-          }
+      <div class="trending-current">
+        3-Lift Total: ${Math.round(a.latest)} lbs
+      </div>
+    `
+  : `
+      <div class="trending-improvement">
+        ${a.label}
+      </div>
+
+      <div class="trending-current">
+        +${a.improvement.toFixed(1)}${a.suffix}
+      </div>
+    `
+}
 
         </div>
 
