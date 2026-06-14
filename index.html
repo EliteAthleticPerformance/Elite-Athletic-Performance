@@ -838,7 +838,21 @@ setInterval(
   3500
 );
 
+console.log(
+  "BEFORE BUILD:",
+  data.filter(
+    a => a.name === "Wyatt-Smith, Tyson"
+  )
+);
+    
     buildTrendingAthletes(data);
+
+    console.log(
+  "INSIDE BUILD:",
+  data.filter(
+    a => a.name === "Wyatt-Smith, Tyson"
+  )
+);
 
   } catch (err) {
     console.error("❌ Dashboard load error:", err);
