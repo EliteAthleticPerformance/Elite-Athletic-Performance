@@ -469,9 +469,7 @@ trackedMetrics.forEach(metric => {
    SORT RESULTS
 ===================== */
 
-trending.sort((a,b) => {
-
-  const scoreWeights = {
+const scoreWeights = {
   mph: 50,
   strength: 1,
   bench: 5,
