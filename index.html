@@ -230,7 +230,11 @@ function buildTrendingAthletes(data) {
 
   data.forEach(row => {
 
-  if (!row.name || !row.date) return;
+  if (!row.name) return;
+
+if (!row.date) {
+  row.date = "1900-01-01";
+}
 
   if (!athleteMap[row.name]) {
     athleteMap[row.name] = [];
