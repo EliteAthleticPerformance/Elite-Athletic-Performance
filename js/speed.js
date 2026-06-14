@@ -379,14 +379,22 @@ if (athlete1 && athlete2 && athlete3) {
 <tr>
 
   <td>
-    ${
-      a.rankChange > 0
-        ? `🔼 ${a.rankChange}`
-        : a.rankChange < 0
-        ? `🔽 ${Math.abs(a.rankChange)}`
-        : `➖`
-    }
-  </td>
+
+  ${
+    a.currentRank === 1
+      ? "👑"
+      : `#${a.currentRank}`
+  }
+
+  ${
+    a.rankChange > 0
+      ? ` 🔼${a.rankChange}`
+      : a.rankChange < 0
+      ? ` 🔽${Math.abs(a.rankChange)}`
+      : ` ➖`
+  }
+
+</td>
 
   <td>${a.name}</td>
 
