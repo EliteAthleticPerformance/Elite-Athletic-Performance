@@ -308,7 +308,23 @@ Object.values(athleteMap).forEach(tests => {
 
 }
 
+console.log(
+  "BUILD TRENDING:",
+  tests[0].name,
+  "strength tests:",
+  strengthTests.length,
+  strengthTests.map(t => ({
+    total: t.total,
+    date: t.date
+  }))
+);
+  
   if (strengthTests.length >= 2) {
+
+    console.log(
+    "ENTERED STRENGTH BLOCK:",
+    strengthTests[0].name
+  );
 
     const latestStrength =
       strengthTests[
@@ -362,6 +378,12 @@ if (totalImprovement > 0) {
     latestStrength.name,
     totalImprovement
   );
+
+  console.log(
+  "ABOUT TO PUSH:",
+  latestStrength.name,
+  totalImprovement
+);
 
   trending.push({
     type: "strength",
