@@ -378,8 +378,13 @@ if (athlete1 && athlete2 && athlete3) {
         tbody.innerHTML += `
 <tr>
 
-  <td>
-
+<td class="${
+  a.rankChange > 0
+    ? "rank-up"
+    : a.rankChange < 0
+    ? "rank-down"
+    : ""
+}">
   ${
     a.currentRank === 1
       ? "👑"
@@ -393,32 +398,25 @@ if (athlete1 && athlete2 && athlete3) {
       ? ` 🔽${Math.abs(a.rankChange)}`
       : ` ➖`
   }
-
 </td>
 
-  <td>${a.name}</td>
+<td>${a.name}</td>
 
-  <td>
-    ${a.firstMPH.toFixed(2)}
-  </td>
+<td>${a.firstMPH.toFixed(2)}</td>
 
-  <td>
-    ${a.recentMPH.toFixed(2)}
-  </td>
+<td>${a.recentMPH.toFixed(2)}</td>
 
-  <td>
-    ${a.bestMPH.toFixed(2)}
-  </td>
+<td>${a.bestMPH.toFixed(2)}</td>
 
-  <td class="${
-    a.change > 0
-      ? "positive-change"
-      : a.change < 0
-      ? "negative-change"
-      : ""
-  }">
-    ${sign}${a.change.toFixed(2)}
-  </td>
+<td class="${
+  a.change > 0
+    ? "positive-change"
+    : a.change < 0
+    ? "negative-change"
+    : ""
+}">
+  ${sign}${a.change.toFixed(2)}
+</td>
 
 </tr>
 `;
