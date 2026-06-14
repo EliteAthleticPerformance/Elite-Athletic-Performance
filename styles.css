@@ -2796,14 +2796,18 @@ LEADERBOARD LAYOUT (CLEAN + BALANCED)
   font-weight:600;
 }
 
-.rank-up {
-  color: #4CAF50;
+.rank-up-arrow {
+  color: #00c853;
   font-weight: 700;
 }
 
-.rank-down {
-  color: #ff5252;
+.rank-down-arrow {
+  color: #ff1744;
   font-weight: 700;
+}
+
+.rank-neutral {
+  color: #999;
 }
 
 .mph-card {
