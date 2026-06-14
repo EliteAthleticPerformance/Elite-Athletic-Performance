@@ -233,16 +233,62 @@ weekSelector.addEventListener(
 
       athleteDevelopment.push({
 
-        name,
-        firstMPH,
-        recentMPH,
-        bestMPH,
-        change
+  name,
+  firstMPH,
+  recentMPH,
+  bestMPH,
+  change,
 
-      });
+  previousMPH:
+    tests.length > 1
+      ? Number(
+          tests[tests.length - 2].mph
+        )
+      : recentMPH
+
+});
 
     }
   );
+
+  /* ====================================
+   RANK MOVEMENT CALCULATIONS
+==================================== */
+
+const currentRanks = {};
+const previousRanks = [];
+
+[...athleteDevelopment]
+  .sort((a,b) => b.bestMPH - a.bestMPH)
+  .forEach((athlete,index) => {
+
+    currentRanks[athlete.name] =
+      index + 1;
+
+  });
+
+[...athleteDevelopment]
+  .sort((a,b) => b.previousMPH - a.previousMPH)
+  .forEach((athlete,index) => {
+
+    previousRanks[athlete.name] =
+      index + 1;
+
+  });
+
+athleteDevelopment.forEach(a => {
+
+  a.currentRank =
+    currentRanks[a.name];
+
+  a.previousRank =
+    previousRanks[a.name];
+
+  a.rankChange =
+    a.previousRank -
+    a.currentRank;
+
+});
 
   // =========================
 // POPULATE SIMULATOR
