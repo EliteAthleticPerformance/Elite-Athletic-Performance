@@ -364,10 +364,10 @@ if (athlete1 && athlete2 && athlete3) {
     tbody.innerHTML = "";
 
     rows
-      .sort(
-        (a, b) =>
-          b.bestMPH - a.bestMPH
-      )
+  .sort(
+    (a, b) =>
+      b.recentMPH - a.recentMPH
+  )
       .forEach(a => {
 
         const sign =
