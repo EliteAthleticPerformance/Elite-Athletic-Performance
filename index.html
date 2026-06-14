@@ -244,10 +244,6 @@ if (!row.date) {
 
 });
 
-console.log(
-  "ATHLETE MAP HAS WYATT:",
-  athleteMap["Wyatt-Smith, Tyson"]
-);
   
   const trending = [];
 
@@ -303,38 +299,6 @@ Object.values(athleteMap).forEach(tests => {
 
    
 
- if (tests[0].name === "Wyatt-Smith, Tyson") {
-
-  console.log(
-    "TYSON TESTS:",
-    tests
-  );
-
-  console.log(
-    "TYSON STRENGTH TESTS:",
-    strengthTests
-  );
-
-}
-
-console.log(
-  "BUILD TRENDING:",
-  tests[0].name,
-  "strength tests:",
-  strengthTests.length,
-  strengthTests.map(t => ({
-    total: t.total,
-    date: t.date
-  }))
-);
-  
-  if (strengthTests.length >= 2) {
-
-    console.log(
-    "ENTERED STRENGTH BLOCK:",
-    strengthTests[0].name
-  );
-
     const latestStrength =
       strengthTests[
         strengthTests.length - 1
@@ -354,47 +318,10 @@ const previousTotal =
     const totalImprovement =
   latestTotal - previousTotal;
 
-console.log(
-  latestStrength.name,
-  {
-    latestTotal,
-    previousTotal,
-    totalImprovement,
-    latestBench: latestStrength.bench,
-    latestSquat: latestStrength.squat,
-    latestClean: latestStrength.clean,
-    previousBench: previousStrength.bench,
-    previousSquat: previousStrength.squat,
-    previousClean: previousStrength.clean
-  }
-);
-
-console.log(
-  "CHECKING:",
-  latestStrength.name,
-  totalImprovement
-);
-
-    console.log(
-  typeof totalImprovement,
-  totalImprovement
-);
     
 if (totalImprovement > 0) {
 
-  console.log(
-    "ADDING STRENGTH:",
-    latestStrength.name,
-    totalImprovement
-  );
-
-  console.log(
-  "ABOUT TO PUSH:",
-  latestStrength.name,
-  totalImprovement
-);
-
-  trending.push({
+    trending.push({
     type: "strength",
     name: latestStrength.name,
     gender: latestStrength.gender,
@@ -407,6 +334,11 @@ if (totalImprovement > 0) {
   }
 
 }); // ← IMPORTANT: athlete loop ends here
+
+
+
+
+  
 
 /* =====================
    SORT RESULTS
@@ -428,18 +360,6 @@ trending.sort((a,b) => {
 
 });
 
-console.log("TRENDING:", trending);
-
-console.log(
-  "Strength:",
-  trending.filter(
-    t => t.type === "strength"
-  ).length,
-  "MPH:",
-  trending.filter(
-    t => t.type === "mph"
-  ).length
-);
 
 if (!trending.length) {
 
@@ -544,19 +464,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const data = await loadAthleteData();
 
-    console.log(
-  "TYSON FROM LOADER:",
-  data
-    .filter(a => a.name.includes("Tyson"))
-    .map(a => ({
-      name: a.name,
-      total: a.total,
-      bench: a.bench,
-      squat: a.squat,
-      clean: a.clean
-    }))
-);
-
+    
     const athleteMap = {};
 
 data.forEach(row => {
@@ -595,33 +503,9 @@ const previousTotal =
   Number(previousStrength.squat || 0) +
   Number(previousStrength.clean || 0);
 
-console.log(
-  name,
-  {
-    latestTotal,
-    previousTotal,
-    improvement:
-      latestTotal - previousTotal
-  }
-);
-
   }
 
 });
-
-    console.log(
-  data
-    .filter(a => a.name === "Bliss, Micah")
-    .map(a => ({
-      date: a.date,
-      bench: a.bench,
-      squat: a.squat,
-      clean: a.clean
-    }))
-);
-
-    console.log("FIRST ATHLETE:", data[0]);
-    console.log("FIELDS:", Object.keys(data[0]));
 
     if (!data || !data.length) return;
 
@@ -842,23 +726,10 @@ setInterval(
   3500
 );
 
-console.log(
-  "BEFORE BUILD:",
-  data.filter(
-    a => a.name === "Wyatt-Smith, Tyson"
-  )
-);
-    
+   
     buildTrendingAthletes(data);
 
-    console.log(
-  "INSIDE BUILD:",
-  data.filter(
-    a => a.name === "Wyatt-Smith, Tyson"
-  )
-);
-
-  } catch (err) {
+      } catch (err) {
     console.error("❌ Dashboard load error:", err);
   }
 });
