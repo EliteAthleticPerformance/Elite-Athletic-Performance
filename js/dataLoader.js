@@ -354,12 +354,9 @@ console.log("ROW:", row);
 
   // 🔥 3-LIFT TOTAL (NEW)
   total:
-    num(row.total || row["3 Lift Projected Max Total"]) ||
-    (
-      num(row.bench || row["Bench Press"]) +
-      num(row.squat || row["Squat"]) +
-      num(row.clean || row["Hang Clean"])
-    ),
+  num(row.bench || row["Bench Press"]) +
+  num(row.squat || row["Squat"]) +
+  num(row.clean || row["Hang Clean"]),
 
   // ⚡ EXPLOSIVE
   vertical: num(row.vertical || row["Vertical Jump"]),
