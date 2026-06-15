@@ -14,7 +14,7 @@ let currentSearch = "";
   try {
     await window.APP_READY;
 
-    console.log("✅ TESTING INIT START");
+    
 
     const data = await loadAthleteData();
 
@@ -158,7 +158,7 @@ function renderTable(data) {
 
   data.forEach(a => {
 
-     console.log("GROUP VALUE:", a.group);
+     
      
     const prs = prMap[a.name];
 
