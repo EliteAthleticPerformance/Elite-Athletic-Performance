@@ -15,6 +15,8 @@ document.addEventListener("headerLoaded", async () => {
 
     const data = await loadAthleteData();
 
+     console.table(data.slice(0,5));
+
     // ✅ KEEP ALL ENTRIES (NO COLLAPSING)
    const athleteMap = {};
 
