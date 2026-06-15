@@ -38,6 +38,16 @@ data.forEach((a, i) => {
 // ✅ final clean list
 athletes = Object.values(athleteMap);
 
+     console.log(
+  "Athletes with scores:",
+  data.filter(a => a.score > 0).length
+);
+
+console.log(
+  "Total athletes:",
+  data.length
+);
+
     // ✅ SORT BY SCORE
     athletes.sort((a, b) => b.score - a.score);
 
