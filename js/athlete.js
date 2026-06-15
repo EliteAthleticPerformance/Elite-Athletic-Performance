@@ -232,7 +232,7 @@ function renderAthlete(name) {
   if (!history.length) return showError("No data found");
 
   const latest = history[history.length - 1];
-  console.log("Cole Data:", latest);
+  
   CURRENT_ATHLETE = latest;
 
   trackEvent("athlete_profile_view", {
@@ -689,7 +689,7 @@ else if (type === "similar") {
 ======================================== */
 
 function renderRadar(a, comparison=null) {
-  console.log("CHART DATA:", a);
+  
   const ctx = document.getElementById("radarChart");
   if (!ctx) return;
 
@@ -1116,5 +1116,5 @@ function renderHeadToHead(a, b) {
 
   radarChart.update();
 
-  console.log("🔥 HEAD TO HEAD:", a.name, b.name);
+  
 }
