@@ -222,8 +222,7 @@ renderTrialBanner(school);
 
     const url = `${config.dataURL}?school=${school}&t=${Date.now()}`;
 
-   console.log("🏫 FINAL SCHOOL:", school);
-console.log("🔗 FINAL URL:", url);
+   
 
     // ========================================
     // 🌐 FETCH (SAFE)
@@ -245,16 +244,7 @@ console.log("🔗 FINAL URL:", url);
       throw new Error("API did not return valid JSON");
     }
 
-    console.log("🧪 RAW API:", raw);
-
-    console.log(
-  "RAW ALVAREZ",
-  raw.filter(
-    r =>
-      r.name &&
-      r.name.includes("Alvarez")
-  )
-);
+    
 
     if (!Array.isArray(raw)) {
       console.warn("⚠️ API did not return an array");
@@ -272,20 +262,13 @@ console.log("🔗 FINAL URL:", url);
 
     APP_DATA = raw.map(row => {
 
-console.log("🧪 ROW DATA:", row);
 
-      console.log(
-  "ALVAREZ RAW:",
-  row.name,
-  row.date,
-  row.mph
-);
 
       if (
   row["Student-Athlete"] &&
   row["Student-Athlete"].includes("Alvarez")
 ) {
-  console.log("FULL ALVAREZ ROW:", row);
+  
 }
        
       const name =
@@ -305,21 +288,7 @@ console.log("🧪 ROW DATA:", row);
         activeRaw === "" ||
         activeRaw === undefined;
 
-      console.log("HEADERS:", Object.keys(row));
-console.log("ROW:", row);
-
-      console.log("MPH CHECK:", {
-  mph: row.mph,
-  MPH: row["MPH"],
-  keys: Object.keys(row)
-});
-
-      console.log(
-  "MPH BEFORE RETURN:",
-  row.name,
-  row.mph,
-  row["MPH"]
-);
+     
 
       return {
   id: clean(row.id || row.ID),
@@ -397,15 +366,7 @@ console.log("ROW:", row);
       a.active
     );
 
-    console.log(
-  "ALVAREZ RECORDS:",
-  APP_DATA.filter(a =>
-    a.name.includes("Alvarez")
-  )
-);
     
-    console.log("🔥 CLEAN DATA:", APP_DATA);
-    console.log("✅ ATHLETES LOADED:", APP_DATA.length);
 
     return APP_DATA;
 
