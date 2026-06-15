@@ -116,9 +116,7 @@ async function sendControl(payload) {
 
     payload.timestamp = new Date().toISOString();
 
-    console.log("🎮 Sending control:", payload);
-
-    await fetch(window.SCHOOL_CONFIG.dataURL, {
+        await fetch(window.SCHOOL_CONFIG.dataURL, {
         method: "POST",
         body: JSON.stringify(payload)
     });
