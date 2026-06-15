@@ -15,7 +15,7 @@ document.addEventListener("headerLoaded", async () => {
 
     const data = await loadAthleteData();
 
-     console.log(data[0]);
+     console.dir(data[0]);
 
     // ✅ KEEP ALL ENTRIES (NO COLLAPSING)
    const athleteMap = {};
