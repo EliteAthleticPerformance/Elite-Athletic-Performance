@@ -9,7 +9,7 @@ let isSubmitting = false;
 ======================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("ENTER.JS LOADED");
+  
 
   const btn = document.getElementById("submitBtn");
 
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   btn.addEventListener("click", async () => {
-    console.log("🔥 SAVE BUTTON CLICKED");
+    
 
     try {
       await saveAthlete();
@@ -203,8 +203,7 @@ function validateEntry(entry) {
 
 async function submitToGoogle(entry, url) {
   try {
-    console.log("🚀 POSTING TO URL:", url);
-    console.log("📦 DATA BEING SENT:", entry);
+    
 
     // Convert to form data (required for Apps Script)
     const body = new URLSearchParams(entry);
@@ -247,11 +246,11 @@ async function getSubmitURL() {
 
   const config = await window.APP_READY;
 
-  console.log("🔥 APP_READY CONFIG:", config);
+  
 
   const url = config?.submitURL;
 
-  console.log("🔥 FINAL SUBMIT URL:", url);
+ 
 
   if (!url) {
     showMessage("Config error: missing submitURL", "error");
