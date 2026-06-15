@@ -19,7 +19,7 @@ async function init() {
 
     const data = await loadAthleteData();
 
-    console.log("📊 Leaderboard Data:", data);
+   
 
     if (!data || !data.length) {
       renderEmpty();
