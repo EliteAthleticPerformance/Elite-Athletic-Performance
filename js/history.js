@@ -42,9 +42,12 @@ function renderAthlete(name) {
   if (!container) return;
 
   const history = DATA
-    .filter(a => a.name === name)
-    .slice() // 🔥 prevent mutation
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
+  .filter(a =>
+    a.name === name &&
+    a.isPerformanceTest
+  )
+  .slice()
+  .sort((a, b) => new Date(a.date) - new Date(b.date));
 
   if (!history.length) {
     container.innerHTML = `<p>No data found for ${name}</p>`;
