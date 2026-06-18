@@ -289,7 +289,7 @@ renderTrialBanner(school);
         activeRaw === undefined;
 
      // 🔍 DEBUG BLISS SCORE
-if (name.includes("Bliss")) {
+if (name.includes("Gilmore")) {
   console.log(
     "FINAL SCORE VALUE:",
     num(row["Total Athletic Performance Points"])
