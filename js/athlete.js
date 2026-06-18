@@ -226,18 +226,11 @@ function calculateMultiSportSimilarity(a, b) {
 function renderAthlete(name) {
 
   const history = DATA
-  .filter(a => a.name === name);
-
-console.table(
-  history.map(a => ({
-    date: a.date,
-    mph: a.mph,
-    bench: a.bench,
-    squat: a.squat,
-    clean: a.clean,
-    isPerformanceTest: a.isPerformanceTest
-  }))
-);
+  .filter(a =>
+    a.name === name &&
+    a.isPerformanceTest
+  )
+  .sort((a, b) => new Date(a.date) - new Date(b.date));
 
   if (!history.length) return showError("No data found");
 
