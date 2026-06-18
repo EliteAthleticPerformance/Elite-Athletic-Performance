@@ -381,6 +381,7 @@ liftTotal:
   // 🏆 ATHLETIC PERFORMANCE SCORE
   score: num(row.total)
 };
+      })
 
     // ========================================
     // ✅ FINAL FILTER (CRITICAL)
