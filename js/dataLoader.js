@@ -335,10 +335,10 @@ if (name.includes("Gilmore")) {
   clean: num(row.clean || row["Hang Clean"]),
 
   // 🔥 3-LIFT TOTAL
-  total:
-    num(row.bench || row["Bench Press"]) +
-    num(row.squat || row["Squat"]) +
-    num(row.clean || row["Hang Clean"]),
+liftTotal:
+  num(row.bench || row["Bench Press"]) +
+  num(row.squat || row["Squat"]) +
+  num(row.clean || row["Hang Clean"]),
 
   // ⚡ EXPLOSIVE
   vertical: num(row.vertical || row["Vertical Jump"]),
