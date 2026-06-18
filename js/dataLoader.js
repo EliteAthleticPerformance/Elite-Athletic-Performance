@@ -329,16 +329,16 @@ if (name.includes("Gilmore")) {
   thirdPosition: clean(row.thirdPosition || row["Third Position"]),
   thirdPosition2: clean(row.thirdPosition2 || row["Third Position 2"]),
 
-  // 🏋️ STRENGTH
+   // 🏋️ STRENGTH
   bench: num(row.bench || row["Bench Press"]),
   squat: num(row.squat || row["Squat"]),
   clean: num(row.clean || row["Hang Clean"]),
 
-  // 🔥 3-LIFT TOTAL (NEW)
+  // 🔥 3-LIFT TOTAL
   total:
-  num(row.bench || row["Bench Press"]) +
-  num(row.squat || row["Squat"]) +
-  num(row.clean || row["Hang Clean"]),
+    num(row.bench || row["Bench Press"]) +
+    num(row.squat || row["Squat"]) +
+    num(row.clean || row["Hang Clean"]),
 
   // ⚡ EXPLOSIVE
   vertical: num(row.vertical || row["Vertical Jump"]),
@@ -353,6 +353,22 @@ if (name.includes("Gilmore")) {
   // 💨 VELOCITY
   mph: num(row.mph || row["MPH"]),
 
+  // 🔍 TRUE ATHLETIC PERFORMANCE TEST?
+  // MPH-only entries will return FALSE
+  isPerformanceTest:
+    (
+      num(row.bench || row["Bench Press"]) > 0 ||
+      num(row.squat || row["Squat"]) > 0 ||
+      num(row.clean || row["Hang Clean"]) > 0 ||
+      num(row.vertical || row["Vertical Jump"]) > 0 ||
+      num(row.broad || row["Broad Jump"]) > 0 ||
+      num(row.medBall || row["Med Ball Toss"]) > 0 ||
+      num(row.agility || row["Pro Agility"]) > 0 ||
+      num(row.situps || row["Sit-Ups"]) > 0 ||
+      num(row.dash10 || row["10 yd Dash"]) > 0 ||
+      num(row.dash40 || row["40 yd Dash"]) > 0
+    ),
+
   // 🔁 CORE
   situps: num(row.situps || row["Sit-Ups"]),
 
@@ -365,7 +381,6 @@ if (name.includes("Gilmore")) {
   // 🏆 ATHLETIC PERFORMANCE SCORE
   score: num(row.total)
 };
-    })
 
     // ========================================
     // ✅ FINAL FILTER (CRITICAL)
