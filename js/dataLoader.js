@@ -288,7 +288,20 @@ renderTrialBanner(school);
         activeRaw === "" ||
         activeRaw === undefined;
 
-     
+     // 🔍 DEBUG BLISS SCORE
+if (name.includes("Bliss")) {
+  console.log(
+    "FINAL SCORE VALUE:",
+    num(row["Total Athletic Performance Points"])
+  );
+
+  console.log(
+    "RAW SCORE FIELD:",
+    row["Total Athletic Performance Points"]
+  );
+
+  console.log("FULL ROW:", row);
+}
 
       return {
   id: clean(row.id || row.ID),
