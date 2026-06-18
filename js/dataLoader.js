@@ -363,9 +363,7 @@ if (name.includes("Bliss")) {
   powerPoints: num(row.powerPoints || row["Power Score"]),
 
   // 🏆 ATHLETIC PERFORMANCE SCORE
-  score: num(
-    row["Total Athletic Performance Points"]
-  )
+  score: num(row.total)
 };
     })
 
