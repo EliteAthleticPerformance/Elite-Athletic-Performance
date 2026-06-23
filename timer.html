@@ -1279,14 +1279,12 @@ function buildWorkoutTimeline() {
                 phaseSequence.push("work");
 
                 phaseMeta.push({
-                    phase: "work",
-                    setIndex: index + 1,
-                    station,
-                    duration:
-                        item.workSec ||
-                        sheetWorkDuration ||
-                        safeGet("workTime", 30)
-                });
+    phase: "work",
+    setIndex: index + 1,
+    station,
+    rotation: station,
+    duration: ...
+});
 
                 // ------------------------------------------------
                 // FINAL STATION BEFORE BREAK
@@ -1311,14 +1309,12 @@ function buildWorkoutTimeline() {
                 phaseSequence.push("rotate");
 
                 phaseMeta.push({
-                    phase: "rotate",
-                    setIndex: index + 1,
-                    station,
-                    duration:
-                        item.rotateSec ||
-                        sheetRotateDuration ||
-                        safeGet("restTime", 30)
-                });
+    phase: "rotate",
+    setIndex: index + 1,
+    station,
+    rotation: station + 1,
+    duration: ...
+});
             }
         }
 
@@ -2167,9 +2163,8 @@ if (currentPhase !== prevPhase) {
         state.phase === "break"
     ) {
 
-        rotationCount++;
-
-        applyRotationState(rotationCount);
+        rotationCount = state.rotation || 0;
+applyRotationState(rotationCount);
 
         console.log(
             "🔁 Quadrants rotated:",
