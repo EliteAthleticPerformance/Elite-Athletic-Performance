@@ -138,7 +138,7 @@ if (nextItem && nextItem.type === "set") {
 
         case "rotate":
 
-            if (rotationCount >= maxRotations) {
+            if (rotationCount === maxRotations) {
                 rotationCount = 0;
                 currentSet++;
                 displaySetNumber++;
