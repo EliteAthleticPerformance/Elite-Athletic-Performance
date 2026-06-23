@@ -122,6 +122,7 @@ function tick() {
         const nextItem = workoutData[nextSet - 1];
 
         if (nextItem && nextItem.type === "set") {
+            console.log("🔥 SHOWING PREVIEW FOR SET", nextSet);
             previewSetData(nextSet);
         }
     }
@@ -251,11 +252,11 @@ function loadSetData(i) {
 
 function previewSetData(i) {
 
+        console.log("🔥 PREVIEW FIRING", i, workoutData[i - 1]);
+
     const item = workoutData[i - 1];
 
-        console.log("🔥 PREVIEW FIRING", item);
-
-    if (!item || item.type !== "set") return;
+       if (!item || item.type !== "set") return;
 
     document.querySelector("#q1 .quad-text").innerHTML =
         `
