@@ -253,6 +253,8 @@ function previewSetData(i) {
 
     const item = workoutData[i - 1];
 
+        console.log("🔥 PREVIEW FIRING", item);
+
     if (!item || item.type !== "set") return;
 
     document.querySelector("#q1 .quad-text").innerHTML =
