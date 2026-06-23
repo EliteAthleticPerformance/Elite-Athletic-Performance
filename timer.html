@@ -2205,15 +2205,13 @@ applyRotationState(rotationCount);
 
     speakRotate();
 
-    // 🔥 Detect final rotate before break
-    const nextSegment =
-        phaseMeta[state.sequenceIndex + 1];
+    if (state.rotation === 4) {
 
-    if (
-        nextSegment &&
-        nextSegment.phase === "break"
-    ) {
-        previewNextSet();
+        const nextSet = currentSet + 1;
+
+        console.log("🔥 PREVIEWING SET", nextSet);
+
+        previewSetData(nextSet);
     }
 
     break;
