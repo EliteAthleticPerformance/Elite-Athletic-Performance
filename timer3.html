@@ -121,10 +121,17 @@ function tick() {
         const nextSet = currentSet + 1;
         const nextItem = workoutData[nextSet - 1];
 
-        if (nextItem && nextItem.type === "set") {
-            console.log("🔥 SHOWING PREVIEW FOR SET", nextSet);
-            previewSetData(nextSet);
-        }
+        console.log("======== PREVIEW CHECK ========");
+console.log("currentSet =", currentSet);
+console.log("nextSet =", nextSet);
+console.log("rotationCount =", rotationCount);
+console.log("workoutData.length =", workoutData.length);
+console.log("nextItem =", nextItem);
+
+if (nextItem && nextItem.type === "set") {
+    console.log("🔥 SHOWING PREVIEW FOR SET", nextSet);
+    previewSetData(nextSet);
+}
     }
 
     break;
