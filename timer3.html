@@ -108,12 +108,25 @@ function tick() {
             break;
 
         case "work":
-            rotateQuadrantColors();
-            rotationCount++;
 
-            currentPhase = "rotate";
-            timeLeft = getRestDuration();
-            break;
+    rotateQuadrantColors();
+    rotationCount++;
+
+    currentPhase = "rotate";
+    timeLeft = getRestDuration();
+
+    // Last rotation before advancing to next set
+    if (rotationCount >= maxRotations) {
+
+        const nextSet = currentSet + 1;
+        const nextItem = workoutData[nextSet - 1];
+
+        if (nextItem && nextItem.type === "set") {
+            previewSetData(nextSet);
+        }
+    }
+
+    break;
 
         case "rotate":
 
@@ -229,7 +242,36 @@ function loadSetData(i) {
     document.querySelector("#q4 .quad-text").innerText = item.move;
 }
 
+function previewSetData(i) {
 
+    const item = workoutData[i - 1];
+
+    if (!item || item.type !== "set") return;
+
+    document.querySelector("#q1 .quad-text").innerHTML =
+        `
+        <div>${item.core}</div>
+        <div style="font-size:.8em;margin-top:6px;">
+            ${item.percent}% x ${item.coreReps}
+        </div>
+        `;
+
+    document.querySelector("#q2 .quad-text").innerHTML =
+        `
+        <div>${item.aux}</div>
+        <div style="font-size:.8em;margin-top:6px;">
+            ${item.auxReps}
+        </div>
+        `;
+
+    document.querySelector("#q4 .quad-text").innerHTML =
+        `
+        <div>${item.move}</div>
+        <div style="font-size:.8em;margin-top:6px;">
+            ${item.moveReps}
+        </div>
+        `;
+}
 
 function getWorkDuration() {
     const val = parseInt(document.getElementById("workTime").value, 10);
