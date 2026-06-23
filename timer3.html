@@ -234,12 +234,19 @@ function updatePhaseDisplay() {
 /* ===================== DATA ===================== */
 
 function loadSetData(i) {
+
     const item = workoutData[i - 1];
+
     if (!item || item.type !== "set") return;
 
-    document.querySelector("#q1 .quad-text").innerText = item.core;
-    document.querySelector("#q2 .quad-text").innerText = item.aux;
-    document.querySelector("#q4 .quad-text").innerText = item.move;
+    document.querySelector("#q1 .quad-text").innerText =
+        item.coreLift;
+
+    document.querySelector("#q2 .quad-text").innerText =
+        item.auxLift;
+
+    document.querySelector("#q4 .quad-text").innerText =
+        item.movement;
 }
 
 function previewSetData(i) {
@@ -250,25 +257,28 @@ function previewSetData(i) {
 
     document.querySelector("#q1 .quad-text").innerHTML =
         `
-        <div>${item.core}</div>
-        <div style="font-size:.8em;margin-top:6px;">
-            ${item.percent}% x ${item.coreReps}
+        <div style="font-size:.7em;color:yellow;">UP NEXT</div>
+        <div>${item.coreLift}</div>
+        <div style="font-size:.8em;">
+            ${item.percentage}% x ${item.coreReps}
         </div>
         `;
 
     document.querySelector("#q2 .quad-text").innerHTML =
         `
-        <div>${item.aux}</div>
-        <div style="font-size:.8em;margin-top:6px;">
+        <div style="font-size:.7em;color:yellow;">UP NEXT</div>
+        <div>${item.auxLift}</div>
+        <div style="font-size:.8em;">
             ${item.auxReps}
         </div>
         `;
 
     document.querySelector("#q4 .quad-text").innerHTML =
         `
-        <div>${item.move}</div>
-        <div style="font-size:.8em;margin-top:6px;">
-            ${item.moveReps}
+        <div style="font-size:.7em;color:yellow;">UP NEXT</div>
+        <div>${item.movement}</div>
+        <div style="font-size:.8em;">
+            ${item.movementReps}
         </div>
         `;
 }
