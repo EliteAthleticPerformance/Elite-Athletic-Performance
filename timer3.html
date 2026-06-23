@@ -116,7 +116,7 @@ function tick() {
     timeLeft = getRestDuration();
 
     // Last rotation before advancing to next set
-    if (rotationCount >= maxRotations) {
+    if (rotationCount === maxRotations) {
 
         const nextSet = currentSet + 1;
         const nextItem = workoutData[nextSet - 1];
@@ -247,50 +247,53 @@ function loadSetData(i) {
 
     if (!item || item.type !== "set") return;
 
-    document.querySelector("#q1 .quad-text").innerText =
-        item.coreLift;
+    document.querySelector("#q1").innerHTML = `
+        <div class="quad-title">Core Lift</div>
+        <div class="quad-text">${item.coreLift}</div>
+    `;
 
-    document.querySelector("#q2 .quad-text").innerText =
-        item.auxLift;
+    document.querySelector("#q2").innerHTML = `
+        <div class="quad-title">Aux Lift</div>
+        <div class="quad-text">${item.auxLift}</div>
+    `;
 
-    document.querySelector("#q4 .quad-text").innerText =
-        item.movement;
+    document.querySelector("#q4").innerHTML = `
+        <div class="quad-title">Movement / Stability Skill</div>
+        <div class="quad-text">${item.movement}</div>
+    `;
 }
 
 function previewSetData(i) {
 
-        console.log("🔥 PREVIEW FIRING", i, workoutData[i - 1]);
-
     const item = workoutData[i - 1];
 
-       if (!item || item.type !== "set") return;
+    if (!item || item.type !== "set") return;
 
-    document.querySelector("#q1 .quad-text").innerHTML =
-        `
-        <div style="font-size:.7em;color:yellow;">UP NEXT</div>
-        <div>${item.coreLift}</div>
-        <div style="font-size:.8em;">
-            ${item.percentage}% x ${item.coreReps}
-        </div>
-        `;
+    const q1 = document.querySelector("#q1");
+    const q2 = document.querySelector("#q2");
+    const q4 = document.querySelector("#q4");
 
-    document.querySelector("#q2 .quad-text").innerHTML =
-        `
-        <div style="font-size:.7em;color:yellow;">UP NEXT</div>
-        <div>${item.auxLift}</div>
-        <div style="font-size:.8em;">
-            ${item.auxReps}
-        </div>
-        `;
+    q1.innerHTML = `
+        <div class="quad-title">Core Lift</div>
+        <div class="quad-text">🔥 NEXT</div>
+        <div class="quad-text">${item.coreLift}</div>
+        <div class="quad-text">${item.coreReps} Reps</div>
+        <div class="quad-text">${item.percentage}%</div>
+    `;
 
-    document.querySelector("#q4 .quad-text").innerHTML =
-        `
-        <div style="font-size:.7em;color:yellow;">UP NEXT</div>
-        <div>${item.movement}</div>
-        <div style="font-size:.8em;">
-            ${item.movementReps}
-        </div>
-        `;
+    q2.innerHTML = `
+        <div class="quad-title">Aux Lift</div>
+        <div class="quad-text">🔥 NEXT</div>
+        <div class="quad-text">${item.auxLift}</div>
+        <div class="quad-text">${item.auxReps}</div>
+    `;
+
+    q4.innerHTML = `
+        <div class="quad-title">Movement / Stability Skill</div>
+        <div class="quad-text">🔥 NEXT</div>
+        <div class="quad-text">${item.movement}</div>
+        <div class="quad-text">${item.movementReps}</div>
+    `;
 }
 
 function getWorkDuration() {
