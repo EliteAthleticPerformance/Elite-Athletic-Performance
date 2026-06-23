@@ -387,7 +387,38 @@ function previewNextSet() {
     const nextItem = workoutData[currentSet] ?? null;
 
     if (nextItem && nextItem.type === "set") {
-        loadSetData(currentSet + 1); // loadSetData is 1-based
+        loadSetData(currentSet + 1);
+    }
+}
+
+/* ======================================================
+   PREVIEW NEXT SET
+====================================================== */
+
+function previewSetData(setNumber) {
+
+    const workout = workoutData[setNumber - 1];
+
+    if (!workout || workout.type !== "set") return;
+
+    const q1Texts = document.querySelectorAll("#q1 .quad-text");
+    const q2Texts = document.querySelectorAll("#q2 .quad-text");
+    const q4Texts = document.querySelectorAll("#q4 .quad-text");
+
+    if (q1Texts.length >= 3) {
+        q1Texts[0].innerText = "🔥 NEXT: " + workout.core;
+        q1Texts[1].innerText = "Reps: " + workout.reps;
+        q1Texts[2].innerText = "Percentage: " + workout.percent + "%";
+    }
+
+    if (q2Texts.length >= 2) {
+        q2Texts[0].innerText = "🔥 NEXT: " + workout.aux;
+        q2Texts[1].innerText = "Reps: " + workout.auxReps;
+    }
+
+    if (q4Texts.length >= 2) {
+        q4Texts[0].innerText = "🔥 NEXT: " + workout.move;
+        q4Texts[1].innerText = "Reps/Time: " + workout.moveReps;
     }
 }
 
@@ -1451,15 +1482,26 @@ function tick() {
             break;
 
         case "work": {
-            rotateQuadrantColors();
-            rotationCount++;
 
-            currentPhase = "rotate";
-            timeLeft = getRestDuration();
-            phaseJustChanged = true;
-            speakRotate();
-            break;
+    rotateQuadrantColors();
+    rotationCount++;
+
+    // SHOW PREVIEW ON FINAL ROTATION
+    if (rotationCount === maxRotations) {
+
+        const nextSet = getNextSetIndex();
+
+        if (nextSet) {
+            previewSetData(nextSet);
         }
+    }
+
+    currentPhase = "rotate";
+    timeLeft = getRestDuration();
+    phaseJustChanged = true;
+    speakRotate();
+    break;
+}
 
       
         /* ---------- ROTATE → NEXT ---------- */
@@ -1588,11 +1630,17 @@ function updatePhaseDisplay() {
         center.classList.add("workMode");
         logo.classList.add("logoWork");
 
-        phaseEl.innerHTML = `
-            <div>WORK</div>
-            <div>Set ${displaySetNumber} of ${getTotalSets()}</div>
-            <div>Rotation ${rotationCount + 1} of ${maxRotations}</div>
-        `;
+        const displayRotation =
+    currentPhase === "rotate"
+        ? rotationCount
+        : rotationCount + 1;
+
+phaseEl.innerHTML = `
+    <div>WORK</div>
+    <div>Set ${displaySetNumber} of ${getTotalSets()}</div>
+    <div>Rotation ${displayRotation} of ${maxRotations}</div>
+`;
+        
 
         return;
     }
