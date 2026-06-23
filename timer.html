@@ -1278,12 +1278,15 @@ function buildWorkoutTimeline() {
 
                 phaseSequence.push("work");
 
-                phaseMeta.push({
+               phaseMeta.push({
     phase: "work",
     setIndex: index + 1,
     station,
     rotation: station,
-    duration: ...
+    duration:
+        item.workSec ||
+        sheetWorkDuration ||
+        safeGet("workTime", 30)
 });
 
                 // ------------------------------------------------
@@ -1313,7 +1316,10 @@ function buildWorkoutTimeline() {
     setIndex: index + 1,
     station,
     rotation: station + 1,
-    duration: ...
+    duration:
+        item.rotateSec ||
+        sheetRotateDuration ||
+        safeGet("restTime", 30)
 });
             }
         }
