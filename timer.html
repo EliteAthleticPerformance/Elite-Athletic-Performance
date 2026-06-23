@@ -2997,20 +2997,32 @@ function previewSetData(setNumber) {
 
     if (!workout || workout.type !== "set") return;
 
+    /* ---------- CORE ---------- */
     const q1Texts = document.querySelectorAll("#q1 .quad-text");
+
+    if (q1Texts.length >= 3) {
+        q1Texts[0].innerText = "🔥 NEXT: " + workout.core;
+        q1Texts[1].innerText = "Reps: " + workout.reps;
+        q1Texts[2].innerText =
+            "Percentage: " +
+            (workout.percent ? workout.percent + "%" : "");
+    }
+
+    /* ---------- AUX ---------- */
     const q2Texts = document.querySelectorAll("#q2 .quad-text");
+
+    if (q2Texts.length >= 2) {
+        q2Texts[0].innerText = "🔥 NEXT: " + workout.aux;
+        q2Texts[1].innerText = "Reps: " + workout.auxReps;
+    }
+
+    /* ---------- MOVEMENT ---------- */
     const q4Texts = document.querySelectorAll("#q4 .quad-text");
 
-    if (q1Texts.length) {
-        q1Texts[0].innerText = "🔥 NEXT: " + workout.core;
-    }
-
-    if (q2Texts.length) {
-        q2Texts[0].innerText = "🔥 NEXT: " + workout.aux;
-    }
-
-    if (q4Texts.length) {
+    if (q4Texts.length >= 2) {
         q4Texts[0].innerText = "🔥 NEXT: " + workout.move;
+        q4Texts[1].innerText =
+            "Reps/Time: " + workout.moveReps;
     }
 }
 
