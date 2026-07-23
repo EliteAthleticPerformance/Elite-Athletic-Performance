@@ -50,13 +50,14 @@ async function waitForConfig() {
 ======================================== */
 
 function initHeaderUI() {
-  setupMenu();
-  injectSchoolIntoLinks();
-  highlightActiveLink();
-  setPageTitle();
 
-  // 🔥 SIGNAL READY AFTER EVERYTHING
-  document.dispatchEvent(new Event("headerLoaded"));
+    setupMenu();
+    setupLogout();          // ← ADD THIS
+    injectSchoolIntoLinks();
+    highlightActiveLink();
+    setPageTitle();
+
+    document.dispatchEvent(new Event("headerLoaded"));
 }
 
 /* ========================================
@@ -195,3 +196,25 @@ function goToEnterTest() { goToPage("enter.html"); }
 function goToLeaderboard() { goToPage("leaderboard.html"); }
 function goToTesting() { goToPage("testing.html"); }
 function goToAthletes() { goToPage("athletes.html"); }
+
+/* ========================================
+   🔐 LOGOUT
+======================================== */
+
+function setupLogout() {
+
+    const logoutBtn = document.querySelector(".logout-btn");
+
+    if (!logoutBtn) return;
+
+    logoutBtn.addEventListener("click", (e) => {
+
+        e.preventDefault();
+
+        if (typeof window.logout === "function") {
+            window.logout();
+        }
+
+    });
+
+}
