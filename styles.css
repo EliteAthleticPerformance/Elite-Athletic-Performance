@@ -816,7 +816,7 @@ LIVE PERFORMANCE LEADER ROTATOR
   gap: 20px;
   width: max-content;
 
-  animation: scrollTrending 99s linear infinite;
+  animation: scrollTrending 120s linear infinite;
 }
 
 .trending-card {
