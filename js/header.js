@@ -154,6 +154,7 @@ function highlightActiveLink() {
 ======================================== */
 
 let menuInitialized = false;
+let outsideClickBound = false;
 
 function setupMenu() {
   if (menuInitialized) return;
@@ -164,17 +165,33 @@ function setupMenu() {
 
   if (!toggle || !dropdown) return;
 
-  toggle.onclick = (e) => {
-  e.stopPropagation();
-  dropdown.classList.toggle("show");
-  toggle.classList.toggle("open"); // 👈 add this line
-};
+  toggle.addEventListener("click", (e) => {
 
-  document.addEventListener("click", (e) => {
-    if (!dropdown.contains(e.target) && !toggle.contains(e.target)) {
-      dropdown.classList.remove("show");
-    }
-  });
+    e.stopPropagation();
+
+    dropdown.classList.toggle("show");
+
+    toggle.classList.toggle("open");
+
+});
+
+  if (!outsideClickBound) {
+
+    document.addEventListener("click", (e) => {
+
+        if (!dropdown.contains(e.target) &&
+            !toggle.contains(e.target)) {
+
+            dropdown.classList.remove("show");
+
+            toggle.classList.remove("open");
+
+        }
+
+    });
+
+    outsideClickBound = true;
+
 }
 
 /* ========================================
