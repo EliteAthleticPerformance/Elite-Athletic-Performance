@@ -1,1 +1,1 @@
-
+const LeaderService = {};
