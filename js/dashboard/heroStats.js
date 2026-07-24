@@ -1,27 +1,20 @@
 const HeroStats = {
 
-  elements: {
-
-    athleteCount:
-      document.getElementById("athleteCount"),
-
-    testCount:
-      document.getElementById("testCount")
-
-  },
-
   update(data) {
 
     if (!data || !data.length) return;
 
+    const athleteCount =
+      document.getElementById("athleteCount");
+
+    const testCount =
+      document.getElementById("testCount");
+
     const athletes =
       new Set(data.map(d => d.name)).size;
 
-    this.elements.athleteCount.textContent =
-      athletes;
-
-    this.elements.testCount.textContent =
-      data.length;
+    athleteCount.textContent = athletes;
+    testCount.textContent = data.length;
 
   }
 
