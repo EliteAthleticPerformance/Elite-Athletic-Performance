@@ -184,6 +184,13 @@ const leaderElements = {
 
 function updateLeaderDisplays() {
 
+  if (
+  !femaleLeaders.length ||
+  !maleLeaders.length
+) {
+  return;
+}
+
   const female =
     femaleLeaders[femaleIndex];
 
