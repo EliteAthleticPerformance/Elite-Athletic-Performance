@@ -84,9 +84,9 @@ const TrendingService = {
 
 }
 
-  groupTestsByEvent(tests) {
-
-},
+  const trendingMetrics = [ 
+    ...
+];
 
   const latest =
     metricTests[metricTests.length - 1];
