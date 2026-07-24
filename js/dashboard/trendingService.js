@@ -56,22 +56,51 @@ const TrendingService = {
 
   findImprovements(name, tests) {
 
-    // TODO:
-    // Compare oldest vs newest test
-    // Calculate improvement
-    // Return an array of trending objects
+    const grouped =
+        this.groupTestsByEvent(tests);
 
-    return [];
+    const results = [];
 
-},
+    Object.entries(grouped).forEach(([event, eventTests]) => {
+
+        const improvement =
+            this.calculateEventImprovement(
+                event,
+                eventTests
+            );
+
+        if (improvement) {
+
+            results.push({
+                name,
+                ...improvement
+            });
+
+        }
+
+    });
+
+    return results;
+
+}
 
   groupTestsByEvent(tests) {
 
 },
 
-  calculateEventImprovement(eventName, tests) {
+  const latest =
+    metricTests[metricTests.length - 1];
 
-},
+const previous =
+    metricTests[metricTests.length - 2];
+
+const improvement = ...
+
+if (improvement <= 0) return;
+
+return {
+    ...
+};
 
     renderTicker(trending) {
 
