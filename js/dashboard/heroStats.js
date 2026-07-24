@@ -1,21 +1,34 @@
+// ========================================
+// HERO STATS SERVICE
+// ========================================
+
 const HeroStats = {
 
-  update(data) {
+    render(data) {
 
-    if (!data || !data.length) return;
+        if (!Array.isArray(data) || data.length === 0) {
+            return;
+        }
 
-    const athleteCount =
-      document.getElementById("athleteCount");
+        const athleteCount =
+            document.getElementById("athleteCount");
 
-    const testCount =
-      document.getElementById("testCount");
+        const testCount =
+            document.getElementById("testCount");
 
-    const athletes =
-      new Set(data.map(d => d.name)).size;
+        if (!athleteCount || !testCount) {
+            return;
+        }
 
-    athleteCount.textContent = athletes;
-    testCount.textContent = data.length;
+        const totalAthletes = new Set(
+    data
+        .map(a => a.name?.trim())
+        .filter(Boolean)
+).size;
 
-  }
+        athleteCount.textContent = totalAthletes;
+        testCount.textContent = data.length;
+
+    }
 
 };

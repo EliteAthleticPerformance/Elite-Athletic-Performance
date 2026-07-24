@@ -1,4 +1,6 @@
-const leaderStats = [
+const LeaderService = {
+
+    leaderStats: [
 
   {
     label: "🏋️ Bench Press",
@@ -69,12 +71,56 @@ const leaderStats = [
     suffix: " sec",
     best: "min"
   }
-];
+],
 
+  femaleLeaders: [],
+    maleLeaders: [],
 
-function buildLeaders(groupData) {
+    femaleIndex: 0,
+    maleIndex: 0,
 
-  return leaderStats.map(stat => {
+    rotationTimer: null,
+
+    elements: {},
+
+    render(data) {
+
+    if (!data?.length) return;
+
+    const femaleData = data.filter(
+    athlete => athlete.gender === "Female"
+);
+
+const maleData = data.filter(
+    athlete => athlete.gender === "Male"
+);
+
+    this.femaleLeaders =
+    this.buildLeaders(femaleData);
+
+this.maleLeaders =
+    this.buildLeaders(maleData);
+
+    this.cacheElements();
+
+this.femaleIndex = 0;
+this.maleIndex = 0;
+
+this.updateDisplays();
+
+if (this.rotationTimer) {
+    clearInterval(this.rotationTimer);
+}
+
+this.rotationTimer = setInterval(() => {
+    this.updateDisplays();
+}, 3500);
+
+},
+
+buildLeaders(groupData) {
+
+  return this.leaderStats.map(stat => {
 
     let bestAthlete = null;
 
@@ -126,110 +172,94 @@ function buildLeaders(groupData) {
 
   });
 
+},
+
+cacheElements() {
+
+    this.elements = {
+
+        female: {
+
+            event:
+                document.getElementById("femaleLeaderEvent"),
+
+            value:
+                document.getElementById("femaleLeaderValue"),
+
+            athlete:
+                document.getElementById("femaleLeaderAthlete")
+
+        },
+
+        male: {
+
+            event:
+                document.getElementById("maleLeaderEvent"),
+
+            value:
+                document.getElementById("maleLeaderValue"),
+
+            athlete:
+                document.getElementById("maleLeaderAthlete")
+
+        }
+
+    };
+
+},
+
+updateDisplays() {
+
+    if (
+    !this.elements.female?.event ||
+    !this.elements.female?.value ||
+    !this.elements.female?.athlete ||
+    !this.elements.male?.event ||
+    !this.elements.male?.value ||
+    !this.elements.male?.athlete
+) {
+    return;
 }
 
-const femaleLeaders =
-  buildLeaders(females);
+    if (
+        !this.femaleLeaders.length ||
+        !this.maleLeaders.length
+    ) {
+        return;
+    }
 
-const maleLeaders =
-  buildLeaders(males);
+    const female =
+        this.femaleLeaders[this.femaleIndex];
 
-let femaleIndex = 0;
-let maleIndex = 0;
+    const male =
+        this.maleLeaders[this.maleIndex];
 
+    this.elements.female.event.textContent =
+        female.label;
 
-const leaderElements = {
+    this.elements.female.value.textContent =
+        female.value;
 
-  female: {
+    this.elements.female.athlete.textContent =
+        female.athlete;
 
-    event:
-      document.getElementById(
-        "femaleLeaderEvent"
-      ),
+    this.elements.male.event.textContent =
+        male.label;
 
-    value:
-      document.getElementById(
-        "femaleLeaderValue"
-      ),
+    this.elements.male.value.textContent =
+        male.value;
 
-    athlete:
-      document.getElementById(
-        "femaleLeaderAthlete"
-      )
+    this.elements.male.athlete.textContent =
+        male.athlete;
 
-  },
+    this.femaleIndex =
+        (this.femaleIndex + 1) %
+        this.femaleLeaders.length;
 
-  
-  male: {
+    this.maleIndex =
+        (this.maleIndex + 1) %
+        this.maleLeaders.length;
 
-    event:
-      document.getElementById(
-        "maleLeaderEvent"
-      ),
-
-    value:
-      document.getElementById(
-        "maleLeaderValue"
-      ),
-
-    athlete:
-      document.getElementById(
-        "maleLeaderAthlete"
-      )
-
-  }
+},
 
 };
-
-
-function updateLeaderDisplays() {
-
-  if (
-  !femaleLeaders.length ||
-  !maleLeaders.length
-) {
-  return;
-}
-
-  const female =
-    femaleLeaders[femaleIndex];
-
-  const male =
-    maleLeaders[maleIndex];
-
-  leaderElements.female.event.textContent =
-  female.label;
-
-leaderElements.female.value.textContent =
-  female.value;
-
-leaderElements.female.athlete.textContent =
-  female.athlete;
-
-leaderElements.male.event.textContent =
-  male.label;
-
-leaderElements.male.value.textContent =
-  male.value;
-
-leaderElements.male.athlete.textContent =
-  male.athlete;
-
-  
-
-  femaleIndex =
-    (femaleIndex + 1) %
-    femaleLeaders.length;
-
-  maleIndex =
-    (maleIndex + 1) %
-    maleLeaders.length;
-
-}
-
-updateLeaderDisplays();
-
-setInterval(
-  updateLeaderDisplays,
-  3500
-);
