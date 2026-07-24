@@ -665,20 +665,7 @@ const previousTotal =
 
 });
 
-    if (!data || !data.length) return;
-
-    const athletes = new Set(data.map(d => d.name)).size;
-
-    document.getElementById("athleteCount").textContent = athletes;
-    document.getElementById("testCount").textContent = data.length;
-
-/* =========================
-   LIVE PERFORMANCE LEADERS
-========================= */
-
-
-
-
+    
 
    
     buildTrendingAthletes(data);
