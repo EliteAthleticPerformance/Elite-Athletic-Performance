@@ -1,134 +1,108 @@
 const TrendingService = {
 
-  render(data) {
+    render(data) {
 
-    if (!data || !data.length) {
-      return;
-    }
+        if (!data?.length) return;
 
-    this.buildTrendingAthletes(data);
+        const athleteMap = this.buildAthleteMap(data);
 
-  },
+        const trending =
+            this.calculateTrending(athleteMap);
 
-  
-  
-  buildTrendingAthletes(data) {
+        this.renderTicker(trending);
 
-  const feed =
-    document.getElementById("trendingFeed");
+    },
 
-  if (!feed) return;
+    buildAthleteMap(data) {
 
-  const athleteMap = {};
+        const athleteMap = {};
 
-  data.forEach(row => {
+        data.forEach(test => {
 
-  if (!row.name) return;
+            const name = test.Name?.trim();
 
-if (!row.date) {
-  row.date = "1900-01-01";
-}
+            if (!name) return;
 
-  if (!athleteMap[row.name]) {
-    athleteMap[row.name] = [];
-  }
+            if (!athleteMap[name]) {
+                athleteMap[name] = [];
+            }
 
-const trending = [];
+            athleteMap[name].push(test);
 
-  const trackedMetrics = [
+        });
 
-  {
-    type: "bench",
-    label: "🏋️ Bench Press",
-    key: "bench",
-    better: "higher",
-    suffix: " lbs"
-  },
+        return athleteMap;
 
-  {
-    type: "squat",
-    label: "🦵 Squat",
-    key: "squat",
-    better: "higher",
-    suffix: " lbs"
-  },
+    },
 
-  {
-    type: "clean",
-    label: "💥 Hang Clean",
-    key: "clean",
-    better: "higher",
-    suffix: " lbs"
-  },
+    calculateTrending(athleteMap) {
 
-  {
-    type: "vertical",
-    label: "🚀 Vertical Jump",
-    key: "vertical",
-    better: "higher",
-    suffix: " in"
-  },
+        const trending = [];
 
-  {
-    type: "broad",
-    label: "↔️ Broad Jump",
-    key: "broad",
-    better: "higher",
-    suffix: " ft"
-  },
+        Object.entries(athleteMap).forEach(([name, tests]) => {
 
-  {
-    type: "med",
-    label: "🏐 Med Ball Toss",
-    key: "med",
-    better: "higher",
-    suffix: " ft"
-  },
+    const improvements =
+        this.findImprovements(name, tests);
 
-  {
-    type: "situps",
-    label: "🔥 Sit-Ups",
-    key: "situps",
-    better: "higher",
-    suffix: ""
-  },
+    if (!improvements.length) return;
 
-  {
-    type: "agility",
-    label: "⚡ Agility",
-    key: "agility",
-    better: "lower",
-    suffix: " sec"
-  },
-
-  {
-    type: "ten",
-    label: "🏃 10 Yard Dash",
-    key: "ten",
-    better: "lower",
-    suffix: " sec"
-  },
-
-  {
-    type: "forty",
-    label: "🏃 40 Yard Dash",
-    key: "forty",
-    better: "lower",
-    suffix: " sec"
-  }
-
-];
-
-Object.values(athleteMap).forEach(tests => {
-
-  tests.sort(
-    (a,b) =>
-      new Date(a.date) -
-      new Date(b.date)
-  );
-
-  if (tests.length < 2) return;
-
-  athleteMap[row.name].push(row);
+    trending.push(...improvements);
 
 });
+
+        return trending.sort((a, b) => b.score - a.score);
+
+    },
+
+  findImprovements(name, tests) {
+
+    // TODO:
+    // Compare oldest vs newest test
+    // Calculate improvement
+    // Return an array of trending objects
+
+    return [];
+
+},
+
+  groupTestsByEvent(tests) {
+
+},
+
+  calculateEventImprovement(eventName, tests) {
+
+},
+
+    renderTicker(trending) {
+
+    const container =
+        document.getElementById("trendingFeed");
+
+    if (!container || !trending.length) return;
+
+    container.innerHTML =
+        trending
+            .map(athlete => this.buildCard(athlete))
+            .join("");
+
+},
+
+    buildCard(athlete) {
+
+        return `
+            <div class="trend-card">
+
+                <div class="trend-name">
+                    ${athlete.name}
+                </div>
+
+                <div class="trend-improvement">
+                    ${athlete.improvement}
+                </div>
+
+            </div>
+        `;
+
+    }
+
+};
