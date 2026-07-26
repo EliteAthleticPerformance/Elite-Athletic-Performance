@@ -18,7 +18,7 @@ async function loadWorkout() {
     new Date().toLocaleTimeString()
 );
 
-     debugger;
+     
 
     try {
         const school = window.APP_CONFIG.key;
