@@ -59,7 +59,15 @@ window.SCHOOL_CONFIG = Object.freeze({
         secondary: "#60a5fa",
         secondaryLight: "#93c5fd"
 
-         }
+         },
+
+         sheetGids: {
+        monday: "PUT_REAL_GID_HERE",
+        tuesday: "PUT_REAL_GID_HERE",
+        wednesday: "PUT_REAL_GID_HERE",
+        thursday: "PUT_REAL_GID_HERE",
+        friday: "PUT_REAL_GID_HERE"
+    }
 
       },
 

@@ -41,15 +41,18 @@ window.APP_READY = new Promise(async (resolve, reject) => {
 
         const appConfig = {
 
-            ...SchoolService.getConfig(),
+    ...SchoolService.getConfig(),
 
-            dataURL:
-                "https://script.google.com/macros/s/AKfycbwnSjmwlod_AoqmTEoownI1CsWhjpTu9ubLrb78DsLBTaH0WDnYxXNiXEyJmY1J0Uh2/exec",
+    dataURL:
+        "https://script.google.com/macros/s/AKfycbwnSjmwlod_AoqmTEoownI1CsWhjpTu9ubLrb78DsLBTaH0WDnYxXNiXEyJmY1J0Uh2/exec",
 
-            submitURL:
-                "https://script.google.com/macros/s/AKfycbwnSjmwlod_AoqmTEoownI1CsWhjpTu9ubLrb78DsLBTaH0WDnYxXNiXEyJmY1J0Uh2/exec"
+    submitURL:
+        "https://script.google.com/macros/s/AKfycbwnSjmwlod_AoqmTEoownI1CsWhjpTu9ubLrb78DsLBTaH0WDnYxXNiXEyJmY1J0Uh2/exec"
 
-        };
+};
+
+
+window.APP_CONFIG = appConfig;
 
         console.log("3️⃣ ThemeService...");
 
@@ -91,3 +94,5 @@ window.APP_READY.catch(() => {
     </div>
   `;
 });
+
+
