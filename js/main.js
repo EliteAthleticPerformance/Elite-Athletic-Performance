@@ -359,15 +359,17 @@ window.addEventListener("DOMContentLoaded", async () => {
             isPolling = true;
 
             try {
-                await loadWorkout();
-                buildSegmentTimeline();
-                applyCoachControl(); // 🔥 keep UI synced
-            } catch (e) {
+    applyCoachControl();
+} catch (e) {
                 console.error("Polling error:", e);
             }
 
             isPolling = false;
         }, 3000);
+
+        await loadWorkout();
+
+        buildSegmentTimeline();
 
         updateTotalDisplay();
 
@@ -376,16 +378,10 @@ window.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        await loadWorkout();
-        buildSegmentTimeline();
-
-        // 🔥 sync clocks BEFORE scheduler starts
-        syncClockOffset();
-
-        // 🔥 immediate late-join sync
         applyCoachControl();
 
-        // 🔥 START TIMER AUTOMATICALLY
+        syncClockOffset();
+
         startAutoScheduler();
 
         setTimeout(autoDetectActiveClass, 2000);

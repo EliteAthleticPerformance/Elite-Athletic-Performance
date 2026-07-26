@@ -18,6 +18,8 @@ async function loadWorkout() {
     new Date().toLocaleTimeString()
 );
 
+     debugger;
+
     try {
         const school = window.APP_CONFIG.key;
 
@@ -34,6 +36,10 @@ const response = await fetch(
         console.log("CSV length:", text.length);
 
         const rows = parseCSV(text);
+
+        console.log("Row 0:", rows[0]);
+console.log("Row 0 first cell:", rows[0][0]);
+console.log("Row 0 second cell:", rows[0][1]);
 
         const DEBUG = true;
 
@@ -81,6 +87,17 @@ for (const r of rows) {
 
     const firstRaw = clean(r[0] ?? "");
     const firstCell = firstRaw.toLowerCase();
+
+    // ---------- SERVER TIME ----------
+
+if (firstCell === "server_time") {
+
+    window.serverTime = clean(r[1]);
+
+    console.log("🕒 Server time:", window.serverTime);
+
+    continue;
+}
 
     // ---------- BULLETPROOF BLANK ROW ----------
     if (isEffectivelyBlankRow(r)) {
@@ -255,6 +272,8 @@ if (looksLikeSetNumber) {
 preloadFirstSet();
 
 applyDaySpecificClassLength();
+
+syncClockOffset();
 
 startAutoScheduler();
 

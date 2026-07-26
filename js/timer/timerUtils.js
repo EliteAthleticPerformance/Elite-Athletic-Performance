@@ -30,15 +30,21 @@ function getSyncedNow() {
 
 
 function syncClockOffset() {
+
     if (!window.serverTime) {
         console.warn("⚠️ No server time found");
         return;
     }
 
-    const clientNow = Date.now();
-    const serverNow = new Date(window.serverTime).getTime();
+    const serverNow = new Date(window.serverTime);
 
-    timeOffset = serverNow - clientNow;
+    if (isNaN(serverNow.getTime())) {
+        console.warn("⚠️ Invalid server time:", window.serverTime);
+        return;
+    }
 
+    timeOffset = serverNow.getTime() - Date.now();
+
+    console.log("🕒 Server time:", window.serverTime);
     console.log("⏱ Clock offset (ms):", timeOffset);
 }
