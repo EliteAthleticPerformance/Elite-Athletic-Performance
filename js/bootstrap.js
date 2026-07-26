@@ -29,26 +29,30 @@ function trackEvent(eventName, params = {}) {
 
 console.log("🚀 Bootstrap loaded");
 
+console.log("SchoolService on window:", window.SchoolService);
+
 window.APP_READY = new Promise(async (resolve, reject) => {
 
     try {
 
         console.log("1️⃣ SchoolService...");
 
-        const school = SchoolService.getSchoolKey();
+        const schoolService = window.SchoolService;
 
-        console.log("2️⃣ Config...");
+if (!schoolService) {
+    throw new Error("SchoolService was not loaded before bootstrap.");
+}
 
-        const appConfig = {
+const school = schoolService.getSchoolKey();
 
-    ...SchoolService.getConfig(),
+const appConfig = {
+    ...schoolService.getConfig(),
 
     dataURL:
         "https://script.google.com/macros/s/AKfycbwnSjmwlod_AoqmTEoownI1CsWhjpTu9ubLrb78DsLBTaH0WDnYxXNiXEyJmY1J0Uh2/exec",
 
     submitURL:
         "https://script.google.com/macros/s/AKfycbwnSjmwlod_AoqmTEoownI1CsWhjpTu9ubLrb78DsLBTaH0WDnYxXNiXEyJmY1J0Uh2/exec"
-
 };
 
 
