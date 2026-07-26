@@ -235,7 +235,7 @@ MOBILE
   </main>      
 
         
-<script src="./js/themeLoader.js"></script>
+
 <script src="./js/header.js"></script>
 
 <script>
@@ -269,6 +269,8 @@ RESTORE SCHOOL CONTEXT
     
 
 })();
+
+</script>
 
 <!-- Configuration -->
 <script src="./js/config/schoolConfig.js"></script>
@@ -354,16 +356,27 @@ INIT
 
 async function init() {
 
+    await window.APP_READY;
+
     DATA = await loadAthleteData();
 
-      
+    DATA = DATA.filter(a =>
+        a.testType === "performance"
+    );
 
-        buildPage();
+    if (!DATA.length) {
+        console.warn("No performance records found.");
+        return;
+    }
+
+    buildPage();
+
 }
 
 /* ========================================
 BUILD PAGE
 ======================================== */
+
 
 function buildPage() {
 
@@ -474,17 +487,12 @@ function buildRecordCard(event) {
 TOP ATHLETES
 ======================================== */
 
+function getTopAthletes(stat, gender, ascending = false) {
 
-function getTopAthletes(
-    stat,
-    gender,
-    ascending = false
-) {
+    const bestByAthlete = new Map();
 
-    return DATA
-
+    DATA
         .filter(a => {
-
             const value = Number(a[stat]);
 
             return (
@@ -493,17 +501,34 @@ function getTopAthletes(
                 value > 0
             );
         })
+        .forEach(a => {
 
+            const existing = bestByAthlete.get(a.name);
+
+            if (!existing) {
+                bestByAthlete.set(a.name, a);
+                return;
+            }
+
+            if (ascending) {
+                if (Number(a[stat]) < Number(existing[stat])) {
+                    bestByAthlete.set(a.name, a);
+                }
+            } else {
+                if (Number(a[stat]) > Number(existing[stat])) {
+                    bestByAthlete.set(a.name, a);
+                }
+            }
+        });
+
+    return [...bestByAthlete.values()]
         .sort((a, b) => {
 
-            const aVal = Number(a[stat]);
-            const bVal = Number(b[stat]);
-
             return ascending
-                ? aVal - bVal
-                : bVal - aVal;
-        })
+                ? Number(a[stat]) - Number(b[stat])
+                : Number(b[stat]) - Number(a[stat]);
 
+        })
         .slice(0, 5);
 }
 
