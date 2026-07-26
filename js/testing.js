@@ -14,8 +14,6 @@ let currentSearch = "";
   try {
     await window.APP_READY;
 
-    
-
     const data = await loadAthleteData();
 
     if (!data || !data.length) {
@@ -23,7 +21,12 @@ let currentSearch = "";
       return;
     }
 
-    tableData = data;
+    // ========================================
+    // EXCLUDE MPH-ONLY TESTS
+    // Keep complete and partial performance tests
+    // ========================================
+
+    tableData = data.filter(a => a.testType !== "mph");
 
     renderAlphabet();
     renderTable(tableData);

@@ -2,6 +2,8 @@
 // 🔥 ATHLETE PROFILE (STABLE FINAL)
 // ========================================
 
+console.log("athlete.js file loaded");
+
 let DATA = [];
 let radarChart = null;
 let progressChart = null;
@@ -20,18 +22,37 @@ let ACTIVE_PROGRESS_KEYS = new Set([
   "score"
 ]);
 
-document.addEventListener("headerLoaded", init);
+console.log("Calling init()");
+init();
 
 async function init() {
+
+ console.log("INIT STARTED");
+
   try {
     await window.APP_READY;
 
     DATA = await loadAthleteData();
 
+    console.log("DATA length:", DATA.length);
+
     const params = new URLSearchParams(window.location.search);
     const name = params.get("name");
 
-    if (!name) return showError("No athlete selected");
+    console.log("URL:", window.location.href);
+    console.log("URL name:", name);
+
+    const matches = DATA.filter(a => a.name === name);
+
+    console.log("Matches:", matches.length);
+
+    if (matches.length) {
+      console.log("First match:", matches[0]);
+    }
+
+    if (!name) {
+      return showError("No athlete selected");
+    }
 
     renderAthlete(name);
 
@@ -225,22 +246,27 @@ function calculateMultiSportSimilarity(a, b) {
 
 function renderAthlete(name) {
 
+  console.log("renderAthlete:", name);
+
   const history = DATA
-  .filter(a =>
-    a.name === name &&
-    a.isPerformanceTest
-  )
-  .sort((a, b) => new Date(a.date) - new Date(b.date));
+  .filter(a => a.name === name);
+  
+  console.log("History:", history.length);
 
   if (!history.length) return showError("No data found");
 
   const latest = history[history.length - 1];
   
+   console.log("Reached renderAthlete()");
+console.log("Latest athlete:", latest);
+
   CURRENT_ATHLETE = latest;
 
-  trackEvent("athlete_profile_view", {
-  athlete_name: name
-});
+  if (typeof trackEvent === "function") {
+    trackEvent("athlete_profile_view", {
+        athlete_name: name
+    });
+}
 
   document.getElementById("athleteName").textContent = formatName(name);
 
@@ -261,15 +287,34 @@ set("tenyard", fmt2(cleanNumber(latest.ten)));
 set("forty", fmt2(cleanNumber(latest.forty)));
 
   renderRadar(latest, null);
-  renderInsights(latest); // ✅ ADD THIS LINE
-  populateSportDropdown();
-  populatePositionDropdown();
-  initProgressToggles(history);
-  renderProgress(history);
+renderInsights(latest);
 
-  renderTable(history);
-}
+populateSportDropdown();
+populatePositionDropdown();
 
+// 🔥 Activate comparison dropdowns
+document
+    .getElementById("sportComparisonSelect")
+    ?.addEventListener("change", e => {
+
+        setSportComparison(e.target.value);
+
+    });
+
+document
+    .getElementById("positionComparisonSelect")
+    ?.addEventListener("change", e => {
+
+        setPositionComparison(e.target.value);
+
+    });
+
+initProgressToggles(history);
+renderProgress(history);
+
+renderTable(history);
+
+  }
 
 function populateSportDropdown() {
 
@@ -409,9 +454,11 @@ function setComparison(type) {
 
   CURRENT_COMPARISON = type;
 
-  trackEvent("comparison_used", {
-  comparison_type: type
-});
+  if (typeof trackEvent === "function") {
+    trackEvent("comparison_used", {
+        comparison_type: type
+    });
+}
 
   document.querySelectorAll("#comparisonButtons button")
     .forEach(btn => btn.classList.remove("active"));
@@ -442,13 +489,15 @@ function setSportComparison(sport) {
   if (!sport) return;
 
   SELECTED_SPORT_COMPARISON = sport;
-
 SELECTED_POSITION_COMPARISON = null;
 
+// Rebuild positions for this sport
 populatePositionDropdown();
 
+// Reset position dropdown
+document.getElementById("positionComparisonSelect").value = "";
 
-  CURRENT_COMPARISON = "sport";
+CURRENT_COMPARISON = "sport";
 
   document.querySelectorAll(
     "#comparisonButtons button"
@@ -469,6 +518,7 @@ document.getElementById(
 ).textContent =
   `${SELECTED_SPORT_COMPARISON || ""} ${SELECTED_POSITION_COMPARISON || ""}`.trim();
 
+  console.log("Sport comparison:", comparison);
   
   renderRadar(
     CURRENT_ATHLETE,
@@ -582,9 +632,9 @@ function getComparisonData(type, athlete) {
   // 🔥 TOP 5
   if (type === "top5") {
 
-    group = [...DATA]
-      .sort((a, b) => (b.score || 0) - (a.score || 0))
-      .slice(0, 5);
+    group = getLatestAthletes(DATA)
+    .sort((a, b) => (b.score || 0) - (a.score || 0))
+    .slice(0, 5);
   }
 
 
@@ -593,61 +643,65 @@ function getComparisonData(type, athlete) {
   // 🔥 TEAM
   else if (type === "team") {
 
-    group = DATA;
+    group = getLatestAthletes(DATA);
   }
 
   // 🔥 GRADE
   else if (type === "grade") {
 
-    group = DATA.filter(a =>
-      norm(a.grade) === norm(athlete.grade)
-    );
+    group = getLatestAthletes(
+    DATA.filter(a =>
+        norm(a.grade) === norm(athlete.grade)
+    )
+);
   }
 
   // 🔥 WEIGHT CLASS
   else if (type === "weight") {
 
-    group = DATA.filter(a =>
-     norm(a.group) === norm(athlete.group)
-    );
+    group = getLatestAthletes(
+    DATA.filter(a =>
+        norm(a.group) === norm(athlete.group)
+    )
+);
   }
 
  // 🔥 SPORT
 else if (type === "sport") {
 
-  const selectedSport =
-    SELECTED_SPORT_COMPARISON ||
-    athlete.primarySport ||
-    athlete.sport ||
-    athlete.primary_sport;
+  const selectedSport = SELECTED_SPORT_COMPARISON;
 
-  group = DATA.filter(a =>
-    athleteHasSport(a, selectedSport)
-  );
+if (!selectedSport) {
+    return null;
+}
+
+  group = getLatestAthletes(
+    DATA.filter(a =>
+        athleteHasSport(a, selectedSport)
+    )
+);
 }
 
   // 🔥 POSITION
 else if (type === "position") {
 
-  const selectedSport =
-    SELECTED_SPORT_COMPARISON ||
-    athlete.primarySport ||
-    athlete.sport ||
-    athlete.primary_sport;
+  const selectedSport = SELECTED_SPORT_COMPARISON;
+const selectedPosition = SELECTED_POSITION_COMPARISON;
 
-  const selectedPosition =
-    SELECTED_POSITION_COMPARISON ||
-    athlete.primaryPosition ||
-    athlete.position ||
-    athlete.primary_position;
+if (!selectedSport || !selectedPosition) {
+    return null;
+}
 
-  group = DATA.filter(a => {
+  group = getLatestAthletes(
+    DATA.filter(a => {
 
-    return (
-      athleteHasSport(a, selectedSport) &&
-      athleteHasPosition(a, selectedPosition)
-    );
-  });
+        return (
+            athleteHasSport(a, selectedSport) &&
+            athleteHasPosition(a, selectedPosition)
+        );
+
+    })
+);
 }
 
   
@@ -671,20 +725,199 @@ else if (type === "similar") {
   return null;
 }
 
-  const avg = key =>
-    group.reduce((sum, a) =>
-      sum + Number(a[key] || 0), 0
-    ) / group.length;
 
-  return {
+// ========================================
+// KEEP ONLY LATEST TEST PER ATHLETE
+// ========================================
+
+console.log("Comparison:", type);
+
+console.table(
+    group.map(a => ({
+        name: a.name,
+        score: a.score,
+        strength: a.strengthPoints,
+        power: a.powerPoints,
+        explosive: a.explosivePoints,
+        speed: a.speedPoints
+    }))
+);
+
+
+// ========================================
+// REMOVE INCOMPLETE ATHLETES
+// ========================================
+
+console.log(
+    "Before complete profile filter:",
+    group.length
+);
+
+group = group.filter(hasCompleteProfile);
+
+console.log("After filter:", group.length);
+
+console.table(
+    group.map(a => ({
+        name: a.name,
+        score: a.score,
+        strength: a.strengthPoints,
+        power: a.powerPoints,
+        explosive: a.explosivePoints,
+        speed: a.speedPoints
+    }))
+);
+
+if (!group.length) {
+
+    return null;
+
+}
+
+  const avg = key => {
+
+    const values = group
+        .map(a => Number(a[key]))
+        .filter(v => !isNaN(v));
+
+    if (!values.length) return 0;
+
+    return values.reduce((sum, v) => sum + v, 0) / values.length;
+
+};
+
+// DEBUG
+console.log("Group size:", group.length);
+
+console.log({
+    strength: avg("strengthPoints"),
+    power: avg("powerPoints"),
+    explosive: avg("explosivePoints"),
+    speed: avg("speedPoints")
+});
+
+return {
     strengthPoints: avg("strengthPoints"),
     powerPoints: avg("powerPoints"),
     explosivePoints: avg("explosivePoints"),
     speedPoints: avg("speedPoints")
-  };
+};
+
 }
 
-  
+
+function getLatestAthletes(records) {
+
+    console.table(records.slice(0, 10));
+
+    const latest = new Map();
+
+    records.forEach(record => {
+
+        const key = String(record.name || "")
+            .trim()
+            .toLowerCase();
+
+        const existing = latest.get(key);
+
+        if (
+            !existing ||
+            new Date(record.date) > new Date(existing.date)
+        ) {
+            latest.set(key, record);
+        }
+
+    });
+
+    console.log("Original:", records.length);
+    console.log("Latest:", latest.size);
+
+    return [...latest.values()];
+}
+
+
+
+/* ========================================
+   COMPLETE ATHLETE PROFILE
+======================================== */
+
+function hasCompleteProfile(a) {
+
+    return (
+
+        Number(a.score) > 0 &&
+        Number(a.strengthPoints) > 0 &&
+        Number(a.powerPoints) > 0 &&
+        Number(a.explosivePoints) > 0 &&
+        Number(a.speedPoints) > 0
+
+    );
+
+}
+
+
+
+function getComparisonLabel() {
+
+    switch (CURRENT_COMPARISON) {
+
+        case "team":
+            return "🟨 Team Average";
+
+        case "top5":
+            return "🟪 Top 5 Average";
+
+        case "position":
+            return "🟩 Position Average";
+
+        case "sport":
+    return "🔷 Sport Average";
+
+        case "grade":
+    return "🟧 Grade Average";
+
+case "weight":
+    return "🟦 Weight Class Average";
+
+        case "similar":
+            return "Most Similar Athlete";
+
+        default:
+            return "Comparison";
+    }
+
+}
+
+function getComparisonTheme() {
+
+    switch (CURRENT_COMPARISON) {
+
+        case "team":
+            return ChartTheme.teamAverage;
+
+        case "top5":
+            return ChartTheme.topFive;
+
+        case "position":
+            return ChartTheme.positionAverage;
+
+        case "sport":
+            return ChartTheme.sportAverage;
+
+        case "grade":
+            return ChartTheme.gradeAverage;
+
+        case "weight":
+            return ChartTheme.weightAverage;
+
+        case "similar":
+            return ChartTheme.comparison;
+
+        default:
+            return ChartTheme.comparison;
+    }
+
+}  
 
 
 /* ========================================
@@ -699,34 +932,60 @@ function renderRadar(a, comparison=null) {
   if (radarChart) radarChart.destroy();
 
   const datasets = [{
-    label: "Athlete",
+
+    label: formatName(a.name),
+
     data: [
-      a.strengthPoints,
-      a.powerPoints,
-      a.explosivePoints,
-      a.speedPoints
+        a.strengthPoints,
+        a.powerPoints,
+        a.explosivePoints,
+        a.speedPoints
     ],
+
     borderWidth: 2,
-   backgroundColor: "rgba(54,162,235,0.18)",
-borderColor: "#4da6ff",
-pointBackgroundColor: "#4da6ff",
-pointRadius: 4
-  }];
+
+    backgroundColor: ChartTheme.athlete.background,
+
+    borderColor: ChartTheme.athlete.border,
+
+    pointBackgroundColor: ChartTheme.athlete.point,
+
+    pointRadius: 4
+
+}];
 
   if (comparison) {
-    datasets.push({
-      label: "Comparison",
-      data: [
+    const comparisonTheme = getComparisonTheme();
+
+console.log("Comparison Label:", getComparisonLabel());
+
+datasets.push({
+
+    label: getComparisonLabel(),
+
+    data: [
         comparison.strengthPoints,
         comparison.powerPoints,
         comparison.explosivePoints,
         comparison.speedPoints
-      ],
-      borderDash: [6,6],
-      borderColor: "#ff4d6d",
-      backgroundColor: "rgba(255,99,132,0.2)"
-    });
+    ],
+
+    borderDash: [6,6],
+
+    borderWidth: 2,
+
+    borderColor: comparisonTheme.border,
+
+    backgroundColor: comparisonTheme.background,
+
+    pointBackgroundColor: comparisonTheme.border,
+
+    pointRadius: 4
+
+});
   }
+
+console.log(datasets);
 
   radarChart = new Chart(ctx, {
     type: "radar",
@@ -1095,8 +1354,9 @@ function renderHeadToHead(a, b) {
         a.speedPoints
       ],
 
-      borderColor: "#3b82f6",
-      backgroundColor: "rgba(59,130,246,.25)",
+      borderColor: ChartTheme.athlete.border,
+backgroundColor: ChartTheme.athlete.background,
+pointBackgroundColor: ChartTheme.athlete.point,
       borderWidth: 2
     },
 
@@ -1110,8 +1370,9 @@ function renderHeadToHead(a, b) {
         b.speedPoints
       ],
 
-      borderColor: "#ff4d6d",
-      backgroundColor: "rgba(255,77,109,.25)",
+      borderColor: ChartTheme.comparison.border,
+backgroundColor: ChartTheme.comparison.background,
+pointBackgroundColor: ChartTheme.comparison.point,
       borderDash: [6,4],
       borderWidth: 2
     }
@@ -1121,3 +1382,5 @@ function renderHeadToHead(a, b) {
 
   
 }
+
+

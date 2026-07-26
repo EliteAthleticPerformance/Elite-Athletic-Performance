@@ -28,7 +28,7 @@
 <div id="header-placeholder"></div>
 
 <!-- 🔥 LOAD ORDER (CRITICAL) -->
-<script src="js/themeLoader.js"></script>
+
 <script src="js/header.js"></script>
 
 <!-- ===== MAIN ===== -->
@@ -187,9 +187,19 @@
 
 <!-- 🔥 ORDER MATTERS -->
 
-<script src="js/schoolConfig.js"></script>  
-<script src="js/dataLoader.js"></script>
-<script src="js/leaderboard.js"></script>
+<!-- Configuration -->
+<script src="./js/config/schoolConfig.js"></script>
+
+<!-- Services -->
+<script src="./js/services/schoolService.js"></script>
+<script src="./js/services/themeService.js"></script>
+<script src="./js/services/navigationService.js"></script>
+
+<!-- Bootstrap -->
+<script src="./js/bootstrap.js"></script>
+
+<!-- Data -->
+<script src="./js/dataLoader.js"></script>
 
 <!-- FOOTER -->
 <div style="text-align:center; padding:30px; color:#aaa; font-size:14px;">

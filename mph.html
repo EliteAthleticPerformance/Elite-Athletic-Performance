@@ -28,7 +28,7 @@
 <div id="header-placeholder"></div>
 
 <!-- 🔥 LOAD ORDER (CRITICAL) -->
-<script src="js/themeLoader.js"></script>
+
 <script src="js/header.js"></script>
 
 <!-- ===== MAIN ===== -->
@@ -285,9 +285,41 @@
 
 <!-- 🔥 ORDER MATTERS -->
 
-<script src="js/schoolConfig.js"></script>  
-<script src="js/dataLoader.js"></script>
-  <script src="js/speed.js"></script>
+<!-- ===== Configuration ===== -->
+<script src="./js/config/schoolConfig.js"></script>
+
+<!-- ===== Core Services ===== -->
+<script src="./js/services/schoolService.js"></script>
+<script src="./js/services/themeService.js"></script>
+<script src="./js/services/navigationService.js"></script>
+
+<!-- ===== Bootstrap ===== -->
+<script src="./js/bootstrap.js"></script>
+
+<!-- ===== Data ===== -->
+<script src="./js/dataLoader.js"></script>
+
+<!-- ===== Page Logic ===== -->
+<script>
+document.addEventListener("headerLoaded", async () => {
+
+    try {
+
+        await window.APP_READY;
+
+        const script = document.createElement("script");
+        script.src = "./js/speed.js";
+
+        document.body.appendChild(script);
+
+    } catch (err) {
+
+        console.error("❌ Speed page failed to initialize:", err);
+
+    }
+
+});
+</script>
 
 
 <!-- FOOTER -->

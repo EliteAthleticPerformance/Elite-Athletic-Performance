@@ -1,6 +1,35 @@
-document.addEventListener("DOMContentLoaded", async () => {
+(async function () {
 
-  const data = await loadAthleteData();
+    console.log("🚀 SPEED PAGE INITIALIZED");
+
+    const data = await loadAthleteData();
+
+    const rowsWithMPH = data.filter(r => r.mph !== "" && r.mph != null);
+
+console.log("Rows with date:", data.filter(r => !!r.date).length);
+
+console.log(
+  "Rows with numeric mph:",
+  data.filter(r => Number(r.mph) > 0).length
+);
+
+console.log(
+    data.slice(0, 10).map(r => ({
+        name: r.name,
+        mph: r.mph,
+        type: typeof r.mph,
+        number: Number(r.mph),
+        json: JSON.stringify(r.mph)
+    }))
+);
+
+    if (!data?.length) {
+
+        console.warn("No athlete data returned.");
+
+        return;
+
+    }
 
   gtag("event", "speed_page_view", {
     page_name: "Speed Development"
@@ -18,6 +47,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       a.date &&
       a.date.toString().trim() !== ""
   );
+
+  console.log("Total rows:", data.length);
+console.log("MPH rows:", mphRows.length);
+console.log("First MPH row:", mphRows[0]);
 
   if (!mphRows.length) return;
 
@@ -457,6 +490,7 @@ if (athlete1 && athlete2 && athlete3) {
               .includes(term)
         );
 
+        
       renderTable(filtered);
 
     }
@@ -759,7 +793,7 @@ if (
 
 }
 
-});
+})();  
 
 
 

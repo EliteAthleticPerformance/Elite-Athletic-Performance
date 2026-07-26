@@ -374,7 +374,7 @@ box-shadow: 0 10px 25px var(--primaryLight)
     white-space:nowrap;
 }
 
-@keyframes eliteGlow {
+@keyframes eliteTextGlow {
     from {
         text-shadow:
             0 2px 2px rgba(0,0,0,0.9),
@@ -816,23 +816,52 @@ LIVE PERFORMANCE LEADER ROTATOR
   gap: 20px;
   width: max-content;
 
-  animation: scrollTrending 120s linear infinite;
+  animation: scrollTrending 60s linear infinite;
 }
 
-.trending-card {
-  min-width: 280px;
+.trending-card{
 
-  padding: 18px;
+    min-width:260px;
 
-  border-radius: 12px;
+    min-height:260px;
 
-  background: rgba(255,255,255,.05);
+    padding:24px;
 
-  border: 1px solid rgba(255,255,255,.12);
+    border-radius:18px;
 
-  text-align: center;
+    text-align:center;
 
-  flex-shrink: 0;
+    background:linear-gradient(
+        145deg,
+        #171717,
+        #232323
+    );
+
+    border:1px solid rgba(255,255,255,.08);
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,.55);
+
+    transition:.25s;
+
+}
+
+.trend-stronger{
+
+    color:#22c55e;
+
+    text-shadow:
+        0 0 12px rgba(34,197,94,.45);
+
+}
+
+.trend-faster{
+
+    color:#38bdf8;
+
+    text-shadow:
+        0 0 12px rgba(56,189,248,.45);
+
 }
  
 .trending-name {
@@ -850,6 +879,158 @@ LIVE PERFORMANCE LEADER ROTATOR
 .trending-current {
   margin-top: 6px;
   opacity: .85;
+}
+
+.trending-track:hover{
+
+    animation-play-state:paused;
+
+}
+
+.trending-avatar{
+
+    width:56px;
+    height:56px;
+
+    margin:0 auto 14px;
+
+    border-radius:50%;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #7c3aed
+    );
+
+    color:white;
+
+    font-size:20px;
+    font-weight:800;
+
+    box-shadow:
+        0 0 18px rgba(59,130,246,.45);
+
+}
+
+.trending-value{
+
+    font-size:34px;
+
+    font-weight:900;
+
+    color:#22c55e;
+
+    margin-top:12px;
+    margin-bottom:10px;
+
+    text-shadow:
+        0 0 12px rgba(34,197,94,.45);
+
+}
+
+.trending-event{
+
+    font-size:17px;
+
+    font-weight:700;
+
+    color:white;
+
+    opacity:.9;
+
+}
+
+.trending-pr-label{
+
+    margin-top:14px;
+
+    font-size:12px;
+
+    text-transform:uppercase;
+
+    letter-spacing:2px;
+
+    opacity:.55;
+
+}
+
+.trending-current{
+
+    font-size:24px;
+
+    font-weight:800;
+
+    color:#FFD54F;
+
+}
+
+/* ========================================
+   TRENDING SUMMARY
+======================================== */
+
+.trending-summary{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:28px;
+
+    flex-wrap:wrap;
+
+    margin:20px auto 35px;
+
+}
+
+.trend-stat{
+
+    width:220px;
+
+    padding:18px;
+
+    text-align:center;
+
+    border-radius:14px;
+
+    background:linear-gradient(
+        145deg,
+        rgba(20,20,20,.95),
+        rgba(35,35,35,.90)
+    );
+
+    border:1px solid rgba(255,255,255,.08);
+
+    box-shadow:
+        0 0 15px rgba(59,130,246,.20);
+
+}
+
+.trend-number{
+
+    font-size:42px;
+
+    font-weight:900;
+
+    color:#4ade80;
+
+    margin-bottom:8px;
+
+}
+
+.trend-label{
+
+    font-size:14px;
+
+    text-transform:uppercase;
+
+    letter-spacing:1px;
+
+    opacity:.75;
+
 }
 
 @keyframes scrollTrending {
@@ -907,8 +1088,7 @@ right: 45px;
 
   border-radius: 18px;
 
-  transform:
-    rotate(-5 deg)
+  transform: rotate(-5deg)
 
   box-shadow:
     0 0 20px rgba(59,130,246,0.35),
@@ -927,11 +1107,8 @@ right: 45px;
 }
 
 .trial-floating-pill::before {
-
+  position: absolute;
   content: "";
-
- 
-
   inset: 0;
 
   background:
@@ -947,7 +1124,7 @@ right: 45px;
 .trial-floating-pill:hover {
 
   transform:
-    rotate(5 deg)
+    rotate(5deg)
     scale(1.04);
 
   box-shadow:
@@ -1720,7 +1897,7 @@ text-shadow:
   margin-top: 60px; /* 🔥 reduces giant top gap */
 }
 
-@keyframes eliteGlow {
+@keyframes eliteCardGlow {
   0% { box-shadow: 0 0 8px rgba(59,130,246,0.5); }
   50% { box-shadow: 0 0 18px rgba(59,130,246,0.9); }
   100% { box-shadow: 0 0 8px rgba(59,130,246,0.5); }
@@ -2971,6 +3148,13 @@ PERFORMANCE TIERS
 
 .tier.needs {
   color: #ef4444;
+}
+
+.site-footer {
+    text-align: center;
+    padding: 30px;
+    color: #aaa;
+    font-size: 14px;
 }
 
 

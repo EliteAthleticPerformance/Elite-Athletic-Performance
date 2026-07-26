@@ -31,7 +31,7 @@
 <div id="header-placeholder"></div>
 
 <!-- 🔥 FIXED PATHS -->
-<script src="./js/themeLoader.js"></script>
+
 <script src="./js/header.js"></script>
 
 <!-- ===== MAIN ===== -->
@@ -147,9 +147,43 @@
 
 
 <section class="trending-athletes">
-  <h2>🔥 Trending Athletes</h2>
 
-  <div id="trendingFeed"></div>
+    <h2>🔥 Trending Athletes</h2>
+
+    <div class="trending-summary">
+
+        <div class="trend-stat">
+            <div id="trendAthletes" class="trend-number">--</div>
+            <div class="trend-label">
+                Athletes Improved
+            </div>
+        </div>
+
+        <div class="trend-stat">
+            <div id="trendLiftTotals" class="trend-number">--</div>
+            <div class="trend-label">
+                3-Lift Totals Improved
+            </div>
+        </div>
+
+        <div class="trend-stat">
+            <div id="trendOverallScore" class="trend-number">--</div>
+            <div class="trend-label">
+                Athletic Scores Improved
+            </div>
+        </div>
+
+        <div class="trend-stat">
+            <div id="trendPRs" class="trend-number">--</div>
+            <div class="trend-label">
+                Personal Records
+            </div>
+        </div>
+
+    </div>
+
+    <div id="trendingFeed"></div>
+
 </section>
   
 
@@ -200,69 +234,37 @@
 
 </main>
 
-<!-- ===== NAVIGATION ===== -->
-<script>
-function goToPage(page) {
-  const school =
-    new URLSearchParams(window.location.search).get("school") ||
-    sessionStorage.getItem("school") ||
-    "pleasanthill";
 
-  sessionStorage.setItem("school", school);
 
-  window.location.href = page + "?school=" + school;
-}
-</script>
+<!-- Configuration -->
+<script src="./js/config/schoolConfig.js"></script>
 
-<!-- ===== DATA ===== -->
-<script src="./js/dataLoader.js?v=3"></script>
+<!-- Services -->
+<script src="./js/services/schoolService.js"></script>
+<script src="./js/services/themeService.js"></script>
+<script src="./js/services/navigationService.js"></script>
 
+<!-- Bootstrap -->
+<script src="./js/bootstrap.js"></script>
+
+<!-- Data -->
+<script src="./js/dataLoader.js"></script>
+
+<!-- Dashboard Services -->
+<script src="./js/services/heroStats.js"></script>
+<script src="./js/services/leaderService.js"></script>
+<script src="./js/services/trendingService.js"></script>
+<script src="./js/services/analyticsService.js"></script>
+
+<!-- Renderer -->
 <script src="./js/dashboard/dashboardRenderer.js"></script>
-<script src="./js/dashboard/heroStats.js"></script>
-<script src="./js/dashboard/leaderService.js"></script>
-<script src="./js/dashboard/trendingService.js"></script>
-<script src="./js/dashboard/analyticsService.js"></script>
+
+<!-- App -->
 <script src="./js/dashboard/dashboard.js"></script>
 
-<script>
-
-  
-document.addEventListener("DOMContentLoaded", async () => {
-  try {
-    await window.APP_READY;
-
-    document
-  .getElementById("freeTrialBtn")
-  ?.addEventListener("click", () => {
-
-    trackEvent("free_trial_click", {
-      page: window.location.pathname
-    });
-
-    trackEvent("trial_signup_started");
-
-});
-
-const data = await loadAthleteData();
-
-HeroStats.render(data);
-
-LeaderService.render(data);
-
-TrendingService.render(data);
-
-AnalyticsService.render(data);
-
-      } catch (err) {
-    console.error("❌ Dashboard load error:", err);
-  }
-});
-
-
-</script>
 
 <!-- FOOTER -->
-<div style="text-align:center; padding:30px; color:#aaa; font-size:14px;">
+<footer class="site-footer">
   © 2026 Elite Athletic Performance<br>
   Missouri, USA<br><br>
 

@@ -10,10 +10,7 @@ const Dashboard = {
 
             const data = await loadAthleteData();
 
-            HeroStats.render(data);
-            LeaderService.render(data);
-            TrendingService.render(data);
-            AnalyticsService.render(data);
+            DashboardRenderer.render(data);
 
         } catch (err) {
 
@@ -45,7 +42,6 @@ const Dashboard = {
 
 };
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => Dashboard.init()
-);
+document.addEventListener("DOMContentLoaded", () => {
+    Dashboard.init();
+});

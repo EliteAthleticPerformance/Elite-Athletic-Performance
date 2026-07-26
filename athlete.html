@@ -29,7 +29,7 @@
 
 <div id="header-placeholder"></div>
 
-<script src="js/themeLoader.js"></script>
+
 <script src="js/header.js"></script>
 
 <main>
@@ -287,9 +287,21 @@
 
 </main>
 
-<script src="js/schoolConfig.js"></script>  
-<script src="js/dataLoader.js"></script>
-<script src="js/athlete.js"></script>
+<!-- Configuration -->
+<script src="./js/config/schoolConfig.js"></script>
+
+<!-- Services -->
+<script src="./js/services/schoolService.js"></script>
+<script src="./js/services/themeService.js"></script>
+<script src="./js/services/navigationService.js"></script>
+<script src="js/services/ChartTheme.js"></script>
+
+
+<!-- Bootstrap -->
+<script src="./js/bootstrap.js"></script>
+
+<!-- Data -->
+<script src="./js/dataLoader.js"></script>
 
 <!-- 🔥 DYNAMIC BACK BUTTON SCRIPT -->
 <script>
@@ -301,6 +313,27 @@
       btn.href = `athletes.html?school=${school}`;
     }
   });
+</script>
+
+<script>
+document.addEventListener("headerLoaded", async () => {
+
+    try {
+
+        await window.APP_READY;
+
+        const script = document.createElement("script");
+        script.src = "./js/athlete.js";
+
+        document.body.appendChild(script);
+
+    } catch (err) {
+
+        console.error("❌ Athlete page failed:", err);
+
+    }
+
+});
 </script>
 
 <!-- FOOTER -->
