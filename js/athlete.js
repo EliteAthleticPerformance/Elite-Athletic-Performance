@@ -248,15 +248,22 @@ function renderAthlete(name) {
 
   console.log("renderAthlete:", name);
 
-  const history = DATA
-  .filter(a => a.name === name);
-  
-  console.log("History:", history.length);
+  // All records for this athlete
+const allHistory = DATA.filter(a => a.name === name);
 
-  if (!history.length) return showError("No data found");
+const history = allHistory.filter(
+    test => test.testType !== "mph"
+);
 
-  const latest = history[history.length - 1];
-  
+if (!history.length) {
+    return showError("No performance tests found");
+}
+
+const latest = history[history.length - 1];
+
+console.log("Performance history:", history.length);
+
+    
    console.log("Reached renderAthlete()");
 console.log("Latest athlete:", latest);
 

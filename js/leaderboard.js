@@ -1,3 +1,6 @@
+
+console.log("Leaderboard JS loaded");
+
 // ===============================
 // 🔤 FILTER STATE
 // ===============================
@@ -17,18 +20,30 @@ async function init() {
   try {
     await window.APP_READY;
 
+    console.log("APP READY");
+
     const data = await loadAthleteData();
 
-   
+console.log("Loaded", data.length, "records");
 
-    if (!data || !data.length) {
-      renderEmpty();
-      return;
-    }
+if (!data || !data.length) {
+    renderEmpty();
+    return;
+}
 
-   window.ALL_RAW_DATA = data; // 🔥 full dataset for search
+// Ignore MPH-only tests
+const performanceData = data.filter(
+    a => a.testType !== "mph"
+);
 
-const best = getBestPerAthlete(data);
+console.log(
+    "Performance records:",
+    performanceData.length
+);
+
+window.ALL_RAW_DATA = performanceData;
+
+const best = getBestPerAthlete(performanceData);
 
 allAthletes = best;
 
@@ -97,10 +112,19 @@ function getBestPerAthlete(data) {
 ======================================== */
 
 function renderLeaderboard(data) {
-  renderPodium(data);
-  renderLiftTable(data);
-  renderScoreTable(data);
-  renderMobile(data);
+  console.log("Rendering podium...");
+    renderPodium(data);
+
+    console.log("Rendering lift table...");
+    renderLiftTable(data);
+
+    console.log("Rendering score table...");
+    renderScoreTable(data);
+
+    console.log("Rendering mobile...");
+    renderMobile(data);
+
+    console.log("Leaderboard complete.");
 }
 
 function renderPodium(data) {
