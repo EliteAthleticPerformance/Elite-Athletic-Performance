@@ -109,3 +109,5 @@ const SchoolService = {
     }
 
 };
+
+window.SchoolService = SchoolService;

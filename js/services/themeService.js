@@ -147,3 +147,5 @@ const ThemeService = {
     }
 
 };
+
+window.ThemeService = ThemeService;

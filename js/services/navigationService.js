@@ -26,3 +26,5 @@ const NavigationService = {
     }
 
 };
+
+window.NavigationService = NavigationService;
