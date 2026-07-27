@@ -1,18 +1,23 @@
-/* ======================================================
-   PHASE DISPLAY + CENTER MODES
-====================================================== */
+// ========================================
+// TIME HELPERS
+// ========================================
 
+function formatTime(totalSeconds) {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    return (
+        String(minutes).padStart(2, "0") +
+        ":" +
+        String(seconds).padStart(2, "0")
+    );
+}
 
 function updateClock() {
     const el = document.getElementById("clock");
     if (!el) return;
 
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
-
-    el.textContent =
-        String(minutes).padStart(2, "0") + ":" +
-        String(seconds).padStart(2, "0");
+    el.textContent = formatTime(timeLeft);
 }
 
 
@@ -20,13 +25,40 @@ function updateTotalDisplay() {
     const el = document.getElementById("headerTimer"); // 🔥 NEW TARGET
     if (!el) return;
 
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-
-    el.textContent =
-        String(minutes).padStart(2, "0") + ":" +
-        String(seconds).padStart(2, "0");
+    el.textContent = formatTime(totalSeconds);
 } 
+
+
+// ========================================
+// CENTER HELPERS
+// ========================================
+
+function resetCenterModes(center) {
+    center.classList.remove(
+        "workMode",
+        "rotateMode",
+        "breakMode",
+        "dressMode",
+        "stretchMode",
+        "cooldownMode"
+    );
+}
+
+
+function setCenterMode(center, logo, centerMode, logoMode) {
+
+    resetCenterModes(center);
+
+    logo.classList.remove(
+        "logoDefault",
+        "logoWork",
+        "logoRotate",
+        "logoBreak"
+    );
+
+    center.classList.add(centerMode);
+    logo.classList.add(logoMode);
+}
 
 
 function updatePhaseDisplay() {
@@ -37,91 +69,72 @@ function updatePhaseDisplay() {
 
     if (!center || !logo || !phaseEl) return;
 
-    // RESET
-    center.classList.remove(
-    "workMode",
-    "rotateMode",
-    "breakMode",
-    "dressMode",
-    "stretchMode",
-    "cooldownMode"
-);
+        /* ===================== PHASES ===================== */
 
-    logo.classList.remove(
-        "logoDefault",
-        "logoWork",
-        "logoRotate",
-        "logoBreak"
-    );
+    switch (currentPhase) {
 
-    /* ===================== PHASES ===================== */
+    case "work": {
 
-    if (currentPhase === "work") {
+        setCenterMode(center, logo, "workMode", "logoWork");
 
-    center.classList.add("workMode");
-    logo.classList.add("logoWork");
+        const displayRotation = rotationCount + 1;
 
-    const displayRotation = rotationCount + 1;
+        phaseEl.innerHTML = `
+            <div>WORK</div>
+            <div>Set ${displaySetNumber} of ${getTotalSets()}</div>
+            <div>Rotation ${displayRotation} of ${maxRotations}</div>
+        `;
 
-    phaseEl.innerHTML = `
-        <div>WORK</div>
-        <div>Set ${displaySetNumber} of ${getTotalSets()}</div>
-        <div>Rotation ${displayRotation} of ${maxRotations}</div>
-    `;
-
-    return;
-}
-
-    if (currentPhase === "rotate") {
-        center.classList.add("rotateMode");
-        logo.classList.add("logoRotate");
-
-        phaseEl.innerHTML = `<div>ROTATE</div>`;
-        return;
+        break;
     }
 
-    if (currentPhase === "break") {
-        center.classList.add("breakMode");
-        logo.classList.add("logoBreak");
+    case "rotate":
+
+        setCenterMode(center, logo, "rotateMode", "logoRotate");
+
+        phaseEl.innerHTML = `<div>ROTATE</div>`;
+        break;
+
+    case "break":
+
+        setCenterMode(center, logo, "breakMode", "logoBreak");
 
         phaseEl.innerHTML = `
             <div>BREAK</div>
             <div>PREP NEXT LIFT</div>
         `;
-        return;
-    }
+        break;
 
-    if (currentPhase === "dress") {
-        center.classList.add("dressMode");
-        logo.classList.add("logoDefault");
+    case "dress":
+
+        setCenterMode(center, logo, "dressMode", "logoDefault");
 
         phaseEl.innerHTML = `<div>DRESS OUT & ATTENDANCE</div>`;
-        return;
-    }
+        break;
 
-    if (currentPhase === "stretch") {
-        center.classList.add("stretchMode");
-        logo.classList.add("logoDefault");
+    case "stretch":
+
+        setCenterMode(center, logo, "stretchMode", "logoDefault");
 
         phaseEl.innerHTML = `<div>DYNAMIC STRETCH</div>`;
-        return;
-    }
+        break;
 
-    if (currentPhase === "cooldown") {
+    case "cooldown":
 
-    center.classList.add("cooldownMode");
-    logo.classList.add("logoDefault");
+        setCenterMode(center, logo, "cooldownMode", "logoDefault");
 
-    phaseEl.innerHTML = `
-        <div>COOL DOWN</div>
-        <div>CLEAN-UP / DRESS</div>
-    `;
+        phaseEl.innerHTML = `
+            <div>COOL DOWN</div>
+            <div>CLEAN-UP / DRESS</div>
+        `;
+        break;
 
-    return;
+    default:
 
+        phaseEl.innerHTML = `<div>${currentPhase}</div>`;
+        break;
 }
 
-    phaseEl.innerHTML = `<div>${currentPhase}</div>`;
 }
 
 
@@ -129,14 +142,7 @@ function resetCenterClock() {
 
     const center = document.getElementById("center");
 
-    center.classList.remove(
-    "workMode",
-    "rotateMode",
-    "breakMode",
-    "dressMode",
-    "stretchMode",
-    "cooldownMode"
-);
+    resetCenterModes(center);
 
     center.classList.add("workMode");
 
