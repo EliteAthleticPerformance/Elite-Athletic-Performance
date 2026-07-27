@@ -31,6 +31,8 @@ function getSyncedNow() {
 
 function syncClockOffset() {
 
+    console.trace("⏱ syncClockOffset called");
+
     if (!window.serverTime) {
         console.warn("⚠️ No server time found");
         return;

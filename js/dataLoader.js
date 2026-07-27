@@ -336,7 +336,7 @@ function getCompletedEvents(record) {
 
 }
 
-const MINIMUM_PERFORMANCE_EVENTS = 10;
+const MINIMUM_PERFORMANCE_EVENTS = 8;
 
 function isPerformanceTest(record) {
 

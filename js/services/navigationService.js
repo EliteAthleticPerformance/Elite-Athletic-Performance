@@ -1,18 +1,46 @@
 const NavigationService = {
 
+    init() {
+
+        console.log("✅ NavigationService initialized");
+
+        const nav = document.getElementById("navDropdown");
+
+        console.log("Navigation:", nav);
+
+        if (!nav) return;
+
+        nav.addEventListener("change", (e) => {
+
+            const page = e.target.value;
+
+            if (!page) return;
+
+            this.navigate(page);
+
+        });
+
+        const logoutBtn = document.querySelector(".logout-btn");
+
+        if (logoutBtn) {
+            logoutBtn.addEventListener("click", () => this.logout());
+        }
+
+    },
+
     navigate(page) {
 
         const school = SchoolService.getSchoolKey();
 
-        window.location.href =
-            `${page}?school=${school}`;
+        const separator = page.includes("?") ? "&" : "?";
+
+        window.location.href = `${page}${separator}school=${school}`;
 
     },
 
     logout() {
 
         sessionStorage.clear();
-
         localStorage.clear();
 
         const base =
@@ -20,8 +48,7 @@ const NavigationService = {
                 ? "/Elite-Athletic-Performance/"
                 : "/";
 
-        window.location.href =
-            base + "index.html";
+        window.location.href = base + "index.html";
 
     }
 

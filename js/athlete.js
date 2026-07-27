@@ -1322,10 +1322,18 @@ document
       document.getElementById("athleteSelectB").value;
 
     const athleteA =
-      DATA.find(a => a.name === athleteAName);
+    DATA
+        .filter(a => a.name === athleteAName)
+        .sort((a, b) =>
+            Number(b.score) - Number(a.score)
+        )[0];
 
     const athleteB =
-      DATA.find(a => a.name === athleteBName);
+    DATA
+        .filter(a => a.name === athleteBName)
+        .sort((a, b) =>
+            Number(b.score) - Number(a.score)
+        )[0];
 
     if (!athleteA || !athleteB) {
       return;
@@ -1333,6 +1341,12 @@ document
 
     comparisonAthleteA = athleteA;
     comparisonAthleteB = athleteB;
+
+    console.log("Athlete A");
+console.table(athleteA);
+
+console.log("Athlete B");
+console.table(athleteB);
 
     renderHeadToHead(athleteA, athleteB);
 

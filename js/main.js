@@ -330,6 +330,8 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     await loadHeader(); // 🔥 MUST BE FIRST
   
+    NavigationService.init();
+
     try {
 
         if (!window.APP_READY) {
@@ -379,8 +381,6 @@ window.addEventListener("DOMContentLoaded", async () => {
         }
 
         applyCoachControl();
-
-        syncClockOffset();
 
         startAutoScheduler();
 

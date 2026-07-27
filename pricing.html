@@ -20,10 +20,14 @@
 
 </head>
 
+
 <body>
+
 
 <!-- HEADER -->
 <div id="header-placeholder"></div>
+
+<script src="./js/header.js"></script>
 
 <!-- Configuration -->
 <script src="./js/config/schoolConfig.js"></script>
@@ -39,15 +43,64 @@
 <!-- Data -->
 <script src="./js/dataLoader.js"></script>
 
+
 <main>
 
 <!-- HERO -->
-<section class="section" style="text-align:center;">
-  <h1>A modern performance tracking system designed for schools, coaches, and athletes 
-    to measure, analyze, compare and improve athletic development.</h1>
-  <p style="color: var(--muted); max-width:700px; margin:auto;">
-      </p>
+<section class="section pricing-hero">
+
+    <h1>Affordable Pricing for Every Athletic Program</h1>
+
+    <p>
+
+        Everything your strength & conditioning program needs
+        to manage workouts, track athlete performance,
+        analyze progress, and compare results.
+
+    </p>
+
 </section>
+
+
+<section class="section">
+
+<div class="card">
+
+<h2>Everything Included</h2>
+
+<div class="feature-grid">
+
+<div>✔ Unlimited Athlete Profiles</div>
+
+<div>✔ Radar Charts</div>
+
+<div>✔ Team Dashboards</div>
+
+<div>✔ AI Athlete Comparisons</div>
+
+<div>✔ Leaderboards</div>
+
+<div>✔ Performance Analytics</div>
+
+<div>✔ 4 Quadrant Timer</div>
+
+<div>✔ Multi-School Branding</div>
+
+<div>✔ MPH Tracking</div>
+
+<div>✔ School Records</div>
+
+<div>✔ Separate Divisions for Boys and Girls</div>
+
+<div>✔ Ability to Customize Workouts</div>
+
+</div>
+
+</div>
+
+</section>
+
+
 
 <!-- WHAT IT IS -->
 <section class="section">
@@ -87,54 +140,131 @@
   <div class="card">
     <h2>💰 Pricing</h2>
 
-    <div class="form-grid cols-3">
+    <div class="pricing-grid">
 
-      <div class="card">
-        <h3>4 Quadrant Timer (ONLY)</h3>
-        <h2>$500/year</h2>
-        <p>Perfect for Weight Room / Class Management and Program Development</p>
+    <!-- Timer -->
+    <div class="pricing-card">
+
+        <h3>4 Quadrant Timer</h3>
+
+        <div class="price">
+            $500<span>/year</span>
+        </div>
+
+        <p class="plan-description">
+            Perfect for weight room management and workout programming.
+        </p>
+
         <ul>
-          <p>Single school<p>
-          <p>Manual setup<p>
-          <p>Auto Start Following Bell Schedule Availalble<p>
-          <p>Custom school branding<p>
-          <p>Workout fully customizeable using google sheets (template provided)<p>
+            <li>✔ Single School</li>
+            <li>✔ Bell Schedule Automation</li>
+            <li>✔ Custom Branding</li>
+            <li>✔ Google Sheets Workout Builder</li>
         </ul>
-      </div>
 
-      <div class="card" style="border: 2px solid var(--primary);">
-        <h3>Performance Tracking System (ONLY)</h3>
-        <h2>$500/year</h2>
-        <ul>
-          <p>Multi-athlete tracking<p>
-          <p>Leaderboards<p>
-          <p>Performance profiles<p>
-          <p>Custom school branding<p>
-        </ul>
-      </div>
+        <button
+    class="pricing-btn"
+    onclick="openTrialModal()">
 
-      <div class="card">
-        <h3>Elite Athletic Performance - Combo</h3>
-        <h2>(Inculdes both 4 Quadrant Timer & Performance Tracking System)</h2>
-        <h1>$850/year  -  Most Poplular</h1>
-        
-        <ul>
-          <p>Perfect for Schools to Manage All Grade Levels 6-12<p>
-          </ul>
-      </div>
+Get Started
+
+</button>
 
     </div>
-  </div>
+
+    <!-- Performance -->
+    <div class="pricing-card">
+
+        <h3>Performance Tracking</h3>
+
+        <div class="price">
+            $500<span>/year</span>
+        </div>
+
+        <p class="plan-description">
+            Everything needed to manage athlete performance.
+        </p>
+
+        <ul>
+            <li>✔ Athlete Profiles</li>
+            <li>✔ Radar Charts</li>
+            <li>✔ Leaderboards</li>
+            <li>✔ School Branding</li>
+        </ul>
+
+        <button
+    class="pricing-btn"
+    onclick="openTrialModal()">
+
+Get Started
+
+</button>
+
+    </div>
+
+    <!-- Combo -->
+    <div class="pricing-card featured">
+
+        <div class="popular-badge">
+            ⭐ MOST POPULAR
+        </div>
+
+        <h3>Elite Combo</h3>
+
+        <div class="price">
+            $850<span>/year</span>
+        </div>
+
+        <p class="plan-description">
+
+            Includes BOTH systems for one discounted price.
+
+        </p>
+
+        <ul>
+            <li>✔ 4 Quadrant Timer</li>
+            <li>✔ Performance Tracking</li>
+            <li>✔ Unlimited Grade Levels</li>
+            <li>✔ Best Value</li>
+        </ul>
+
+        <button
+    class="trial-button"
+    onclick="openTrialModal()">
+
+    🚀 START YOUR FREE 14-DAY TRIAL
+
+</button>
+
+    </div>
+
+</div>
 </section>
 
 <!-- CONTACT -->
-<section class="section">
+<section id="contact" class="section">
   <div class="card">
     <h2>📞 Contact</h2>
 
-    <p>
-      Interested in bringing Elite Athletic Performance to your school?  Contact me for a FREE 14-day trial with a custom page with your high school and logo.
-    </p>
+   <h2>Ready to Get Started?</h2>
+
+<p>
+
+Start your FREE 14-day trial today.
+
+We'll build your school's custom dashboard,
+install your logo,
+and have you up and running quickly.
+
+</p>
+
+<button
+    class="trial-button"
+    onclick="openTrialModal()">
+
+    🚀 START YOUR FREE 14-DAY TRIAL
+
+</button>
 
     <p><strong>Brent Maxwell</strong> 660-351-2939</p>
     <p><strong>Email:</strong>brent.maxwell@harrisonvilleschools.org</p>
@@ -150,16 +280,173 @@
 
 </main>
 
-<script src=js/dataLoader.js"></script>
 
   <!-- FOOTER -->
 <div style="text-align:center; padding:30px; color:#aaa; font-size:14px;">
-  © 2026 Elite Athletic Performance<br>
-  Missouri, USA<br><br>
+ <div style="line-height:1.8;">
+
+<strong>Elite Athletic Performance</strong><br>
+
+Performance Tracking<br>
+
+Workout Management<br>
+
+Athlete Analytics<br>
+
+AI Comparisons
+
+</div>
+
+© 2026 Elite Athletic Performance<br><br>
 
   <a href="privacy.html" style="color:gold; text-decoration:none;">Privacy Policy</a> |
   <a href="terms.html" style="color:gold; text-decoration:none;">Terms of Service</a>
 </div>
+
+
+<div id="trialModal" class="modal">
+
+    <div class="modal-content">
+
+        <span class="close-modal">&times;</span>
+
+        <h2>🚀 Start Your FREE 14-Day Trial</h2>
+
+        <p>
+            Fill out the form below and we'll create your
+            customized Elite Athletic Performance dashboard.
+        </p>
+
+        <form id="trialForm">
+
+            <input type="text" placeholder="Full Name *" required>
+
+            <input type="text" placeholder="School *" required>
+
+            <input type="text" placeholder="Mascot *" required>
+
+            <div class="two-column">
+
+                <input type="text" placeholder="City *" required>
+
+                <input type="text" placeholder="State *" required>
+
+            </div>
+
+            <input type="email" placeholder="Email Address *" required>
+
+            <input type="tel" placeholder="School Phone">
+
+            <input type="tel" placeholder="Cell Phone">
+
+            <input type="text" placeholder="Sport(s) Using the Platform">
+
+            <input type="number"
+                   placeholder="Approximate Number of Athletes">
+
+            <div class="product-selection">
+
+    <div class="product-title">
+        Which product are you interested in?
+    </div>
+
+    <div class="product-subtitle">
+        (Select all that apply)
+    </div>
+
+    <label class="product-option">
+        <input
+            type="checkbox"
+            name="product"
+            value="4 Quadrant Timer">
+            
+
+        <span>⏱️ 4 Quadrant Timer</span>
+    </label>
+
+    <label class="product-option">
+        <input
+            type="checkbox"
+            name="product"
+            value="Athletic Performance Tracker">
+
+        <span>📊 Athletic Performance Tracker</span>
+    </label>
+
+    <label class="product-option">
+        <input
+            type="checkbox"
+            name="product"
+            value="Elite Combo">
+
+        <span>⭐ Elite Combo (Both Products)</span>
+    </label>
+
+</div>
+
+            <button type="submit" class="trial-button">
+
+                🚀 Start My Trial
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+  const form = document.getElementById("trialForm");
+
+form.addEventListener("submit", function (e) {
+
+    e.preventDefault();
+
+    alert("Thank you! Your trial request has been received.");
+
+    modal.style.display = "none";
+
+    form.reset();
+
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const modal = document.getElementById("trialModal");
+
+    const closeButton =
+        document.querySelector(".close-modal");
+
+    window.openTrialModal = function () {
+
+        modal.style.display = "flex";
+
+    };
+
+    function closeTrialModal() {
+
+        modal.style.display = "none";
+
+    }
+
+    closeButton.addEventListener("click", closeTrialModal);
+
+    window.addEventListener("click", (event) => {
+
+        if (event.target === modal) {
+
+            closeTrialModal();
+
+        }
+
+    });
+
+});
+
+</script>
   
 </body>
 </html>
