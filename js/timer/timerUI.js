@@ -39,12 +39,13 @@ function updatePhaseDisplay() {
 
     // RESET
     center.classList.remove(
-        "workMode",
-        "rotateMode",
-        "breakMode",
-        "dressMode",
-        "stretchMode"
-    );
+    "workMode",
+    "rotateMode",
+    "breakMode",
+    "dressMode",
+    "stretchMode",
+    "cooldownMode"
+);
 
     logo.classList.remove(
         "logoDefault",
@@ -57,23 +58,19 @@ function updatePhaseDisplay() {
 
     if (currentPhase === "work") {
 
-        center.classList.add("workMode");
-        logo.classList.add("logoWork");
+    center.classList.add("workMode");
+    logo.classList.add("logoWork");
 
-        const displayRotation =
-    currentPhase === "rotate"
-        ? rotationCount
-        : rotationCount + 1;
+    const displayRotation = rotationCount + 1;
 
-phaseEl.innerHTML = `
-    <div>WORK</div>
-    <div>Set ${displaySetNumber} of ${getTotalSets()}</div>
-    <div>Rotation ${displayRotation} of ${maxRotations}</div>
-`;
-        
+    phaseEl.innerHTML = `
+        <div>WORK</div>
+        <div>Set ${displaySetNumber} of ${getTotalSets()}</div>
+        <div>Rotation ${displayRotation} of ${maxRotations}</div>
+    `;
 
-        return;
-    }
+    return;
+}
 
     if (currentPhase === "rotate") {
         center.classList.add("rotateMode");
@@ -111,12 +108,18 @@ phaseEl.innerHTML = `
     }
 
     if (currentPhase === "cooldown") {
-        center.classList.add("dressMode");
-        logo.classList.add("logoDefault");
 
-        phaseEl.innerHTML = `<div>COOL DOWN / CLEAN-UP / DRESS</div>`;
-        return;
-    }
+    center.classList.add("cooldownMode");
+    logo.classList.add("logoDefault");
+
+    phaseEl.innerHTML = `
+        <div>COOL DOWN</div>
+        <div>CLEAN-UP / DRESS</div>
+    `;
+
+    return;
+
+}
 
     phaseEl.innerHTML = `<div>${currentPhase}</div>`;
 }
@@ -127,12 +130,13 @@ function resetCenterClock() {
     const center = document.getElementById("center");
 
     center.classList.remove(
-        "workMode",
-        "rotateMode",
-        "breakMode",
-        "dressMode",
-        "stretchMode"
-    );
+    "workMode",
+    "rotateMode",
+    "breakMode",
+    "dressMode",
+    "stretchMode",
+    "cooldownMode"
+);
 
     center.classList.add("workMode");
 

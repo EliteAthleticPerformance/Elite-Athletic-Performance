@@ -1,3 +1,19 @@
+// ========================================
+// SCHEDULE HELPERS
+// ========================================
+
+function getTodaySchedule(day) {
+    switch (day) {
+        case 1: return monTimes;
+        case 2: return tueTimes;
+        case 3: return wedTimes;
+        case 4: return thurTimes;
+        case 5: return friTimes;
+        default: return [];
+    }
+}
+
+
 function autoDetectActiveClass() {
 
     // ✅ FIXED (allow sync even if already running)
@@ -5,15 +21,7 @@ function autoDetectActiveClass() {
 
     const now = getEffectiveNow();
     const day = now.getDay();
-
-    let todaySchedule = [];
-
-if (day === 1) todaySchedule = monTimes;
-else if (day === 2) todaySchedule = tueTimes;
-else if (day === 3) todaySchedule = wedTimes;
-else if (day === 4) todaySchedule = thurTimes;
-else if (day === 5) todaySchedule = friTimes;
-else return;
+    const todaySchedule = getTodaySchedule(day);
 
     for (const timeStr of todaySchedule) {
 
@@ -49,22 +57,33 @@ function applyDaySpecificClassLength() {
 
     const day = getEffectiveNow().getDay();
 
-    if (day === 1) {
+    switch (day) {
 
-        classBlockLength = mondayMinutes * 60;
+        case 1:
+            classBlockLength = mondayMinutes * 60;
+            break;
 
-    } else if (day === 2 || day === 3) {
+        case 2:
+            classBlockLength = tuesdayMinutes * 60;
+            break;
 
-        classBlockLength = tueWedMinutes * 60;
+        case 3:
+            classBlockLength = wednesdayMinutes * 60;
+            break;
 
-    } else if (day === 4 || day === 5) {
+        case 4:
+            classBlockLength = thursdayMinutes * 60;
+            break;
 
-        classBlockLength = thuFriMinutes * 60;
+        case 5:
+            classBlockLength = fridayMinutes * 60;
+            break;
 
+        default:
+            classBlockLength = 45 * 60;
     }
 
     console.log("📏 Class length:", classBlockLength);
-
 }
 
 
@@ -79,22 +98,15 @@ function startAutoScheduler() {
         if (!autoStartEnabled) return;
 
         const now = getEffectiveNow();
-        const day = now.getDay(); // 0=Sun, 1=Mon...
+const day = now.getDay(); // 0=Sun, 1=Mon...
 
-        if (todayOnlyMode) {
-            const today = now.getDay();
-            if (today === 0 || today === 6) return; // block weekends
-        }
+if (todayOnlyMode && (day === 0 || day === 6)) {
+    return;
+}
 
-        if (isRunning) return;
+if (isRunning) return;
 
-        let todaySchedule = [];
-
-        if (day === 1) todaySchedule = monTimes;
-else if (day === 2) todaySchedule = tueTimes;
-else if (day === 3) todaySchedule = wedTimes;
-else if (day === 4) todaySchedule = thurTimes;
-else if (day === 5) todaySchedule = friTimes;
+const todaySchedule = getTodaySchedule(day);
 
         for (const timeStr of todaySchedule) {
 
@@ -146,34 +158,12 @@ function checkAutoStart() {
     if (!autoStartEnabled) return;
     if (isRunning) return;
 
-    const now = getEffectiveNow();
-
+   const now = getEffectiveNow();
     const day = now.getDay();
 
-    let todaySchedule = [];
-
-    if (day === 1) todaySchedule = monTimes;
-    else if (day === 2) todaySchedule = tueTimes;
-    else if (day === 3) todaySchedule = wedTimes;
-    else if (day === 4) todaySchedule = thurTimes;
-    else if (day === 5) todaySchedule = friTimes;
-    else return;
-
-    if (!todaySchedule.length) return;
-
-    // 🔥 convert ALL schedule times to timestamps
-    const timestamps = todaySchedule.map(t => parseTimeToToday(t));
-
-    // 🔥 find the most recent start time that has passed
-    let bestStart = null;
-
-    for (const t of timestamps) {
-        if (t <= now) {
-            if (!bestStart || t > bestStart) {
-                bestStart = t;
-            }
-        }
-    }
+    if (todayOnlyMode && (day === 0 || day === 6)) {
+    return;
+}
 
     if (!bestStart) return;
 

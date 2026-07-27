@@ -58,11 +58,20 @@ let maxSets = 1;
 let rotationCount = 0;
 const maxRotations = 4;
 
-
+const DEBUG_TIMER = false;
 
 /* ===================== PERIOD AUTO START ===================== */
 
 let autoStartEnabled = true;
+
+/* Bell Schedule Lengths */
+let mondayMinutes = 45;
+let tuesdayMinutes = 45;
+let wednesdayMinutes = 45;
+let thursdayMinutes = 45;
+let fridayMinutes = 45;
+
+/* Auto Start Times */
 let monTimes = [];
 let tueTimes = [];
 let wedTimes = [];

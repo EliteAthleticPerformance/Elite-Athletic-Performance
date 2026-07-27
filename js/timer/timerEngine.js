@@ -1,3 +1,168 @@
+// ========================================
+// PHASE TRANSITION HELPER
+// ========================================
+
+function transitionToPhase(phase, duration) {
+
+    currentPhase = phase;
+    timeLeft = duration;
+    phaseJustChanged = true;
+
+    lastCountdownSpoken = null;
+
+}
+
+
+// ========================================
+// WORKOUT INITIALIZATION
+// ========================================
+
+// ========================================
+// DRESS PHASE
+// ========================================
+
+function handleDressPhase() {
+
+    transitionToPhase("stretch", dynamicStretchDuration);
+
+    dressWarningSpoken = false;
+
+    speakStretch();
+
+}
+
+
+// ========================================
+// STRETCH PHASE
+// ========================================
+
+function handleStretchPhase() {
+
+    beginWorkout();
+
+    transitionToPhase("work", getWorkDuration());
+
+    speakLift();
+
+}
+
+
+
+function beginWorkout() {
+
+    rotationCount = 0;
+    currentSet = 1;
+    displaySetNumber = 1;
+
+    loadSetData(currentSet);
+
+}
+
+
+// ========================================
+// WORK PHASE
+// ========================================
+
+function handleWorkPhase() {
+
+    rotateQuadrantColors();
+
+    rotationCount++;
+
+    // SHOW PREVIEW ON FINAL ROTATION
+    if (rotationCount === maxRotations) {
+
+        const nextSet = getNextSetIndex();
+
+        if (nextSet) {
+            previewSetData(nextSet);
+        }
+    }
+
+    transitionToPhase("rotate", getRestDuration());
+
+    speakRotate();
+
+}
+
+
+// ========================================
+// ROTATE PHASE
+// ========================================
+
+function handleRotatePhase() {
+
+    const finishedRotations = rotationCount >= maxRotations;
+
+    if (finishedRotations) {
+
+        rotationCount = 0;
+
+        const nextItem = workoutData[currentSet] ?? null;
+
+        // 🔴 no more items
+        if (!nextItem) {
+            startCooldown();
+            return;
+        }
+
+        // 🟡 break row
+        if (nextItem.type === "break") {
+
+            currentSet++;
+
+            transitionToPhase(
+                "break",
+                Math.max(1, nextItem.breakSec || breakDuration)
+            );
+
+            speakBreakPrep();
+
+            previewNextSet();
+
+            return;
+        }
+
+        // ✅ next is real set
+        currentSet++;
+        displaySetNumber++;
+        loadSetData(currentSet);
+    }
+
+    transitionToPhase("work", getWorkDuration());
+
+    speakLift();
+
+}
+
+
+// ========================================
+// BREAK PHASE
+// ========================================
+
+function handleBreakPhase() {
+
+    const nextItem = workoutData[currentSet] ?? null;
+
+    if (!nextItem) {
+        startCooldown();
+        return;
+    }
+
+    // ✅ ONLY advance when next is a set
+    if (nextItem.type === "set") {
+        currentSet++;
+        displaySetNumber++;
+        loadSetData(currentSet);
+    }
+
+    transitionToPhase("work", getWorkDuration());
+
+    speakLift();
+
+}
+
+
 function preciseTick() {
 
     if (!isRunning) return;
@@ -54,17 +219,13 @@ updateTotalDisplay();
 document.getElementById("startBtn").innerText = "STOP";
 
     // FULL RESET
-    displaySetNumber = 1;
-    rotationCount = 0;
-    currentSet = 1;
-    dressWarningSpoken = false;
-    lastAutoStartMinute = null;
+resetWorkoutState();
 
-    preloadFirstSet();
+lastAutoStartMinute = null;
 
-    /* ---------- START WITH DRESS PHASE ---------- */
-    currentPhase = "dress";
-    timeLeft = dressOutDuration;
+preloadFirstSet();
+
+transitionToPhase("dress", dressOutDuration);
       
     updatePhaseDisplay();
     updateClock();
@@ -154,7 +315,7 @@ function tick() {
     
   if (timeLeft > 0) return;
 
-    lastCountdownSpoken = null;
+    
 
     console.log("Set:", currentSet, "Rotation:", rotationCount);
 
@@ -165,128 +326,41 @@ function tick() {
    
   switch (currentPhase) {
 
-        case "dress":
-            currentPhase = "stretch";
-            timeLeft = dynamicStretchDuration;
-            dressWarningSpoken = false;
-            phaseJustChanged = true;
-            speakStretch();
-            break;
+    case "dress":
 
-        case "stretch":
-            currentPhase = "work";
-            rotationCount = 0;
-            currentSet = 1;
-            displaySetNumber = 1;
+        handleDressPhase();
 
-            loadSetData(1);
+        break;
 
-            timeLeft = getWorkDuration();
-            phaseJustChanged = true;
-            speakLift();
-            break;
+    case "stretch":
 
-        case "work": {
+        handleStretchPhase();
 
-    rotateQuadrantColors();
-    rotationCount++;
+        break;
 
-    // SHOW PREVIEW ON FINAL ROTATION
-    if (rotationCount === maxRotations) {
+    case "work":
 
-        const nextSet = getNextSetIndex();
+        handleWorkPhase();
 
-        if (nextSet) {
-            previewSetData(nextSet);
-        }
-    }
+        break;
 
-    currentPhase = "rotate";
-    timeLeft = getRestDuration();
-    phaseJustChanged = true;
-    speakRotate();
-    break;
-}
+    case "rotate":
 
-      
-        /* ---------- ROTATE → NEXT ---------- */
-      
-    case "rotate": {
+        handleRotatePhase();
 
-    const finishedRotations = rotationCount >= maxRotations;
+        break;
 
-    if (finishedRotations) {
+    case "break":
 
-        rotationCount = 0;
+        handleBreakPhase();
 
-        const nextItem = workoutData[currentSet] ?? null;
+        break;
 
-        // 🔴 no more items
-        if (!nextItem) {
-            workoutFinishScreen();
-            return;
-        }
+    case "cooldown":
 
-
-        // 🟡 break row
-        if (nextItem.type === "break") {
-
-            // advance pointer onto the break row
-            currentSet++;
-
-            currentPhase = "break";
-
-            timeLeft = Math.max(
-                1,
-                nextItem.breakSec || breakDuration
-            );
-
-            phaseJustChanged = true;
-            speakBreakPrep();
-
-            previewNextSet();
-            break;
-        }
-
-
-        // ✅ next is real set
-        currentSet++;
-        displaySetNumber++;
-        loadSetData(currentSet);
-    }
-
-    currentPhase = "work";
-    timeLeft = getWorkDuration();
-    phaseJustChanged = true;
-    speakLift();
-    break;
-}
-
-        case "break": {
-
-            const nextItem = workoutData[currentSet] ?? null;
-
-            if (!nextItem) {
-                workoutFinishScreen();
-                return;
-            }
-
-          
-            // ✅ ONLY advance when next is a set
-            if (nextItem.type === "set") {
-                currentSet++;
-                displaySetNumber++;
-                loadSetData(currentSet);
-            }
-
-            currentPhase = "work";
-            timeLeft = getWorkDuration();
-            phaseJustChanged = true;
-            speakLift();
-            break;
-        }
-
-    } // ✅ CLOSES switch(currentPhase)
+        workoutFinishScreen();
+        return;
+} // ✅ CLOSES switch(currentPhase)
 
   
     /* ======================================================
@@ -294,33 +368,75 @@ function tick() {
     ====================================================== */
     
   if (phaseJustChanged) {
-    lastCountdownSpoken = null;
-    updatePhaseDisplay();
+        updatePhaseDisplay();
 }
 }
 
 
 function syncTime() {
 
-    if (!isRunning) {
+    if (isRunning) return;
 
-        const workVal = getWorkDuration();
-        const restVal = getRestDuration();
+    const workVal = getWorkDuration();
+    const restVal = getRestDuration();
 
-        timeLeft = (currentPhase === "work") ? workVal : restVal;
+    switch (currentPhase) {
 
-        updateClock();
+        case "work":
+            timeLeft = workVal;
+            break;
 
-        // Always show full class block
-        totalSeconds = classBlockLength;
-        originalTotalSeconds = classBlockLength;
+        case "rotate":
+        case "break":
+            timeLeft = restVal;
+            break;
 
-        updateTotalDisplay();
+        case "cooldown":
+            timeLeft = cooldownDuration;
+            break;
+
+        case "dress":
+            timeLeft = dressOutDuration;
+            break;
+
+        case "stretch":
+            timeLeft = dynamicStretchDuration;
+            break;
+
+        default:
+            timeLeft = workVal;
     }
+
+    updateClock();
+
+    totalSeconds = classBlockLength;
+    originalTotalSeconds = classBlockLength;
+
+    updateTotalDisplay();
 }
 
 
 function workoutFinishScreen() {
     stopAllTimers();
     document.getElementById("phase").innerText = "WORKOUT COMPLETE";
+}
+
+function startCooldown() {
+
+    if (currentPhase === "cooldown") return;
+
+    // No cooldown needed
+    if (cooldownDuration <= 0) {
+        workoutFinishScreen();
+        return;
+    }
+
+    transitionToPhase("cooldown", cooldownDuration);
+
+speakCooldown?.();
+
+    updatePhaseDisplay();
+    updateClock();
+
+    console.log("🧘 Starting Cooldown:", cooldownDuration);
 }

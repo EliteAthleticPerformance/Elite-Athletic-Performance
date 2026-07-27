@@ -4,9 +4,23 @@ function getTotalSets() {
 
 
 function resetWorkoutState() {
+
+    /* ---------- SET TRACKING ---------- */
+
     displaySetNumber = 1;
-    rotationCount = 0;
     currentSet = 1;
+    rotationCount = 0;
+
+    /* ---------- PHASE STATE ---------- */
+
+    currentPhase = "dress";
+    phaseJustChanged = false;
+
+    /* ---------- AUDIO / WARNINGS ---------- */
+
+    dressWarningSpoken = false;
+    lastCountdownSpoken = null;
+
 }
 
 
@@ -14,24 +28,46 @@ function resetWorkoutState() {
 
     // Start searching AFTER currentSet
     for (let i = currentSet; i < workoutData.length; i++) {
-        if (workoutData[i].type === "set") {
-            return i + 1; // convert to 1-based index
+
+        const item = workoutData[i];
+
+        if (item?.type === "set") {
+            return i + 1; // Convert to 1-based index
         }
+
     }
 
     // No more sets found
     return null;
+
 }
 
+
+/* ======================================================
+   TIME HELPERS
+====================================================== */
+
+function formatTime(seconds) {
+
+    const minutes = Math.floor(seconds / 60);
+
+    return (
+        String(minutes).padStart(2, "0") +
+        ":" +
+        String(seconds % 60).padStart(2, "0")
+    );
+
+}
 
 function getSyncedNow() {
     return new Date(Date.now() + timeOffset);
 }
 
-
 function syncClockOffset() {
 
-    console.trace("⏱ syncClockOffset called");
+    if (DEBUG_TIMER) {
+        console.trace("⏱ syncClockOffset called");
+    }
 
     if (!window.serverTime) {
         console.warn("⚠️ No server time found");
@@ -47,6 +83,9 @@ function syncClockOffset() {
 
     timeOffset = serverNow.getTime() - Date.now();
 
-    console.log("🕒 Server time:", window.serverTime);
-    console.log("⏱ Clock offset (ms):", timeOffset);
+    if (DEBUG_TIMER) {
+        console.log("🕒 Server time:", window.serverTime);
+        console.log("⏱ Clock offset (ms):", timeOffset);
+    }
+
 }
