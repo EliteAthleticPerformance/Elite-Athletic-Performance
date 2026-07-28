@@ -38,16 +38,15 @@ function autoDetectActiveClass() {
 
             console.log("⚡ Class already in progress. Auto syncing timer.");
 
-            startTimer();
+startTimer();
 
-            const elapsed = Math.floor((now - start) / 1000);
-            
-            totalSeconds = Math.max(classBlockLength - elapsed, 1);
-            originalTotalSeconds = totalSeconds;
+const elapsed = Math.floor((now - start) / 1000);
 
-            updateTotalDisplay();
+startTimer(true);
 
-            break;
+resumeWorkout(elapsed);
+
+break;
         }
     }
 }
@@ -107,6 +106,8 @@ if (todayOnlyMode && (day === 0 || day === 6)) {
 if (isRunning) return;
 
 const todaySchedule = getTodaySchedule(day);
+
+        classBlockLength = calculateTotalTime();
 
         for (const timeStr of todaySchedule) {
 
@@ -233,3 +234,5 @@ window.startAutoScheduler = startAutoScheduler;
 window.autoDetectActiveClass = autoDetectActiveClass;
 window.parseTimeToToday = parseTimeToToday;
 window.getEffectiveNow = getEffectiveNow;
+window.getWorkoutState = getWorkoutState;
+window.resumeWorkout = resumeWorkout;

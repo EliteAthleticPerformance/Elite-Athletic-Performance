@@ -4,18 +4,22 @@
 
 function transitionToPhase(phase, duration) {
 
+    console.log(
+        "Transition:",
+        currentPhase,
+        "→",
+        phase,
+        "duration:",
+        duration
+    );
+
     currentPhase = phase;
     timeLeft = duration;
     phaseJustChanged = true;
 
     lastCountdownSpoken = null;
-
 }
 
-
-// ========================================
-// WORKOUT INITIALIZATION
-// ========================================
 
 // ========================================
 // DRESS PHASE
@@ -185,7 +189,7 @@ function preciseTick() {
  }
 
 
-function startTimer() {
+function startTimer(isResume = false) {
 
   stopAllTimers();
   
@@ -214,9 +218,12 @@ classBlockLength = calculateTotalTime(); // 🔥 NOW DYNAMIC
 
 totalSeconds = classBlockLength;
 originalTotalSeconds = classBlockLength;
-updateTotalDisplay();
 
 document.getElementById("startBtn").innerText = "STOP";
+
+ if (!isResume) {
+
+        console.log("🟢 Starting New Workout");
 
     // FULL RESET
 resetWorkoutState();
@@ -226,7 +233,14 @@ lastAutoStartMinute = null;
 preloadFirstSet();
 
 transitionToPhase("dress", dressOutDuration);
-      
+     
+ } else {
+
+        console.log("🔄 Resume Mode");
+
+ }
+
+    // Shared code (runs for BOTH new and resumed workouts)
     updatePhaseDisplay();
     updateClock();
     updateTotalDisplay();
@@ -234,6 +248,66 @@ transitionToPhase("dress", dressOutDuration);
     nextTickTime = Date.now() + 1000;
     timer = setTimeout(preciseTick, 1000);
 }
+
+
+
+// ========================================
+// RESUME WORKOUT
+// ========================================
+
+function resumeWorkout(elapsedSeconds) {
+
+    const state = getWorkoutState(elapsedSeconds);
+
+    if (!state) {
+        console.warn("Unable to restore workout state.");
+        return;
+    }
+
+    console.log("🔄 Restoring Workout", state);
+
+    // Restore phase
+    currentPhase = state.phase;
+    timeLeft = state.timeLeft;
+
+    // Restore workout position
+    currentSet = state.currentSet;
+    displaySetNumber = state.displaySetNumber;
+    rotationCount = state.rotationCount;
+
+    // Restore total timer
+    totalSeconds = Math.max(classBlockLength - elapsedSeconds, 1);
+    originalTotalSeconds = totalSeconds;
+
+    // Restore workout cards
+    if (
+        currentPhase === "work" ||
+        currentPhase === "rotate" ||
+        currentPhase === "break"
+    ) {
+        loadSetData(currentSet);
+    }
+
+    // Refresh UI
+    updatePhaseDisplay();
+    updateClock();
+    updateTotalDisplay();
+
+    // Highlight current timeline segment
+    updateSegmentHighlight();
+
+    console.log(
+        "✅ Resume:",
+        currentPhase,
+        "Set:",
+        currentSet,
+        "Rotation:",
+        rotationCount,
+        "Time Left:",
+        timeLeft
+    );
+}
+
 
 
  function stopAllTimers() {

@@ -22,11 +22,12 @@ function updateClock() {
 
 
 function updateTotalDisplay() {
-    const el = document.getElementById("headerTimer"); // 🔥 NEW TARGET
+    const el = document.getElementById("totalTime");
+
     if (!el) return;
 
     el.textContent = formatTime(totalSeconds);
-} 
+}
 
 
 // ========================================
@@ -34,40 +35,32 @@ function updateTotalDisplay() {
 // ========================================
 
 function resetCenterModes(center) {
+
     center.classList.remove(
-        "workMode",
-        "rotateMode",
-        "breakMode",
-        "dressMode",
-        "stretchMode",
-        "cooldownMode"
+        "phase-dress",
+        "phase-stretch",
+        "phase-work",
+        "phase-rotate",
+        "phase-break",
+        "phase-cooldown"
     );
 }
 
 
-function setCenterMode(center, logo, centerMode, logoMode) {
+function setCenterMode(center, phaseClass) {
 
     resetCenterModes(center);
 
-    logo.classList.remove(
-        "logoDefault",
-        "logoWork",
-        "logoRotate",
-        "logoBreak"
-    );
-
-    center.classList.add(centerMode);
-    logo.classList.add(logoMode);
+    center.classList.add(phaseClass);
 }
 
 
 function updatePhaseDisplay() {
 
-    const logo = document.getElementById("teamLogo");
-    const center = document.getElementById("center");
+    const center = document.getElementById("centerInner");
     const phaseEl = document.getElementById("phase");
 
-    if (!center || !logo || !phaseEl) return;
+    if (!center || !phaseEl) return;
 
         /* ===================== PHASES ===================== */
 
@@ -75,7 +68,7 @@ function updatePhaseDisplay() {
 
     case "work": {
 
-        setCenterMode(center, logo, "workMode", "logoWork");
+        setCenterMode(center, "phase-work");
 
         const displayRotation = rotationCount + 1;
 
@@ -90,14 +83,14 @@ function updatePhaseDisplay() {
 
     case "rotate":
 
-        setCenterMode(center, logo, "rotateMode", "logoRotate");
+        setCenterMode(center, "phase-rotate");
 
         phaseEl.innerHTML = `<div>ROTATE</div>`;
         break;
 
     case "break":
 
-        setCenterMode(center, logo, "breakMode", "logoBreak");
+        setCenterMode(center, "phase-break");
 
         phaseEl.innerHTML = `
             <div>BREAK</div>
@@ -107,14 +100,14 @@ function updatePhaseDisplay() {
 
     case "dress":
 
-        setCenterMode(center, logo, "dressMode", "logoDefault");
+        setCenterMode(center, "phase-dress");
 
         phaseEl.innerHTML = `<div>DRESS OUT & ATTENDANCE</div>`;
         break;
 
     case "stretch":
 
-        setCenterMode(center, logo, "stretchMode", "logoDefault");
+        setCenterMode(center, "phase-stretch");
 
         phaseEl.innerHTML = `<div>DYNAMIC STRETCH</div>`;
         break;
@@ -140,14 +133,16 @@ function updatePhaseDisplay() {
 
 function resetCenterClock() {
 
-    const center = document.getElementById("center");
+    const center = document.getElementById("centerInner");
+
+    if (!center) return;
 
     resetCenterModes(center);
 
-    center.classList.add("workMode");
+    center.classList.add("phase-work");
 
-    document.getElementById("clock").innerText =
+    document.getElementById("clock").textContent =
         document.getElementById("workTime").value;
 
-    document.getElementById("phase").innerText = "WORK";
+    document.getElementById("phase").textContent = "WORK";
 }

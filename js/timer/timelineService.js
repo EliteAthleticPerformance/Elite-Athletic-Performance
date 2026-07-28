@@ -21,11 +21,27 @@ function getRotateDuration(item) {
 // TIMELINE HELPERS
 // ========================================
 
-function addTimelineSegment(phase, duration) {
+function addTimelineSegment(
+    phase,
+    duration,
+    set = 0,
+    displaySet = 0,
+    rotation = 0,
+    workoutIndex = 0
+) {
+
     timelineData.push({
+
         phase,
-        duration
+        duration,
+
+        set,
+        displaySet,
+        rotation,
+
+        workoutIndex
     });
+
 }
 
 
@@ -34,41 +50,140 @@ function buildSegmentTimeline() {
 
     timelineData = [];
 
-    // DRESS
-    addTimelineSegment("dress", dressOutDuration);
+    addTimelineSegment(
+    "dress",
+    dressOutDuration,
+    1,
+    1,
+    0,
+    1
+);
 
-    // STRETCH
-    if (dynamicStretchDuration > 0) {
-        addTimelineSegment("stretch", dynamicStretchDuration);
-    }
+if (dynamicStretchDuration > 0) {
+    addTimelineSegment(
+        "stretch",
+        dynamicStretchDuration,
+        1,
+        1,
+        0,
+        1
+    );
+}
 
-    
-    // WORKOUT
+   
+let displaySet = 1;
+
 window.workoutData.forEach((item) => {
 
     if (item.type === "set") {
 
+        workoutIndex++;
+
         for (let r = 0; r < maxRotations; r++) {
 
-        
-            // Work segment
-addTimelineSegment("work", getWorkDuration(item));
+            addTimelineSegment(
 
-// Rotate between stations (not after the last station)
-if (r < maxRotations - 1) {
-    addTimelineSegment("rotate", getRotateDuration(item));
-}
+                "work",
+
+                getWorkDuration(item),
+
+                workoutIndex,
+                displaySet,
+                r,
+                workoutIndex
+            );
+
+            if (r < maxRotations - 1) {
+
+                addTimelineSegment(
+
+                    "rotate",
+
+                    getRotateDuration(item),
+
+                    workoutIndex,
+                    displaySet,
+                    r,
+                    workoutIndex
+                );
+            }
         }
+
+        displaySet++;
     }
 
-    if (item.type === "break") {
-    addTimelineSegment("break", item.breakSec ?? breakDuration);
-}
+    else if (item.type === "break") {
+
+        addTimelineSegment(
+
+            "break",
+
+            item.breakSec ?? breakDuration,
+
+            workoutIndex,
+            displaySet,
+            0,
+            workoutIndex
+        );
+    }
 
 });
 
     renderTimeline(); // ✅ correct place
 }
+
+
+function getWorkoutState(elapsedSeconds) {
+
+    let elapsed = elapsedSeconds;
+
+    for (let i = 0; i < timelineData.length; i++) {
+
+        const segment = timelineData[i];
+
+        if (elapsed < segment.duration) {
+
+            return {
+
+                phase: segment.phase,
+                timeLeft: segment.duration - elapsed,
+
+                currentSet: segment.set,
+                displaySetNumber: segment.displaySet,
+                rotationCount: segment.rotation,
+                workoutIndex: segment.workoutIndex,
+
+                segmentIndex: i,
+                elapsedInSegment: elapsed,
+
+                segment
+            };
+        }
+
+        elapsed -= segment.duration;
+    }
+
+    return {
+
+        phase: "cooldown",
+
+        timeLeft: 0,
+
+        currentSet: workoutData.length,
+
+        displaySetNumber: getTotalSets(),
+
+        rotationCount: 0,
+
+        workoutIndex: workoutData.length,
+
+        segmentIndex: timelineData.length - 1,
+
+        elapsedInSegment: 0
+    };
+}
+
+    
 
 
 function renderTimeline() {

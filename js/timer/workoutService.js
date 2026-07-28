@@ -12,20 +12,35 @@ function parseCSV(text) {
 }
 
 
-async function loadWorkout() {
-    console.log(
-    "🚀 loadWorkout started",
-    new Date().toLocaleTimeString()
-);
+function resetWorkoutData() {
 
-     
+    workoutData.length = 0;
+
+    autoStartEnabled = false;
+
+    monTimes = [];
+    tueTimes = [];
+    wedTimes = [];
+    thurTimes = [];
+    friTimes = [];
+
+}
+
+
+async function loadWorkout() {
+
+    console.log(
+        "🚀 loadWorkout started",
+        new Date().toLocaleTimeString()
+    );
 
     try {
+
         const school = window.APP_CONFIG.key;
 
-const response = await fetch(
-    `${window.APP_CONFIG.dataURL}?type=workout&school=${school}`
-);
+        const response = await fetch(
+            `${window.APP_CONFIG.dataURL}?type=workout&school=${school}`
+        );
 
         if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -38,79 +53,90 @@ const response = await fetch(
         const rows = parseCSV(text);
 
         console.log("Row 0:", rows[0]);
-console.log("Row 0 first cell:", rows[0][0]);
-console.log("Row 0 second cell:", rows[0][1]);
+        console.log("Row 0 first cell:", rows[0][0]);
+        console.log("Row 0 second cell:", rows[0][1]);
 
         const DEBUG = true;
 
         if (DEBUG) {
-        console.log("CSV preview:", text.slice(0,200));
-        console.log("First rows:", rows.slice(0,10));
+            console.log("CSV preview:", text.slice(0, 200));
+            console.log("First rows:", rows.slice(0, 10));
         }
-        console.log("Rows parsed:", rows.length);
-        
 
+        console.log("Rows parsed:", rows.length);
         console.log("First 10 rows:", rows.slice(0, 10));
 
-        /* =============================
-           RESET GLOBALS
-        ============================= */
-        workoutData.length = 0;
-        autoStartEnabled = false;
-        monTimes = [];
-tueTimes = [];
-wedTimes = [];
-thurTimes = [];
-friTimes = [];
+        resetWorkoutData();
 
-        const clean = v =>
-            String(v || "")
-                .replace(/\u00A0/g, "")
-                .replace(/\r/g, "")
-                .trim();
+        processWorkoutRows(rows);
 
-      
-       /* =============================
-   PROCESS ROWS
-============================= */
-for (const r of rows) {
+        console.log("✅ Workout rows:", workoutData.length);
+        console.log("✅ Auto start:", autoStartEnabled);
 
-    // ---------- TRUE EMPTY ROW ----------
-    if (!r || r.length === 0) {
-        workoutData.push({
-            type: "break",
-            breakSec: breakDuration
-        });
-        console.log("📥 Empty CSV row → break inserted");
-        continue;
+        console.log("📅 Monday:", mondayMinutes);
+        console.log("📅 Tuesday:", tuesdayMinutes);
+        console.log("📅 Wednesday:", wednesdayMinutes);
+        console.log("📅 Thursday:", thursdayMinutes);
+        console.log("📅 Friday:", fridayMinutes);
+
+        console.log("🕒 Monday Times:", monTimes);
+        console.log("🕒 Tuesday Times:", tueTimes);
+        console.log("🕒 Wednesday Times:", wedTimes);
+        console.log("🕒 Thursday Times:", thurTimes);
+        console.log("🕒 Friday Times:", friTimes);
+
+        finishWorkoutLoad();
+
+    } catch (err) {
+
+        console.error("❌ Failed to load workout:", err);
+
     }
 
-    const firstRaw = clean(r[0] ?? "");
-    const firstCell = firstRaw.toLowerCase();
+}
 
-    // ---------- SERVER TIME ----------
 
-if (firstCell === "server_time") {
+function handleServerTimeRow(firstCell, r, clean) {
+
+    if (firstCell !== "server_time") {
+        return false;
+    }
 
     window.serverTime = clean(r[1]);
 
     console.log("🕒 Server time:", window.serverTime);
 
-    continue;
+    return true;
 }
 
-    // ---------- BULLETPROOF BLANK ROW ----------
-    if (isEffectivelyBlankRow(r)) {
+function handleBreakRow(firstCell, r) {
+
+    if (!r || r.length === 0) {
+
         workoutData.push({
             type: "break",
             breakSec: breakDuration
         });
-        continue;
+
+        console.log("📥 Empty CSV row → break inserted");
+
+        return true;
     }
 
-    // ---------- EXPLICIT BREAK ----------
+    if (isEffectivelyBlankRow(r)) {
+
+        workoutData.push({
+            type: "break",
+            breakSec: breakDuration
+        });
+
+        return true;
+    }
+
     if (firstCell.replace(/\s+/g, "") === "break") {
-        const breakSec = parseSheetNumber(r[10], breakDuration);
+
+        const breakSec =
+            parseSheetNumber(r[10], breakDuration);
 
         workoutData.push({
             type: "break",
@@ -118,98 +144,108 @@ if (firstCell === "server_time") {
         });
 
         console.log("📥 Explicit break parsed:", breakSec);
-        continue;
+
+        return true;
     }
 
-    // ---------- HEADER SKIP ----------
-    if (firstCell === "set" || firstCell === "sets") continue;
+    return false;
+}
 
-    /* =================================================
-       CONFIG FLAGS
-    ================================================= */
+
+function handleConfigRow(firstCell, r, clean) {
 
     if (firstCell === "auto_start") {
         autoStartEnabled = clean(r[1]).toLowerCase() === "true";
-        continue;
+        return true;
     }
 
     if (firstCell === "today_only") {
         todayOnlyMode = clean(r[1]).toLowerCase() === "true";
-        continue;
+        return true;
     }
 
     if (firstCell === "force_date") {
         forceDateString = clean(r[1]) || null;
-        continue;
+        return true;
     }
 
-    /* ---------- CLASS LENGTH BY DAY ---------- */
+    return false;
+}
+
+
+function handleClassLengthRow(firstCell, r) {
 
     if (firstCell === "monday_minutes") {
-    const v = parseSheetNumber(r[1]);
-    if (v !== null) mondayMinutes = v;
-    continue;
+        const v = parseSheetNumber(r[1]);
+        if (v !== null) mondayMinutes = v;
+        return true;
+    }
+
+    if (firstCell === "tuesday_minutes") {
+        const v = parseSheetNumber(r[1]);
+        if (v !== null) tuesdayMinutes = v;
+        return true;
+    }
+
+    if (firstCell === "wednesday_minutes") {
+        const v = parseSheetNumber(r[1]);
+        if (v !== null) wednesdayMinutes = v;
+        return true;
+    }
+
+    if (firstCell === "thursday_minutes") {
+        const v = parseSheetNumber(r[1]);
+        if (v !== null) thursdayMinutes = v;
+        return true;
+    }
+
+    if (firstCell === "friday_minutes") {
+        const v = parseSheetNumber(r[1]);
+        if (v !== null) fridayMinutes = v;
+        return true;
+    }
+
+    return false;
 }
 
-if (firstCell === "tuesday_minutes") {
-    const v = parseSheetNumber(r[1]);
-    if (v !== null) tuesdayMinutes = v;
-    continue;
+
+function handleScheduleRow(firstCell, r, clean) {
+
+    if (firstCell === "monday_times") {
+        monTimes = r.slice(1).map(clean).filter(Boolean);
+        console.log("📅 Monday Schedule:", monTimes);
+        return true;
+    }
+
+    if (firstCell === "tuesday_times") {
+        tueTimes = r.slice(1).map(clean).filter(Boolean);
+        console.log("📅 Tuesday Schedule:", tueTimes);
+        return true;
+    }
+
+    if (firstCell === "wednesday_times") {
+        wedTimes = r.slice(1).map(clean).filter(Boolean);
+        console.log("📅 Wednesday Schedule:", wedTimes);
+        return true;
+    }
+
+    if (firstCell === "thursday_times") {
+        thurTimes = r.slice(1).map(clean).filter(Boolean);
+        console.log("📅 Thursday Schedule:", thurTimes);
+        return true;
+    }
+
+    if (firstCell === "friday_times") {
+        friTimes = r.slice(1).map(clean).filter(Boolean);
+        console.log("📅 Friday Schedule:", friTimes);
+        return true;
+    }
+
+    return false;
 }
 
-if (firstCell === "wednesday_minutes") {
-    const v = parseSheetNumber(r[1]);
-    if (v !== null) wednesdayMinutes = v;
-    continue;
-}
 
-if (firstCell === "thursday_minutes") {
-    const v = parseSheetNumber(r[1]);
-    if (v !== null) thursdayMinutes = v;
-    continue;
-}
-
-if (firstCell === "friday_minutes") {
-    const v = parseSheetNumber(r[1]);
-    if (v !== null) fridayMinutes = v;
-    continue;
-}
-
-    /* ---------- SCHEDULE TIMES ---------- */
-
-    /* ---------- SCHEDULE TIMES ---------- */
-
-if (firstCell === "monday_times") {
-    monTimes = r.slice(1).map(clean).filter(Boolean);
-    console.log("📅 Monday Schedule:", monTimes);
-    continue;
-}
-
-if (firstCell === "tuesday_times") {
-    tueTimes = r.slice(1).map(clean).filter(Boolean);
-    console.log("📅 Tuesday Schedule:", tueTimes);
-    continue;
-}
-
-if (firstCell === "wednesday_times") {
-    wedTimes = r.slice(1).map(clean).filter(Boolean);
-    console.log("📅 Wednesday Schedule:", wedTimes);
-    continue;
-}
-
-if (firstCell === "thursday_times") {
-    thurTimes = r.slice(1).map(clean).filter(Boolean);
-    console.log("📅 Thursday Schedule:", thurTimes);
-    continue;
-}
-
-if (firstCell === "friday_times") {
-    friTimes = r.slice(1).map(clean).filter(Boolean);
-    console.log("📅 Friday Schedule:", friTimes);
-    continue;
-}
-
-    /* ---------- GLOBAL TIMINGS ---------- */
+function handleTimingRow(firstCell, r) {
 
     if (
         firstCell === "dress_seconds" ||
@@ -218,62 +254,73 @@ if (firstCell === "friday_times") {
         firstCell === "get_dress"
     ) {
         const v = parseSheetNumber(r[1]);
+
         if (v !== null) {
             dressOutDuration = v;
             console.log("📥 Dress time:", dressOutDuration);
         }
-        continue;
+
+        return true;
     }
 
     if (firstCell === "stretch_seconds") {
-    const v = parseSheetNumber(r[1]);
-    if (v !== null) {
-        dynamicStretchDuration = v;
-        console.log("📥 Stretch time:", dynamicStretchDuration);
-    }
-    continue;
-}
+        const v = parseSheetNumber(r[1]);
 
-if (firstCell === "work_seconds") {
-    const v = parseSheetNumber(r[1]);
+        if (v !== null) {
+            dynamicStretchDuration = v;
+            console.log("📥 Stretch time:", dynamicStretchDuration);
+        }
 
-    if (v !== null) {
-        sheetWorkDuration = v;
-        console.log("📥 Work time:", sheetWorkDuration);
+        return true;
     }
 
-    continue;
-}
+    if (firstCell === "work_seconds") {
+        const v = parseSheetNumber(r[1]);
 
-if (firstCell === "rotate_seconds") {
-    const v = parseSheetNumber(r[1]);
+        if (v !== null) {
+            sheetWorkDuration = v;
+            console.log("📥 Work time:", sheetWorkDuration);
+        }
 
-    if (v !== null) {
-        sheetRotateDuration = v;
-        console.log("📥 Rotate time:", sheetRotateDuration);
+        return true;
     }
 
-    continue;
-}
+    if (firstCell === "rotate_seconds") {
+        const v = parseSheetNumber(r[1]);
 
-if (firstCell === "break_seconds") {
-    const v = parseSheetNumber(r[1]);
+        if (v !== null) {
+            sheetRotateDuration = v;
+            console.log("📥 Rotate time:", sheetRotateDuration);
+        }
 
-    if (v !== null) {
-        breakDuration = v;
-        console.log("📥 Break time:", breakDuration);
+        return true;
     }
 
-    continue;
+    if (firstCell === "break_seconds") {
+        const v = parseSheetNumber(r[1]);
+
+        if (v !== null) {
+            breakDuration = v;
+            console.log("📥 Break time:", breakDuration);
+        }
+
+        return true;
+    }
+
+    return false;
 }
-        
-    
+
+
+function handleWorkoutSetRow(firstRaw, firstCell, r, clean) {
+
     const looksLikeSetNumber =
-    /^\d+$/.test(firstCell) ||
-    /^\d+\.$/.test(firstCell) ||
-    /^set\s*\d*$/i.test(firstRaw);
+        /^\d+$/.test(firstCell) ||
+        /^\d+\.$/.test(firstCell) ||
+        /^set\s*\d*$/i.test(firstRaw);
 
-if (looksLikeSetNumber) {
+    if (!looksLikeSetNumber) {
+        return false;
+    }
 
     const workSec = parseSheetNumber(r[8]);
     const rotateSec = parseSheetNumber(r[9]);
@@ -293,48 +340,95 @@ if (looksLikeSetNumber) {
         breakSec
     });
 
+    return true;
+}
+
+    
+function processWorkoutRows(rows) {
+
+    const clean = v =>
+        String(v || "")
+            .replace(/\u00A0/g, "")
+            .replace(/\r/g, "")
+            .trim();
+
+    for (const r of rows) {
+
+        const firstRaw = clean(r[0] ?? "");
+        const firstCell = firstRaw.toLowerCase();
+
+        if (firstCell === "set" || firstCell === "sets") {
+            continue;
+        }
+        
+        if (handleServerTimeRow(firstCell, r, clean)) {
+            continue;
+        }
+
+        if (handleBreakRow(firstCell, r)) {
+            continue;
+        }
+        
+
+    /* =================================================
+       CONFIG FLAGS
+    ================================================= */
+
+    if (handleConfigRow(firstCell, r, clean)) {
+    continue;
+}
+
+    /* ---------- CLASS LENGTH BY DAY ---------- */
+
+    if (handleClassLengthRow(firstCell, r)) {
+    continue;
+}
+
+
+    /* ---------- SCHEDULE TIMES ---------- */
+
+if (handleScheduleRow(firstCell, r, clean)) {
+    continue;
+}
+
+    /* ---------- GLOBAL TIMINGS ---------- */
+
+   if (handleTimingRow(firstCell, r)) {
+    continue;
+}
+        
+    
+    if (handleWorkoutSetRow(firstRaw, firstCell, r, clean)) {
     continue;
 }
         }
 
-        console.log("✅ Workout rows:", workoutData.length);
-        console.log("✅ Auto start:", autoStartEnabled);
-        console.log("📅 Monday:", mondayMinutes);
-console.log("📅 Tuesday:", tuesdayMinutes);
-console.log("📅 Wednesday:", wednesdayMinutes);
-console.log("📅 Thursday:", thursdayMinutes);
-console.log("📅 Friday:", fridayMinutes);
-
-console.log("🕒 Monday Times:", monTimes);
-console.log("🕒 Tuesday Times:", tueTimes);
-console.log("🕒 Wednesday Times:", wedTimes);
-console.log("🕒 Thursday Times:", thurTimes);
-console.log("🕒 Friday Times:", friTimes);
-
-preloadFirstSet();
-
-applyDaySpecificClassLength();
-
-syncClockOffset();
-
-startAutoScheduler();
-
-const planned = calculateTotalTime();
-const finalTotal = Math.min(planned, classBlockLength);
-
-totalSeconds = finalTotal;
-originalTotalSeconds = finalTotal;
-
-updateTotalDisplay();
-
-    } catch (err) {
-        console.error("❌ Failed to load workout:", err);
-    }
 }
 
 function preloadFirstSet() {
     if (!workoutData.length) return;
     loadSetData(1);
+}
+
+
+function finishWorkoutLoad() {
+
+    preloadFirstSet();
+
+    applyDaySpecificClassLength();
+
+    syncClockOffset();
+
+    startAutoScheduler();
+
+    const planned = calculateTotalTime();
+    const finalTotal = Math.min(planned, classBlockLength);
+
+    totalSeconds = finalTotal;
+    originalTotalSeconds = finalTotal;
+
+    updateTotalDisplay();
+
 }
 
 
