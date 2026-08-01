@@ -1,54 +1,267 @@
+const S = window.TimerState;
+
+// ========================================
+// SCHEDULE CONFIGURATION
+// Loaded from Google Sheets
+// ========================================
+
+window.ScheduleService = window.ScheduleService || {};
+
+
+ScheduleService.config = {
+
+    autoStart: false,
+
+    todayOnly: false,
+
+    schedules: {
+
+        monday: [],
+        tuesday: [],
+        wednesday: [],
+        thursday: [],
+        friday: []
+
+    },
+
+    classLength: {
+
+        monday: 45,
+        tuesday: 45,
+        wednesday: 45,
+        thursday: 45,
+        friday: 45
+
+    }
+
+};
+
+
+
 // ========================================
 // SCHEDULE HELPERS
 // ========================================
 
 function getTodaySchedule(day) {
+
     switch (day) {
-        case 1: return monTimes;
-        case 2: return tueTimes;
-        case 3: return wedTimes;
-        case 4: return thurTimes;
-        case 5: return friTimes;
-        default: return [];
+
+        case 1:
+            return ScheduleService.config.schedules.monday;
+
+        case 2:
+            return ScheduleService.config.schedules.tuesday;
+
+        case 3:
+            return ScheduleService.config.schedules.wednesday;
+
+        case 4:
+            return ScheduleService.config.schedules.thursday;
+
+        case 5:
+            return ScheduleService.config.schedules.friday;
+
+        default:
+            return [];
+
     }
+
+}
+
+
+function findNextScheduledClass() {
+
+    const now = getEffectiveNow();
+
+    const today = getTodaySchedule(now.getDay());
+
+    let next = null;
+
+    for (const timeStr of today) {
+
+        const start = parseTimeToToday(timeStr);
+
+        if (start < now) continue;
+
+        if (!next || start < next) {
+            next = start;
+        }
+
+    }
+
+    return next;
+
+}
+
+
+function getCurrentClass() {
+
+    const now = getEffectiveNow();
+
+    const todaySchedule = getTodaySchedule(now.getDay());
+
+    for (const timeStr of todaySchedule) {
+
+        const start = parseTimeToToday(timeStr);
+
+        const end = new Date(
+            start.getTime() + S.classBlockLength * 1000
+        );
+
+        if (now >= start && now < end) {
+
+            return {
+
+                start,
+
+                end,
+
+                startTime: timeStr
+
+            };
+
+        }
+
+    }
+
+    return null;
+
+}
+
+
+function isClassInProgress() {
+
+    return getCurrentClass() !== null;
+
+}
+
+
+function shouldAutoStart() {
+
+    return (
+        isAutoStartEnabled() &&
+        canRunToday() &&
+        !S.isRunning
+    );
+
+}
+
+
+function beginScheduledWorkout(nextClass) {
+
+    if (!nextClass) return false;
+
+    const now = getEffectiveNow();
+
+    if (Math.abs(now.getTime() - nextClass.getTime()) > 5000) {
+        return false;
+    }
+
+    if (S.lastAutoStartMinute === nextClass.toISOString()) {
+        return false;
+    }
+
+    if (
+        S.lastStartTime &&
+        Math.abs(S.lastStartTime - nextClass.getTime()) < 60000
+    ) {
+        return false;
+    }
+
+    S.lastAutoStartMinute = nextClass.toISOString();
+
+    S.classStartTime = nextClass.getTime();
+    S.lastStartTime = nextClass.getTime();
+
+    return true;
+}
+
+
+function getElapsedClassSeconds() {
+
+    const currentClass = getCurrentClass();
+
+    if (!currentClass) {
+
+        return 0;
+
+    }
+
+    return Math.floor(
+
+        (getEffectiveNow() - currentClass.start) / 1000
+
+    );
+
+}
+
+
+function isAutoStartEnabled() {
+
+    return ScheduleService.config.autoStart;
+
+}
+
+
+function isTodayOnly() {
+
+    return ScheduleService.config.todayOnly;
+
+}
+
+
+function canRunToday() {
+
+    const day = getEffectiveNow().getDay();
+
+    if (isTodayOnly()) {
+        return day >= 1 && day <= 5;
+    }
+
+    return true;
+
+}
+
+
+function getClassLength(day) {
+
+    switch (day) {
+
+        case 1:
+            return ScheduleService.config.classLength.monday;
+
+        case 2:
+            return ScheduleService.config.classLength.tuesday;
+
+        case 3:
+            return ScheduleService.config.classLength.wednesday;
+
+        case 4:
+            return ScheduleService.config.classLength.thursday;
+
+        case 5:
+            return ScheduleService.config.classLength.friday;
+
+        default:
+            return 45;
+
+    }
+
 }
 
 
 function autoDetectActiveClass() {
 
-    // ✅ FIXED (allow sync even if already running)
-    if (!autoStartEnabled) return;
+    if (!isAutoStartEnabled()) return;
 
-    const now = getEffectiveNow();
-    const day = now.getDay();
-    const todaySchedule = getTodaySchedule(day);
+    if (!isClassInProgress()) return;
 
-    for (const timeStr of todaySchedule) {
+    console.log("⚡ Class already in progress. Auto syncing timer.");
 
-        if (!timeStr || !timeStr.includes(":")) continue;
+    startTimer(true);
 
-        const [h, m] = timeStr.split(":").map(Number);
+    resumeWorkout(getElapsedClassSeconds());
 
-        const start = new Date(now);
-        start.setHours(h, m, 0, 0);
-
-        const end = new Date(start.getTime() + classBlockLength * 1000);
-
-        if (now >= start && now < end) {
-
-            console.log("⚡ Class already in progress. Auto syncing timer.");
-
-startTimer();
-
-const elapsed = Math.floor((now - start) / 1000);
-
-startTimer(true);
-
-resumeWorkout(elapsed);
-
-break;
-        }
-    }
 }
 
 
@@ -56,128 +269,54 @@ function applyDaySpecificClassLength() {
 
     const day = getEffectiveNow().getDay();
 
-    switch (day) {
+    S.classBlockLength =
+        getClassLength(day) * 60;
 
-        case 1:
-            classBlockLength = mondayMinutes * 60;
-            break;
-
-        case 2:
-            classBlockLength = tuesdayMinutes * 60;
-            break;
-
-        case 3:
-            classBlockLength = wednesdayMinutes * 60;
-            break;
-
-        case 4:
-            classBlockLength = thursdayMinutes * 60;
-            break;
-
-        case 5:
-            classBlockLength = fridayMinutes * 60;
-            break;
-
-        default:
-            classBlockLength = 45 * 60;
-    }
-
-    console.log("📏 Class length:", classBlockLength);
+    console.log(
+        "📏 Class length:",
+        S.classBlockLength
+    );
 }
 
+    
 
 function startAutoScheduler() {
 
-    if (autoStartTimer) {
-        clearInterval(autoStartTimer);
+    if (S.autoStartTimer) {
+        clearInterval(S.autoStartTimer);
     }
 
-    autoStartTimer = setInterval(() => {
+    S.autoStartTimer = setInterval(() => {
 
-        if (!autoStartEnabled) return;
+        if (!shouldAutoStart()) return;
 
-        const now = getEffectiveNow();
-const day = now.getDay(); // 0=Sun, 1=Mon...
+        const nextClass = findNextScheduledClass();
 
-if (todayOnlyMode && (day === 0 || day === 6)) {
-    return;
-}
+        if (!nextClass) return;
 
-if (isRunning) return;
+        if (!beginScheduledWorkout(nextClass)) return;
 
-const todaySchedule = getTodaySchedule(day);
-
-        classBlockLength = calculateTotalTime();
-
-        for (const timeStr of todaySchedule) {
-
-            const parts = timeStr.split(":");
-            if (parts.length !== 2) continue;
-
-            const targetHour = parseInt(parts[0], 10);
-            const targetMinute = parseInt(parts[1], 10);
-
-            if (isNaN(targetHour) || isNaN(targetMinute)) continue;
-
-            // start within first 5 seconds of the minute
-            const currentMinuteStamp =
-                String(now.getHours()).padStart(2, "0") + ":" +
-                String(now.getMinutes()).padStart(2, "0");
-
-            const currentTotalSeconds =
-                now.getHours() * 3600 +
-                now.getMinutes() * 60 +
-                now.getSeconds();
-
-            const targetTotalSeconds =
-                targetHour * 3600 +
-                targetMinute * 60;
-
-            if (
-                currentTotalSeconds >= targetTotalSeconds &&
-                currentTotalSeconds < targetTotalSeconds + 5 &&
-                lastAutoStartMinute !== currentMinuteStamp
-            ) {
-                lastAutoStartMinute = currentMinuteStamp;
-
-                console.log("🔔 Auto starting:", timeStr);
-                startTimer();
-                break;
-            }
-        }
+    startTimer();
 
     }, 1000);
+
 }
 
 
 function checkAutoStart() {
 
-  if (window.workoutData?.length) {
-    classBlockLength = calculateTotalTime();
-}
+    applyDaySpecificClassLength();
+    calculateTotalTime();
 
-    if (!autoStartEnabled) return;
-    if (isRunning) return;
+    if (!shouldAutoStart()) return;
 
-   const now = getEffectiveNow();
-    const day = now.getDay();
+    const nextClass = findNextScheduledClass();
 
-    if (todayOnlyMode && (day === 0 || day === 6)) {
+    if (!nextClass) return;
+
+    if (!beginScheduledWorkout(nextClass)) {
     return;
 }
-
-    if (!bestStart) return;
-
-    // 🔥 prevent restarting same session
-    if (window.lastStartTime &&
-        Math.abs(window.lastStartTime - bestStart.getTime()) < 60000) {
-        return;
-    }
-
-    console.log("🔥 AUTO START (ABSOLUTE):", bestStart);
-
-    window.classStartTime = bestStart.getTime();
-    window.lastStartTime = bestStart.getTime();
 
     startTimer();
 }
@@ -202,8 +341,8 @@ function parseTimeToToday(timeStr) {
 function getEffectiveNow() {
 
     // ⭐ FORCE_DATE override (LOCAL TIME SAFE)
-    if (forceDateString) {
-        const parts = forceDateString.split(/[T:\-]/);
+    if (S.forceDateString) {
+        const parts = S.forceDateString.split(/[T:\-]/);
 
         if (parts.length >= 6) {
             const forced = new Date(
@@ -228,6 +367,11 @@ function getEffectiveNow() {
 // GLOBAL EXPORTS
 // ========================================
 
+window.getTodaySchedule = getTodaySchedule;
+window.isAutoStartEnabled = isAutoStartEnabled;
+window.isTodayOnly = isTodayOnly;
+window.canRunToday = canRunToday;
+window.getClassLength = getClassLength;
 window.applyDaySpecificClassLength = applyDaySpecificClassLength;
 window.checkAutoStart = checkAutoStart;
 window.startAutoScheduler = startAutoScheduler;
@@ -236,3 +380,9 @@ window.parseTimeToToday = parseTimeToToday;
 window.getEffectiveNow = getEffectiveNow;
 window.getWorkoutState = getWorkoutState;
 window.resumeWorkout = resumeWorkout;
+window.findNextScheduledClass = findNextScheduledClass;
+window.getCurrentClass = getCurrentClass;
+window.isClassInProgress = isClassInProgress;
+window.getElapsedClassSeconds = getElapsedClassSeconds;
+window.shouldAutoStart = shouldAutoStart;
+window.beginScheduledWorkout = beginScheduledWorkout;

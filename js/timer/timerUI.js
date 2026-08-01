@@ -2,17 +2,6 @@
 // TIME HELPERS
 // ========================================
 
-function formatTime(totalSeconds) {
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-
-    return (
-        String(minutes).padStart(2, "0") +
-        ":" +
-        String(seconds).padStart(2, "0")
-    );
-}
-
 function updateClock() {
     const el = document.getElementById("clock");
     if (!el) return;
@@ -55,18 +44,9 @@ function setCenterMode(center, phaseClass) {
 }
 
 
-function updatePhaseDisplay() {
+switch (currentPhase) {
 
-    const center = document.getElementById("centerInner");
-    const phaseEl = document.getElementById("phase");
-
-    if (!center || !phaseEl) return;
-
-        /* ===================== PHASES ===================== */
-
-    switch (currentPhase) {
-
-    case "work": {
+    case TIMER_PHASES.WORK: {
 
         setCenterMode(center, "phase-work");
 
@@ -81,14 +61,14 @@ function updatePhaseDisplay() {
         break;
     }
 
-    case "rotate":
+    case TIMER_PHASES.ROTATE:
 
         setCenterMode(center, "phase-rotate");
 
         phaseEl.innerHTML = `<div>ROTATE</div>`;
         break;
 
-    case "break":
+    case TIMER_PHASES.BREAK:
 
         setCenterMode(center, "phase-break");
 
@@ -98,23 +78,23 @@ function updatePhaseDisplay() {
         `;
         break;
 
-    case "dress":
+    case TIMER_PHASES.DRESS:
 
         setCenterMode(center, "phase-dress");
 
         phaseEl.innerHTML = `<div>DRESS OUT & ATTENDANCE</div>`;
         break;
 
-    case "stretch":
+    case TIMER_PHASES.STRETCH:
 
         setCenterMode(center, "phase-stretch");
 
         phaseEl.innerHTML = `<div>DYNAMIC STRETCH</div>`;
         break;
 
-    case "cooldown":
+    case TIMER_PHASES.COOLDOWN:
 
-        setCenterMode(center, logo, "cooldownMode", "logoDefault");
+        setCenterMode(center, "phase-cooldown");
 
         phaseEl.innerHTML = `
             <div>COOL DOWN</div>
@@ -128,7 +108,6 @@ function updatePhaseDisplay() {
         break;
 }
 
-}
 
 
 function resetCenterClock() {

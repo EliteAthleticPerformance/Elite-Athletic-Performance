@@ -13,7 +13,7 @@ function resetWorkoutState() {
 
     /* ---------- PHASE STATE ---------- */
 
-    currentPhase = "dress";
+    currentPhase = TIMER_PHASES.DRESS;
     phaseJustChanged = false;
 
     /* ---------- AUDIO / WARNINGS ---------- */

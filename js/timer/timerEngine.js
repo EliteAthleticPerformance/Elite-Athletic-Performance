@@ -6,185 +6,40 @@ function transitionToPhase(phase, duration) {
 
     console.log(
         "Transition:",
-        currentPhase,
+        S.currentPhase,
         "→",
         phase,
         "duration:",
         duration
     );
 
-    currentPhase = phase;
-    timeLeft = duration;
-    phaseJustChanged = true;
+    S.currentPhase = phase;
+    S.timeLeft = duration;
+    S.phaseJustChanged = true;
 
-    lastCountdownSpoken = null;
+    S.lastCountdownSpoken = null;
 }
 
-
-// ========================================
-// DRESS PHASE
-// ========================================
-
-function handleDressPhase() {
-
-    transitionToPhase("stretch", dynamicStretchDuration);
-
-    dressWarningSpoken = false;
-
-    speakStretch();
-
-}
-
-
-// ========================================
-// STRETCH PHASE
-// ========================================
-
-function handleStretchPhase() {
-
-    beginWorkout();
-
-    transitionToPhase("work", getWorkDuration());
-
-    speakLift();
-
-}
-
-
-
-function beginWorkout() {
-
-    rotationCount = 0;
-    currentSet = 1;
-    displaySetNumber = 1;
-
-    loadSetData(currentSet);
-
-}
-
-
-// ========================================
-// WORK PHASE
-// ========================================
-
-function handleWorkPhase() {
-
-    rotateQuadrantColors();
-
-    rotationCount++;
-
-    // SHOW PREVIEW ON FINAL ROTATION
-    if (rotationCount === maxRotations) {
-
-        const nextSet = getNextSetIndex();
-
-        if (nextSet) {
-            previewSetData(nextSet);
-        }
-    }
-
-    transitionToPhase("rotate", getRestDuration());
-
-    speakRotate();
-
-}
-
-
-// ========================================
-// ROTATE PHASE
-// ========================================
-
-function handleRotatePhase() {
-
-    const finishedRotations = rotationCount >= maxRotations;
-
-    if (finishedRotations) {
-
-        rotationCount = 0;
-
-        const nextItem = workoutData[currentSet] ?? null;
-
-        // 🔴 no more items
-        if (!nextItem) {
-            startCooldown();
-            return;
-        }
-
-        // 🟡 break row
-        if (nextItem.type === "break") {
-
-            currentSet++;
-
-            transitionToPhase(
-                "break",
-                Math.max(1, nextItem.breakSec || breakDuration)
-            );
-
-            speakBreakPrep();
-
-            previewNextSet();
-
-            return;
-        }
-
-        // ✅ next is real set
-        currentSet++;
-        displaySetNumber++;
-        loadSetData(currentSet);
-    }
-
-    transitionToPhase("work", getWorkDuration());
-
-    speakLift();
-
-}
-
-
-// ========================================
-// BREAK PHASE
-// ========================================
-
-function handleBreakPhase() {
-
-    const nextItem = workoutData[currentSet] ?? null;
-
-    if (!nextItem) {
-        startCooldown();
-        return;
-    }
-
-    // ✅ ONLY advance when next is a set
-    if (nextItem.type === "set") {
-        currentSet++;
-        displaySetNumber++;
-        loadSetData(currentSet);
-    }
-
-    transitionToPhase("work", getWorkDuration());
-
-    speakLift();
-
-}
 
 
 function preciseTick() {
 
-    if (!isRunning) return;
+    if (!S.isRunning) return;
 
     const now = Date.now();
 
-    if (!nextTickTime) {
-        nextTickTime = now + 1000;
+    if (!S.nextTickTime) {
+        S.nextTickTime = now + 1000;
     }
 
     // catch up if browser slept
-    while (nextTickTime <= now) {
+    while (S.nextTickTime <= now) {
         tick();
-        nextTickTime += 1000;
+        S.nextTickTime += 1000;
     }
 
-    const delay = Math.max(0, nextTickTime - now);
-    timer = setTimeout(preciseTick, delay);
+    const delay = Math.max(0, S.nextTickTime - now);
+    S.timer = setTimeout(preciseTick, delay);
 
  }
 
@@ -194,30 +49,30 @@ function startTimer(isResume = false) {
   stopAllTimers();
   
     // Safety: require workout
-    if (!workoutData.length) {
+    if (!S.workoutData.length) {
         console.warn("Workout not loaded yet.");
         return;
     }
 
     // Initialize audio once
-    if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (!S.audioCtx) {
+        S.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     }
 
     // Toggle stop if already running
-    if (isRunning) {
+    if (S.isRunning) {
         stopAllTimers();
         return;
     }
 
 /* ---------- START STATE ---------- */
-    isRunning = true;
+    S.isRunning = true;
     
 
-classBlockLength = calculateTotalTime(); // 🔥 NOW DYNAMIC
+const total = WorkoutService.calculateTotalTime();
 
-totalSeconds = classBlockLength;
-originalTotalSeconds = classBlockLength;
+S.totalSeconds = total;
+S.originalTotalSeconds = total;
 
 document.getElementById("startBtn").innerText = "STOP";
 
@@ -226,13 +81,8 @@ document.getElementById("startBtn").innerText = "STOP";
         console.log("🟢 Starting New Workout");
 
     // FULL RESET
-resetWorkoutState();
+prepareWorkoutSession();
 
-lastAutoStartMinute = null;
-
-preloadFirstSet();
-
-transitionToPhase("dress", dressOutDuration);
      
  } else {
 
@@ -245,8 +95,8 @@ transitionToPhase("dress", dressOutDuration);
     updateClock();
     updateTotalDisplay();
 
-    nextTickTime = Date.now() + 1000;
-    timer = setTimeout(preciseTick, 1000);
+    S.nextTickTime = Date.now() + 1000;
+    S.timer = setTimeout(preciseTick, 1000);
 }
 
 
@@ -267,25 +117,31 @@ function resumeWorkout(elapsedSeconds) {
     console.log("🔄 Restoring Workout", state);
 
     // Restore phase
-    currentPhase = state.phase;
-    timeLeft = state.timeLeft;
+    S.currentPhase = state.phase;
+    S.timeLeft = state.timeLeft;
 
     // Restore workout position
-    currentSet = state.currentSet;
-    displaySetNumber = state.displaySetNumber;
-    rotationCount = state.rotationCount;
+    S.currentSet = state.currentSet;
+    S.displaySetNumber = state.displaySetNumber;
+    S.rotationCount = state.rotationCount;
 
     // Restore total timer
-    totalSeconds = Math.max(classBlockLength - elapsedSeconds, 1);
-    originalTotalSeconds = totalSeconds;
+    S.totalSeconds = Math.max(
+    S.classBlockLength - elapsedSeconds,
+    1
+);
+
+// keep the original class length
+S.originalTotalSeconds = S.classBlockLength;
+    
 
     // Restore workout cards
     if (
-        currentPhase === "work" ||
-        currentPhase === "rotate" ||
-        currentPhase === "break"
-    ) {
-        loadSetData(currentSet);
+    S.currentPhase === TIMER_PHASES.WORK ||
+    S.currentPhase === TIMER_PHASES.ROTATE ||
+    S.currentPhase === TIMER_PHASES.BREAK
+){
+        loadSetData(S.currentSet);
     }
 
     // Refresh UI
@@ -298,13 +154,13 @@ function resumeWorkout(elapsedSeconds) {
 
     console.log(
         "✅ Resume:",
-        currentPhase,
+        S.currentPhase,
         "Set:",
-        currentSet,
+        S.currentSet,
         "Rotation:",
-        rotationCount,
+        S.rotationCount,
         "Time Left:",
-        timeLeft
+        S.timeLeft
     );
 }
 
@@ -312,34 +168,34 @@ function resumeWorkout(elapsedSeconds) {
 
  function stopAllTimers() {
 
-    if (timer) {
-        clearTimeout(timer); // ✅ CORRECT for setTimeout loop
-        timer = null;
-    }
+    if (S.timer) {
+    clearTimeout(S.timer);
+    S.timer = null;
+}
 
-    nextTickTime = null; // prevents drift on restart
+    S.nextTickTime = null; // prevents drift on restart
 
-    isRunning = false;
+    S.isRunning = false;
     document.getElementById("startBtn").innerText = "START";
 }
 
 
 function tick() {
 
-    if (!isRunning) return;
+    if (!S.isRunning) return;
 
-    phaseJustChanged = false;
+    S.phaseJustChanged = false;
 
   
     /* ======================================================
        1️⃣ MASTER CLASS TIMER (authoritative)
     ====================================================== */
-    if (totalSeconds <= 0) {
+    if (S.totalSeconds <= 0) {
         workoutFinishScreen();
         return;
     }
 
-    totalSeconds = Math.max(0, totalSeconds - 1);
+    S.totalSeconds = Math.max(0, S.totalSeconds - 1);
     updateTotalDisplay();
 
   
@@ -347,7 +203,7 @@ function tick() {
        2️⃣ PHASE TIMER
     ====================================================== */
    
-  timeLeft = Math.max(0, timeLeft - 1);
+  S.timeLeft = Math.max(0, S.timeLeft - 1);
 
   
     /* ======================================================
@@ -355,23 +211,23 @@ function tick() {
     ====================================================== */
   
   if (
-        currentPhase === "dress" &&
-        timeLeft === 120 &&
-        !dressWarningSpoken
-    ) {
-        speakDressWarning();
-        dressWarningSpoken = true;
-    }
+    S.currentPhase === TIMER_PHASES.DRESS &&
+    S.timeLeft === COUNTDOWN.DRESS_WARNING &&
+    !S.dressWarningSpoken
+) {
+    speakDressWarning();
+    S.dressWarningSpoken = true;
+}
 
     
     /* ======================================================
        4️⃣ FINAL COUNTDOWN (no repeats)
     ====================================================== */
     
-  if (timeLeft >= 1 && timeLeft <= 5) {
-        if (lastCountdownSpoken !== timeLeft) {
-            speakNumber(timeLeft);
-            lastCountdownSpoken = timeLeft;
+  if (S.timeLeft >= 1 && S.timeLeft <= COUNTDOWN.FINAL_SECONDS) {
+        if (S.lastCountdownSpoken !== S.timeLeft) {
+            speakNumber(S.timeLeft);
+            S.lastCountdownSpoken = S.timeLeft;
         }
     }
 
@@ -387,61 +243,25 @@ function tick() {
        6️⃣ EXIT IF TIME REMAINS
     ====================================================== */
     
-  if (timeLeft > 0) return;
+  if (S.timeLeft > 0) return;
 
     
 
-    console.log("Set:", currentSet, "Rotation:", rotationCount);
+    console.log("Set:", S.currentSet, "Rotation:", S.rotationCount);
 
   
     /* ======================================================
        PHASE TRANSITIONS (STATE MACHINE)
     ====================================================== */
    
-  switch (currentPhase) {
-
-    case "dress":
-
-        handleDressPhase();
-
-        break;
-
-    case "stretch":
-
-        handleStretchPhase();
-
-        break;
-
-    case "work":
-
-        handleWorkPhase();
-
-        break;
-
-    case "rotate":
-
-        handleRotatePhase();
-
-        break;
-
-    case "break":
-
-        handleBreakPhase();
-
-        break;
-
-    case "cooldown":
-
-        workoutFinishScreen();
-        return;
-} // ✅ CLOSES switch(currentPhase)
+  handleCurrentPhase();
 
   
     /* ======================================================
        FINAL UI UPDATE
     ====================================================== */
     
-  if (phaseJustChanged) {
+  if (S.phaseJustChanged) {
         updatePhaseDisplay();
 }
 }
@@ -449,68 +269,48 @@ function tick() {
 
 function syncTime() {
 
-    if (isRunning) return;
+    if (S.isRunning) return;
 
-    const workVal = getWorkDuration();
-    const restVal = getRestDuration();
-
-    switch (currentPhase) {
-
-        case "work":
-            timeLeft = workVal;
-            break;
-
-        case "rotate":
-        case "break":
-            timeLeft = restVal;
-            break;
-
-        case "cooldown":
-            timeLeft = cooldownDuration;
-            break;
-
-        case "dress":
-            timeLeft = dressOutDuration;
-            break;
-
-        case "stretch":
-            timeLeft = dynamicStretchDuration;
-            break;
-
-        default:
-            timeLeft = workVal;
-    }
+    
+    S.timeLeft = getPhaseDuration(S.currentPhase);
 
     updateClock();
 
-    totalSeconds = classBlockLength;
-    originalTotalSeconds = classBlockLength;
+    S.totalSeconds = S.classBlockLength;
+    S.originalTotalSeconds = S.classBlockLength;
 
     updateTotalDisplay();
 }
 
 
-function workoutFinishScreen() {
-    stopAllTimers();
-    document.getElementById("phase").innerText = "WORKOUT COMPLETE";
-}
-
 function startCooldown() {
 
-    if (currentPhase === "cooldown") return;
+    if (S.currentPhase === TIMER_PHASES.COOLDOWN) return;
 
     // No cooldown needed
-    if (cooldownDuration <= 0) {
-        workoutFinishScreen();
-        return;
-    }
+   if (getPhaseDuration(TIMER_PHASES.COOLDOWN) <= 0) {
+    workoutFinishScreen();
+    return;
+}
 
-    transitionToPhase("cooldown", cooldownDuration);
+    transitionToPhase(
+    TIMER_PHASES.COOLDOWN,
+    getPhaseDuration(TIMER_PHASES.COOLDOWN)
+);
 
 speakCooldown?.();
 
     updatePhaseDisplay();
     updateClock();
 
-    console.log("🧘 Starting Cooldown:", cooldownDuration);
+    console.log(
+    "🧘 Starting Cooldown:",
+    getPhaseDuration(TIMER_PHASES.COOLDOWN)
+);
+}
+
+
+function workoutFinishScreen() {
+    stopAllTimers();
+    document.getElementById("phase").innerText = "WORKOUT COMPLETE";
 }

@@ -2,6 +2,8 @@
 // 🔥 ELITE V7 HEADER ENGINE (LOCKED + SYNCED)
 // ========================================
 
+const Header = {};
+
 document.addEventListener("DOMContentLoaded", loadHeader);
 
 /* ========================================
@@ -120,10 +122,46 @@ function injectSchoolIntoLinks() {
    🏷️ TITLE
 ======================================== */
 
-function setPageTitle() {
-  const el = document.getElementById("pageTitle");
-  if (el) el.textContent = "Elite Athletic Performance";
+function setPageTitle(title = "Elite Athletic Performance") {
+
+    const el = document.getElementById("pageTitle");
+
+    if (!el) return;
+
+    el.textContent = title;
+
 }
+
+Header.setTitle = setPageTitle;
+
+
+/* ========================================
+   ⏱ HEADER TIMER
+======================================== */
+
+function showHeaderTimer(show = true) {
+
+    const timer = document.getElementById("headerTimer");
+
+    if (!timer) return;
+
+    timer.style.display = show ? "" : "none";
+
+}
+
+function updateHeaderTimer(value) {
+
+    const timer = document.getElementById("headerTimer");
+
+    if (!timer) return;
+
+    timer.textContent = value;
+
+}
+
+Header.showTimer = showHeaderTimer;
+Header.updateTimer = updateHeaderTimer;
+Header.hideTimer = () => showHeaderTimer(false);
 
 /* ========================================
    🔗 ACTIVE LINK (FIXED)
@@ -237,3 +275,5 @@ function setupLogout() {
     });
 
 }
+
+window.Header = Header;
