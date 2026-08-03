@@ -45,14 +45,13 @@ if (!schoolService) {
 
 const school = schoolService.getSchoolKey();
 
+const data = schoolService.getData();
+
 const appConfig = {
     ...schoolService.getConfig(),
 
-    dataURL:
-        "https://script.google.com/macros/s/AKfycbwnSjmwlod_AoqmTEoownI1CsWhjpTu9ubLrb78DsLBTaH0WDnYxXNiXEyJmY1J0Uh2/exec",
-
-    submitURL:
-        "https://script.google.com/macros/s/AKfycbwnSjmwlod_AoqmTEoownI1CsWhjpTu9ubLrb78DsLBTaH0WDnYxXNiXEyJmY1J0Uh2/exec"
+    dataURL: data.workoutApiURL,
+    submitURL: data.submitApiURL
 };
 
 

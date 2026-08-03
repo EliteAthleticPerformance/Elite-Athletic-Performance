@@ -29,7 +29,7 @@ const TimerState = {
     // Current workout position
     // ========================================
 
-    currentPhase: "idle",
+    currentPhase: TIMER_PHASES.IDLE,
     currentSet: 1,
     displaySetNumber: 1,
     rotationCount: 0,

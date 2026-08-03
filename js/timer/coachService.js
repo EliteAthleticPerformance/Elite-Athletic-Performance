@@ -150,7 +150,8 @@ function computeWorkoutState(nowMs) {
 
             for (let r = 0; r < maxRotations; r++) {
 
-                const work = item.workSec || getWorkDuration();
+                const work =
+    item.workSec || WorkoutService.getWorkDuration();
 
                 // WORK
                 if (elapsed < cursor + work) {

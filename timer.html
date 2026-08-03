@@ -122,8 +122,11 @@ window.pendingGlobalTheme = config;
 <script src="js/config/schoolConfig.js"></script>
 <script src="js/services/schoolService.js"></script>
 <script src="js/services/themeService.js"></script>
-
+<script src="js/timer/timerConstants.js"></script>
 <script src="js/timer/timerState.js"></script>
+<script src="js/timer/workoutService.js"></script>
+<script src="js/timer/scheduleService.js"></script> 
+
 
 <script src="js/bootstrap.js"></script>
 
@@ -923,7 +926,7 @@ HIDDEN COACH PANEL
 
 <script>
 
-  const S = window.TimerState;
+  window.S = window.TimerState;
   S.globalTheme = window.pendingGlobalTheme;
 
       /* ===================== STATE ===================== */
@@ -1150,7 +1153,7 @@ function calculateTotalTime() {
     // Cooldown
     total += cooldownDuration || 0;
 
-    console.log("🧮 PhaseMeta Count:", S.phaseMeta.length);
+    console.log("🧮 S.PhaseMeta Count:", S.phaseMeta.length);
     console.log("🧮 Total workout time:", total);
 
     return total;
@@ -1203,7 +1206,7 @@ function startTimer() {
 
     window.classStartTime = getEffectiveNow().getTime();
 // 🔥 Fresh total recalculation
-const planned = calculateTotalTime();
+const planned = WorkoutService.calculateTotalTime();
 
 S.totalSeconds =
     S.classBlockLength &&
@@ -1234,7 +1237,7 @@ S.originalTotalSeconds = S.totalSeconds;
     S.timeLeft = dressOutDuration;
 
     refreshTimerUI();
-    updateSegmentHighlight();
+    TimelineService.updateHighlight();
 
     /* ---------- TIMER LOOP ---------- */
 
@@ -1517,7 +1520,7 @@ function autoDetectActiveClass() {
 
                 // 🔥 Force ALL UI refreshes
                 refreshTimerUI();
-                updateSegmentHighlight();
+                TimelineService.updateHighlight();
             }
 
             /* ====================================================== */
@@ -2051,12 +2054,12 @@ loadSetData(S.currentSet);
 
 startAutoScheduler();
 
-buildSegmentTimeline();
+TimelineService.buildTimeline();
           buildCoachButtons();
 
 
 // ⭐ Recalculate preview total
-const planned = calculateTotalTime();
+const planned = WorkoutService.calculateTotalTime();
 const finalTotal =
     S.classBlockLength &&
     S.classBlockLength > 0
@@ -2291,6 +2294,7 @@ let timelineData = [];
 
 function buildSegmentTimeline() {
 
+    
     if (!S.workoutData?.length) return;
 
     timelineData = [];
@@ -2564,7 +2568,7 @@ fill.style.width = percent + "%";
 }
 
 function animateTimeline() {
-    updateSegmentHighlight();
+    TimelineService.updateHighlight();
     requestAnimationFrame(animateTimeline);
 }
       
@@ -2938,7 +2942,7 @@ function syncTime() {
 
     if (!S.isRunning) {
 
-        const workVal = getWorkDuration();
+        const workVal = WorkoutService.getWorkDuration();
         const restVal = getRestDuration();
 
         S.timeLeft =
@@ -3129,7 +3133,7 @@ function jumpToSection(targetPhase) {
     // BREAK
     else if (targetPhase === "break") {
 
-        for (const seg of phaseMeta) {
+        for (const seg of S.phaseMeta) {
 
             if (seg.phase === "break") {
                 break;
@@ -3144,7 +3148,7 @@ function jumpToSection(targetPhase) {
     // COOLDOWN
     else if (targetPhase === "cooldown") {
 
-        offset = calculateTotalTime() - cooldownDuration;
+        offset = WorkoutService.calculateTotalTime() - cooldownDuration;
     }
 
     window.classStartTime = now - (offset * 1000);
@@ -3160,7 +3164,7 @@ function jumpToSet(setNumber) {
 
     let offset = dressOutDuration + dynamicStretchDuration;
 
-    for (const seg of phaseMeta) {
+    for (const seg of S.phaseMeta) {
 
         if (
             seg.phase === "work" &&
@@ -3243,7 +3247,7 @@ window.addEventListener("DOMContentLoaded", () => {
     console.log("📦 DOM READY");
 
     
-    loadWorkout();
+    WorkoutService.load();
 
     setInterval(autoDetectActiveClass, 5000);
 

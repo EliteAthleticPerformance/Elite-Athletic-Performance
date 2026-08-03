@@ -1,3 +1,6 @@
+window.PhaseService = window.PhaseService || {};
+const PhaseService = window.PhaseService;
+
 const S = window.TimerState;
 
 
@@ -7,14 +10,21 @@ const S = window.TimerState;
 
 function handleDressPhase() {
 
-    transitionToPhase(
-    TIMER_PHASES.STRETCH,
-    getPhaseDuration(TIMER_PHASES.STRETCH)
-);
+    gotoPhase(TIMER_PHASES.STRETCH);
 
     S.dressWarningSpoken = false;
 
     speakStretch();
+
+}
+
+
+function gotoPhase(phase, duration = null) {
+
+    TimerEngine.transition(
+        phase,
+        duration ?? WorkoutService.getPhaseDuration(phase)
+    );
 
 }
 
@@ -25,25 +35,11 @@ function handleDressPhase() {
 
 function handleStretchPhase() {
 
-    beginWorkout();
+    WorkoutService.beginWorkout();
 
-    transitionToPhase(
-    TIMER_PHASES.WORK,
-    getPhaseDuration(TIMER_PHASES.WORK)
-);
+    gotoPhase(TIMER_PHASES.WORK);
 
     speakLift();
-
-}
-
-
-function beginWorkout() {
-
-    S.rotationCount = 0;
-    S.currentSet = 1;
-    S.displaySetNumber = 1;
-
-    loadSetData(S.currentSet);
 
 }
 
@@ -59,19 +55,17 @@ function handleWorkPhase() {
     S.rotationCount++;
 
     // SHOW PREVIEW ON FINAL ROTATION
-    if (S.rotationCount === maxRotations) {
+    if (S.rotationCount === WorkoutService.config.maxRotations) {
 
-        const nextSet = getNextSetIndex();
+    const nextSet = WorkoutService.getNextSetIndex();
 
-        if (nextSet) {
-            previewSetData(nextSet);
-        }
+    if (nextSet) {
+        previewSetData(nextSet);
     }
 
-    transitionToPhase(
-    TIMER_PHASES.ROTATE,
-    getPhaseDuration(TIMER_PHASES.ROTATE)
-);
+} 
+
+    gotoPhase(TIMER_PHASES.ROTATE);
 
     speakRotate();
 
@@ -84,7 +78,8 @@ function handleWorkPhase() {
 
 function handleRotatePhase() {
 
-    const finishedRotations = S.rotationCount >= maxRotations;
+    const finishedRotations =
+    S.rotationCount >= WorkoutService.config.maxRotations;
 
     if (finishedRotations) {
 
@@ -94,7 +89,7 @@ function handleRotatePhase() {
 
         // 🔴 no more items
         if (!nextItem) {
-            startCooldown();
+            TimerEngine.startCooldown();
             return;
         }
 
@@ -105,12 +100,12 @@ function handleRotatePhase() {
 
         const breakDuration = Math.max(
         1,
-        nextItem.breakSec || getPhaseDuration(TIMER_PHASES.BREAK)
+        nextItem.breakSec || WorkoutService.getPhaseDuration(TIMER_PHASES.BREAK)
 );
 
-    transitionToPhase(
-        TIMER_PHASES.BREAK,
-        breakDuration
+            gotoPhase(
+            TIMER_PHASES.BREAK,
+            breakDuration
 );
 
             speakBreakPrep();
@@ -123,13 +118,10 @@ function handleRotatePhase() {
         // ✅ next is real set
         S.currentSet++;
         S.displaySetNumber++;
-        loadSetData(S.currentSet);
+        WorkoutService.loadSetData(S.currentSet);
     }
 
-    transitionToPhase(
-    TIMER_PHASES.WORK,
-    getPhaseDuration(TIMER_PHASES.WORK)
-);
+    gotoPhase(TIMER_PHASES.WORK);
 
     speakLift();
 
@@ -145,7 +137,7 @@ function handleBreakPhase() {
     const nextItem = S.workoutData[S.currentSet] ?? null;
 
     if (!nextItem) {
-        startCooldown();
+        TimerEngine.startCooldown();
         return;
     }
 
@@ -153,13 +145,10 @@ function handleBreakPhase() {
     if (nextItem.type === "set") {
         S.currentSet++;
         S.displaySetNumber++;
-        loadSetData(S.currentSet);
+        WorkoutService.loadSetData(S.currentSet);
     }
 
-    transitionToPhase(
-    TIMER_PHASES.WORK,
-    getPhaseDuration(TIMER_PHASES.WORK)
-);
+    gotoPhase(TIMER_PHASES.WORK);
 
 speakLift();
 
@@ -182,7 +171,7 @@ const PhaseHandlers = {
 
     [TIMER_PHASES.BREAK]: handleBreakPhase,
 
-    [TIMER_PHASES.COOLDOWN]: workoutFinishScreen
+    [TIMER_PHASES.COOLDOWN]: () => TimerEngine.finishWorkout()
 
 }
 
@@ -208,14 +197,9 @@ function handleCurrentPhase() {
 
 
 
-
-
-
-
-window.handleDressPhase = handleDressPhase;
-window.handleStretchPhase = handleStretchPhase;
-window.beginWorkout = beginWorkout;
-window.handleWorkPhase = handleWorkPhase;
-window.handleRotatePhase = handleRotatePhase;
-window.handleBreakPhase = handleBreakPhase;
-window.handleCurrentPhase = handleCurrentPhase;
+PhaseService.handleDress = handleDressPhase;
+PhaseService.handleStretch = handleStretchPhase;
+PhaseService.handleWork = handleWorkPhase;
+PhaseService.handleRotate = handleRotatePhase;
+PhaseService.handleBreak = handleBreakPhase;
+PhaseService.handleCurrentPhase = handleCurrentPhase;

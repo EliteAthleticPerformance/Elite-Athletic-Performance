@@ -1,11 +1,21 @@
+window.ScheduleService = window.ScheduleService || {};
+const ScheduleService = window.ScheduleService;
+
 const S = window.TimerState;
+
+
+const DAY_KEYS = Object.freeze([
+    null,
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday"
+]);
 
 // ========================================
 // SCHEDULE CONFIGURATION
-// Loaded from Google Sheets
 // ========================================
-
-window.ScheduleService = window.ScheduleService || {};
 
 
 ScheduleService.config = {
@@ -44,42 +54,25 @@ ScheduleService.config = {
 
 function getTodaySchedule(day) {
 
-    switch (day) {
-
-        case 1:
-            return ScheduleService.config.schedules.monday;
-
-        case 2:
-            return ScheduleService.config.schedules.tuesday;
-
-        case 3:
-            return ScheduleService.config.schedules.wednesday;
-
-        case 4:
-            return ScheduleService.config.schedules.thursday;
-
-        case 5:
-            return ScheduleService.config.schedules.friday;
-
-        default:
-            return [];
-
-    }
+    return ScheduleService.config.schedules[
+        DAY_KEYS[day]
+    ] ?? [];
 
 }
 
 
 function findNextScheduledClass() {
 
-    const now = getEffectiveNow();
+    const now = ScheduleService.getEffectiveNow();
 
-    const today = getTodaySchedule(now.getDay());
+    const today = ScheduleService.getTodaySchedule(now.getDay());
 
     let next = null;
 
     for (const timeStr of today) {
 
-        const start = parseTimeToToday(timeStr);
+        const start =
+    ScheduleService.parseTimeToToday(timeStr);
 
         if (start < now) continue;
 
@@ -94,15 +87,21 @@ function findNextScheduledClass() {
 }
 
 
+function resetAutoStart() {
+    S.lastAutoStartMinute = null;
+}
+
+
 function getCurrentClass() {
 
-    const now = getEffectiveNow();
+    const now = ScheduleService.getEffectiveNow();
 
-    const todaySchedule = getTodaySchedule(now.getDay());
+    const todaySchedule = ScheduleService.getTodaySchedule(now.getDay());
 
     for (const timeStr of todaySchedule) {
 
-        const start = parseTimeToToday(timeStr);
+        const start =
+    ScheduleService.parseTimeToToday(timeStr);
 
         const end = new Date(
             start.getTime() + S.classBlockLength * 1000
@@ -131,7 +130,7 @@ function getCurrentClass() {
 
 function isClassInProgress() {
 
-    return getCurrentClass() !== null;
+    return ScheduleService.getCurrentClass() !== null;
 
 }
 
@@ -139,10 +138,10 @@ function isClassInProgress() {
 function shouldAutoStart() {
 
     return (
-        isAutoStartEnabled() &&
-        canRunToday() &&
-        !S.isRunning
-    );
+    ScheduleService.isAutoStartEnabled() &&
+    ScheduleService.canRunToday() &&
+    !S.isRunning
+);
 
 }
 
@@ -151,7 +150,7 @@ function beginScheduledWorkout(nextClass) {
 
     if (!nextClass) return false;
 
-    const now = getEffectiveNow();
+    const now = ScheduleService.getEffectiveNow();
 
     if (Math.abs(now.getTime() - nextClass.getTime()) > 5000) {
         return false;
@@ -179,7 +178,7 @@ function beginScheduledWorkout(nextClass) {
 
 function getElapsedClassSeconds() {
 
-    const currentClass = getCurrentClass();
+    const currentClass = ScheduleService.getCurrentClass();
 
     if (!currentClass) {
 
@@ -189,7 +188,7 @@ function getElapsedClassSeconds() {
 
     return Math.floor(
 
-        (getEffectiveNow() - currentClass.start) / 1000
+        (ScheduleService.getEffectiveNow() - currentClass.start) / 1000
 
     );
 
@@ -212,9 +211,9 @@ function isTodayOnly() {
 
 function canRunToday() {
 
-    const day = getEffectiveNow().getDay();
+    const day = ScheduleService.getEffectiveNow().getDay();
 
-    if (isTodayOnly()) {
+    if (ScheduleService.isTodayOnly()) {
         return day >= 1 && day <= 5;
     }
 
@@ -225,52 +224,51 @@ function canRunToday() {
 
 function getClassLength(day) {
 
-    switch (day) {
+    return ScheduleService.config.classLength[
+        DAY_KEYS[day]
+    ] ?? 45;
 
-        case 1:
-            return ScheduleService.config.classLength.monday;
+}
 
-        case 2:
-            return ScheduleService.config.classLength.tuesday;
 
-        case 3:
-            return ScheduleService.config.classLength.wednesday;
+function tryStartWorkout() {
 
-        case 4:
-            return ScheduleService.config.classLength.thursday;
+    const nextClass =
+        ScheduleService.findNextScheduledClass();
 
-        case 5:
-            return ScheduleService.config.classLength.friday;
+    if (!ScheduleService.beginScheduledWorkout(nextClass))
+        return false;
 
-        default:
-            return 45;
+    TimerEngine.start();
 
-    }
+    return true;
 
 }
 
 
 function autoDetectActiveClass() {
 
-    if (!isAutoStartEnabled()) return;
+    if (!ScheduleService.isAutoStartEnabled()) return;
 
-    if (!isClassInProgress()) return;
+    if (!ScheduleService.isClassInProgress()) return;
 
     console.log("⚡ Class already in progress. Auto syncing timer.");
 
-    startTimer(true);
+    TimerEngine.start(true);
 
-    resumeWorkout(getElapsedClassSeconds());
+    TimerEngine.resumeWorkout(
+    ScheduleService.getElapsedClassSeconds()
+);
 
 }
 
 
 function applyDaySpecificClassLength() {
 
-    const day = getEffectiveNow().getDay();
+    const day = ScheduleService.getEffectiveNow().getDay();
 
     S.classBlockLength =
-        getClassLength(day) * 60;
+    ScheduleService.getClassLength(day) * 60;
 
     console.log(
         "📏 Class length:",
@@ -288,15 +286,9 @@ function startAutoScheduler() {
 
     S.autoStartTimer = setInterval(() => {
 
-        if (!shouldAutoStart()) return;
+        if (!ScheduleService.shouldAutoStart()) return;
 
-        const nextClass = findNextScheduledClass();
-
-        if (!nextClass) return;
-
-        if (!beginScheduledWorkout(nextClass)) return;
-
-    startTimer();
+        tryStartWorkout();
 
     }, 1000);
 
@@ -305,27 +297,19 @@ function startAutoScheduler() {
 
 function checkAutoStart() {
 
-    applyDaySpecificClassLength();
-    calculateTotalTime();
+    ScheduleService.applyDaySpecificClassLength();
 
-    if (!shouldAutoStart()) return;
+if (!ScheduleService.shouldAutoStart()) return;
 
-    const nextClass = findNextScheduledClass();
+tryStartWorkout();
 
-    if (!nextClass) return;
-
-    if (!beginScheduledWorkout(nextClass)) {
-    return;
-}
-
-    startTimer();
 }
 
 
 function parseTimeToToday(timeStr) {
     const [h, m] = timeStr.split(":").map(Number);
 
-    const now = getEffectiveNow();
+    const now = ScheduleService.getEffectiveNow();
 
     return new Date(
         now.getFullYear(),
@@ -367,22 +351,10 @@ function getEffectiveNow() {
 // GLOBAL EXPORTS
 // ========================================
 
-window.getTodaySchedule = getTodaySchedule;
-window.isAutoStartEnabled = isAutoStartEnabled;
-window.isTodayOnly = isTodayOnly;
-window.canRunToday = canRunToday;
-window.getClassLength = getClassLength;
-window.applyDaySpecificClassLength = applyDaySpecificClassLength;
-window.checkAutoStart = checkAutoStart;
-window.startAutoScheduler = startAutoScheduler;
-window.autoDetectActiveClass = autoDetectActiveClass;
-window.parseTimeToToday = parseTimeToToday;
-window.getEffectiveNow = getEffectiveNow;
-window.getWorkoutState = getWorkoutState;
-window.resumeWorkout = resumeWorkout;
-window.findNextScheduledClass = findNextScheduledClass;
-window.getCurrentClass = getCurrentClass;
-window.isClassInProgress = isClassInProgress;
-window.getElapsedClassSeconds = getElapsedClassSeconds;
-window.shouldAutoStart = shouldAutoStart;
-window.beginScheduledWorkout = beginScheduledWorkout;
+ScheduleService.resetAutoStart = resetAutoStart;
+ScheduleService.getElapsedClassSeconds = getElapsedClassSeconds;
+ScheduleService.applyDaySpecificClassLength = applyDaySpecificClassLength;
+ScheduleService.startAutoScheduler = startAutoScheduler;
+ScheduleService.checkAutoStart = checkAutoStart;
+ScheduleService.autoDetectActiveClass = autoDetectActiveClass;
+ScheduleService.getEffectiveNow = getEffectiveNow;

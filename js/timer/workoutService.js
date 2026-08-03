@@ -1,12 +1,16 @@
+console.log("🔥 WORKOUT SERVICE VERSION 2", Math.random());
+
+window.WorkoutService = window.WorkoutService || {};
+const WorkoutService = window.WorkoutService;
+
 const S = window.TimerState;
+
 
 
 // ========================================
 // WORKOUT CONFIGURATION
 // Loaded from Google Sheets
 // ========================================
-
-window.WorkoutService = window.WorkoutService || {};
 
 WorkoutService.config = {
 
@@ -26,6 +30,7 @@ WorkoutService.config = {
 
 };
 
+
 function parseCSV(text) {
     return text
         .split("\n")
@@ -44,24 +49,18 @@ function resetWorkoutData() {
 
     S.workoutData.length = 0;
 
-    ScheduleService.config.autoStart = false;
-
-    ScheduleService.config.schedules.monday = [];
-    ScheduleService.config.schedules.tuesday = [];
-    ScheduleService.config.schedules.wednesday = [];
-    ScheduleService.config.schedules.thursday = [];
-    ScheduleService.config.schedules.friday = [];
-
 }
 
 
 async function fetchWorkoutRows() {
 
-    const school = window.APP_CONFIG.key;
+    const school = SchoolService.getSchoolKey();
 
-    const response = await fetch(
-        `${window.APP_CONFIG.dataURL}?type=workout&school=${school}`
-    );
+const data = SchoolService.getData();
+
+const response = await fetch(
+    `${data.workoutApiURL}?type=workout&school=${school}`
+);
 
     if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -130,12 +129,7 @@ function logWorkoutSummary() {
         S.workoutData.length
     );
 
-    console.log(
-        "✅ Auto Start:",
-        ScheduleService.config.autoStart
-    );
-
-}
+    }
 
 
 function handleServerTimeRow(firstCell, r) {
@@ -204,16 +198,14 @@ function handleConfigRow(firstCell, r) {
     }
 
     if (firstCell === "today_only") {
-        const todayOnly =
-    cleanCell(r[1]).toLowerCase() === "true";
 
-        ScheduleService.config.todayOnly = todayOnly;
-    }
+    const todayOnly =
+        cleanCell(r[1]).toLowerCase() === "true";
 
-    if (firstCell === "force_date") {
-        S.forceDateString = cleanCell(r[1]) || null;
-        return true;
-    }
+    ScheduleService.config.todayOnly = todayOnly;
+
+    return true;
+}
 
     return false;
 }
@@ -223,102 +215,98 @@ function handleClassLengthRow(firstCell, r) {
 
     if (firstCell === "monday_minutes") {
         const v = parseSheetNumber(r[1]);
-        if (v !== null) ScheduleService.config.classLength.monday = v;
+        if (v !== null) 
+
+        ScheduleService.config.classLength.monday = v;
 
         return true;
     }
 
     if (firstCell === "tuesday_minutes") {
         const v = parseSheetNumber(r[1]);
-        if (v !== null) ScheduleService.config.classLength.tuesday = v;
+        if (v !== null) 
+
+        ScheduleService.config.classLength.tuesday = v;
 
         return true;
     }
 
     if (firstCell === "wednesday_minutes") {
         const v = parseSheetNumber(r[1]);
-        if (v !== null) ScheduleService.config.classLength.wednesday = v;
+        if (v !== null) 
+
+        ScheduleService.config.classLength.wednesday = v;
 
         return true;
     }
 
     if (firstCell === "thursday_minutes") {
         const v = parseSheetNumber(r[1]);
-        if (v !== null) ScheduleService.config.classLength.thursday = v;
+        if (v !== null) 
+
+        ScheduleService.config.classLength.thursday = v;
 
         return true;
     }
 
     if (firstCell === "friday_minutes") {
         const v = parseSheetNumber(r[1]);
-        if (v !== null) ScheduleService.config.classLength.friday = v;
+        if (v !== null) 
+
+        ScheduleService.config.classLength.friday = v;
 
         return true;
     }
 
-    return false;
 }
 
 
 function handleScheduleRow(firstCell, r) {
 
     if (firstCell === "monday_times") {
+        
+
         ScheduleService.config.schedules.monday =
         r.slice(1)
         .map(cleanCell)
         .filter(Boolean);
-        console.log(
-    "📅 Monday Schedule:",
-    ScheduleService.config.schedules.monday
-);
         return true;
     }
 
     if (firstCell === "tuesday_times") {
+
         ScheduleService.config.schedules.tuesday =
         r.slice(1)
         .map(cleanCell)
-        .filter(Boolean);
-        console.log(
-    "📅 Tuesday Schedule:",
-    ScheduleService.config.schedules.tuesday
-);
+         .filter(Boolean);
         return true;
     }
 
     if (firstCell === "wednesday_times") {
+
         ScheduleService.config.schedules.wednesday =
         r.slice(1)
         .map(cleanCell)
-        .filter(Boolean);
-        console.log(
-    "📅 Wednesday Schedule:",
-    ScheduleService.config.schedules.wednesday
-);
+         .filter(Boolean);
         return true;
     }
+        
 
     if (firstCell === "thursday_times") {
+
         ScheduleService.config.schedules.thursday =
         r.slice(1)
         .map(cleanCell)
-        .filter(Boolean);
-        console.log(
-    "📅 Thursday Schedule:",
-    ScheduleService.config.schedules.thursday
-);
+         .filter(Boolean);
         return true;
     }
 
     if (firstCell === "friday_times") {
+
         ScheduleService.config.schedules.friday =
         r.slice(1)
         .map(cleanCell)
-        .filter(Boolean);
-        console.log(
-    "📅 Friday Schedule:",
-    ScheduleService.config.schedules.friday
-);
+         .filter(Boolean);
         return true;
     }
 
@@ -405,20 +393,31 @@ function getStretchDuration() {
     return WorkoutService.config.stretchSeconds;
 }
 
-function getWorkDuration() {
-    return WorkoutService.config.workSeconds;
-}
-
-function getRotateDuration() {
-    return WorkoutService.config.rotateSeconds;
-}
-
 function getBreakDuration() {
     return WorkoutService.config.breakSeconds;
 }
 
 function getCooldownDuration() {
     return WorkoutService.config.cooldownSeconds;
+}
+
+
+function getNextSetIndex() {
+
+    for (
+        let i = S.currentSet;
+        i < S.workoutData.length;
+        i++
+    ) {
+
+        if (S.workoutData[i]?.type === "set") {
+            return i + 1;
+        }
+
+    }
+
+    return null;
+
 }
 
 
@@ -508,11 +507,14 @@ function finishWorkoutLoad() {
 
     preloadFirstSet();
 
-    applyDaySpecificClassLength();
+    TimelineService.build();
 
+    ScheduleService.applyDaySpecificClassLength();
+    ScheduleService.startAutoScheduler();
+
+if (typeof syncClockOffset === "function") {
     syncClockOffset();
-
-    startAutoScheduler();
+}
 
     const planned = calculateTotalTime();
     const finalTotal = Math.min(planned, S.classBlockLength);
@@ -573,40 +575,74 @@ function calculateWarmupTime() {
 
 function calculateWorkoutTime() {
 
-    const work = getWorkDuration();
-    const rotate = getRotateDuration();
-
     let workoutTotal = 0;
     let breakTotal = 0;
 
     S.workoutData.forEach(item => {
 
-        if (item.type === "set") {
+    if (item.type === "set") {
 
-            for (let i = 0; i < WorkoutService.config.maxRotations; i++) {
+        const work = WorkoutService.getWorkDuration(item);
+        const rotate = WorkoutService.getRotateDuration(item);
 
-                workoutTotal += work;
+        const rotations = WorkoutService.config.maxRotations;
 
-                if (i < WorkoutService.config.maxRotations - 1) {
-                    workoutTotal += rotate;
-                }
+for (let i = 0; i < rotations; i++) {
 
-            }
+    workoutTotal += work;
 
-        }
+    if (i < rotations - 1) {
+        workoutTotal += rotate;
+    }
 
-        if (item.type === "break") {
+}
+    }
 
-            breakTotal +=
-                item.breakSec ||
-                getBreakDuration();
+    if (item.type === "break") {
 
-        }
-
-    });
+        breakTotal +=
+            item.breakSec ??
+            WorkoutService.getBreakDuration();
+    }
+});
 
     return workoutTotal + breakTotal;
 
+}
+
+
+function beginWorkout() {
+
+    S.rotationCount = 0;
+    S.currentSet = 1;
+    S.displaySetNumber = 1;
+
+    WorkoutService.loadSetData(S.currentSet);
+
+}
+
+
+
+// ========================================
+// DURATION HELPERS
+// ========================================
+
+function getWorkDuration(item = null) {
+
+    if (item?.workSec != null) {
+        return item.workSec;
+    }
+
+    return WorkoutService.config.workSeconds;
+}
+
+function getRotateDuration(item = null) {
+
+    if (item?.rotateSec != null) {
+        return item.rotateSec;
+    }
+
+    return WorkoutService.config.rotateSeconds;
 }
 
 
@@ -646,37 +682,50 @@ console.log("Cooldown calculated:", cooldown);
 }
 
 
+function resetState() {
+
+    S.currentSet = 1;
+    S.displaySetNumber = 1;
+    S.rotationCount = 0;
+
+    S.currentPhase = TIMER_PHASES.DRESS;
+
+    S.phaseJustChanged = false;
+    S.dressWarningSpoken = false;
+    S.lastCountdownSpoken = null;
+}
+
+
 function prepareWorkoutSession() {
 
-    resetWorkoutState();
+    WorkoutService.resetState();
 
-     S.lastAutoStartMinute = null;
-
-     preloadFirstSet();
-
-     transitionToPhase(
-    TIMER_PHASES.DRESS,
-    getPhaseDuration(TIMER_PHASES.DRESS)
-);
+WorkoutService.preloadFirstSet();
 
 }
 
 
 const PhaseDurationGetters = {
 
-    [TIMER_PHASES.DRESS]: getDressDuration,
+    [TIMER_PHASES.DRESS]:
+        WorkoutService.getDressDuration,
 
-    [TIMER_PHASES.STRETCH]: getStretchDuration,
+    [TIMER_PHASES.STRETCH]:
+        WorkoutService.getStretchDuration,
 
-    [TIMER_PHASES.WORK]: getWorkDuration,
+    [TIMER_PHASES.WORK]:
+        WorkoutService.getWorkDuration,
 
-    [TIMER_PHASES.ROTATE]: getRotateDuration,
+    [TIMER_PHASES.ROTATE]:
+        WorkoutService.getRotateDuration,
 
-    [TIMER_PHASES.BREAK]: getBreakDuration,
+    [TIMER_PHASES.BREAK]:
+        WorkoutService.getBreakDuration,
 
-    [TIMER_PHASES.COOLDOWN]: getCooldownDuration
-
+    [TIMER_PHASES.COOLDOWN]:
+        WorkoutService.getCooldownDuration
 };
+
 
 
 function getPhaseDuration(phase) {
@@ -696,16 +745,122 @@ function getPhaseDuration(phase) {
 }
 
 
+/* ======================================================
+   LOAD SET INTO QUADRANTS
+====================================================== */
 
-window.getDressDuration = getDressDuration;
-window.getStretchDuration = getStretchDuration;
-window.getWorkDuration = getWorkDuration;
-window.getRotateDuration = getRotateDuration;
-window.getBreakDuration = getBreakDuration;
-window.getCooldownDuration = getCooldownDuration;
-window.prepareWorkoutSession = prepareWorkoutSession;
-window.getPhaseDuration = getPhaseDuration;
+function loadSetData(setNumber) {
+
+    const workout = S.workoutData[setNumber - 1];
+
+    if (!workout || workout.type !== "set") return;
+
+    /* ---------- CORE ---------- */
+    const q1Texts = document.querySelectorAll("#q1 .quad-text");
+    if (q1Texts.length >= 3) {
+        q1Texts[0].innerText = workout.core;
+        q1Texts[1].innerText = "Reps: " + workout.reps;
+        q1Texts[2].innerText =
+            "Percentage: " + (workout.percent ? workout.percent + "%" : "");
+    }
+
+    /* ---------- AUX ---------- */
+    const q2Texts = document.querySelectorAll("#q2 .quad-text");
+    if (q2Texts.length >= 2) {
+        q2Texts[0].innerText = workout.aux;
+        q2Texts[1].innerText = "Reps: " + workout.auxReps;
+    }
+
+    /* ---------- MOVEMENT ---------- */
+    const q4Texts = document.querySelectorAll("#q4 .quad-text");
+    if (q4Texts.length >= 2) {
+        q4Texts[0].innerText = workout.move;
+        q4Texts[1].innerText = "Reps/Time: " + workout.moveReps;
+    }
+}
 
 
+// ========================================
+// RESTORE WORKOUT STATE
+// ========================================
+
+function restoreWorkoutState(state) {
+
+    S.currentPhase = state.phase;
+    S.timeLeft = state.timeLeft;
+
+    S.currentSet = state.currentSet;
+    S.displaySetNumber = state.displaySetNumber;
+    S.rotationCount = state.rotationCount;
+
+    if (
+        state.phase === TIMER_PHASES.WORK ||
+        state.phase === TIMER_PHASES.ROTATE ||
+        state.phase === TIMER_PHASES.BREAK
+    ) {
+        WorkoutService.loadSetData(state.currentSet);
+    }
+}
 
 
+// ========================================
+// PUBLIC API
+// ========================================
+
+WorkoutService.beginWorkout = beginWorkout;
+
+WorkoutService.parseCSV = parseCSV;
+
+WorkoutService.parseSheetNumber = parseSheetNumber;
+
+WorkoutService.cleanCell = cleanCell;
+
+WorkoutService.load = loadWorkout;
+
+WorkoutService.fetchRows = fetchWorkoutRows;
+
+WorkoutService.calculateTotalTime = calculateTotalTime;
+
+WorkoutService.prepareSession = prepareWorkoutSession;
+
+WorkoutService.resetWorkoutData = resetWorkoutData;
+
+WorkoutService.processRows = processWorkoutRows;
+
+WorkoutService.finishLoad = finishWorkoutLoad;
+
+WorkoutService.calculateWorkoutTime = calculateWorkoutTime;
+
+WorkoutService.calculateWarmupTime = calculateWarmupTime;
+
+WorkoutService.calculateCooldownTime = calculateCooldownTime;
+
+WorkoutService.getDressDuration = getDressDuration;
+
+WorkoutService.getStretchDuration = getStretchDuration;
+
+WorkoutService.getWorkDuration = getWorkDuration;
+
+WorkoutService.getRotateDuration = getRotateDuration;
+
+WorkoutService.getBreakDuration = getBreakDuration;
+
+WorkoutService.getCooldownDuration = getCooldownDuration;
+
+WorkoutService.getPhaseDuration = getPhaseDuration;
+
+WorkoutService.getNextSetIndex = getNextSetIndex;
+
+WorkoutService.preloadFirstSet = preloadFirstSet;
+
+WorkoutService.logWorkoutLoad = logWorkoutLoad;
+
+WorkoutService.logWorkoutSummary = logWorkoutSummary;
+
+WorkoutService.isEffectivelyBlankRow = isEffectivelyBlankRow;
+
+WorkoutService.resetState = resetState;
+
+WorkoutService.restoreWorkoutState = restoreWorkoutState;
+
+WorkoutService.loadSetData = loadSetData;

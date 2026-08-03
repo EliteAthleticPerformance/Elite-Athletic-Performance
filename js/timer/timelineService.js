@@ -1,20 +1,8 @@
-// ========================================
-// DURATION HELPERS
-// ========================================
+window.TimelineService = window.TimelineService || {};
+const TimelineService = window.TimelineService;
 
-function getWorkDuration(item) {
-    if (item.workSec != null) return item.workSec;
+const S = window.TimerState;
 
-    const fallback = parseInt(document.getElementById("workTime").value, 10);
-    return Number.isNaN(fallback) ? 0 : fallback;
-}
-
-function getRotateDuration(item) {
-    if (item.rotateSec != null) return item.rotateSec;
-
-    const fallback = parseInt(document.getElementById("restTime").value, 10);
-    return Number.isNaN(fallback) ? 0 : fallback;
-}
 
 
 // ========================================
@@ -30,7 +18,7 @@ function addTimelineSegment(
     workoutIndex = 0
 ) {
 
-    timelineData.push({
+    S.timelineData.push({
 
         phase,
         duration,
@@ -45,24 +33,27 @@ function addTimelineSegment(
 }
 
 
-function buildSegmentTimeline() {
-    if (!window.workoutData?.length) return;
+function buildTimeline() {
 
-    timelineData = [];
+    if (!S.workoutData?.length) return;
+
+    S.timelineData = [];
 
     addTimelineSegment(
     "dress",
-    dressOutDuration,
+    WorkoutService.getDressDuration(),
     1,
     1,
     0,
     1
 );
 
-if (dynamicStretchDuration > 0) {
+const stretchDuration = WorkoutService.getStretchDuration();
+
+if (stretchDuration > 0) {
     addTimelineSegment(
         "stretch",
-        dynamicStretchDuration,
+        stretchDuration,
         1,
         1,
         0,
@@ -72,20 +63,21 @@ if (dynamicStretchDuration > 0) {
 
    
 let displaySet = 1;
+let workoutIndex = 0;
 
-window.workoutData.forEach((item) => {
+S.workoutData.forEach((item) => {
 
     if (item.type === "set") {
 
         workoutIndex++;
 
-        for (let r = 0; r < maxRotations; r++) {
+        for (let r = 0; r < WorkoutService.config.maxRotations; r++) {
 
             addTimelineSegment(
 
                 "work",
 
-                getWorkDuration(item),
+                WorkoutService.getWorkDuration(item),
 
                 workoutIndex,
                 displaySet,
@@ -93,13 +85,13 @@ window.workoutData.forEach((item) => {
                 workoutIndex
             );
 
-            if (r < maxRotations - 1) {
+            if (r < WorkoutService.config.maxRotations - 1) {
 
                 addTimelineSegment(
 
                     "rotate",
 
-                    getRotateDuration(item),
+                    WorkoutService.getRotateDuration(item),
 
                     workoutIndex,
                     displaySet,
@@ -118,7 +110,7 @@ window.workoutData.forEach((item) => {
 
             "break",
 
-            item.breakSec ?? breakDuration,
+            item.breakSec ?? WorkoutService.getBreakDuration(),
 
             workoutIndex,
             displaySet,
@@ -129,7 +121,7 @@ window.workoutData.forEach((item) => {
 
 });
 
-    renderTimeline(); // ✅ correct place
+    TimelineService.render();// ✅ correct place
 }
 
 
@@ -137,9 +129,9 @@ function getWorkoutState(elapsedSeconds) {
 
     let elapsed = elapsedSeconds;
 
-    for (let i = 0; i < timelineData.length; i++) {
+    for (let i = 0; i < S.timelineData.length; i++) {
 
-        const segment = timelineData[i];
+    const segment = S.timelineData[i];
 
         if (elapsed < segment.duration) {
 
@@ -169,15 +161,15 @@ function getWorkoutState(elapsedSeconds) {
 
         timeLeft: 0,
 
-        currentSet: workoutData.length,
+        currentSet: S.workoutData.length,
 
-        displaySetNumber: getTotalSets(),
+        displaySetNumber: WorkoutService.getTotalSets(),
 
         rotationCount: 0,
 
-        workoutIndex: workoutData.length,
+        workoutIndex: S.workoutData.length,
 
-        segmentIndex: timelineData.length - 1,
+        segmentIndex: S.timelineData.length - 1,
 
         elapsedInSegment: 0
     };
@@ -192,11 +184,11 @@ function renderTimeline() {
 
     container.innerHTML = "";
 
-    const total = timelineData.reduce((sum, seg) => sum + seg.duration, 0);
+    const total = S.timelineData.reduce((sum, seg) => sum + seg.duration, 0);
 
     if (!total) return;
 
-    timelineData.forEach((seg, index) => {
+    S.timelineData.forEach((seg, index) => {
         
         const div = document.createElement("div");
 
@@ -213,19 +205,21 @@ function renderTimeline() {
 
 
 function updateSegmentHighlight() {
-    if (!window.classStartTime) return;
+    if (!S.classStartTime) return;
 
-    const now = getEffectiveNow().getTime();
-    let elapsed = (now - window.classStartTime) / 1000;
+    const now =
+    ScheduleService.getEffectiveNow().getTime();
+    let elapsed =
+    (now - S.classStartTime) / 1000;
 
     let currentIndex = -1;
 
-    for (let i = 0; i < timelineData.length; i++) {
-        if (elapsed < timelineData[i].duration) {
+    for (let i = 0; i < S.timelineData.length; i++) {
+        if (elapsed < S.timelineData[i].duration) {
             currentIndex = i;
             break;
         }
-        elapsed -= timelineData[i].duration;
+        elapsed -= S.timelineData[i].duration;
     }
 
     if (currentIndex === -1) {
@@ -239,3 +233,9 @@ function updateSegmentHighlight() {
         el.classList.toggle("active", i === currentIndex);
     });
 }
+
+
+TimelineService.build = buildTimeline;
+TimelineService.getWorkoutState = getWorkoutState;
+TimelineService.render = renderTimeline;
+TimelineService.updateHighlight = updateSegmentHighlight;

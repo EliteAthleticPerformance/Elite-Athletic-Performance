@@ -50,6 +50,34 @@ const SchoolService = {
 },
 
 
+    // ========================================
+    // NEW CONFIGURATION API
+    // ========================================
+
+    getBranding() {
+
+    return this.getConfig().branding || {};
+
+},
+
+    getData() {
+
+    return this.getConfig().data || {};
+
+},
+
+    getTerminology() {
+
+    return this.getConfig().terminology || {};
+
+},
+
+    getFeatures() {
+
+    return this.getConfig().features || {};
+
+},
+
 
     getSchoolKey() {
 
@@ -59,21 +87,43 @@ const SchoolService = {
 
     getSchoolName() {
 
-        return this.getConfig().name;
+    return this.getBranding()?.displayName ??
+           this.getConfig().name;
 
-    },
+},
 
     getLogo() {
 
-        return this.getConfig().logo;
+    return this.getBranding()?.logo ??
+           this.getConfig().logo;
 
-    },
+},
 
     getTheme() {
 
         return this.getConfig().theme;
 
     },
+
+
+    getMascot() {
+
+    return this.getBranding()?.mascot ?? "";
+
+},
+
+getShortName() {
+
+    return this.getBranding()?.shortName ?? "";
+
+},
+
+getSlogan() {
+
+    return this.getBranding()?.slogan ?? "";
+
+},
+
 
     getSubscription() {
 
@@ -111,3 +161,4 @@ const SchoolService = {
 };
 
 window.SchoolService = SchoolService;
+

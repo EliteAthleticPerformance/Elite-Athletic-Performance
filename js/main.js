@@ -259,41 +259,6 @@ function getRestDuration() {
 
 
 /* ======================================================
-   LOAD SET INTO QUADRANTS
-====================================================== */
-
-function loadSetData(setNumber) {
-
-    const workout = workoutData[setNumber - 1];
-
-    if (!workout || workout.type !== "set") return;
-
-    /* ---------- CORE ---------- */
-    const q1Texts = document.querySelectorAll("#q1 .quad-text");
-    if (q1Texts.length >= 3) {
-        q1Texts[0].innerText = workout.core;
-        q1Texts[1].innerText = "Reps: " + workout.reps;
-        q1Texts[2].innerText =
-            "Percentage: " + (workout.percent ? workout.percent + "%" : "");
-    }
-
-    /* ---------- AUX ---------- */
-    const q2Texts = document.querySelectorAll("#q2 .quad-text");
-    if (q2Texts.length >= 2) {
-        q2Texts[0].innerText = workout.aux;
-        q2Texts[1].innerText = "Reps: " + workout.auxReps;
-    }
-
-    /* ---------- MOVEMENT ---------- */
-    const q4Texts = document.querySelectorAll("#q4 .quad-text");
-    if (q4Texts.length >= 2) {
-        q4Texts[0].innerText = workout.move;
-        q4Texts[1].innerText = "Reps/Time: " + workout.moveReps;
-    }
-}
-
-
-/* ======================================================
    INITIAL PAGE LOAD
 ====================================================== */
 
@@ -378,9 +343,9 @@ window.addEventListener("DOMContentLoaded", async () => {
             isPolling = false;
         }, 3000);
 
-        await loadWorkout();
+        await WorkoutService.load();
 
-        buildSegmentTimeline();
+        TimelineService.buildTimeline();
 
         updateTotalDisplay();
 
@@ -391,9 +356,11 @@ window.addEventListener("DOMContentLoaded", async () => {
 
         applyCoachControl();
 
-        startAutoScheduler();
+        ScheduleService.startAutoScheduler();
 
-        setTimeout(autoDetectActiveClass, 2000);
+setTimeout(() => {
+    ScheduleService.autoDetectActiveClass();
+}, 2000);
 
     } catch (err) {
         console.error("🔥 CRITICAL INIT ERROR:", err);
