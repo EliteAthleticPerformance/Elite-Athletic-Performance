@@ -1,200 +1,307 @@
-function applyCoachControl() {
+(() => {
 
-  if (!window.classStartTime && window.controlTimestamp) {
-    window.classStartTime = new Date(window.controlTimestamp).getTime();
+
+// ========================================
+// COACH SERVICE
+// ========================================
+
+window.CoachService = window.CoachService || {};
+const CoachService = window.CoachService;
+
+const S = window.TimerState;
+
+
+function getElapsedSeconds() {
+
+    if (!S.classStartTime) {
+        return 0;
+    }
+
+    return Math.floor(
+        (
+            ScheduleService.getEffectiveNow().getTime() -
+            S.classStartTime
+        ) / 1000
+    );
+
 }
 
-  // 🔥 FORCE SYNC FOR LATE JOIN (even without new START command)
-if (window.classStartTime && isRunning) {
-    const now = getEffectiveNow().getTime();
-    const state = computeWorkoutState(now);
 
-    if (state) {
-        currentPhase = state.phase;
-        timeLeft = state.timeLeft;
+function calculateOffsetForTarget(targetPhase, targetSet, targetRotation) {
 
-        if (state.setIndex !== undefined) {
-            currentSet = state.setIndex;
-            displaySetNumber = state.setNumber;
-            loadSetData(currentSet);
+    let offset = 0;
+
+    for (const segment of S.timelineData) {
+
+        const phaseMatch =
+            segment.phase === targetPhase;
+
+        const setMatch =
+            segment.displaySet === targetSet;
+
+        const rotationMatch =
+            segment.rotation === targetRotation;
+
+        if (phaseMatch && setMatch && rotationMatch) {
+            return offset;
         }
 
-        rotationCount = state.rotation || 0;
-
-        updateClock();
-        updatePhaseDisplay();
-        updateTotalDisplay();
+        offset += segment.duration;
     }
+
+    return 0;
+
 }
 
-    if (!window.controlAction) return;
 
-    const signature = [
-        window.controlAction,
-        window.controlTimestamp,
-        window.controlPhase,
-        window.controlSet,
-        window.controlRotation
-    ].join("|");
+// ========================================
+// APPLY COACH COMMAND
+// ========================================
 
-    // 🚫 prevent re-running same command
-    if (signature === lastControlSignature) return;
+function applyCoachControl() {
 
-    lastControlSignature = signature;
+    // Restore class start time
+    if (!S.classStartTime && S.controlTimestamp) {
 
-    const now = getEffectiveNow().getTime();
+    const parsedTimestamp =
+        new Date(S.controlTimestamp).getTime();
 
-    console.log("🎮 Applying control:", signature);
+    if (!Number.isNaN(parsedTimestamp)) {
 
-    switch (window.controlAction) {
+        S.classStartTime = parsedTimestamp;
 
-       case "START":
-    window.classStartTime = new Date(window.controlTimestamp).getTime();
-    isRunning = true;
-
-    // 🔥 FIXED — DEFINE nowMs FIRST
-    const nowMs = getEffectiveNow().getTime();
-    const state = computeWorkoutState(nowMs);
-
-    if (!state) return;
-
-    // 🔥 ROTATE CHECK (optional but good)
-    if (
-        state.phase === "rotate" &&
-        state.rotation !== rotationCount
-    ) {
-        console.log("🔁 ROTATING QUADRANTS (COACH SYNC)");
-        rotateQuadrantColors();
     }
 
-    currentPhase = state.phase;
-    timeLeft = state.timeLeft;
+}
 
-    rotationCount = state.rotation || 0;
+    // Keep late joiners synchronized
+    if (S.classStartTime && S.isRunning) {
 
-    updateClock();
-    updatePhaseDisplay();
-    updateTotalDisplay();
-break;
+        const elapsed = getElapsedSeconds();
+
+        const state =
+            TimelineService.getWorkoutState(elapsed);
+
+        if (state) {
+
+            WorkoutService.restoreWorkoutState(state);
+
+            TimerUI.refresh();
+            
+        }
+
+    }
+
+    if (!S.controlAction) return;
+
+    const signature = [
+
+        S.controlAction,
+        S.controlTimestamp,
+        S.controlPhase,
+        S.controlSet,
+        S.controlRotation
+
+    ].join("|");
+
+    if (signature === S.lastControlSignature) return;
+
+    S.lastControlSignature = signature;
+
+    switch (S.controlAction) {
+
+        case "START": {
+
+            S.classStartTime =
+                new Date(S.controlTimestamp).getTime();
+
+            const elapsed = getElapsedSeconds();
+
+            TimerEngine.start(true);
+            TimerEngine.resumeWorkout(elapsed);
+
+            break;
+        }
 
         case "STOP":
-    stopAllTimers();
-    window.classStartTime = null;
-        updatePhaseDisplay();
-updateClock();
-updateTotalDisplay();
-    break;
+
+            TimerEngine.stop();
+
+            S.classStartTime = null;
+
+            TimerUI.refresh();
+            
+
+            break;
 
         case "PAUSE":
-            isRunning = false;
-        updatePhaseDisplay();
-updateClock();
-updateTotalDisplay();
+
+            S.isRunning = false;
+
+            TimerUI.refresh();
+            
+
             break;
 
         case "RESUME":
-            isRunning = true;
-        updatePhaseDisplay();
-updateClock();
-updateTotalDisplay();
+
+            S.isRunning = true;
+
+            TimerUI.refresh();
+            
+
             break;
 
-        case "JUMP":
+        case "JUMP": {
 
             const offset = calculateOffsetForTarget(
-                window.controlPhase,
-                window.controlSet,
-                window.controlRotation
+
+                S.controlPhase,
+                S.controlSet,
+                S.controlRotation
+
             );
 
-            window.classStartTime = now - (offset * 1000);
-        updatePhaseDisplay();
-updateClock();
-updateTotalDisplay();
+            S.classStartTime =
+                ScheduleService.getEffectiveNow().getTime() -
+                (offset * 1000);
+
+            TimerEngine.resumeWorkout(offset);
+
             break;
-    }
-} 
-
-
-function computeWorkoutState(nowMs) {
-
-    if (!window.classStartTime) return null;
-
-    let elapsed = Math.floor((nowMs - window.classStartTime) / 1000);
-    let cursor = 0;
-
-    // 1️⃣ DRESS
-    if (elapsed < cursor + dressOutDuration) {
-        return {
-            phase: "dress",
-            timeLeft: (cursor + dressOutDuration) - elapsed
-        };
-    }
-    cursor += dressOutDuration;
-
-    // 2️⃣ STRETCH
-    if (elapsed < cursor + dynamicStretchDuration) {
-        return {
-            phase: "stretch",
-            timeLeft: (cursor + dynamicStretchDuration) - elapsed
-        };
-    }
-    cursor += dynamicStretchDuration;
-
-    // 3️⃣ WORKOUT LOOP
-    for (let i = 0; i < window.workoutData.length; i++) {
-
-        const item = window.workoutData[i];
-
-        if (item.type === "set") {
-
-            for (let r = 0; r < maxRotations; r++) {
-
-                const work =
-    item.workSec || WorkoutService.getWorkDuration();
-
-                // WORK
-                if (elapsed < cursor + work) {
-                    return {
-                        phase: "work",
-                        setIndex: i,
-                        setNumber: window.workoutData
-                            .slice(0, i + 1)
-                            .filter(x => x.type === "set").length,
-                        rotation: r,
-                        timeLeft: (cursor + work) - elapsed
-                    };
-                }
-                cursor += work;
-
-                // ROTATE (always exists)
-                const rest = Math.max(1, item.rotateSec || getRestDuration());
-
-                if (elapsed < cursor + rest) {
-                    return {
-                        phase: "rotate",
-                        setIndex: i,
-                        rotation: r,
-                        timeLeft: (cursor + rest) - elapsed
-                    };
-                }
-                cursor += rest;
-            }
         }
 
-        if (item.type === "break") {
-            const b = item.breakSec || breakDuration;
-
-            if (elapsed < cursor + b) {
-                return {
-                    phase: "break",
-                    setIndex: i,
-                    timeLeft: (cursor + b) - elapsed
-                };
-            }
-            cursor += b;
-        }
     }
 
-    return { phase: "done", timeLeft: 0 };
 }
+
+
+
+// ========================================
+// JUMP TO PHASE
+// ========================================
+
+function jumpToSection(targetPhase) {
+
+    const now =
+        ScheduleService.getEffectiveNow().getTime();
+
+    let offset = 0;
+
+    for (const segment of S.timelineData) {
+
+        if (segment.phase === targetPhase) {
+            break;
+        }
+
+        offset += segment.duration;
+
+    }
+
+    S.classStartTime =
+        now - (offset * 1000);
+
+    TimerEngine.resumeWorkout(offset);
+
+    }
+
+
+// ========================================
+// JUMP TO SET
+// ========================================
+
+function jumpToSet(setNumber) {
+
+    const now =
+        ScheduleService.getEffectiveNow().getTime();
+
+    let offset = 0;
+
+    for (const segment of S.timelineData) {
+
+        if (
+            segment.phase === TIMER_PHASES.WORK &&
+            segment.displaySet === setNumber
+        ) {
+            break;
+        }
+
+        offset += segment.duration;
+
+    }
+
+    S.classStartTime =
+        now - (offset * 1000);
+
+    TimerEngine.resumeWorkout(offset);
+
+    }
+
+
+// ========================================
+// BUILD COACH BUTTONS
+// ========================================
+
+function buildCoachButtons() {
+
+console.log("Building coach buttons");
+
+    const container =
+        document.getElementById("coachSetButtons");
+
+console.log("container =", container);
+
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    const sets = S.workoutData.filter(
+
+        item => item.type === "set"
+
+    );
+
+console.log("sets =", sets);
+
+    sets.forEach((set, index) => {
+
+console.log("Creating button", index + 1);
+
+        const button =
+            document.createElement("button");
+
+        const setNumber = index + 1;
+
+        button.textContent =
+            `Set ${setNumber}`;
+
+        button.onclick = () =>
+            jumpToSet(setNumber);
+
+        container.appendChild(button);
+
+    });
+
+    console.log(
+        "children =",
+        container.children.length
+    );
+
+}
+
+
+// ========================================
+// PUBLIC API
+// ========================================
+
+CoachService.applyControl = applyCoachControl;
+CoachService.jumpToSection = jumpToSection;
+CoachService.jumpToSet = jumpToSet;
+CoachService.buildButtons = buildCoachButtons;
+
+// UI functions now live in coachUI.js
+CoachService.togglePanel = CoachUI.toggle;
+
+
+})();
+

@@ -1,0 +1,216 @@
+/* ========================================
+   COACH GEAR BUTTON
+======================================== */
+
+.coach-toggle {
+
+    position: fixed;
+
+    right: 18px;
+    bottom: 18px;
+
+    width: 56px;
+    height: 56px;
+
+    border: none;
+    border-radius: 50%;
+
+    cursor: pointer;
+
+    font-size: 24px;
+    font-weight: 900;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.10),
+            rgba(255,255,255,.04)
+        );
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    border: 1px solid rgba(255,255,255,.15);
+
+    box-shadow:
+        0 0 12px rgba(57,255,20,.25),
+        inset 0 0 10px rgba(255,255,255,.04);
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease,
+        border-color .25s ease;
+
+    z-index: 9999;
+
+}
+
+.coach-toggle:hover {
+
+    transform:
+        rotate(90deg)
+        scale(1.08);
+
+    border-color:#39ff14;
+
+    box-shadow:
+
+        0 0 18px rgba(57,255,20,.75),
+
+        0 0 34px rgba(0,255,136,.35);
+
+}
+
+/* ========================================
+   COACH PANEL
+======================================== */
+
+#coachPanel {
+
+    position:fixed;
+    right:12px;
+    bottom:62px;
+
+    width:340px;
+    box-sizing:border-box;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:8px;
+
+    padding:12px;
+
+    border-radius:14px;
+
+    background:rgba(0,0,0,.92);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    z-index:9999;
+
+}
+
+#coachPanel.hidden{
+    display:none;
+}
+
+.coach-title {
+
+    font-size:18px;
+
+    font-weight:900;
+
+    letter-spacing:1px;
+
+    color:white;
+
+    text-align:center;
+
+    padding-bottom:10px;
+
+    border-bottom:
+
+        1px solid rgba(255,255,255,.08);
+
+}
+
+.coach-divider {
+
+    height:1px;
+
+    background:
+
+        rgba(255,255,255,.08);
+
+}
+
+#coachPhaseButtons{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:10px;
+
+    margin-top:10px;
+
+}
+
+#coachSetButtons{
+
+    display:grid;
+
+    grid-template-columns:repeat(5,1fr);
+
+    gap:8px;
+
+    margin-top:12px;
+
+}
+
+.coach-panel button {
+
+    height:42px;
+
+    border:none;
+
+    border-radius:12px;
+
+    padding:10px;
+
+    cursor:pointer;
+
+    font-weight:800;
+
+    color:white;
+
+    background:
+
+        rgba(255,255,255,.06);
+
+    transition:
+
+        transform .18s ease,
+
+        box-shadow .18s ease,
+
+        background .18s ease;
+
+}
+
+.coach-panel button:hover {
+
+    transform:translateY(-2px);
+
+    background:
+
+        rgba(57,255,20,.18);
+
+    box-shadow:
+
+        0 0 14px rgba(57,255,20,.55);
+
+}
+
+.coach-status {
+
+    margin-top:6px;
+
+    padding-top:10px;
+
+    border-top:
+
+        1px solid rgba(255,255,255,.08);
+
+    text-align:center;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    color:#39ff14;
+
+}

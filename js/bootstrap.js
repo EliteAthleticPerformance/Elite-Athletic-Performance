@@ -6,15 +6,16 @@
 // APPLICATION STARTUP
 //
 // 1. Load school configuration
-// 2. Track analytics
+// 2. Build APP_CONFIG
 // 3. Apply school branding
 // 4. Expose APP_READY
 // ========================================
 
 
+// ========================================
+// GA4 EVENT TRACKING
+// ========================================
 
-
-// 🔥 GA4 EVENT TRACKING
 function trackEvent(eventName, params = {}) {
 
     if (typeof gtag !== "undefined") {
@@ -23,51 +24,67 @@ function trackEvent(eventName, params = {}) {
 
 }
 
-/* ========================================
-   🌐 APP READY
-======================================== */
 
-console.log("🚀 Bootstrap loaded");
+// ========================================
+// CONFIGURATION
+// ========================================
 
-console.log("SchoolService on window:", window.SchoolService);
+function buildAppConfig() {
+
+    const config = SchoolService.getConfig();
+    const data = SchoolService.getData();
+
+    return {
+
+        ...config,
+
+        dataURL: data.workoutApiURL,
+        submitURL: data.submitApiURL
+
+    };
+
+}
+
+
+// ========================================
+// APP READY
+// ========================================
+
+console.log("🚀 Bootstrap Loaded");
 
 window.APP_READY = new Promise(async (resolve, reject) => {
 
     try {
 
-        console.log("1️⃣ SchoolService...");
+        if (!window.SchoolService) {
+            throw new Error(
+                "SchoolService was not loaded before bootstrap."
+            );
+        }
 
-        const schoolService = window.SchoolService;
+        console.log("📚 Loading School Configuration...");
 
-if (!schoolService) {
-    throw new Error("SchoolService was not loaded before bootstrap.");
-}
+        const appConfig = buildAppConfig();
 
-const school = schoolService.getSchoolKey();
+        window.APP_CONFIG = appConfig;
 
-const data = schoolService.getData();
-
-const appConfig = {
-    ...schoolService.getConfig(),
-
-    dataURL: data.workoutApiURL,
-    submitURL: data.submitApiURL
-};
-
-
-window.APP_CONFIG = appConfig;
-
-        console.log("3️⃣ ThemeService...");
+        console.log("🎨 Applying Theme...");
 
         await ThemeService.apply(appConfig);
 
-        console.log("4️⃣ APP READY");
+        console.log(
+            "✅ App Ready:",
+            appConfig.branding.displayName
+        );
 
         resolve(appConfig);
 
     } catch (err) {
 
-        console.error("BOOTSTRAP FAILED", err);
+        console.error(
+            "❌ Bootstrap Failed",
+            err
+        );
 
         reject(err);
 
@@ -76,26 +93,32 @@ window.APP_CONFIG = appConfig;
 });
 
 
- 
-/* ========================================
-   🔐 GLOBAL LOGOUT
-======================================== */
+// ========================================
+// GLOBAL LOGOUT
+// ========================================
 
 window.logout = () => NavigationService.logout();
 
-/* ========================================
-   🚨 FAIL SAFE
-======================================== */
+
+// ========================================
+// FAIL SAFE
+// ========================================
 
 window.APP_READY.catch(() => {
-  document.body.innerHTML = `
-    <div style="display:flex;justify-content:center;align-items:center;height:100vh;">
-      <div>
-        <h1>⚠️ System Error</h1>
-        <p>Unable to load configuration</p>
-      </div>
-    </div>
-  `;
+
+    document.body.innerHTML = `
+        <div style="
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+            text-align:center;
+        ">
+            <div>
+                <h1>⚠️ System Error</h1>
+                <p>Unable to load application configuration.</p>
+            </div>
+        </div>
+    `;
+
 });
-
-

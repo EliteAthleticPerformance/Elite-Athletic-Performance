@@ -1,8 +1,17 @@
+// ========================================
+// TIMELINE SERVICE
+// ========================================
+
 window.TimelineService = window.TimelineService || {};
 const TimelineService = window.TimelineService;
 
 const S = window.TimerState;
 
+// ========================================
+// CACHED UI ELEMENTS
+// ========================================
+
+const UI = {};
 
 
 // ========================================
@@ -12,10 +21,9 @@ const S = window.TimerState;
 function addTimelineSegment(
     phase,
     duration,
-    set = 0,
-    displaySet = 0,
-    rotation = 0,
-    workoutIndex = 0
+    rowIndex,
+    displaySet,
+    rotation = 0
 ) {
 
     S.timelineData.push({
@@ -23,15 +31,30 @@ function addTimelineSegment(
         phase,
         duration,
 
-        set,
+        rowIndex,
         displaySet,
-        rotation,
+        rotation
 
-        workoutIndex
     });
 
 }
 
+
+// ========================================
+// CACHE UI ELEMENTS
+// ========================================
+
+function cacheElements() {
+
+    UI.container =
+        document.getElementById("timelineSegments");
+
+}
+
+
+// ========================================
+// BUILD TIMELINE
+// ========================================
 
 function buildTimeline() {
 
@@ -39,91 +62,123 @@ function buildTimeline() {
 
     S.timelineData = [];
 
-    addTimelineSegment(
-    "dress",
-    WorkoutService.getDressDuration(),
-    1,
-    1,
-    0,
-    1
-);
+    // ------------------------------------
+    // Dress
+    // ------------------------------------
 
-const stretchDuration = WorkoutService.getStretchDuration();
-
-if (stretchDuration > 0) {
     addTimelineSegment(
-        "stretch",
-        stretchDuration,
-        1,
-        1,
+        TIMER_PHASES.DRESS,
+        WorkoutService.getDressDuration(),
         0,
-        1
+        1,
+        0
     );
-}
 
-   
-let displaySet = 1;
-let workoutIndex = 0;
+    // ------------------------------------
+    // Stretch
+    // ------------------------------------
 
-S.workoutData.forEach((item) => {
+    const stretchDuration =
+        WorkoutService.getStretchDuration();
 
-    if (item.type === "set") {
+    if (stretchDuration > 0) {
 
-        workoutIndex++;
+        addTimelineSegment(
+            TIMER_PHASES.STRETCH,
+            stretchDuration,
+            0,
+            1,
+            0
+        );
 
-        for (let r = 0; r < WorkoutService.config.maxRotations; r++) {
+    }
 
-            addTimelineSegment(
+    let displaySet = 1;
 
-                "work",
+    S.workoutData.forEach((item, rowIndex) => {
 
-                WorkoutService.getWorkDuration(item),
+        if (item.type === "set") {
 
-                workoutIndex,
-                displaySet,
-                r,
-                workoutIndex
-            );
+            for (
 
-            if (r < WorkoutService.config.maxRotations - 1) {
+                let rotation = 0;
+
+                rotation < WorkoutService.config.maxRotations;
+
+                rotation++
+
+            ) {
 
                 addTimelineSegment(
 
-                    "rotate",
+                    TIMER_PHASES.WORK,
 
-                    WorkoutService.getRotateDuration(item),
+                    WorkoutService.getWorkDuration(item),
 
-                    workoutIndex,
+                    rowIndex,
+
                     displaySet,
-                    r,
-                    workoutIndex
+
+                    rotation
+
                 );
+
+                if (
+                    rotation <
+                    WorkoutService.config.maxRotations - 1
+                ) {
+
+                    addTimelineSegment(
+
+                        TIMER_PHASES.ROTATE,
+
+                        WorkoutService.getRotateDuration(item),
+
+                        rowIndex,
+
+                        displaySet,
+
+                        rotation + 1
+
+                    );
+
+                }
+
             }
+
+            displaySet++;
+
         }
 
-        displaySet++;
-    }
+        else if (item.type === "break") {
 
-    else if (item.type === "break") {
+            addTimelineSegment(
 
-        addTimelineSegment(
+                TIMER_PHASES.BREAK,
 
-            "break",
+                item.breakSec ??
+                WorkoutService.getBreakDuration(),
 
-            item.breakSec ?? WorkoutService.getBreakDuration(),
+                rowIndex,
 
-            workoutIndex,
-            displaySet,
-            0,
-            workoutIndex
-        );
-    }
+                displaySet,
 
-});
+                0
 
-    TimelineService.render();// ✅ correct place
+            );
+
+        }
+
+    });
+
+    renderTimeline();
+
 }
 
+
+// ========================================
+// RESTORE WORKOUT STATE
+// ========================================
 
 function getWorkoutState(elapsedSeconds) {
 
@@ -131,111 +186,248 @@ function getWorkoutState(elapsedSeconds) {
 
     for (let i = 0; i < S.timelineData.length; i++) {
 
-    const segment = S.timelineData[i];
+        const segment = S.timelineData[i];
 
         if (elapsed < segment.duration) {
 
             return {
 
                 phase: segment.phase,
-                timeLeft: segment.duration - elapsed,
 
-                currentSet: segment.set,
-                displaySetNumber: segment.displaySet,
-                rotationCount: segment.rotation,
-                workoutIndex: segment.workoutIndex,
+                timeLeft:
+                    segment.duration - elapsed,
 
-                segmentIndex: i,
-                elapsedInSegment: elapsed,
+                currentSet:
+                    segment.rowIndex,
+
+                displaySetNumber:
+                    segment.displaySet,
+
+                rotationCount:
+                    segment.rotation,
+
+                segmentIndex:
+                    i,
+
+                elapsedInSegment:
+                    elapsed,
 
                 segment
+
             };
+
         }
 
         elapsed -= segment.duration;
+
     }
 
     return {
 
-        phase: "cooldown",
+        phase: TIMER_PHASES.COOLDOWN,
 
         timeLeft: 0,
 
-        currentSet: S.workoutData.length,
+        currentSet:
+            S.workoutData.length,
 
-        displaySetNumber: WorkoutService.getTotalSets(),
+        displaySetNumber:
+            WorkoutService.getTotalSets(),
 
         rotationCount: 0,
 
-        workoutIndex: S.workoutData.length,
-
-        segmentIndex: S.timelineData.length - 1,
+        segmentIndex:
+            S.timelineData.length - 1,
 
         elapsedInSegment: 0
+
     };
+
 }
 
-    
 
+// ========================================
+// RENDER TIMELINE
+// ========================================
 
 function renderTimeline() {
-    const container = document.getElementById("timelineSegments");
-    if (!container) return;
+
+    const container = UI.container;
+
+if (!container) return;
 
     container.innerHTML = "";
 
-    const total = S.timelineData.reduce((sum, seg) => sum + seg.duration, 0);
+    const totalDuration =
+        S.timelineData.reduce(
+            (sum, segment) => sum + segment.duration,
+            0
+        );
 
-    if (!total) return;
+    if (!totalDuration) return;
 
-    S.timelineData.forEach((seg, index) => {
-        
-        const div = document.createElement("div");
+    S.timelineData.forEach((segment, index) => {
 
-        div.classList.add("timeline-segment", `seg-${seg.phase}`);
+        const div =
+            document.createElement("div");
 
-        const percent = (seg.duration / total) * 100;
-        div.style.width = percent + "%";
+        div.classList.add(
+            "timeline-segment",
+            `seg-${segment.phase}`
+        );
+
+        const fill =
+            document.createElement("div");
+
+        fill.classList.add(
+            "segment-fill"
+        );
+
+        const label =
+            document.createElement("div");
+
+        label.classList.add(
+            "segment-label"
+        );
+
+        switch (segment.phase) {
+
+            case TIMER_PHASES.WORK:
+                label.textContent = "SET";
+                break;
+
+            case TIMER_PHASES.ROTATE:
+                label.textContent = "ROTATE";
+                break;
+
+            case TIMER_PHASES.BREAK:
+                label.textContent = "BREAK";
+                break;
+
+            case TIMER_PHASES.STRETCH:
+                label.textContent = "STRETCH";
+                break;
+
+            case TIMER_PHASES.DRESS:
+                label.textContent = "DRESS";
+                break;
+
+            case TIMER_PHASES.COOLDOWN:
+                label.textContent = "COOLDOWN";
+                break;
+
+            default:
+                label.textContent =
+                    segment.phase.toUpperCase();
+
+        }
+
+        div.appendChild(fill);
+        div.appendChild(label);
+
+        div.style.width =
+            (segment.duration / totalDuration) * 100 + "%";
 
         div.dataset.index = index;
 
         container.appendChild(div);
+
     });
+
 }
+
+
+// ========================================
+// UPDATE ACTIVE SEGMENT
+// ========================================
+
 
 
 function updateSegmentHighlight() {
-    if (!S.classStartTime) return;
 
-    const now =
-    ScheduleService.getEffectiveNow().getTime();
+    console.log({
+    classStartTime: S.classStartTime,
+    totalSeconds: S.totalSeconds,
+    currentPhase: S.currentPhase
+});
+
+    if (!S.timelineData.length) return;
+
     let elapsed =
-    (now - S.classStartTime) / 1000;
+    S.originalTotalSeconds -
+    S.totalSeconds;
 
-    let currentIndex = -1;
+elapsed = Math.max(0, elapsed);
+
+    let currentIndex = 0;
+    let elapsedInSegment = 0;
 
     for (let i = 0; i < S.timelineData.length; i++) {
+
         if (elapsed < S.timelineData[i].duration) {
+
             currentIndex = i;
+            elapsedInSegment = elapsed;
             break;
+
         }
+
         elapsed -= S.timelineData[i].duration;
+
     }
 
-    if (currentIndex === -1) {
-    document.querySelectorAll(".timeline-segment").forEach(el => {
-        el.classList.remove("active");
-    });
-    return;
+    document
+        .querySelectorAll(".timeline-segment")
+        .forEach((element, index) => {
+
+            const fill =
+                element.querySelector(".segment-fill");
+
+            if (!fill) return;
+
+            element.classList.toggle(
+                "active",
+                index === currentIndex
+            );
+
+            if (index < currentIndex) {
+
+                fill.style.width = "100%";
+
+            }
+
+            else if (index > currentIndex) {
+
+                fill.style.width = "0%";
+
+            }
+
+            else {
+
+                const percent =
+
+                    (
+                        elapsedInSegment /
+                        S.timelineData[index].duration
+                    ) * 100;
+
+                fill.style.width =
+                    Math.min(percent, 100) + "%";
+
+            }
+
+        });
+
 }
 
-    document.querySelectorAll(".timeline-segment").forEach((el, i) => {
-        el.classList.toggle("active", i === currentIndex);
-    });
-}
 
+
+// ========================================
+// PUBLIC API
+// ========================================
 
 TimelineService.build = buildTimeline;
-TimelineService.getWorkoutState = getWorkoutState;
 TimelineService.render = renderTimeline;
+TimelineService.cacheElements = cacheElements;
 TimelineService.updateHighlight = updateSegmentHighlight;
+TimelineService.getWorkoutState = getWorkoutState;

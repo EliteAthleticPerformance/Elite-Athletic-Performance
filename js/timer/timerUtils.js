@@ -1,91 +1,36 @@
-function getTotalSets() {
-    return window.workoutData.filter(item => item.type === "set").length;
-}
+"use strict";
 
+// ========================================
+// TIMER UTILITIES
+// Shared helper functions used throughout
+// the timer application.
+// ========================================
 
-function resetWorkoutState() {
+window.TimerUtils = {
 
-    /* ---------- SET TRACKING ---------- */
+    // ========================================
+    // FORMAT TIME (seconds → MM:SS)
+    // ========================================
 
-    displaySetNumber = 1;
-    currentSet = 1;
-    rotationCount = 0;
+    formatTime(seconds) {
 
-    /* ---------- PHASE STATE ---------- */
+        const safeSeconds =
+            Math.max(0, Math.floor(seconds));
 
-    currentPhase = TIMER_PHASES.DRESS;
-    phaseJustChanged = false;
+        const minutes =
+            Math.floor(safeSeconds / 60);
 
-    /* ---------- AUDIO / WARNINGS ---------- */
+        const remainingSeconds =
+            safeSeconds % 60;
 
-    dressWarningSpoken = false;
-    lastCountdownSpoken = null;
-
-}
-
-
- function getNextSetIndex() {
-
-    // Start searching AFTER currentSet
-    for (let i = currentSet; i < workoutData.length; i++) {
-
-        const item = workoutData[i];
-
-        if (item?.type === "set") {
-            return i + 1; // Convert to 1-based index
-        }
+        return (
+            String(minutes).padStart(2, "0") +
+            ":" +
+            String(remainingSeconds).padStart(2, "0")
+        );
 
     }
 
-    // No more sets found
-    return null;
-
-}
+};
 
 
-/* ======================================================
-   TIME HELPERS
-====================================================== */
-
-function formatTime(seconds) {
-
-    const minutes = Math.floor(seconds / 60);
-
-    return (
-        String(minutes).padStart(2, "0") +
-        ":" +
-        String(seconds % 60).padStart(2, "0")
-    );
-
-}
-
-function getSyncedNow() {
-    return new Date(Date.now() + timeOffset);
-}
-
-function syncClockOffset() {
-
-    if (DEBUG_TIMER) {
-        console.trace("⏱ syncClockOffset called");
-    }
-
-    if (!window.serverTime) {
-        console.warn("⚠️ No server time found");
-        return;
-    }
-
-    const serverNow = new Date(window.serverTime);
-
-    if (isNaN(serverNow.getTime())) {
-        console.warn("⚠️ Invalid server time:", window.serverTime);
-        return;
-    }
-
-    timeOffset = serverNow.getTime() - Date.now();
-
-    if (DEBUG_TIMER) {
-        console.log("🕒 Server time:", window.serverTime);
-        console.log("⏱ Clock offset (ms):", timeOffset);
-    }
-
-}

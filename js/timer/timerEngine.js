@@ -1,3 +1,6 @@
+(() => {
+
+
 // ========================================
 // TIMER ENGINE
 // ========================================
@@ -14,22 +17,102 @@ const S = window.TimerState;
 
 function transitionToPhase(phase, duration) {
 
-    console.log(
-        "Transition:",
-        S.currentPhase,
-        "→",
-        phase,
-        "duration:",
-        duration
-    );
-
+    
     S.currentPhase = phase;
     S.timeLeft = duration;
-    S.phaseJustChanged = true;
-
     S.lastCountdownSpoken = null;
 }
 
+
+function startTimer(isResume = false) {
+
+  stopAllTimers();
+  
+    // Safety: require workout
+    if (!S.workoutData.length) {
+
+    console.warn("Workout not loaded.");
+
+    return;
+
+}
+
+    // Initialize audio once
+    if (!S.audioCtx) {
+        S.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    
+/* ---------- START STATE ---------- */
+    S.isRunning = true;
+    
+
+const totalTime =
+    WorkoutService.calculateTotalTime();
+
+S.totalSeconds = totalTime;
+S.originalTotalSeconds = totalTime;
+
+TimerUI.setStartButton("STOP");
+
+ if (!isResume) {
+
+    WorkoutService.prepareSession();
+
+}
+
+    // Shared code (runs for BOTH new and resumed workouts)
+    TimerUI.refresh();
+
+    S.nextTickTime = Date.now() + 1000;
+    S.timer = setTimeout(preciseTick, 1000);
+}
+
+
+
+// ========================================
+// RESUME WORKOUT
+// ========================================
+
+function resumeWorkout(elapsedSeconds) {
+
+    const state =
+        TimelineService.getWorkoutState(elapsedSeconds);
+
+    if (!state) {
+        console.warn("Unable to restore workout state.");
+        return;
+    }
+
+    WorkoutService.restoreWorkoutState(state);
+
+    S.totalSeconds = Math.max(
+        S.classBlockLength - elapsedSeconds,
+        1
+    );
+
+    S.originalTotalSeconds = S.classBlockLength;
+
+    TimelineService.updateHighlight();
+    
+    TimerUI.refresh();
+
+    }
+
+
+ function stopAllTimers() {
+
+    if (S.timer) {
+    clearTimeout(S.timer);
+    S.timer = null;
+}
+
+    S.nextTickTime = null; // prevents drift on restart
+
+    S.isRunning = false;
+
+    TimerUI.setStartButton("START");
+}
 
 
 function preciseTick() {
@@ -53,192 +136,47 @@ function preciseTick() {
 
  }
 
- // ========================================
-// UI REFRESH
-// ========================================
-
-function refreshUI() {
-
-    updatePhaseDisplay();
-    updateClock();
-    updateTotalDisplay();
-
-}
-
-
-function startTimer(isResume = false) {
-
-  stopAllTimers();
-  
-    // Safety: require workout
-    if (!S.workoutData.length) {
-        console.warn("Workout not loaded yet.");
-        return;
-    }
-
-    // Initialize audio once
-    if (!S.audioCtx) {
-        S.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-
-    // Toggle stop if already running
-    if (S.isRunning) {
-        stopAllTimers();
-        return;
-    }
-
-/* ---------- START STATE ---------- */
-    S.isRunning = true;
-    
-
-const totalTime =
-    WorkoutService.calculateTotalTime();
-
-S.totalSeconds = totalTime;
-S.originalTotalSeconds = totalTime;
-
-document.getElementById("startBtn").innerText = "STOP";
-
- if (!isResume) {
-
-        console.log("🟢 Starting New Workout");
-
-    // FULL RESET
-WorkoutService.prepareSession();
-
-     
- } else {
-
-        console.log("🔄 Resume Mode");
-
- }
-
-    // Shared code (runs for BOTH new and resumed workouts)
-    refreshUI();
-
-    S.nextTickTime = Date.now() + 1000;
-    S.timer = setTimeout(preciseTick, 1000);
-}
-
-
-
-// ========================================
-// RESUME WORKOUT
-// ========================================
-
-function resumeWorkout(elapsedSeconds) {
-
-    const state =
-        TimelineService.getWorkoutState(elapsedSeconds);
-
-    if (!state) {
-        console.warn("Unable to restore workout state.");
-        return;
-    }
-
-    console.log("🔄 Restoring Workout", state);
-
-    WorkoutService.restoreWorkoutState(state);
-
-    S.totalSeconds = Math.max(
-        S.classBlockLength - elapsedSeconds,
-        1
-    );
-
-    S.originalTotalSeconds = S.classBlockLength;
-
-    refreshUI();
-
-    TimelineService.updateHighlight();
-
-    console.log(
-        "✅ Resume:",
-        S.currentPhase,
-        "Set:",
-        S.currentSet,
-        "Rotation:",
-        S.rotationCount,
-        "Time Left:",
-        S.timeLeft
-    );
-}
-
-
-
- function stopAllTimers() {
-
-    if (S.timer) {
-    clearTimeout(S.timer);
-    S.timer = null;
-}
-
-    S.nextTickTime = null; // prevents drift on restart
-
-    S.isRunning = false;
-    document.getElementById("startBtn").innerText = "START";
-}
-
 
 function tick() {
 
+    console.log(
+    "Tick",
+    {
+        phase: S.currentPhase,
+        timeLeft: S.timeLeft,
+        rotation: S.rotationCount,
+        total: S.totalSeconds
+    }
+);
+
     if (!S.isRunning) return;
-
-    S.phaseJustChanged = false;
-
-    // ========================================
-    // MASTER CLASS TIMER
-    // ========================================
 
     if (!updateMasterClock()) return;
 
-    // ========================================
-    // PHASE TIMER
-    // ========================================
-
     updatePhaseClock();
-
-    // ========================================
-    // COUNTDOWN ANNOUNCEMENTS
-    // ========================================
 
     handleCountdownSpeech();
 
-    // ========================================
-    // UPDATE CLOCK
-    // ========================================
+    if (S.timeLeft <= 0) {
 
-    updateClock();
+        console.log(
+            "Set:",
+            S.currentSet,
+            "Rotation:",
+            S.rotationCount
+        );
 
-    // ========================================
-    // WAIT FOR PHASE TO END
-    // ========================================
+        PhaseService.handleCurrentPhase();
 
-    if (S.timeLeft > 0) return;
-
-    console.log(
-        "Set:",
-        S.currentSet,
-        "Rotation:",
-        S.rotationCount
-    );
-
-    // ========================================
-    // PHASE TRANSITION
-    // ========================================
-
-    PhaseService.handleCurrentPhase();
-
-    // ========================================
-    // REFRESH UI
-    // ========================================
-
-    if (S.phaseJustChanged) {
-        refreshUI();
     }
+
+    // Always update visuals after state changes
+    TimelineService.updateHighlight();
+    TimerUI.refresh();
 
 }
 
-
+   
 function updateMasterClock() {
 
     if (S.totalSeconds <= 0) {
@@ -250,8 +188,6 @@ function updateMasterClock() {
         0,
         S.totalSeconds - 1
     );
-
-    updateTotalDisplay();
 
     return true;
 
@@ -278,7 +214,7 @@ function handleCountdownSpeech() {
         !S.dressWarningSpoken
     ) {
 
-        speakDressWarning();
+        AudioService.speakDressWarning();
 
         S.dressWarningSpoken = true;
 
@@ -292,26 +228,12 @@ function handleCountdownSpeech() {
         S.lastCountdownSpoken !== S.timeLeft
     ) {
 
-        speakNumber(S.timeLeft);
+        AudioService.speakNumber(S.timeLeft);
 
         S.lastCountdownSpoken = S.timeLeft;
 
     }
 
-}
-
-
-function syncTime() {
-
-    if (S.isRunning) return;
-
-    
-    S.timeLeft = WorkoutService.getPhaseDuration(S.currentPhase);
-
-S.totalSeconds = S.classBlockLength;
-S.originalTotalSeconds = S.classBlockLength;
-
-refreshUI();
 }
 
 
@@ -332,21 +254,23 @@ function startCooldown() {
         cooldown
     );
 
-    speakCooldown?.();
+    AudioService.speakCooldown();
 
-    refreshUI();
+    TimerUI.refresh();
 
-    console.log("🧘 Starting Cooldown:", cooldown);
-
-}
+    }
 
 
 function workoutFinishScreen() {
 
     TimerEngine.stop();
 
-    document.getElementById("phase").innerText =
-        "WORKOUT COMPLETE";
+    S.currentPhase = TIMER_PHASES.COOLDOWN;
+
+    S.timeLeft = 0;
+    S.totalSeconds = 0;
+
+    TimerUI.refresh();
 
 }
 
@@ -358,7 +282,9 @@ function workoutFinishScreen() {
 TimerEngine.start = startTimer;
 TimerEngine.resumeWorkout = resumeWorkout;
 TimerEngine.stop = stopAllTimers;
-TimerEngine.syncTime = syncTime;
 TimerEngine.startCooldown = startCooldown;
 TimerEngine.transition = transitionToPhase;
 TimerEngine.finishWorkout = workoutFinishScreen;
+
+
+})();

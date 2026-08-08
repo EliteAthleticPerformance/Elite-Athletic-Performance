@@ -1,10 +1,9 @@
-console.log("🔥 WORKOUT SERVICE VERSION 2", Math.random());
+(() => {
 
 window.WorkoutService = window.WorkoutService || {};
 const WorkoutService = window.WorkoutService;
 
 const S = window.TimerState;
-
 
 
 // ========================================
@@ -30,6 +29,94 @@ WorkoutService.config = {
 
 };
 
+
+function loadSetData(rowIndex) {
+
+    const workout = S.workoutData[rowIndex];
+
+    if (!workout || workout.type !== "set") {
+        return;
+    }
+
+    PreviewService.renderSetData(workout);
+
+}
+
+
+/* ======================================================
+   WORK DURATION (seconds)
+====================================================== */
+
+function getWorkDuration(item = null) {
+
+    // Default to current workout item
+    if (!item) {
+        item = S.workoutData[S.currentSet];
+    }
+
+    // Per-set override
+    if (item?.workSec != null) {
+        return item.workSec;
+    }
+
+    // Sheet/global configuration
+    if (S.sheetWorkDuration != null) {
+        return S.sheetWorkDuration;
+    }
+
+    // Final fallback
+    return WorkoutService.config.workSeconds;
+
+}
+
+
+function getRotateDuration(item = null) {
+
+    if (!item) {
+        item = S.workoutData[S.currentSet];
+    }
+
+    if (item?.rotateSec != null) {
+        return item.rotateSec;
+    }
+
+    if (S.sheetRotateDuration != null) {
+        return S.sheetRotateDuration;
+    }
+
+    return WorkoutService.config.rotateSeconds;
+
+}
+
+
+
+
+
+/* ======================================================
+   RESET WORKOUT POSITION
+====================================================== */
+
+function resetWorkoutPosition() {
+
+    S.currentSet = 0;
+    S.displaySetNumber = 1;
+    S.rotationCount = 0;
+}
+
+
+function refreshWorkoutPosition() {
+
+    TimerUI.applyRotationState(S.rotationCount);
+
+    if (S.workoutData[S.currentSet]?.type === "set") {
+    WorkoutService.loadSetData(S.currentSet);
+}
+}
+
+
+/* ======================================================
+   START TIMER (INITIAL RESET DEFAULTS)
+====================================================== */
 
 function parseCSV(text) {
     return text
@@ -103,12 +190,6 @@ async function loadWorkout() {
 
 function logWorkoutLoad(text, rows) {
 
-    console.log("CSV length:", text.length);
-
-    console.log("Row 0:", rows[0]);
-    console.log("Row 0 first cell:", rows[0]?.[0]);
-    console.log("Row 0 second cell:", rows[0]?.[1]);
-
     const DEBUG = true;
 
     if (DEBUG) {
@@ -116,10 +197,7 @@ function logWorkoutLoad(text, rows) {
         console.log("First rows:", rows.slice(0, 10));
     }
 
-    console.log("Rows parsed:", rows.length);
-    console.log("First 10 rows:", rows.slice(0, 10));
-
-}
+    }
 
 
 function logWorkoutSummary() {
@@ -140,51 +218,67 @@ function handleServerTimeRow(firstCell, r) {
 
     window.serverTime = cleanCell(r[1]);
 
-    console.log("🕒 Server time:", window.serverTime);
-
     return true;
 }
 
-function handleBreakRow(firstCell, r) {
 
-    if (!r || r.length === 0) {
+function handleControlRow(firstCell, r) {
 
-        S.workoutData.push({
-            type: "break",
-            breakSec: S.breakDuration
-        });
+    const value = cleanCell(r[1]);
 
-        console.log("📥 Empty CSV row → break inserted");
+    switch (firstCell) {
 
-        return true;
-    }
+        case "control_action":
 
-    if (isEffectivelyBlankRow(r)) {
+            S.controlAction = value;
+            return true;
 
-        S.workoutData.push({
-            type: "break",
-            breakSec: S.breakDuration
-        });
+        case "control_timestamp":
 
-        return true;
-    }
+            S.controlTimestamp = value;
+            return true;
 
-    if (firstCell.replace(/\s+/g, "") === "break") {
+        case "control_phase":
 
-        const breakSec =
-        parseSheetNumber(r[10], getBreakDuration());
+            S.controlPhase = value;
+            return true;
 
-        S.workoutData.push({
-            type: "break",
-            breakSec
-        });
+        case "control_set":
 
-        console.log("📥 Explicit break parsed:", breakSec);
+            S.controlSet =
+                parseSheetNumber(value, 0);
 
-        return true;
+            return true;
+
+        case "control_rotation":
+
+            S.controlRotation =
+                parseSheetNumber(value, 0);
+
+            return true;
+
     }
 
     return false;
+
+}
+
+
+function handleBreakRow(firstCell, r) {
+
+    if (firstCell.replace(/\s+/g, "") !== "break") {
+        return false;
+    }
+
+    const breakSec =
+        parseSheetNumber(r[10], getBreakDuration());
+
+    S.workoutData.push({
+        type: "break",
+        breakSec
+    });
+
+    return true;
 }
 
 
@@ -317,21 +411,23 @@ function handleScheduleRow(firstCell, r) {
 function handleTimingRow(firstCell, r) {
 
     if (
-        firstCell === "dress_seconds" ||
-        firstCell === "dress" ||
-        firstCell === "get_dressed" ||
-        firstCell === "get_dress"
-    ) {
-        const v = parseSheetNumber(r[1]);
+    firstCell === "dress_seconds" ||
+    firstCell === "dress" ||
+    firstCell === "get_dressed" ||
+    firstCell === "get_dress"
+) {
 
-        if (v !== null) {
-            S.dressOutDuration = v;
-            WorkoutService.config.dressSeconds = v;
-            console.log("📥 Dress time:", S.dressOutDuration);
+    const v = parseSheetNumber(r[1]);
+
+    if (v !== null) {
+
+        S.dressOutDuration = v;
+        WorkoutService.config.dressSeconds = v;
+
         }
 
-        return true;
-    }
+    return true;
+}
 
     if (firstCell === "stretch_seconds") {
         const v = parseSheetNumber(r[1]);
@@ -339,8 +435,7 @@ function handleTimingRow(firstCell, r) {
         if (v !== null) {
             S.dynamicStretchDuration = v;
             WorkoutService.config.stretchSeconds = v;
-            console.log("📥 Stretch time:", S.dynamicStretchDuration);
-        }
+            }
 
         return true;
     }
@@ -351,8 +446,7 @@ function handleTimingRow(firstCell, r) {
         if (v !== null) {
             S.sheetWorkDuration = v;
             WorkoutService.config.workSeconds = v;
-            console.log("📥 Work time:", S.sheetWorkDuration);
-        }
+            }
 
         return true;
     }
@@ -363,8 +457,7 @@ function handleTimingRow(firstCell, r) {
         if (v !== null) {
             S.sheetRotateDuration = v;
             WorkoutService.config.rotateSeconds = v;
-            console.log("📥 Rotate time:", S.sheetRotateDuration);
-        }
+            }
 
         return true;
     }
@@ -375,8 +468,7 @@ function handleTimingRow(firstCell, r) {
         if (v !== null) {
             S.breakDuration = v;
             WorkoutService.config.breakSeconds = v;
-            console.log("📥 Break time:", S.breakDuration);
-        }
+            }
 
         return true;
     }
@@ -389,29 +481,32 @@ function getDressDuration() {
     return WorkoutService.config.dressSeconds;
 }
 
+
 function getStretchDuration() {
     return WorkoutService.config.stretchSeconds;
 }
 
+
 function getBreakDuration() {
     return WorkoutService.config.breakSeconds;
 }
+
 
 function getCooldownDuration() {
     return WorkoutService.config.cooldownSeconds;
 }
 
 
-function getNextSetIndex() {
+function getNextSetRow() {
 
     for (
-        let i = S.currentSet;
+        let i = S.currentSet + 1;
         i < S.workoutData.length;
         i++
     ) {
 
-        if (S.workoutData[i]?.type === "set") {
-            return i + 1;
+        if (S.workoutData[i].type === "set") {
+            return i;
         }
 
     }
@@ -459,6 +554,8 @@ const RowParsers = [
 
     (firstRaw, firstCell, row) => handleServerTimeRow(firstCell, row),
 
+    (firstRaw, firstCell, row) => handleControlRow(firstCell, row),
+
     (firstRaw, firstCell, row) => handleBreakRow(firstCell, row),
 
     (firstRaw, firstCell, row) => handleConfigRow(firstCell, row),
@@ -477,7 +574,7 @@ const RowParsers = [
 function processWorkoutRows(rows) {
 
     for (const row of rows) {
-
+            
         const firstRaw = cleanCell(row[0]);
         const firstCell = firstRaw.toLowerCase();
 
@@ -497,21 +594,37 @@ function processWorkoutRows(rows) {
 
 }
 
+
 function preloadFirstSet() {
+
     if (!S.workoutData.length) return;
-    loadSetData(1);
+
+    WorkoutService.loadSetData(0);
+
 }
 
 
 function finishWorkoutLoad() {
 
-    preloadFirstSet();
+    resetWorkoutPosition();
 
-    TimelineService.build();
+    refreshWorkoutPosition();
+
+    if (window.CoachService?.buildButtons) {
+        CoachService.buildButtons();
+    }
+
+    console.table(
+        S.workoutData.map((row, i) => ({
+            index: i,
+            type: row.type,
+            core: row.core,
+            breakSec: row.breakSec
+        }))
+    );
 
     ScheduleService.applyDaySpecificClassLength();
-    ScheduleService.startAutoScheduler();
-
+    
 if (typeof syncClockOffset === "function") {
     syncClockOffset();
 }
@@ -522,7 +635,11 @@ if (typeof syncClockOffset === "function") {
     S.totalSeconds = finalTotal;
     S.originalTotalSeconds = finalTotal;
 
-    updateTotalDisplay();
+    if (window.CoachService?.applyControl) {
+
+    CoachService.applyControl();
+
+}
 
 }
 
@@ -614,35 +731,11 @@ for (let i = 0; i < rotations; i++) {
 function beginWorkout() {
 
     S.rotationCount = 0;
-    S.currentSet = 1;
+    S.currentSet = 0;
     S.displaySetNumber = 1;
 
     WorkoutService.loadSetData(S.currentSet);
 
-}
-
-
-
-// ========================================
-// DURATION HELPERS
-// ========================================
-
-function getWorkDuration(item = null) {
-
-    if (item?.workSec != null) {
-        return item.workSec;
-    }
-
-    return WorkoutService.config.workSeconds;
-}
-
-function getRotateDuration(item = null) {
-
-    if (item?.rotateSec != null) {
-        return item.rotateSec;
-    }
-
-    return WorkoutService.config.rotateSeconds;
 }
 
 
@@ -675,8 +768,6 @@ function calculateTotalTime() {
 
     WorkoutService.config.cooldownSeconds = cooldown;
 
-console.log("Cooldown calculated:", cooldown);
-
    /* ---------- FINAL TOTAL (ALWAYS CLASS LENGTH) ---------- */
     return S.classBlockLength;
 }
@@ -684,13 +775,14 @@ console.log("Cooldown calculated:", cooldown);
 
 function resetState() {
 
-    S.currentSet = 1;
+    S.currentSet = 0;
     S.displaySetNumber = 1;
     S.rotationCount = 0;
 
     S.currentPhase = TIMER_PHASES.DRESS;
 
-    S.phaseJustChanged = false;
+    S.timeLeft = WorkoutService.getDressDuration();
+
     S.dressWarningSpoken = false;
     S.lastCountdownSpoken = null;
 }
@@ -705,79 +797,52 @@ WorkoutService.preloadFirstSet();
 }
 
 
-const PhaseDurationGetters = {
+function getTotalSets() {
 
-    [TIMER_PHASES.DRESS]:
-        WorkoutService.getDressDuration,
+    return S.workoutData.filter(
+        item => item.type === "set"
+    ).length;
 
-    [TIMER_PHASES.STRETCH]:
-        WorkoutService.getStretchDuration,
-
-    [TIMER_PHASES.WORK]:
-        WorkoutService.getWorkDuration,
-
-    [TIMER_PHASES.ROTATE]:
-        WorkoutService.getRotateDuration,
-
-    [TIMER_PHASES.BREAK]:
-        WorkoutService.getBreakDuration,
-
-    [TIMER_PHASES.COOLDOWN]:
-        WorkoutService.getCooldownDuration
-};
-
+}
 
 
 function getPhaseDuration(phase) {
 
-    const getter = PhaseDurationGetters[phase];
+    switch (phase) {
 
-    if (!getter) {
+        case TIMER_PHASES.DRESS:
+            return WorkoutService.getDressDuration();
 
-        console.warn("Unknown phase:", phase);
+        case TIMER_PHASES.STRETCH:
+            return WorkoutService.getStretchDuration();
 
-        return 0;
+        case TIMER_PHASES.WORK:
+            return WorkoutService.getWorkDuration();
 
+        case TIMER_PHASES.ROTATE:
+            return WorkoutService.getRotateDuration();
+
+        case TIMER_PHASES.BREAK:
+            return WorkoutService.getBreakDuration();
+
+        case TIMER_PHASES.COOLDOWN:
+            return WorkoutService.getCooldownDuration();
+
+        default:
+            console.warn("Unknown phase:", phase);
+            return 0;
     }
+}
 
-    return getter();
+
+function advanceToNextRow() {
+
+    S.currentSet++;
+
+    return S.workoutData[S.currentSet] ?? null;
 
 }
 
-
-/* ======================================================
-   LOAD SET INTO QUADRANTS
-====================================================== */
-
-function loadSetData(setNumber) {
-
-    const workout = S.workoutData[setNumber - 1];
-
-    if (!workout || workout.type !== "set") return;
-
-    /* ---------- CORE ---------- */
-    const q1Texts = document.querySelectorAll("#q1 .quad-text");
-    if (q1Texts.length >= 3) {
-        q1Texts[0].innerText = workout.core;
-        q1Texts[1].innerText = "Reps: " + workout.reps;
-        q1Texts[2].innerText =
-            "Percentage: " + (workout.percent ? workout.percent + "%" : "");
-    }
-
-    /* ---------- AUX ---------- */
-    const q2Texts = document.querySelectorAll("#q2 .quad-text");
-    if (q2Texts.length >= 2) {
-        q2Texts[0].innerText = workout.aux;
-        q2Texts[1].innerText = "Reps: " + workout.auxReps;
-    }
-
-    /* ---------- MOVEMENT ---------- */
-    const q4Texts = document.querySelectorAll("#q4 .quad-text");
-    if (q4Texts.length >= 2) {
-        q4Texts[0].innerText = workout.move;
-        q4Texts[1].innerText = "Reps/Time: " + workout.moveReps;
-    }
-}
 
 
 // ========================================
@@ -801,6 +866,8 @@ function restoreWorkoutState(state) {
         WorkoutService.loadSetData(state.currentSet);
     }
 }
+
+
 
 
 // ========================================
@@ -849,7 +916,7 @@ WorkoutService.getCooldownDuration = getCooldownDuration;
 
 WorkoutService.getPhaseDuration = getPhaseDuration;
 
-WorkoutService.getNextSetIndex = getNextSetIndex;
+WorkoutService.getNextSetRow = getNextSetRow;
 
 WorkoutService.preloadFirstSet = preloadFirstSet;
 
@@ -863,4 +930,12 @@ WorkoutService.resetState = resetState;
 
 WorkoutService.restoreWorkoutState = restoreWorkoutState;
 
+WorkoutService.getTotalSets = getTotalSets;
+
+WorkoutService.refreshWorkoutPosition = refreshWorkoutPosition;
+
 WorkoutService.loadSetData = loadSetData;
+
+WorkoutService.advanceToNextRow = advanceToNextRow;
+
+})();

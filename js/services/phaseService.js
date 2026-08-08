@@ -1,7 +1,59 @@
+(() => {
+
+// ========================================
+// PHASE SERVICE
+// ========================================
+
 window.PhaseService = window.PhaseService || {};
 const PhaseService = window.PhaseService;
 
 const S = window.TimerState;
+
+const TIMER_PHASES = window.TIMER_PHASES;
+
+
+// ========================================
+// PHASE TRANSITION
+// ========================================
+
+function gotoPhase(phase, duration = null) {
+
+    console.log({
+    from: S.currentPhase,
+    to: phase,
+    row: S.currentSet,
+    display: S.displaySetNumber,
+    rotation: S.rotationCount
+});
+
+    TimerEngine.transition(
+        phase,
+        duration ?? WorkoutService.getPhaseDuration(phase)
+    );
+
+}
+
+
+function logAdvance(label, nextItem = null) {
+
+    console.group(`➡️ ${label}`);
+
+    console.log("currentSet:", S.currentSet);
+    console.log("displaySetNumber:", S.displaySetNumber);
+    console.log("rotationCount:", S.rotationCount);
+    console.log("phase:", S.currentPhase);
+
+    if (nextItem) {
+        console.log("nextItem:", {
+            type: nextItem.type,
+            core: nextItem.core,
+            breakSec: nextItem.breakSec
+        });
+    }
+
+    console.groupEnd();
+
+}
 
 
 // ========================================
@@ -14,17 +66,7 @@ function handleDressPhase() {
 
     S.dressWarningSpoken = false;
 
-    speakStretch();
-
-}
-
-
-function gotoPhase(phase, duration = null) {
-
-    TimerEngine.transition(
-        phase,
-        duration ?? WorkoutService.getPhaseDuration(phase)
-    );
+    AudioService.speakStretch();
 
 }
 
@@ -39,7 +81,7 @@ function handleStretchPhase() {
 
     gotoPhase(TIMER_PHASES.WORK);
 
-    speakLift();
+    AudioService.speakLift();
 
 }
 
@@ -50,24 +92,137 @@ function handleStretchPhase() {
 
 function handleWorkPhase() {
 
-    rotateQuadrantColors();
+    // ========================================
+    // ADVANCE TO THE NEXT ROTATION
+    // ========================================
 
-    S.rotationCount++;
+    const nextRotation =
+    S.rotationCount + 1;
 
-    // SHOW PREVIEW ON FINAL ROTATION
-    if (S.rotationCount === WorkoutService.config.maxRotations) {
+console.log("Before:", S.rotationCount);
+console.log("Next:", nextRotation);
 
-    const nextSet = WorkoutService.getNextSetIndex();
+TimerUI.applyRotationState(nextRotation);
 
-    if (nextSet) {
-        previewSetData(nextSet);
+S.rotationCount = nextRotation;
+
+console.log("After:", S.rotationCount);
+
+    const isFinalRotation =
+        S.rotationCount >=
+        WorkoutService.config.maxRotations;
+
+    // ========================================
+    // PREVIEW NEXT SET
+    // ========================================
+
+    if (isFinalRotation) {
+
+    const nextRow =
+    WorkoutService.getNextSetRow();
+
+    if (nextRow !== null) {
+    PreviewService.previewSetData(nextRow);
+}
+
     }
 
-} 
+    // ========================================
+    // ENTER ROTATE PHASE
+    // ========================================
 
     gotoPhase(TIMER_PHASES.ROTATE);
 
-    speakRotate();
+    AudioService.speakRotate();
+
+}
+
+   
+// ========================================
+// ADVANCE TO NEXT SECTION
+// ========================================
+
+function advanceToNextSection() {
+
+
+    console.log("========== ADVANCE ==========");
+console.log("currentSet =", S.currentSet);
+console.log("displaySetNumber =", S.displaySetNumber);
+
+
+    S.rotationCount = 0;
+        logAdvance("Before advance");
+    const nextItem = WorkoutService.advanceToNextRow();
+        logAdvance("After advance", nextItem);
+    
+
+
+console.log("nextItem =", nextItem);
+console.log("========== ADVANCE ==========");
+console.log("currentSet =", S.currentSet);
+console.log("nextItem =", nextItem);
+console.table(
+    S.workoutData.map((item, i) => ({
+        index: i,
+        type: item.type,
+        core: item.core
+    }))
+);
+
+    // ------------------------------------
+    // Workout Complete
+    // ------------------------------------
+
+    if (!nextItem) {
+
+        TimerEngine.startCooldown();
+
+        return true;
+
+    }
+
+    if (nextItem.type === "break") {
+
+    const breakDuration = Math.max(
+        1,
+        nextItem.breakSec ??
+        WorkoutService.getBreakDuration()
+    );
+
+    gotoPhase(
+        TIMER_PHASES.BREAK,
+        breakDuration
+    );
+
+    AudioService.speakBreakPrep();
+
+    PreviewService.previewNextSet();
+
+    return true;
+
+}
+
+        
+    // ------------------------------------
+    // Next Set
+    // ------------------------------------
+
+    if (nextItem.type === "set") {
+
+    S.displaySetNumber++;
+
+    WorkoutService.loadSetData(S.currentSet);
+
+    return false;
+
+}
+
+console.warn(
+    "Unexpected workout row:",
+    nextItem
+);
+
+return true;
 
 }
 
@@ -78,52 +233,26 @@ function handleWorkPhase() {
 
 function handleRotatePhase() {
 
-    const finishedRotations =
-    S.rotationCount >= WorkoutService.config.maxRotations;
+    const completedAllRotations =
+        S.rotationCount >=
+        WorkoutService.config.maxRotations;
 
-    if (finishedRotations) {
+    if (completedAllRotations) {
 
-        S.rotationCount = 0;
+        console.log("----------------");
+        console.log("Entering Rotate");
+        console.log("rotationCount =", S.rotationCount);
+        console.log("maxRotations =", WorkoutService.config.maxRotations);
 
-        const nextItem = S.workoutData[S.currentSet] ?? null;
-
-        // 🔴 no more items
-        if (!nextItem) {
-            TimerEngine.startCooldown();
+        if (advanceToNextSection()) {
             return;
         }
 
-        // 🟡 break row
-        if (nextItem.type === "break") {
-
-            S.currentSet++;
-
-        const breakDuration = Math.max(
-        1,
-        nextItem.breakSec || WorkoutService.getPhaseDuration(TIMER_PHASES.BREAK)
-);
-
-            gotoPhase(
-            TIMER_PHASES.BREAK,
-            breakDuration
-);
-
-            speakBreakPrep();
-
-            previewNextSet();
-
-            return;
-        }
-
-        // ✅ next is real set
-        S.currentSet++;
-        S.displaySetNumber++;
-        WorkoutService.loadSetData(S.currentSet);
     }
 
     gotoPhase(TIMER_PHASES.WORK);
 
-    speakLift();
+    AudioService.speakLift();
 
 }
 
@@ -134,29 +263,40 @@ function handleRotatePhase() {
 
 function handleBreakPhase() {
 
-    const nextItem = S.workoutData[S.currentSet] ?? null;
+            logAdvance("Leaving break");
+    // Leave the break row and move to the first workout row.
+    const nextItem = WorkoutService.advanceToNextRow();
+            logAdvance("Entered first workout row", nextItem);
+
 
     if (!nextItem) {
         TimerEngine.startCooldown();
         return;
     }
 
-    // ✅ ONLY advance when next is a set
-    if (nextItem.type === "set") {
-        S.currentSet++;
-        S.displaySetNumber++;
-        WorkoutService.loadSetData(S.currentSet);
+    if (nextItem.type !== "set") {
+
+        console.warn(
+            "Expected first workout after break, got:",
+            nextItem
+        );
+
+        return;
     }
+
+    S.displaySetNumber++;
+
+    WorkoutService.loadSetData(S.currentSet);
 
     gotoPhase(TIMER_PHASES.WORK);
 
-speakLift();
+    AudioService.speakLift();
 
 }
 
 
 // ========================================
-// PHASE HANDLERS
+// PHASE DISPATCH TABLE
 // ========================================
 
 const PhaseHandlers = {
@@ -171,14 +311,20 @@ const PhaseHandlers = {
 
     [TIMER_PHASES.BREAK]: handleBreakPhase,
 
-    [TIMER_PHASES.COOLDOWN]: () => TimerEngine.finishWorkout()
+    [TIMER_PHASES.COOLDOWN]: () =>
+        TimerEngine.finishWorkout()
 
-}
+};
 
+
+// ========================================
+// HANDLE CURRENT PHASE
+// ========================================
 
 function handleCurrentPhase() {
 
-    const handler = PhaseHandlers[S.currentPhase];
+    const handler =
+        PhaseHandlers[S.currentPhase];
 
     if (!handler) {
 
@@ -196,10 +342,19 @@ function handleCurrentPhase() {
 }
 
 
+// ========================================
+// PUBLIC API
+// ========================================
+
+PhaseService.gotoPhase = gotoPhase;
 
 PhaseService.handleDress = handleDressPhase;
 PhaseService.handleStretch = handleStretchPhase;
 PhaseService.handleWork = handleWorkPhase;
 PhaseService.handleRotate = handleRotatePhase;
 PhaseService.handleBreak = handleBreakPhase;
+
 PhaseService.handleCurrentPhase = handleCurrentPhase;
+
+
+})();

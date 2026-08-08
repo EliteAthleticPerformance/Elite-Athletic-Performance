@@ -6,132 +6,9 @@
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<script>
-console.log("🔥 SCRIPT LOADED");      
-      
-(function () {
-  const params = new URLSearchParams(window.location.search);
-  const school = params.get("school") || sessionStorage.getItem("school") || "harrisonville";
-  sessionStorage.setItem("school", school);
-
-  let theme = null;
-
-try {
-  const raw = sessionStorage.getItem("theme-" + school);
-  theme = raw ? JSON.parse(raw) : null;
-} catch (e) {
-  console.warn("Theme parse failed:", e);
-}
-  if (theme) {
-    const root = document.documentElement;
-    root.style.setProperty("--primary", theme.primary);
-    root.style.setProperty("--primaryLight", theme.primaryLight);
-    root.style.setProperty("--primaryDark", theme.primaryDark);
-    root.style.setProperty("--secondary", theme.secondary);
-    root.style.setProperty("--secondaryLight", theme.secondaryLight);
-    root.style.setProperty("--background", theme.background);
-  }
-})();
-</script>
-
-<script>
-(function () {
-  const params = new URLSearchParams(window.location.search);
-  const school = params.get("school") || sessionStorage.getItem("school") || "harrisonville";
-  sessionStorage.setItem("school", school);
-
-  let logo = null;
-  let config = null;
-
-  try {
-    const rawLogo = sessionStorage.getItem("logo-" + school);
-    logo = rawLogo ? JSON.parse(rawLogo) : null;
-  } catch (e) {
-    console.warn("Logo parse failed:", e);
-  }
-
-  try {
-    const rawTheme = sessionStorage.getItem("theme-" + school);
-    config = rawTheme ? JSON.parse(rawTheme) : null;
-  } catch (e) {
-    console.warn("School name parse failed:", e);
-  }
-
-      // 👇 ADD THIS LINE RIGHT HERE
-window.pendingGlobalTheme = config;
-
-  document.addEventListener("DOMContentLoaded", () => {
-
-    // ✅ Set logo
-    const logoEl = document.getElementById("schoolLogo");
-    if (logoEl && logo) {
-      logoEl.src = logo;
-    }
-
-    // ✅ Set school name
-    const nameEl = document.getElementById("schoolName");
-    if (nameEl && config?.name) {
-      nameEl.innerText = config.name;
-    }
-
-    // 🔥 AUTO-FIT
-    function fitSchoolName() {
-      const el = document.getElementById("schoolName");
-      if (!el) return;
-
-      let size = 42;
-      el.style.fontSize = size + "px";
-
-      const maxWidth = window.innerWidth * 0.8;
-
-      while (el.scrollWidth > maxWidth && size > 14) {
-        size -= 1;
-        el.style.fontSize = size + "px";
-      }
-    }
-
-    // 🔥 DYNAMIC GLOW
-    function applySchoolGlow(theme) {
-      const el = document.getElementById("schoolName");
-      if (!el || !theme) return;
-
-      el.style.textShadow = `
-        0 0 6px ${theme.primary},
-        0 0 14px ${theme.primaryLight},
-        0 0 22px ${theme.primary}
-      `;
-    }
-
-    // ✅ RUN AFTER DOM READY
-    fitSchoolName();
-    applySchoolGlow(config);
-
-    // 🔁 resize support
-    window.addEventListener("resize", fitSchoolName);
-
-  });
-
-})();
-</script>
-
-<title>4 Quadrant Training Timer</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
-
-
-<script src="js/config/schoolConfig.js"></script>
-<script src="js/services/schoolService.js"></script>
-<script src="js/services/themeService.js"></script>
-<script src="js/timer/timerConstants.js"></script>
-<script src="js/timer/timerState.js"></script>
-<script src="js/timer/workoutService.js"></script>
-<script src="js/timer/scheduleService.js"></script> 
-
-
-<script src="js/bootstrap.js"></script>
-
-
 <style>
+
+/* ===================== TIMER CSS ===================== */
 
 /* ===================== ROOT ===================== */
 :root {
@@ -444,7 +321,6 @@ top:auto;
 }
 
       
-
 /* ===================== QUADS ===================== */
 .quad {
     display:flex;
@@ -475,6 +351,7 @@ top:auto;
 }
 
 .q4 { background:#555; color:#fff; border:8px solid #ccc; }
+
 
 /* ===================== CENTER ===================== */
 #center {
@@ -564,6 +441,7 @@ top:auto;
     100% { transform: scale(1); }
 }
 
+
       /* ===================== CENTER PHASE COLORS ===================== */
 
 .phase-dress {
@@ -599,6 +477,7 @@ top:auto;
     background: #222;
     box-shadow: 0 0 10px #888;
 }
+
 
       /* ===================== URGENCY FLASH ===================== */
 
@@ -742,97 +621,169 @@ body.preview-mode .quad::after {
     text-shadow: 0 0 8px #39ff14;
 }
 
-      /* ========================================
-HIDDEN COACH PANEL
-======================================== */
 
-#coachJumpBtn {
-
-    position: fixed;
-    right: 12px;
-    bottom: 12px;
-
-    width: 42px;
-    height: 42px;
-
-    border-radius: 50%;
-
-    background: rgba(0,0,0,0.35);
-
-    color: rgba(255,255,255,0.18);
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-size: 18px;
-    font-weight: 900;
-
-    cursor: pointer;
-
-    z-index: 9999;
-
-    transition: all 0.25s ease;
-}
-
-#coachJumpBtn:hover {
-
-    color: #39ff14;
-
-    background: rgba(0,0,0,0.75);
-
-    box-shadow:
-        0 0 10px #39ff14;
-}
-
-#coachPanel {
-
-    position: fixed;
-
-    right: 12px;
-    bottom: 62px;
-
-    display: none;
-    flex-direction: column;
-    gap: 8px;
-
-    padding: 12px;
-
-    border-radius: 14px;
-
-    background: rgba(0,0,0,0.92);
-
-    border: 1px solid rgba(255,255,255,0.08);
-
-    z-index: 9999;
-}
-
-#coachPanel button {
-
-    background: #111;
-    color: white;
-
-    border: 1px solid #333;
-
-    padding: 10px 14px;
-
-    border-radius: 10px;
-
-    font-weight: 800;
-
-    cursor: pointer;
-}
-
-#coachPanel button:hover {
-
-    border-color: #39ff14;
-
-    box-shadow:
-        0 0 10px #39ff14;
-}
-
+ </style>     
       
-</style>
+<script>
+(function () {
+
+    // ========================================
+    // RESOLVE ACTIVE SCHOOL
+    // ========================================
+
+    const params = new URLSearchParams(window.location.search);
+
+    const school =
+        params.get("school") ||
+        sessionStorage.getItem("school") ||
+        "harrisonville";
+
+    sessionStorage.setItem("school", school);
+
+    // ========================================
+    // LOAD STORED DATA
+    // ========================================
+
+    let theme = null;
+    let logo = null;
+
+    try {
+        const rawTheme = sessionStorage.getItem("theme-" + school);
+        theme = rawTheme ? JSON.parse(rawTheme) : null;
+    }
+    catch (e) {
+        console.warn("Theme parse failed:", e);
+    }
+
+    try {
+        const rawLogo = sessionStorage.getItem("logo-" + school);
+        logo = rawLogo ? JSON.parse(rawLogo) : null;
+    }
+    catch (e) {
+        console.warn("Logo parse failed:", e);
+    }
+
+    // Make theme available before the app starts
+    window.pendingGlobalTheme = theme;
+
+    // ========================================
+    // APPLY CSS VARIABLES IMMEDIATELY
+    // ========================================
+
+    if (theme) {
+
+        const root = document.documentElement;
+
+        root.style.setProperty("--primary", theme.primary);
+        root.style.setProperty("--primaryLight", theme.primaryLight);
+        root.style.setProperty("--primaryDark", theme.primaryDark);
+        root.style.setProperty("--secondary", theme.secondary);
+        root.style.setProperty("--secondaryLight", theme.secondaryLight);
+        root.style.setProperty("--background", theme.background);
+
+    }
+
+    // ========================================
+    // DOM INITIALIZATION
+    // ========================================
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const logoEl = document.getElementById("schoolLogo");
+        const nameEl = document.getElementById("schoolName");
+
+        if (logoEl && logo) {
+            logoEl.src = logo;
+        }
+
+        if (nameEl && theme?.name) {
+            nameEl.innerText = theme.name;
+        }
+
+        function fitSchoolName() {
+
+            if (!nameEl) return;
+
+            let size = 42;
+
+            nameEl.style.fontSize = size + "px";
+
+            const maxWidth = window.innerWidth * 0.8;
+
+            while (
+                nameEl.scrollWidth > maxWidth &&
+                size > 14
+            ) {
+                size--;
+                nameEl.style.fontSize = size + "px";
+            }
+
+        }
+
+        function applySchoolGlow() {
+
+            if (!nameEl || !theme) return;
+
+            nameEl.style.textShadow = `
+                0 0 6px ${theme.primary},
+                0 0 14px ${theme.primaryLight},
+                0 0 22px ${theme.primary}
+            `;
+
+        }
+
+        fitSchoolName();
+        applySchoolGlow();
+
+        window.addEventListener(
+            "resize",
+            fitSchoolName
+        );
+
+    });
+
+})();
+</script>
+
+<title>4 Quadrant Training Timer</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="js/timer/coachPanel.css">
+
+
+
+
+<!-- ========================================
+     APPLICATION SCRIPTS
+======================================== -->
+
+<script defer src="js/timer/timerConstants.js"></script>
+<script defer src="js/timer/timerState.js"></script>
+<script defer src="js/timer/timerUtils.js"></script>
+
+<script defer src="js/timer/workoutService.js"></script>
+<script defer src="js/services/phaseService.js"></script>
+
+<script defer src="js/timer/timelineService.js"></script>
+<script defer src="js/timer/previewService.js"></script>
+<script defer src="js/timer/audioService.js"></script>
+<script defer src="js/timer/scheduleService.js"></script>
+<script defer src="js/timer/coachUI.js"></script>
+
+<script defer src="js/timer/coachService.js"></script>
+<script defer src="js/timer/timerUI.js"></script>
+<script defer src="js/timer/timerEngine.js"></script>
+
+<script defer src="js/config/schoolConfig.js"></script>
+<script defer src="js/services/schoolService.js"></script>
+<script defer src="js/services/themeService.js"></script>
+<script defer src="js/services/navigationService.js"></script>
+
+<script defer src="js/bootstrap.js"></script>
+<script defer src="js/main.js"></script>
+<script defer src="js/timer/controlService.js"></script>
+
 </head>
 
 <body>
@@ -916,2360 +867,74 @@ HIDDEN COACH PANEL
     </div>
 </div>
 
+</div>
+
+
       <!-- SYSTEM INPUTS (hidden controls) -->
 <div id="systemControls" style="display:none;">
   <input id="workTime" value="30">
   <input id="restTime" value="10">
-  <button id="startBtn" onclick="startTimer()">START</button>
+  <button id="startBtn">START</button>
+    
 </div>
 
 
 <script>
 
-  window.S = window.TimerState;
-  S.globalTheme = window.pendingGlobalTheme;
-
-      /* ===================== STATE ===================== */
-
-
-
-let phaseJustChanged = false;
-
-S.workoutData = [];
-
-
-      
-
-window.classStartTime = null;
-let phaseStartTime = null;
-      
-      
-
-/* ===================== SETS ===================== */
-
-
-let maxSets = 1;
-
-
-
-/* ===================== PERIOD AUTO START ===================== */
-
-window.autoStartEnabled = true;
-window.monTimes = [];
-window.tueTimes = [];
-window.wedTimes = [];
-window.thuTimes = [];
-window.friTimes = [];
-window.satTimes = [];      
-let autoStartTimer = null;
-let lastAutoStartMinute = null;
-let todayOnlyMode = false;
-let forceDateString = null;
-
-
-let manualWorkoutOverride = null;
-let lastControlSignature = null;
-      
-
-/* ===================== DURATIONS ===================== */
-
-let dressOutDuration = 600;
-let dynamicStretchDuration = 600;
-let breakDuration = 120;
-let cooldownDuration = 0;
-
-/* ===================== FLAGS ===================== */
-
-
-
-let onBreak = false;
-
-
-
-function goFullscreen() {
-    document.documentElement.requestFullscreen();
-}
-
-/* ======================================================
-   START / STOP + TOTAL TIME CALCULATION
-====================================================== */
-
-function safeGet(id, fallback = 0) {
-    const el = document.getElementById(id);
-    return el ? parseInt(el.value, 10) || fallback : fallback;
-}
-
-function updateClock() {
-    const el = document.getElementById("clock");
-
-    if (!el) return;
-
-    const minutes = Math.floor(S.timeLeft / 60);
-    const seconds = S.timeLeft % 60;
-
-    el.textContent =
-        minutes + ":" + String(seconds).padStart(2, "0");
-}
-
-      function updatePhaseDisplay() {
-    const el = document.getElementById("phase");
-    if (!el) return;
-
-    const newText = S.currentPhase.toUpperCase();
-
-    // prevent re-animation if same phase
-    if (el.textContent === newText) return;
-
-    el.classList.remove("phase-active", "phase-work");
-    el.classList.add("phase-enter");
-
-    setTimeout(() => {
-        el.textContent = newText;
-
-        el.classList.remove("phase-enter");
-        el.classList.add("phase-active");
-
-        if (S.currentPhase === "work") {
-    el.classList.add("phase-work");
-}
-
-    }, 150);
-}
-
-      function updateCenterVisuals() {
-    const center = document.getElementById("centerInner");
-    if (!center) return;
-
-    // reset classes
-    center.classList.remove(
-        "phase-dress",
-        "phase-stretch",
-        "phase-work",
-        "phase-rotate",
-        "phase-break",
-        "phase-cooldown"
-    );
-
-    // apply current phase
-    center.classList.add(`phase-${S.currentPhase}`);
-}
-
-      function updateUrgencyEffects() {
-    const center = document.getElementById("centerInner");
-
-    if (!center) return;
-
-    // remove first
-    center.classList.remove("urgent");
-
-    if (S.timeLeft <= 5 && S.currentPhase === "work"){
-        center.classList.add("urgent");
-    }
-}
-
-      function updateClockPulse() {
-
-    const centerInner = document.getElementById("centerInner");
-
-    if (!centerInner) return;
-
-    centerInner.classList.remove("pulse");
-
-    if (S.timeLeft <= 5 &&
-    S.currentPhase === "work") {
-    centerInner.classList.add("pulse");
-}
-}
-
-
-/* ======================================================
-   REFRESH TIMER UI
-====================================================== */
-
-function refreshTimerUI() {
-
-    updateClock();
-    updatePhaseDisplay();
-    updateTotalDisplay();
-
-    updatePhaseGlow(S.globalTheme);
-
-    updateCenterVisuals();
-    updateUrgencyEffects();
-    updateClockPulse();
-}
-
-
-/* ======================================================
-   RESET WORKOUT POSITION
-====================================================== */
-function resetWorkoutPosition() {
-
-    S.currentSet = 1;
-    S.displaySetNumber = 1;
-    S.rotationCount = 0;
-}
-
-
-function refreshWorkoutPosition() {
-
-    applyRotationState(S.rotationCount);
-
-    if (S.currentSet > 0) {
-        loadSetData(S.currentSet);
-    }
-}
-      
-/* ---------- COUNT TOTAL SETS ---------- */
-function getTotalSets() {
-    return S.workoutData.filter(item => item.type === "set").length;
-}
-
-/* ======================================================
-   START TIMER (INITIAL RESET DEFAULTS)
-====================================================== */
-resetWorkoutPosition();
-refreshWorkoutPosition();
-
-
-/* ======================================================
-   CALCULATE TOTAL CLASS TIME
-====================================================== */
-function calculateTotalTime() {
-
-    let total = 0;
-
-    // Dress
-    total += dressOutDuration || 0;
-
-    // Stretch
-    total += dynamicStretchDuration || 0;
-
-    // ALL generated timeline segments
-    S.phaseMeta.forEach(seg => {
-        total += Number(seg.duration || 0);
-    });
-
-    // Cooldown
-    total += cooldownDuration || 0;
-
-    console.log("🧮 S.PhaseMeta Count:", S.phaseMeta.length);
-    console.log("🧮 Total workout time:", total);
-
-    return total;
-}
-      
-
-function preciseTick() {
-
-    if (!S.isRunning) return;
-
-    const now = Date.now();
-
-    if (!S.nextTickTime) {
-    S.nextTickTime = now + 1000;
-}
-
-    // catch up if browser slept
-    while (S.nextTickTime <= now) {
-    tick();
-    S.nextTickTime += 1000;
-}
-
-    const delay = Math.max(0, S.nextTickTime - now);
-    S.timer = setTimeout(preciseTick, delay);
-
-      
-}
-
-function startTimer() {
-
-    // Safety: require workout
-    if (!S.workoutData.length){
-        console.warn("Workout not loaded yet.");
-        return;
+  window.addEventListener("DOMContentLoaded", () => {
+
+    if (window.TimerState) {
+        window.TimerState.globalTheme =
+            window.pendingGlobalTheme;
     }
 
-    // Initialize audio once
-    if (!S.audioCtx) {
-        S.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-
-    // Toggle stop if already running
-    if (S.isRunning) {
-        stopAllTimers();
-        return;
-    }
-
-    /* ---------- START STATE ---------- */
-    S.isRunning = true;
-
-    window.classStartTime = getEffectiveNow().getTime();
-// 🔥 Fresh total recalculation
-const planned = WorkoutService.calculateTotalTime();
-
-S.totalSeconds =
-    S.classBlockLength &&
-    S.classBlockLength > 0
-        ? Math.min(planned, S.classBlockLength)
-        : planned;
-
-
-S.originalTotalSeconds = S.totalSeconds;
-   
-    document.getElementById("startBtn").innerText = "STOP";
-
-    /* ---------- FULL RESET ---------- */
-
-    resetWorkoutPosition();
-    refreshWorkoutPosition();
-
-    S.dressWarningSpoken = false;
-
-    lastAutoStartMinute = null;
-
-    
-
-    /* ---------- START WITH DRESS PHASE ---------- */
-
-    S.currentPhase = "dress";
-
-    S.timeLeft = dressOutDuration;
-
-    refreshTimerUI();
-    TimelineService.updateHighlight();
-
-    /* ---------- TIMER LOOP ---------- */
-
-    S.nextTickTime = Date.now() + 1000;
-
-    S.timer = setTimeout(preciseTick, 1000);
-
-    /* ---------- TIMELINE ---------- */
-
-    if (!window.timelineAnimating) {
-
-        window.timelineAnimating = true;
-
-        animateTimeline();
-    }
-
-    console.log("✅ Timer started");
-    console.log("⏱️ Total Seconds:", S.totalSeconds);
-}
-
-/* ---------- AUTO START ---------- */
-
-function getEffectiveNow() {
-
-    // ⭐ FORCE_DATE override (LOCAL TIME SAFE)
-    if (forceDateString) {
-        const parts = forceDateString.split(/[T:\-]/);
-
-        if (parts.length >= 6) {
-            const forced = new Date(
-                Number(parts[0]),     // year
-                Number(parts[1]) - 1, // month
-                Number(parts[2]),     // day
-                Number(parts[3]),     // hour
-                Number(parts[4]),     // minute
-                Number(parts[5])      // second
-            );
-
-            if (!isNaN(forced)) return forced;
-        }
-    }
-
-    return new Date();
-}
-
-function buildWorkoutTimeline() {
-
-    S.phaseSequence = [];
-    S.phaseMeta = [];
-
-    S.workoutData.forEach((item, index) => {
-
-        /* =============================
-           SET ROW
-        ============================= */
-
-        if (item.type === "set") {
-
-            const nextItem = S.workoutData[index + 1];
-
-            const isLastSetBeforeBreak =
-                nextItem &&
-                nextItem.type === "break";
-
-            // ------------------------------------------------
-            // 4 STATION ROTATIONS
-            // ------------------------------------------------
-
-            for (let station = 0; station < 4; station++) {
-
-                /* ---------- WORK ---------- */
-
-                S.phaseSequence.push("work");
-
-               S.phaseMeta.push({
-    phase: "work",
-    setIndex: index + 1,
-    station,
-    rotation: station,
-    duration:
-        item.workSec ||
-        S.sheetWorkDuration ||
-        safeGet("workTime", 30)
 });
 
-                // ------------------------------------------------
-                // FINAL STATION BEFORE BREAK
-                // ------------------------------------------------
-
-                const isFinalStation =
-                    station === 3;
-
-                if (
-                    isLastSetBeforeBreak &&
-                    isFinalStation
-                ) {
-
-                    // DO NOT ADD ROTATE
-                    // Break will occur naturally next
-
-                    continue;
-                }
-
-                /* ---------- ROTATE ---------- */
-
-                S.phaseSequence.push("rotate");
-
-                S.phaseMeta.push({
-    phase: "rotate",
-    setIndex: index + 1,
-    station,
-    rotation: station + 1,
-    duration:
-        item.rotateSec ||
-        S.sheetRotateDuration ||
-        safeGet("restTime", 30)
-});
-            }
-        }
-
-        /* =============================
-           BREAK ROW
-        ============================= */
-
-        if (item.type === "break") {
-
-            S.phaseSequence.push("break");
-
-            S.phaseMeta.push({
-                phase: "break",
-                duration:
-                    item.breakSec ||
-                    breakDuration
-            });
-        }
-    });
-
-    console.log("🔥 PHASE SEQUENCE:", S.phaseSequence);
-    console.log("🔥 TOTAL SEGMENTS:", S.phaseMeta.length);
-}
-      
-
-      function computeWorkoutState(nowMs) {
-
-    const startTime = window.classStartTime;
-    if (!startTime) return null;
-
-    let elapsed = Math.floor((nowMs - startTime) / 1000);
-
-    // DRESS
-    if (elapsed < dressOutDuration) {
-        return {
-            phase: "dress",
-            timeLeft: dressOutDuration - elapsed
-        };
-    }
-
-    elapsed -= dressOutDuration;
-
-    // STRETCH
-    if (elapsed < dynamicStretchDuration) {
-        return {
-            phase: "stretch",
-            timeLeft: dynamicStretchDuration - elapsed
-        };
-    }
-
-    elapsed -= dynamicStretchDuration;
-
-    // 🔥 TRUE SEQUENCE ENGINE
-    for (let i = 0; i < S.phaseMeta.length; i++) {
-
-        const seg = S.phaseMeta[i];
-
-        if (elapsed < seg.duration) {
-
-            return {
-                phase: seg.phase,
-                timeLeft: seg.duration - elapsed,
-                setIndex: seg.setIndex,
-                setNumber: seg.setIndex,
-                rotation: seg.rotation,
-                sequenceIndex: i
-            };
-        }
-
-        elapsed -= seg.duration;
-    }
-
-    // COOLDOWN
-    if (elapsed < cooldownDuration) {
-        return {
-            phase: "cooldown",
-            timeLeft: cooldownDuration - elapsed
-        };
-    }
-
-    return {
-        phase: "done",
-        timeLeft: 0
-    };
-}
-      
-
-function autoDetectActiveClass() {
-
-    // 🔥 Prevent sync before workout fully loads
-    if (!S.originalTotalSeconds || !S.phaseMeta.length) {
-        return;
-    }
-
-    if (!autoStartEnabled || S.isRunning) return;
-
-    const now = getEffectiveNow();
-    const day = now.getDay();
-
-    let todaySchedule = [];
-
-    if (day === 1) todaySchedule = monTimes;
-    else if (day === 2) todaySchedule = tueTimes;
-    else if (day === 3) todaySchedule = wedTimes;
-    else if (day === 4) todaySchedule = thuTimes;
-    else if (day === 5) todaySchedule = friTimes;
-    else if (day === 6) todaySchedule = satTimes;  
-
-    for (const timeStr of todaySchedule) {
-
-        const [h, m] = timeStr.split(":").map(Number);
-
-        const start = new Date(now);
-        start.setHours(h, m, 0, 0);
-
-        const end = new Date(
-            start.getTime() + S.originalTotalSeconds * 1000
-        );
-
-        if (now >= start && now < end) {
-
-            console.log("⚡ Class already in progress. Auto syncing timer.");
-
-            // 🔥 Start system
-            startTimer();
-
-            // 🔥 Force official class start time
-            window.classStartTime = start.getTime();
-
-            // 🔥 Calculate elapsed time
-            const elapsed = Math.floor((now - start) / 1000);
-
-            // 🔥 Sync remaining total time
-            S.totalSeconds = Math.max(
-            S.originalTotalSeconds - elapsed,
-            0
-        );
-
-            updateTotalDisplay();
-
-            /* ===================== 🔥 PHASE SYNC ===================== */
-
-            const state = computeWorkoutState(
-                start.getTime() + (elapsed * 1000)
-            );
-
-            if (state) {
-
-                console.log("🔄 Applying synced state:", state);
-
-                // 🔥 HARD override runtime state
-                S.currentPhase = state.phase;
-
-                S.timeLeft = state.timeLeft;
-
-                if (state.setIndex !== undefined) {
-
-                    S.currentSet = state.setIndex;
-                    S.displaySetNumber = state.setNumber;
-                    S.rotationCount = state.rotation || 0;
-
-                refreshWorkoutPosition();
-
-                // 🔥 Force ALL UI refreshes
-                refreshTimerUI();
-                TimelineService.updateHighlight();
-            }
-
-            /* ====================================================== */
-
-            break;
-        }
-    }
-    }
-}
-
-function startAutoScheduler() {
-
-        if (autoStartTimer) {
-        clearInterval(autoStartTimer);
-    }
-
-    autoStartTimer = setInterval(() => {
-
-        if (!autoStartEnabled) return;
-
-        const now = getEffectiveNow();
-        const day = now.getDay(); // 0=Sun, 1=Mon...
-
-        if (todayOnlyMode) {
-            // Only allow today's schedule
-            const today = now.getDay();
-            if (today === 0 || today === 6) return; // block weekends
-        }
-
-        if (S.isRunning) return;
-
-        let todaySchedule = [];
-
-        if (day === 1) todaySchedule = monTimes;
-else if (day === 2) todaySchedule = tueTimes;
-else if (day === 3) todaySchedule = wedTimes;
-else if (day === 4) todaySchedule = thuTimes;
-else if (day === 5) todaySchedule = friTimes;
-else if (day === 6) todaySchedule = satTimes;      
-        else return; // weekend
-
-        for (const timeStr of todaySchedule) {
-
-            const parts = timeStr.split(":");
-            if (parts.length !== 2) continue;
-
-            const targetHour = parseInt(parts[0], 10);
-            const targetMinute = parseInt(parts[1], 10);
-
-            if (isNaN(targetHour) || isNaN(targetMinute)) continue;
-
-            const currentTotalSeconds =
-                now.getHours() * 3600 +
-                now.getMinutes() * 60 +
-                now.getSeconds();
-
-            const targetTotalSeconds =
-                targetHour * 3600 +
-                targetMinute * 60;
-
-            // start within first 5 seconds of the minute
-            const currentMinuteStamp =
-                String(now.getHours()).padStart(2, "0") + ":" +
-                String(now.getMinutes()).padStart(2, "0");
-
-            if (
-                currentTotalSeconds >= targetTotalSeconds &&
-                currentTotalSeconds < targetTotalSeconds + 60 &&
-                lastAutoStartMinute !== currentMinuteStamp
-            ) {
-                lastAutoStartMinute = currentMinuteStamp;
-
-                console.log("🔔 Auto starting:", timeStr);
-                startTimer();
-                break;
-            }
-        }
-
-    }, 1000);
-}
-/* ======================================================
-   LOAD WORKOUT FROM GOOGLE SHEETS — CLEAN + BULLETPROOF
-====================================================== */
-
-function previewNextSet() {
-    if (!S.workoutData.length) return;
-
-    const nextIndex = getNextSetIndex(); // 🔥 use your existing helper
-
-    if (!nextIndex) return;
-
-    const nextItem = S.workoutData[nextIndex - 1];
-
-    if (nextItem && nextItem.type === "set") {
-
-        // 👇 visually mark preview mode
-        document.body.classList.add("preview-mode");
-previewSetData(nextIndex);
-    }
-}
-
-/* ======================================================
-   ROBUST CSV PARSER
-====================================================== */
-function parseCSV(text) {
-    const rows = [];
-    let row = [];
-    let cell = "";
-    let inQuotes = false;
-
-    for (let i = 0; i < text.length; i++) {
-        const char = text[i];
-        const next = text[i + 1];
-
-        // escaped quote
-        if (char === '"' && inQuotes && next === '"') {
-            cell += '"';
-            i++;
-            continue;
-        }
-
-        // toggle quotes
-        if (char === '"') {
-            inQuotes = !inQuotes;
-            continue;
-        }
-
-        // comma separator
-        if (char === "," && !inQuotes) {
-            row.push(cell);
-            cell = "";
-            continue;
-        }
-
-        // row break
-        if ((char === "\n" || char === "\r") && !inQuotes) {
-            if (cell !== "" || row.length) {
-                row.push(cell);
-                rows.push(row);
-                row = [];
-                cell = "";
-            }
-            continue;
-        }
-
-        cell += char;
-    }
-
-    if (cell !== "" || row.length) {
-        row.push(cell);
-        rows.push(row);
-    }
-
-    return rows;
-}
-
-/* ======================================================
-   SAFE NUMBER PARSER
-====================================================== */
-function parseSheetNumber(val, fallback = null) {
-    if (val === undefined || val === null) return fallback;
-
-    const cleaned = String(val)
-        .replace(/\r/g, "")
-        .trim();
-
-    if (!cleaned) return fallback;
-
-    const num = Number(cleaned);
-    return isNaN(num) ? fallback : num;
-}
-
-/* ======================================================
-   MAIN LOADER
-====================================================== */
-
-function isEffectivelyBlankRow(row) {
-    if (!row || row.length === 0) return true;
-
-    return row.every(cell =>
-        String(cell ?? "")
-            .replace(/\u00A0/g, "") // non-breaking space
-            .replace(/\s/g, "")
-            .trim() === ""
-    );
-}
-
-/* ======================================================
-   AUTO-DETECT WORKOUT BY DAY (ELITE)
-====================================================== */
-function getSheetGid() {
-
-    const params = new URLSearchParams(window.location.search);
-
-    // URL override allowed
-    const urlGid = params.get("gid");
-
-    if (urlGid) {
-        return urlGid;
-    }
-
-    // Auto-select sheet by current day
-    const today = new Date().getDay();
-
-    // 0 = Sunday
-    // 1 = Monday
-    // 2 = Tuesday
-    // etc.
-
-    switch (today) {
-
-        case 1:
-            return "0";
-
-        case 2:
-            return "766025525";
-
-        case 3:
-            return "1645988521";
-
-        case 4:
-            return "1404677519";
-
-        case 5:
-            return "1799243756";
-
-        case 6:
-            return "1400877965"; 
-
-        default:
-            // Sunday fallback
-            return "0";
-    }
-}
-
-/* ===================== SCHOOL DATA SOURCES ===================== */
-
-
-
-console.log("💥 MAIN SCRIPT RUNNING");  
-
-      
-async function loadWorkout() {
-    console.log("🚀 loadWorkout started");
-
-    try {
-        const gid = getSheetGid();
-
-const params = new URLSearchParams(window.location.search);
-const school = params.get("school") || "harrisonville";
-
-const themeRaw = sessionStorage.getItem("theme-" + school);
-
-if (!themeRaw) {
-    throw new Error("❌ No theme config found for school: " + school);
-}
-
-const schoolConfig = JSON.parse(themeRaw);
-
-const baseUrl = schoolConfig.dataURL;
-
-if (!baseUrl) {
-    throw new Error("❌ No dataURL configured for school: " + school);
-}
-
-const response = await fetch(
-`${baseUrl}?type=workout&school=${school}&gid=${gid}&single=true&output=csv`
-);
-
-        if (!response.ok) {
-            throw new Error("Network response was not ok");
-        }
-
-        const text = await response.text();
-
-        console.log("CSV length:", text.length);
-        console.log("CSV preview:", text.slice(0,200));
-        
-        const rows = parseCSV(text);
-
-        console.log("Rows parsed:", rows.length);
-        console.log("First rows:", rows.slice(0,10));
-
-        console.log("First 10 rows:", rows.slice(0, 10));
-
-        /* =============================
-           RESET GLOBALS
-        ============================= */
-        S.workoutData.length = 0;
-        autoStartEnabled = false;
-monTimes = [];
-tueTimes = [];
-wedTimes = [];
-thuTimes = [];
-friTimes = [];
-satTimes = [];          
-
-        const clean = v =>
-            String(v || "")
-                .replace(/\u00A0/g, "")
-                .replace(/\r/g, "")
-                .trim();
-
-        /* =============================
-           PROCESS ROWS
-        ============================= */
-          let detectedSets = 0;
-        for (const r of rows) {
-            if (!r || r.every(cell => !String(cell).trim())) {
-    continue;
-}
-            const firstRaw = clean(r[0]);
-            const firstCell = firstRaw
-    .toLowerCase()
-    .replace(/\s+/g, "")
-    .trim();
-
-              console.log("🔍 Row key:", firstCell);
-
-
-
-
-            // ---------- EXPLICIT BREAK ----------
-            if (firstCell.replace(/\s+/g, "") === "break") {
-                const breakSec =
-    parseSheetNumber(r[11]) ||
-    parseSheetNumber(r[10]) ||
-    90;
-
-                S.workoutData.push({
-                    type: "break",
-                    breakSec
-                });
-
-                console.log("📥 Explicit break parsed:", breakSec);
-                continue;
-            }
-
-            // ---------- HEADER SKIP ----------
-            if (firstCell === "set") continue;
-
-            /* =================================================
-               CONFIG FLAGS
-            ================================================= */
-
-            if (firstCell === "auto_start") {
-                autoStartEnabled = clean(r[1]).toLowerCase() === "true";
-                continue;
-            }
-
-            if (firstCell === "today_only") {
-                todayOnlyMode = clean(r[1]).toLowerCase() === "true";
-                continue;
-            }
-
-            if (firstCell === "force_date") {
-                forceDateString = clean(r[1]) || null;
-                continue;
-            }
-
-            
-
-            /* ---------- SCHEDULE TIMES ---------- */
-
-            if (firstCell === "monday_times") {
-                monTimes = clean(r[1])
-                    .split(",")
-                    .map(s => s.trim())
-                    .filter(Boolean);
-                continue;
-            }
-
-            if (firstCell === "tuesday_times") {
-                tueTimes = clean(r[1])
-                    .split(",")
-                    .map(s => s.trim())
-                    .filter(Boolean);
-                  console.log("📅 Parsed Tuesday times:", tueTimes);
-                continue;
-            }
-
-              if (firstCell === "wednesday_times") {
-                wedTimes = clean(r[1])
-                    .split(",")
-                    .map(s => s.trim())
-                    .filter(Boolean);
-                continue;
-            }
-
-            if (firstCell === "thursday_times") {
-                thuTimes = clean(r[1])
-                    .split(",")
-                    .map(s => s.trim())
-                    .filter(Boolean);
-                continue;
-            }
-
-              if (firstCell === "friday_times") {
-                friTimes = clean(r[1])
-                    .split(",")
-                    .map(s => s.trim())
-                    .filter(Boolean);
-                continue;
-            }
-
-              if (firstCell === "saturday_times") {
-                satTimes = clean(r[1])
-                    .split(",")
-                    .map(s => s.trim())
-                    .filter(Boolean);
-                continue;
-            }
-
-            /* ---------- GLOBAL TIMINGS ---------- */
-
-            if (
-                firstCell === "dress_seconds" ||
-                firstCell === "dress" ||
-                firstCell === "get_dressed" ||
-                firstCell === "get_dress"
-            ) {
-                const v = parseSheetNumber(r[1]);
-                if (v !== null) {
-                    dressOutDuration = v;
-                    console.log("📥 Dress time:", dressOutDuration);
-                }
-                continue;
-            }
-
-            if (firstCell === "stretch_seconds") {
-                const v = parseSheetNumber(r[1]);
-                if (v !== null) {
-                    dynamicStretchDuration = v;
-                    console.log("📥 Stretch time:", dynamicStretchDuration);
-                }
-                continue;
-            }
-
-            if (firstCell === "break_seconds") {
-                const v = parseSheetNumber(r[1]);
-                if (v !== null) breakDuration = v;
-                continue;
-            }
-
-              if (firstCell === "cooldown_seconds") {
-    const v = parseSheetNumber(r[1]);
-
-    if (v !== null) {
-        cooldownDuration = v;
-
-        console.log(
-            "📥 Cooldown time:",
-            cooldownDuration
-        );
-    }
-
-    continue;
-}
-
-              if (firstCell === "work_seconds" || firstCell === "work") {
-    const v = parseSheetNumber(r[1]);
-    if (v !== null) {
-        S.sheetWorkDuration = v;
-        console.log("📥 Global work time:", S.sheetWorkDuration);
-    }
-    continue;
-}
-
-if (firstCell === "rotate_seconds" || firstCell === "rest") {
-    const v = parseSheetNumber(r[1]);
-    if (v !== null) {
-        S.sheetRotateDuration = v;
-        console.log("📥 Global rotate time:", S.sheetRotateDuration);
-    }
-    continue;
-}
-
-            /* =================================================
-               FLEXIBLE SET DETECTION
-            ================================================= */
-
-            const looksLikeSetNumber =
-                /^\d+$/.test(firstCell) ||
-                /^\d+\.$/.test(firstCell) ||
-                /^set\s*\d*$/i.test(firstRaw);
-
-            if (looksLikeSetNumber) {
-
-    // 🔥 dynamically count sets
-    detectedSets++;
-
-    const workSec = parseSheetNumber(r[8]);
-    const rotateSec = parseSheetNumber(r[9]);
-    const breakSec = parseSheetNumber(r[10]);
-
-    S.workoutData.push({
-    type: "set",
-        core: clean(r[1]),
-        percent: clean(r[2]),
-        reps: clean(r[3]),
-        aux: clean(r[4]),
-        auxReps: clean(r[5]),
-        move: clean(r[6]),
-        moveReps: clean(r[7]),
-        workSec,
-        rotateSec,
-        breakSec
-    });
-
-    console.log("📥 Set parsed:", {
-        set: firstRaw,
-        workSec,
-        rotateSec,
-        breakSec
-    });
-
-    continue;
-}
-        }
-
-        console.log("✅ Workout rows:", S.workoutData.length);
-console.log("✅ Auto start:", autoStartEnabled);
-
-// 🔥 dynamic rotation count from worksheet
-
-
-
-buildWorkoutTimeline();
-
-loadSetData(S.currentSet);
-
-startAutoScheduler();
-
-TimelineService.buildTimeline();
-          buildCoachButtons();
-
-
-// ⭐ Recalculate preview total
-const planned = WorkoutService.calculateTotalTime();
-const finalTotal =
-    S.classBlockLength &&
-    S.classBlockLength > 0
-        ? Math.min(planned, S.classBlockLength)
-        : planned;
-
-S.totalSeconds = finalTotal;
-
-S.originalTotalSeconds = finalTotal;
-
-updateTotalDisplay();
-
-    } catch (err) {
-        console.error("❌ Failed to load workout:", err);
-    }
-}
-
-/* ======================================================
-   STOP ALL TIMERS
-====================================================== */
-function stopAllTimers() {
-
-    if (S.timer) {
-    clearTimeout(S.timer);
-    S.timer = null;
-}
-
-    S.nextTickTime = null;
-
-    
-
-    S.isRunning = false;
-    document.getElementById("startBtn").innerText = "START";
-}
-
-/* ======================================================
-   GET NEXT SET INDEX (1-BASED)
-====================================================== */
-function getNextSetIndex() {
-
-    // Start searching AFTER S.currentSet
-    for (let i = S.currentSet; i < S.workoutData.length; i++) {
-        if (S.workoutData[i].type === "set") {
-            return i + 1; // convert to 1-based index
-        }
-    }
-
-    // No more sets found
-    return null;
-}
-
-/* ======================================================
-   WORK DURATION (seconds)
-====================================================== */
-function getWorkDuration() {
-
-    const currentItem = S.workoutData[S.currentSet - 1];
-
-    // 1️⃣ per-set override
-    if (currentItem?.workSec) {
-        console.log("⏱ Work time (set override):", {
-            set: S.currentSet,
-            value: currentItem.workSec
-        });
-        return currentItem.workSec;
-    }
-
-    // 2️⃣ sheet global override
-    if (S.sheetWorkDuration !== null) {
-        console.log("⏱ Work time (sheet global):", S.sheetWorkDuration);
-        return S.sheetWorkDuration;
-    }
-
-    // 3️⃣ UI fallback
-    const val = parseInt(document.getElementById("workTime").value, 10);
-    const safeVal = isNaN(val) || val <= 0 ? 1 : val;
-
-    console.log("⏱ Work time (UI fallback):", safeVal);
-
-    return safeVal;
-}
-
-
-/* ======================================================
-   MAIN TICK (TIME-BASED ENGINE)
-====================================================== */
-
-function tick() {
-
-    if (!S.isRunning || !window.classStartTime) return;
-
-    const now = getEffectiveNow().getTime();
-
-    /* ===================== MASTER STATE ===================== */
-    const state = computeWorkoutState(now);
-/* ===================== DEBUG STATE ===================== */
-
-console.log({
-    currentPhase: S.currentPhase,
-    statePhase: state.phase,
-    rotationCount: S.rotationCount,
-    stateRotation: state.rotation,
-    timeLeft: state.timeLeft,
-    setIndex: state.setIndex,
-    setNumber: state.setNumber
-});
-      
-    if (!state) return;
-
-    const prevPhase = S.currentPhase;
-
-    /* ===================== APPLY STATE ===================== */
-    S.currentPhase = state.phase;
-    S.timeLeft = state.timeLeft;
-
-    if (state.setIndex !== undefined) {
-        if (S.currentSet !== state.setIndex) {
-            S.currentSet = state.setIndex;
-            S.displaySetNumber = state.setNumber;
-            loadSetData(S.currentSet);
-        }
-    }
-
-   /* ===================== ROTATION CONTROL ===================== */
-
-if (S.currentPhase !== prevPhase){
-
-    // 🔥 Rotate colors on BOTH rotate + break
-    if (
-        state.phase === "rotate" ||
-        state.phase === "break"
-    ) {
-
-        S.rotationCount = state.rotation || 0;
-applyRotationState(S.rotationCount);
-
-        console.log(
-            "🔁 Quadrants rotated:",
-            S.rotationCount,
-            "phase:",
-            state.phase
-        );
-    }
-}
-
-    /* ===================== TOTAL TIMER ===================== */
-    const elapsed = Math.floor((now - window.classStartTime) / 1000);
-    S.totalSeconds = Math.max(
-    S.originalTotalSeconds - elapsed,
-    0
-);
-
-
-
-    /* ===================== AUDIO ===================== */
-
-    // Phase change triggers
-    if (S.currentPhase !== prevPhase) {
-
-        S.lastCountdownSpoken = null;
-
-        switch (S.currentPhase) {
-            case "stretch":
-                speakStretch();
-                break;
-            case "work":
-                speakLift();
-                break;
-
-                    
-          case "rotate":
-
-    speakRotate();
-
-    if (state.rotation === 4) {
-
-        const nextSet = S.currentSet + 1;
-
-        console.log("🔥 PREVIEWING SET", nextSet);
-
-        previewSetData(nextSet);
-    }
-
-    break;
-
-                    
-            case "break":
-                speakBreakPrep();
-                previewNextSet();
-                break;
-        }
-          // 🔥 EXIT PREVIEW MODE WHEN LEAVING BREAK
-if (prevPhase === "break" &&
-    S.currentPhase !== "break"){
-    document.body.classList.remove("preview-mode");
-
-    // reload current set (not preview)
-    loadSetData(S.currentSet);
-}
-    }
-
-    // Dress warning
-    if (
-    S.currentPhase === "dress" &&
-    S.timeLeft === 120 &&
-    !S.dressWarningSpoken
-){
-        speakDressWarning();
-        S.dressWarningSpoken = true;
-    }
-
-    // Countdown 3-2-1
-    if (S.timeLeft >= 1 && S.timeLeft <= 3){
-    if (S.lastCountdownSpoken !== S.timeLeft) {
-        speakNumber(S.timeLeft);
-        S.lastCountdownSpoken = S.timeLeft;
-    }
-}
-
-    /* ===================== UI ===================== */
-    refreshTimerUI();
-
-    /* ===================== END ===================== */
-    if (S.totalSeconds <= 0) {
-    workoutFinishScreen();
-}
-}
-
-/* ===================== TIMELINE ===================== */
-
-let timelineData = [];
-
-function buildSegmentTimeline() {
-
-    
-    if (!S.workoutData?.length) return;
-
-    timelineData = [];
-
-    /* ===================== DRESS ===================== */
-
-    timelineData.push({
-        phase: "dress",
-        duration: dressOutDuration
-    });
-
-    /* ===================== STRETCH ===================== */
-
-    if (dynamicStretchDuration > 0) {
-
-        timelineData.push({
-            phase: "stretch",
-            duration: dynamicStretchDuration
-        });
-    }
-
-    /* ===================== WORKOUT ===================== */
-
-    S.workoutData.forEach((item, index) => {
-
-        /* ---------- SETS ---------- */
-
-        if (item.type === "set") {
-
-            const nextItem = S.workoutData[index + 1];
-
-            const isLastSetBeforeBreak =
-                nextItem &&
-                nextItem.type === "break";
-
-            // 🔥 4 station rotations
-            for (let station = 0; station < 4; station++) {
-
-                /* WORK */
-
-                timelineData.push({
-                    phase: "work",
-                    duration:
-                        item.workSec ||
-                        S.sheetWorkDuration ||
-                        safeGet("workTime", 30)
-                });
-
-                const isFinalStation =
-                    station === 3;
-
-                // 🔥 skip final rotate before break
-                if (
-                    isLastSetBeforeBreak &&
-                    isFinalStation
-                ) {
-                    continue;
-                }
-
-                /* ROTATE */
-
-                timelineData.push({
-                    phase: "rotate",
-                    duration:
-                        item.rotateSec ||
-                        S.sheetRotateDuration ||
-                        safeGet("restTime", 30)
-                });
-            }
-        }
-
-        /* ---------- BREAK ---------- */
-
-        if (item.type === "break") {
-
-            timelineData.push({
-                phase: "break",
-                duration:
-                    item.breakSec ||
-                    breakDuration
-            });
-        }
-    });
-
-    /* ===================== COOLDOWN ===================== */
-
-    if (cooldownDuration > 0) {
-
-        timelineData.push({
-            phase: "cooldown",
-            duration: cooldownDuration
-        });
-    }
-
-    console.log("🧩 Timeline Data:", timelineData);
-
-    renderTimeline();
-}
-
-
-/* ===== MUST BE OUTSIDE (GLOBAL) ===== */
-
-function renderTimeline() {
-    const container = document.getElementById("timelineSegments");
-    if (!container) return;
-
-    container.innerHTML = "";
-
-    const total = timelineData.reduce((sum, seg) => sum + seg.duration, 0);
-
-    timelineData.forEach((seg, index) => {
-        const div = document.createElement("div");
-div.classList.add("timeline-segment", `seg-${seg.phase}`);
-
-// 🔤 LABEL
-const label = document.createElement("div");
-label.classList.add("segment-label");
-
-// Auto naming
-let labelText = seg.phase.toUpperCase();
-
-if (seg.phase === "work") {
-    labelText = `SET`;
-}
-if (seg.phase === "rotate") {
-    labelText = `ROTATE`;
-}
-if (seg.phase === "break") {
-    labelText = `BREAK`;
-}
-if (seg.phase === "stretch") {
-    labelText = `STRETCH`;
-}
-if (seg.phase === "dress") {
-    labelText = `DRESS`;
-}
-
-label.innerText = labelText;
-
-// 🔥 fill layer
-const fill = document.createElement("div");
-fill.classList.add("segment-fill");
-
-div.appendChild(fill);
-div.appendChild(label);
-
-
-        const percent = (seg.duration / total) * 100;
-        div.style.width = percent + "%";
-
-        div.dataset.index = index;
-
-        container.appendChild(div);
-    });
-}
-
-      function updatePhaseGlow(theme) {
-    const el = document.getElementById("schoolName");
-    if (!el || !theme) return;
-
-    switch (S.currentPhase) {
-
-        case "dress":
-            el.style.textShadow = `
-                0 0 4px #aaa,
-                0 0 8px #666
-            `;
-            break;
-
-        case "stretch":
-            el.style.textShadow = `
-                0 0 6px #4fc3f7,
-                0 0 14px #4fc3f7
-            `;
-            break;
-
-        case "work":
-            el.style.textShadow = `
-                0 0 8px ${theme.primary},
-                0 0 18px ${theme.primaryLight},
-                0 0 28px ${theme.primary}
-            `;
-            break;
-
-        case "rotate":
-            el.style.textShadow = `
-                0 0 6px orange,
-                0 0 14px gold
-            `;
-            break;
-
-        case "break":
-            el.style.textShadow = `
-                0 0 6px red,
-                0 0 16px crimson
-            `;
-            break;
-
-        case "cooldown":
-            el.style.textShadow = `
-                0 0 4px #888,
-                0 0 10px #555
-            `;
-            break;
-    }
-}
-
-function updateSegmentHighlight() {
-
-    if (!window.classStartTime) return;
-
-    /* ===================== TRUE ELAPSED ===================== */
-
-const totalTimelineDuration = timelineData.reduce(
-    (sum, seg) => sum + seg.duration,
-    0
-);
-
-let elapsed =
-    totalTimelineDuration - S.totalSeconds;
-
-    let currentIndex = 0;
-    let segmentElapsed = 0;
-
-    // find current segment
-    for (let i = 0; i < timelineData.length; i++) {
-
-        const segDuration = timelineData[i].duration;
-
-        if (elapsed < segDuration) {
-            currentIndex = i;
-            segmentElapsed = elapsed;
-            break;
-        }
-
-        elapsed -= segDuration;
-    }
-
-    const segments = document.querySelectorAll(".timeline-segment");
-
-    segments.forEach((el, i) => {
-
-        const fill = el.querySelector(".segment-fill");
-
-        if (!fill) return;
-
-        // ACTIVE segment
-        if (i === currentIndex) {
-
-            el.classList.add("active");
-
-            const segDuration = timelineData[i].duration;
-            const percent = Math.min((segmentElapsed / segDuration) * 100, 100);
-
-            fill.style.transition = "width 0.3s linear";
-fill.style.width = percent + "%";
-        }
-
-        // COMPLETED segments
-        else if (i < currentIndex) {
-            el.classList.remove("active");
-            fill.style.width = "100%";
-        }
-
-        // FUTURE segments
-        else {
-            el.classList.remove("active");
-            fill.style.width = "0%";
-        }
-    });
-}
-
-function animateTimeline() {
-    TimelineService.updateHighlight();
-    requestAnimationFrame(animateTimeline);
-}
-      
-function applyCoachControl() {
-
-  if (!window.classStartTime && window.controlTimestamp) {
-    window.classStartTime = new Date(window.controlTimestamp).getTime();
-}
-
-  // 🔥 FORCE SYNC FOR LATE JOIN (even without new START command)
-if (window.classStartTime && S.isRunning) {
-    const now = getEffectiveNow().getTime();
-    const state = computeWorkoutState(now);
-
-    if (state) {
-        S.currentPhase = state.phase;
-        S.timeLeft = state.timeLeft;
-
-        if (state.setIndex !== undefined) {
-            S.currentSet = state.setIndex;
-            S.displaySetNumber = state.setNumber;
-            loadSetData(S.currentSet);
-        }
-
-        S.rotationCount = state.rotation || 0;
-          applyRotationState(S.rotationCount);
-          
-
-        refreshTimerUI();
-    }
-}
-
-    if (!window.controlAction) return;
-
-    const signature = [
-        window.controlAction,
-        window.controlTimestamp,
-        window.controlPhase,
-        window.controlSet,
-        window.controlRotation
-    ].join("|");
-
-    // 🚫 prevent re-running same command
-    if (signature === lastControlSignature) return;
-
-    lastControlSignature = signature;
-
-    const now = getEffectiveNow().getTime();
-
-    console.log("🎮 Applying control:", signature);
-
-    switch (window.controlAction) {
-
-       case "START":
-    window.classStartTime = new Date(window.controlTimestamp).getTime();
-    S.isRunning = true;
-
-    // 🔥 FIXED — DEFINE nowMs FIRST
-    const nowMs = getEffectiveNow().getTime();
-    const state = computeWorkoutState(nowMs);
-
-    if (!state) return;
-
-    // 🔥 ROTATE CHECK (optional but good)
-    if (
-    state.phase === "rotate" &&
-    state.rotation !== S.rotationCount
-) {
-    console.log("🔁 ROTATING QUADRANTS (COACH SYNC)");
-
-    S.rotationCount = state.rotation;
-
-    applyRotationState(S.rotationCount);
-}
-
-    S.currentPhase = state.phase;
-    S.timeLeft = state.timeLeft;
-
-    S.rotationCount = state.rotation || 0;
-
-    refreshTimerUI();
-    break;
-
-        case "STOP":
-    stopAllTimers();
-    window.classStartTime = null;
-        
-    refreshTimerUI();
-    break;
-
-        case "PAUSE":
-            S.isRunning = false;
-        
-    refreshTimerUI();
-            break;
-
-        case "RESUME":
-            S.isRunning = true;
-        
-    refreshTimerUI();
-            break;
-
-        case "JUMP":
-
-            const offset = calculateOffsetForTarget(
-                window.controlPhase,
-                window.controlSet,
-                window.controlRotation
-            );
-
-            window.classStartTime = now - (offset * 1000);
-        
-    refreshTimerUI();
-            break;
-    }
-} 
-
-      
-
-/* ======================================================
-   TOTAL DISPLAY
-====================================================== */
-function updateTotalDisplay() {
-
-    // Prevent negative time showing
-    const safeTotal = Math.max(0, S.totalSeconds);
-
-    const minutes = Math.floor(safeTotal / 60);
-    const seconds = safeTotal % 60;
-
-    const totalEl = document.getElementById("totalTime");
-    if (!totalEl) return;
-
-    totalEl.innerText =
-        `${minutes.toString().padStart(2, "0")}:` +
-        `${seconds.toString().padStart(2, "0")}`;
-}
-
-/* ======================================================
-   DETERMINISTIC QUADRANT ROTATION
-====================================================== */
-
-function applyRotationState(rotation) {
-
-    const q1 = document.getElementById("q1");
-    const q2 = document.getElementById("q2");
-    const q3 = document.getElementById("q3");
-    const q4 = document.getElementById("q4");
-
-    if (!q1 || !q2 || !q3 || !q4) return;
-
-    const base = {
-
-        q1: {
-            bg: "#000",
-            color: "#fff"
-        },
-
-        q2: {
-            bg: "#f4f4f4",
-            color: "#000"
-        },
-
-        q3: {
-            bg: "var(--primary)",
-            color: "#fff"
-        },
-
-        q4: {
-            bg: "#555",
-            color: "#fff"
-        }
-    };
-
-    const layouts = [
-
-        // ROTATION 0
-        {
-            q1: base.q1,
-            q2: base.q2,
-            q3: base.q3,
-            q4: base.q4
-        },
-
-        // ROTATION 1
-        {
-            q1: base.q3,
-            q2: base.q1,
-            q3: base.q4,
-            q4: base.q2
-        },
-
-        // ROTATION 2
-        {
-            q1: base.q4,
-            q2: base.q3,
-            q3: base.q2,
-            q4: base.q1
-        },
-
-        // ROTATION 3
-        {
-            q1: base.q2,
-            q2: base.q4,
-            q3: base.q1,
-            q4: base.q3
-        }
-    ];
-
-    const layout = layouts[rotation % 4];
-
-    Object.keys(layout).forEach(id => {
-
-        const el = document.getElementById(id);
-
-        if (!el) return;
-
-        el.style.background = layout[id].bg;
-        el.style.color = layout[id].color;
-    });
-}
-
-/* ======================================================
-   AUDIO CORE
-====================================================== */
-
-function ensureAudio() {
-    if (!S.audioCtx) {
-        S.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (S.audioCtx.state === "suspended") {
-        S.audioCtx.resume();
-    }
-}
-
-/* ---------- GENERIC TONE ---------- */
-function playTone(freq, dur) {
-
-    ensureAudio();
-
-    const osc = S.audioCtx.createOscillator();
-    const gain = S.audioCtx.createGain();
-
-    osc.type = "sawtooth";
-    osc.frequency.value = freq;
-
-    // 🔥 prevent speaker clipping
-    gain.gain.setValueAtTime(0.6, S.audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(
-        0.001,
-        S.audioCtx.currentTime + dur
-    );
-
-    osc.connect(gain);
-    gain.connect(S.audioCtx.destination);
-
-    osc.start();
-    osc.stop(S.audioCtx.currentTime + dur);
-}
-
-/* ---------- AIR HORN ---------- */
-function playHorn() {
-
-    ensureAudio();
-
-    const duration = 2.5;
-
-    const osc1 = S.audioCtx.createOscillator();
-    const osc2 = S.audioCtx.createOscillator();
-    const gain = S.audioCtx.createGain();
-
-    osc1.type = "sawtooth";
-    osc2.type = "square";
-
-    osc1.frequency.value = 180;
-    osc2.frequency.value = 220;
-
-    // 🔥 cleaner envelope (less pop)
-    gain.gain.setValueAtTime(0.0001, S.audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.9, S.audioCtx.currentTime + 0.05);
-    gain.gain.exponentialRampToValueAtTime(0.001, S.audioCtx.currentTime + duration);
-
-    osc1.connect(gain);
-    osc2.connect(gain);
-    gain.connect(S.audioCtx.destination);
-
-    osc1.start();
-    osc2.start();
-
-    osc1.stop(S.audioCtx.currentTime + duration);
-    osc2.stop(S.audioCtx.currentTime + duration);
-}
-
-/* ======================================================
-   SPEECH ENGINE (shared helper)
-====================================================== */
-
-function speak(text, rate = 1, pitch = 1) {
-
-    // Prevent queue pile-up
-    speechSynthesis.cancel();
-
-    const utter = new SpeechSynthesisUtterance(text);
-
-    if (S.selectedVoice) utter.voice = S.selectedVoice;
-
-    utter.volume = 1;
-    utter.rate = rate;
-    utter.pitch = pitch;
-
-    speechSynthesis.speak(utter);
-}
-
-/* ---------- COUNTDOWN ---------- */
-function speakNumber(num) {
-    speak(num.toString(), 1, 1);
-}
-
-/* ---------- ROTATE ---------- */
-function speakRotate() {
-    speak("Rotate!", 1.6, 1.5);
-}
-
-/* ---------- DRESS WARNING ---------- */
-function speakDressWarning() {
-    speak("Two minute warning", 1, 1);
-}
-
-/* ---------- LIFT ---------- */
-function speakLift() {
-    speak("Lift!", 1.6, 1.3);
-}
-
-/* ---------- STRETCH ---------- */
-function speakStretch() {
-    speak("Dynamic Stretch!", 1.3, 1.2);
-}
-
-/* ---------- BREAK PREP ---------- */
-function speakBreakPrep() {
-    speak("Break! Prep next lift!", 1.2, 1.1);
-}
-
-/* ======================================================
-   REST DURATION (seconds)
-====================================================== */
-function getRestDuration() {
-
-    // 1️⃣ per-set override
-    const currentItem = S.workoutData[S.currentSet - 1];
-    if (currentItem?.rotateSec) {
-        console.log("⏱ Using per-set rotate:", currentItem.rotateSec);
-        return currentItem.rotateSec;
-    }
-
-    // 2️⃣ sheet override
-    if (S.sheetRotateDuration !== null) {
-        console.log("⏱ Using sheet rotate:", S.sheetRotateDuration);
-        return S.sheetRotateDuration;
-    }
-
-    // 3️⃣ UI fallback
-    const val = parseInt(document.getElementById("restTime").value, 10);
-    const safe = isNaN(val) || val <= 0 ? 1 : val;
-
-    console.log("⏱ Using UI rotate:", safe);
-    return safe;
-}
-
-function syncTime() {
-
-    if (!S.isRunning) {
-
-        const workVal = WorkoutService.getWorkDuration();
-        const restVal = getRestDuration();
-
-        S.timeLeft =
-    (S.currentPhase === "work")
-        ? workVal
-        : restVal;
-
-        refreshTimerUI();
-
-        }
-}
-
-/* ======================================================
-   RESET CENTER CLOCK
-====================================================== */
-
-function resetCenterClock() {
-
-    const center = document.getElementById("center");
-
-    center.classList.remove("workMode", "rotateMode");
-    center.classList.add("workMode");
-
-    document.getElementById("clock").innerText =
-        document.getElementById("workTime").value;
-
-    document.getElementById("phase").innerText = "WORK";
-}
-
-/* ======================================================
-   LOAD SET INTO QUADRANTS
-====================================================== */
-
-function loadSetData(setNumber) {
-
-    const workout = S.workoutData[setNumber - 1];
-
-    if (!workout || workout.type !== "set") return;
-
-    /* ---------- CORE ---------- */
-    const q1Texts = document.querySelectorAll("#q1 .quad-text");
-    if (q1Texts.length >= 3) {
-        q1Texts[0].innerText = workout.core;
-        q1Texts[1].innerText = "Reps: " + workout.reps;
-        q1Texts[2].innerText =
-            "Percentage: " + (workout.percent ? workout.percent + "%" : "");
-    }
-
-    /* ---------- AUX ---------- */
-    const q2Texts = document.querySelectorAll("#q2 .quad-text");
-    if (q2Texts.length >= 2) {
-        q2Texts[0].innerText = workout.aux;
-        q2Texts[1].innerText = "Reps: " + workout.auxReps;
-    }
-
-    /* ---------- MOVEMENT ---------- */
-    const q4Texts = document.querySelectorAll("#q4 .quad-text");
-    if (q4Texts.length >= 2) {
-        q4Texts[0].innerText = workout.move;
-        q4Texts[1].innerText = "Reps/Time: " + workout.moveReps;
-    }
-}
-
-/* ======================================================
-   PREVIEW NEXT SET
-====================================================== */
-
-function previewSetData(setNumber) {
-
-    const workout = S.workoutData[setNumber - 1];
-
-    if (!workout || workout.type !== "set") return;
-
-    /* ---------- CORE ---------- */
-    const q1Texts = document.querySelectorAll("#q1 .quad-text");
-
-    if (q1Texts.length >= 3) {
-        q1Texts[0].innerText = "🔥 NEXT: " + workout.core;
-        q1Texts[1].innerText = "Reps: " + workout.reps;
-        q1Texts[2].innerText =
-            "Percentage: " +
-            (workout.percent ? workout.percent + "%" : "");
-    }
-
-    /* ---------- AUX ---------- */
-    const q2Texts = document.querySelectorAll("#q2 .quad-text");
-
-    if (q2Texts.length >= 2) {
-        q2Texts[0].innerText = "🔥 NEXT: " + workout.aux;
-        q2Texts[1].innerText = "Reps: " + workout.auxReps;
-    }
-
-    /* ---------- MOVEMENT ---------- */
-    const q4Texts = document.querySelectorAll("#q4 .quad-text");
-
-    if (q4Texts.length >= 2) {
-        q4Texts[0].innerText = "🔥 NEXT: " + workout.move;
-        q4Texts[1].innerText =
-            "Reps/Time: " + workout.moveReps;
-    }
-}
-
-function workoutFinishScreen() {
-
-    S.isRunning = false;
-
-    if (S.timer) {
-        clearTimeout(S.timer);
-        S.timer = null;
-    }
-
-    // update center display
-    const clock = document.getElementById("clock");
-    const phase = document.getElementById("phase");
-
-    if (clock) clock.textContent = "0:00";
-    if (phase) phase.textContent = "COMPLETE";
-
-    // visual style
-    const center = document.getElementById("center");
-    if (center) {
-        center.classList.remove(
-            "phase-dress",
-            "phase-stretch",
-            "phase-work",
-            "phase-rotate",
-            "phase-break"
-        );
-        center.classList.add("phase-cooldown");
-    }
-
-    console.log("🏁 Workout finished");
-}
-
-/* ======================================================
-   SPACEBAR CONTROL
-====================================================== */
-
-window.addEventListener("keydown", (e) => {
-
-    // 🔒 Ignore if user is typing in an input/field
-    const tag = document.activeElement?.tagName;
-    if (tag === "INPUT" || tag === "TEXTAREA") return;
-
-    // 🔒 Prevent key repeat when holding space
-    if (e.repeat) return;
-
-    if (e.code === "Space") {
-        e.preventDefault();
-        startTimer();
-    }
-});
-
-document.getElementById("schoolLogo")?.classList.add("logoDefault");
-
-/* ========================================
-COACH JUMP CONTROLS
-======================================== */
-
-function toggleCoachPanel() {
-
-    const panel = document.getElementById("coachPanel");
-
-    if (!panel) return;
-
-    panel.style.display =
-        panel.style.display === "flex"
-            ? "none"
-            : "flex";
-}
-
-function jumpToSection(targetPhase) {
-
-    const now = getEffectiveNow().getTime();
-
-    let offset = 0;
-
-    // DRESS
-    if (targetPhase === "dress") {
-        offset = 0;
-    }
-
-    // STRETCH
-    else if (targetPhase === "stretch") {
-        offset = dressOutDuration;
-    }
-
-    // BREAK
-    else if (targetPhase === "break") {
-
-        for (const seg of S.phaseMeta) {
-
-            if (seg.phase === "break") {
-                break;
-            }
-
-            offset += seg.duration;
-        }
-
-        offset += dressOutDuration + dynamicStretchDuration;
-    }
-
-    // COOLDOWN
-    else if (targetPhase === "cooldown") {
-
-        offset = WorkoutService.calculateTotalTime() - cooldownDuration;
-    }
-
-    window.classStartTime = now - (offset * 1000);
-
-    refreshTimerUI();
-
-    console.log("⏩ Jumped to:", targetPhase);
-}
-
-function jumpToSet(setNumber) {
-
-    const now = getEffectiveNow().getTime();
-
-    let offset = dressOutDuration + dynamicStretchDuration;
-
-    for (const seg of S.phaseMeta) {
-
-        if (
-            seg.phase === "work" &&
-            seg.setIndex === setNumber
-        ) {
-            break;
-        }
-
-        offset += seg.duration;
-    }
-
-         window.classStartTime = now - (offset * 1000);
-
-    refreshTimerUI();
-
-    console.log("⏩ Jumped to set:", setNumber);
-}
-
-       function buildCoachButtons() {
-
-    const container =
-        document.getElementById("coachSetButtons");
-
-    if (!container) return;
-
-    container.innerHTML = "";
-
-    // ONLY workout sets
-    const sets = S.workoutData.filter(
-        item => item.type === "set"
-    );
-
-    sets.forEach((set, index) => {
-
-        const btn = document.createElement("button");
-
-        const setNumber = index + 1;
-
-        btn.innerText = `Set ${setNumber}`;
-
-        btn.onclick = () => jumpToSet(setNumber);
-
-        container.appendChild(btn);
-    });
-}
-
-      
-window.addEventListener("unhandledrejection", e => {
-    console.warn("Unhandled promise:", e.reason);
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    const nav = document.getElementById("navDropdown");
-
-    if (!nav) return;
-
-    nav.addEventListener("change", (e) => {
-
-        const value = e.target.value;
-
-        if (!value) return;
-
-        // preserve school parameter
-        const params = new URLSearchParams(window.location.search);
-
-        const school =
-            params.get("school") ||
-            sessionStorage.getItem("school") ||
-            "harrisonville";
-
-        window.location.href =
-            `${value}?school=${school}`;
-    });
-});
-      
 
 window.addEventListener("DOMContentLoaded", () => {
 
-    console.log("📦 DOM READY");
+    if (window.TimerState) {
+        window.TimerState.globalTheme =
+            window.pendingGlobalTheme;
+    }
 
-    
-    WorkoutService.load();
+    CoachUI.init();
 
-    setInterval(autoDetectActiveClass, 5000);
+});
 
-   // if (typeof loadTheme === "function") {
-//     loadTheme();
-// }
 
-    // ✅ RIGHT HERE (THIS IS THE CORRECT SPOT)
-    const logo = document.getElementById("schoolLogo");
-
-    });
-
+   
 </script>
 
-      <div id="coachJumpBtn" onclick="toggleCoachPanel()">
+<!-- ======================================== -->
+<!-- COACH CONTROLS -->
+<!-- ======================================== -->
+
+<button
+    id="coachToggle"
+    class="coach-toggle">
+
     ⚙
+
+</button>
+
+<div id="coachPanel" class="coach-panel hidden">
+
+    <div class="coach-title">
+        Coach Controls
+    </div>
+
+    <div class="coach-divider"></div>
+
+    <div id="coachPhaseButtons"></div>
+
+    <div id="coachSetButtons"></div>
+
+    <div id="coachStatus"></div>
+
 </div>
 
-<div id="coachPanel"> <button onclick="jumpToSection('dress')">Dress</button> <button onclick="jumpToSection('stretch')">Stretch</button> <!-- AUTO GENERATED SET BUTTONS --> <div id="coachSetButtons"></div> <button onclick="jumpToSection('break')">Break</button> <button onclick="jumpToSection('cooldown')">Cooldown</button> </div>
-      
-
-
+        
 </body>
 </html>
      

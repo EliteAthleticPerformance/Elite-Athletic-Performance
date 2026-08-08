@@ -1,57 +1,112 @@
-const NavigationService = {
+// ========================================
+// NAVIGATION SERVICE
+// ========================================
 
-    init() {
+window.NavigationService = window.NavigationService || {};
+const NavigationService = window.NavigationService;
 
-        console.log("✅ NavigationService initialized");
 
-        const nav = document.getElementById("navDropdown");
+// ========================================
+// INITIALIZATION
+// ========================================
 
-        console.log("Navigation:", nav);
+function init() {
 
-        if (!nav) return;
+    console.log("✅ NavigationService Initialized");
 
-        nav.addEventListener("change", (e) => {
+    initializeDropdown();
 
-            const page = e.target.value;
+    initializeLogout();
 
-            if (!page) return;
+}
 
-            this.navigate(page);
 
-        });
+// ========================================
+// DROPDOWN
+// ========================================
 
-        const logoutBtn = document.querySelector(".logout-btn");
+function initializeDropdown() {
 
-        if (logoutBtn) {
-            logoutBtn.addEventListener("click", () => this.logout());
-        }
+    const nav =
+        document.getElementById("navDropdown");
 
-    },
+    if (!nav) return;
 
-    navigate(page) {
+    nav.addEventListener("change", event => {
 
-        const school = SchoolService.getSchoolKey();
+        const page = event.target.value;
 
-        const separator = page.includes("?") ? "&" : "?";
+        if (!page) return;
 
-        window.location.href = `${page}${separator}school=${school}`;
+        navigate(page);
 
-    },
+    });
 
-    logout() {
+}
 
-        sessionStorage.clear();
-        localStorage.clear();
 
-        const base =
-            window.location.pathname.includes("/Elite-Athletic-Performance/")
-                ? "/Elite-Athletic-Performance/"
-                : "/";
+// ========================================
+// LOGOUT BUTTON
+// ========================================
 
-        window.location.href = base + "index.html";
+function initializeLogout() {
 
-    }
+    const logoutBtn =
+        document.querySelector(".logout-btn");
 
-};
+    logoutBtn?.addEventListener(
+        "click",
+        logout
+    );
 
-window.NavigationService = NavigationService;
+}
+
+
+// ========================================
+// NAVIGATION
+// ========================================
+
+function navigate(page) {
+
+    const school =
+        SchoolService.getSchoolKey();
+
+    const separator =
+        page.includes("?") ? "&" : "?";
+
+    window.location.href =
+        `${page}${separator}school=${school}`;
+
+}
+
+
+// ========================================
+// LOGOUT
+// ========================================
+
+function logout() {
+
+    sessionStorage.clear();
+
+    localStorage.clear();
+
+    const base =
+        window.location.pathname.includes(
+            "/Elite-Athletic-Performance/"
+        )
+            ? "/Elite-Athletic-Performance/"
+            : "/";
+
+    window.location.href =
+        `${base}index.html`;
+
+}
+
+
+// ========================================
+// PUBLIC API
+// ========================================
+
+NavigationService.init = init;
+NavigationService.navigate = navigate;
+NavigationService.logout = logout;
