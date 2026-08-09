@@ -47,6 +47,99 @@ async function waitForConfig() {
   }
 }
 
+
+
+// ========================================
+// 🔥 DEMO-ONLY SALES ELEMENTS
+// ========================================
+
+function updateSalesVisibility() {
+
+    const school = SchoolService.getSchoolKey();
+
+    const isDemo =
+        school.toLowerCase() === "demo";
+
+
+    // ------------------------------------
+    // FREE TRIAL CTA
+    // ------------------------------------
+
+    const cta =
+        document.querySelector(".generic-header-cta");
+
+    if (cta) {
+
+        cta.style.setProperty(
+            "display",
+            isDemo ? "inline-flex" : "none",
+            "important"
+        );
+
+    }
+
+
+    // ------------------------------------
+    // PRICING NAV LINK
+    // ------------------------------------
+
+    const pricingLink =
+        document.getElementById("pricingNavLink");
+
+    if (pricingLink) {
+
+        pricingLink.style.setProperty(
+            "display",
+            isDemo ? "flex" : "none",
+            "important"
+        );
+
+    }
+
+}
+
+
+// ========================================
+// 💰 PRICING LINK VISIBILITY
+// ========================================
+
+function updatePricingLink() {
+
+    const pricingLink =
+        document.getElementById("pricingNavLink");
+
+    if (!pricingLink) return;
+
+    const school =
+        SchoolService.getSchoolKey();
+
+    const isDemo =
+        school === "Demo";
+
+    pricingLink.classList.toggle(
+        "hidden",
+        !isDemo
+    );
+}
+
+
+function updateSchoolBrandingMode() {
+
+    const header =
+        document.getElementById("schoolHeader");
+
+    if (!header) return;
+
+    const school =
+        SchoolService.getSchoolKey();
+
+    header.classList.toggle(
+        "custom-school",
+        school.toLowerCase() !== "demo"
+    );
+}
+
+
 /* ========================================
    🎯 INIT
 ======================================== */
@@ -54,12 +147,21 @@ async function waitForConfig() {
 function initHeaderUI() {
 
     setupMenu();
-    setupLogout();          // ← ADD THIS
+    setupLogout();
+
+    ThemeService.applyHeaderBranding(
+        window.APP_CONFIG
+    );
+
+    updateSalesVisibility();
+    updateSchoolBrandingMode();
+    
     injectSchoolIntoLinks();
     highlightActiveLink();
-    setPageTitle();
 
-    document.dispatchEvent(new Event("headerLoaded"));
+    document.dispatchEvent(
+        new Event("headerLoaded")
+    );
 }
 
 /* ========================================
@@ -98,7 +200,7 @@ function getSchoolParam() {
 ======================================== */
 
 function injectSchoolIntoLinks() {
-  const school = getSchoolParam();
+  const school = SchoolService.getSchoolKey();
   const base = getBasePath();
 
   document.querySelectorAll("#dropdownMenu a").forEach(link => {
@@ -117,6 +219,44 @@ function injectSchoolIntoLinks() {
     link.setAttribute("href", url.pathname + url.search);
   });
 }
+
+
+// ========================================
+// 🏫 HEADER BRANDING
+// ========================================
+
+function applyHeaderBranding() {
+
+    const branding =
+        window.APP_CONFIG?.branding;
+
+    if (!branding) {
+        console.warn(
+            "⚠️ Header branding unavailable"
+        );
+        return;
+    }
+
+    const schoolNameEl =
+        document.getElementById("schoolName");
+
+    const pageTitleEl =
+        document.getElementById("pageTitle");
+
+    if (!schoolNameEl || !pageTitleEl) {
+        return;
+    }
+
+    schoolNameEl.textContent =
+        branding.displayName ||
+        branding.schoolName ||
+        "";
+
+    pageTitleEl.textContent =
+        branding.slogan ||
+        "Elite Athletic Performance";
+}
+
 
 /* ========================================
    🏷️ TITLE
@@ -187,50 +327,70 @@ function highlightActiveLink() {
   });
 }
 
-/* ========================================
-   ☰ MENU
-======================================== */
+// ========================================
+// ☰ MENU
+// ========================================
 
 let menuInitialized = false;
 let outsideClickBound = false;
 
 function setupMenu() {
-  if (menuInitialized) return;
-  menuInitialized = true;
 
-  const toggle = document.getElementById("menuToggle");
-  const dropdown = document.getElementById("dropdownMenu");
+    if (menuInitialized) return;
 
-  if (!toggle || !dropdown) return;
+    const toggle =
+        document.getElementById("menuToggle");
 
-  toggle.addEventListener("click", (e) => {
+    const dropdown =
+        document.getElementById("dropdownMenu");
 
-    e.stopPropagation();
+    // Header not ready yet
+    if (!toggle || !dropdown) {
 
-    dropdown.classList.toggle("show");
+        console.warn(
+            "⚠️ Header menu elements not found"
+        );
 
-    toggle.classList.toggle("open");
+        return;
+    }
 
-});
+    // Only mark initialized AFTER elements exist
+    menuInitialized = true;
 
-  if (!outsideClickBound) {
+    toggle.addEventListener("click", (e) => {
 
-    document.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
 
-        if (!dropdown.contains(e.target) &&
-            !toggle.contains(e.target)) {
+        const isOpen =
+            dropdown.classList.toggle("show");
 
-            dropdown.classList.remove("show");
-
-            toggle.classList.remove("open");
-
-        }
+        toggle.classList.toggle(
+            "open",
+            isOpen
+        );
 
     });
 
-    outsideClickBound = true;
+    if (!outsideClickBound) {
 
-}
+        document.addEventListener("click", (e) => {
+
+            if (
+                !dropdown.contains(e.target) &&
+                !toggle.contains(e.target)
+            ) {
+
+                dropdown.classList.remove("show");
+
+                toggle.classList.remove("open");
+
+            }
+
+        });
+
+        outsideClickBound = true;
+    }
 
 }
 

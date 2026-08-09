@@ -89,8 +89,11 @@ function sendStart() {
 
 function sendPause() {
 
-    return send("PAUSE");
+    // Pause coach browser immediately
+    TimerEngine.pause();
 
+    // Broadcast pause to receiving browsers
+    return send("PAUSE");
 }
 
 function sendResume() {

@@ -198,50 +198,64 @@ MOBILE
   font-size: 14px;
 }
 
-/* Dropdown */
+/* ========================================
+   NAVIGATION DROPDOWN
+======================================== */
+
 .dropdown {
     position: absolute;
-    top: 100%;
-    right: 20px;
-    margin-top: 10px;
+
+    top: calc(100% + 10px);
+    right: 0;
 
     background: #111;
+
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 8px;
 
     display: none;
     flex-direction: column;
+
     min-width: 180px;
 
-    z-index: 999;
+    z-index: 9999;
 
     opacity: 0;
     transform: translateY(-10px);
+
     pointer-events: none;
-    transition: all 0.2s ease;
+
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
 }
 
 .dropdown a {
-  padding: 14px 16px;
-  font-size: 1.1rem;
-  font-weight: 600;
+    padding: 14px 16px;
 
-  display: flex;
-  align-items: center;
-  gap: 10px;                   /* 🔥 space between emoji + text */
+    font-size: 1.1rem;
+    font-weight: 600;
 
-  transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    transition:
+        background 0.2s ease,
+        padding-left 0.2s ease;
 }
 
 .dropdown a:hover {
-  background: #222;
-  padding-left: 20px;          /* 🔥 subtle slide effect */
+    background: #222;
+    padding-left: 20px;
 }
 
 .dropdown.show {
     display: flex;
+
     opacity: 1;
     transform: translateY(0);
+
     pointer-events: auto;
 }
 
@@ -1088,7 +1102,7 @@ right: 45px;
 
   border-radius: 18px;
 
-  transform: rotate(-5deg)
+  transform: rotate(-5deg);
 
   box-shadow:
     0 0 20px rgba(59,130,246,0.35),
@@ -3583,18 +3597,26 @@ MOBILE (RESPONSIVE)
 }
 
 /* ===================== BASE ===================== */
-html, body {
-    width:100%;
-    height:100%;
-    overflow:hidden;
+
+html {
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 body {
-    margin:0;
-    background:#000;
-    color:#fff;
-    font-family:'Arial Black', sans-serif;
-    height:100vh;
+    margin: 0;
+    width: 100%;
+    min-height: 100vh;
+
+    background: #000;
+    color: #fff;
+
+    font-family: 'Arial Black', sans-serif;
+
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 /* ===================== HEADER ===================== */
@@ -4274,4 +4296,386 @@ HIDDEN COACH PANEL
         0 0 10px #39ff14;
 }
 
-      
+
+/* ========================================
+   GENERIC HEADER — VISUAL PREVIEW ONLY
+   ======================================== */
+
+.generic-header-preview {
+    overflow: visible;
+}
+
+
+/* ========================================
+   GENERIC HEADER — TAGLINE PREVIEW
+   ======================================== */
+
+.generic-header-preview .header-tagline {
+    margin-top: 6px;
+    text-align: center;
+
+    font-size: 1.15rem;
+    font-weight: 700;
+
+    color: #ffffff;
+
+    letter-spacing: 0.5px;
+
+    text-shadow:
+        0 0 6px rgba(59, 130, 246, 0.65),
+        0 0 14px rgba(59, 130, 246, 0.35);
+}
+
+
+/* ========================================
+   GENERIC HEADER — PUBLIC PREVIEW
+   ======================================== */
+
+.generic-header-preview #pageTitle {
+    display: none;
+}
+
+
+/* ========================================
+   GENERIC HEADER — FREE TRIAL CTA
+======================================== */
+
+.generic-header-preview .generic-header-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 12px 28px;
+
+    border-radius: 14px;
+
+    background: #2563eb;
+    color: #ffffff;
+
+    font-size: 0.95rem;
+    font-weight: 800;
+
+    letter-spacing: 0.4px;
+    text-decoration: none;
+
+    border: 1px solid #3b82f6;
+
+    box-shadow:
+        0 0 8px rgba(59, 130, 246, 0.65),
+        0 0 18px rgba(59, 130, 246, 0.35);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.generic-header-preview .generic-header-cta:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 0 10px rgba(59, 130, 246, 0.8),
+        0 0 24px rgba(59, 130, 246, 0.45);
+}
+
+
+/* ========================================
+   GENERIC HEADER — LAYOUT
+======================================== */
+
+.generic-header-preview {
+    position: relative;
+
+    display: grid;
+    grid-template-columns: 180px 1fr 280px;
+
+    align-items: center;
+
+    width: 100%;
+    min-height: 150px;
+
+    box-sizing: border-box;
+
+    padding: 12px 28px;
+
+    background: #000000;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+
+/* ========================================
+   GENERIC HEADER — LEFT
+======================================== */
+
+.generic-header-preview .header-left {
+
+    display: flex;
+
+    align-items: center;
+    justify-content: flex-start;
+
+    position: relative;
+    z-index: 2;
+}
+
+
+/* ========================================
+   GENERIC HEADER — LOGO
+======================================== */
+
+.generic-header-preview .logo {
+
+    width: 72px;
+    height: 72px;
+
+    object-fit: contain;
+
+    display: block;
+}
+
+
+/* ========================================
+   GENERIC HEADER — CENTER
+======================================== */
+
+.generic-header-preview .header-center {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    min-width: 0;
+
+    position: relative;
+    z-index: 1;
+}
+
+
+/* ========================================
+   GENERIC HEADER — TITLE
+======================================== */
+
+.generic-header-preview .header-center .elite-header {
+
+    display: block;
+
+    margin: 0;
+
+    font-size: clamp(2rem, 3.2vw, 3rem);
+
+    line-height: 1.05;
+
+    white-space: nowrap;
+
+    color: #ffffff;
+
+    text-shadow:
+        0 0 6px rgba(59, 130, 246, 0.75),
+        0 0 16px rgba(59, 130, 246, 0.45);
+}
+
+
+/* ========================================
+   GENERIC HEADER — RIGHT
+======================================== */
+
+.generic-header-preview .header-right {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-end;
+    justify-content: center;
+
+    gap: 10px;
+
+    position: relative;
+    z-index: 2;
+}
+
+
+/* ========================================
+   GENERIC HEADER — NAVIGATION STACK
+======================================== */
+
+.generic-header-preview .nav-stack {
+
+    display: flex;
+
+    flex-direction: row;
+
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 12px;
+}
+
+
+/* ========================================
+   GENERIC HEADER — RESPONSIVE
+======================================== */
+
+@media (max-width: 900px) {
+
+    .generic-header-preview {
+
+        grid-template-columns: 100px 1fr 200px;
+
+        padding: 10px 16px;
+    }
+
+    .generic-header-preview .logo {
+
+        width: 60px;
+        height: 60px;
+    }
+
+    .generic-header-preview .header-center .elite-header {
+
+        font-size: clamp(1.5rem, 4vw, 2.2rem);
+    }
+
+    .generic-header-preview .header-tagline {
+
+        font-size: 0.9rem;
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .generic-header-preview {
+
+        grid-template-columns: 1fr;
+
+        row-gap: 12px;
+
+        text-align: center;
+    }
+
+    .generic-header-preview .header-left {
+
+        justify-content: center;
+    }
+
+    .generic-header-preview .header-center {
+
+        order: 2;
+    }
+
+    .generic-header-preview .header-right {
+
+        order: 3;
+
+        align-items: center;
+    }
+
+    .generic-header-preview .nav-stack {
+
+        align-items: center;
+    }
+
+}
+
+
+/* ========================================
+   GENERIC HEADER — PUBLIC BRANDING
+======================================== */
+
+/* ========================================
+   SCHOOL NAME — CUSTOM SCHOOL BRANDING
+======================================== */
+
+.generic-header-preview #schoolName {
+    display: none;
+}
+
+.generic-header-preview.custom-school #schoolName {
+    display: block;
+}
+
+.generic-header-preview #pageTitle {
+    display: block;
+}
+
+
+/* ========================================
+   GENERIC HEADER — FINAL TITLE OVERRIDE
+======================================== */
+
+.generic-header-preview #pageTitle {
+    display: block !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+
+    color: #ffffff !important;
+
+    font-size: clamp(2rem, 3.2vw, 3rem) !important;
+    font-weight: 800 !important;
+
+    letter-spacing: 4px !important;
+    line-height: 1.05 !important;
+
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+
+    text-shadow:
+        0 0 6px rgba(59, 130, 246, 0.75),
+        0 0 16px rgba(59, 130, 246, 0.45) !important;
+}
+
+
+/* ========================================
+   HEADER DROPDOWN — ALLOW MENU TO ESCAPE
+   ======================================== */
+
+.generic-header-preview {
+    overflow: visible;
+}
+
+
+/* ========================================
+   GENERIC HEADER — DROPDOWN VISIBILITY
+======================================== */
+
+#schoolHeader.generic-header-preview {
+    overflow: visible !important;
+}
+
+
+.generic-header-cta.hidden {
+    display: none !important;
+}
+
+
+
+.generic-header-preview.custom-school #schoolName {
+    display: block;
+
+    margin: 0 0 4px;
+
+    font-size: 1.15rem;
+    font-weight: 800;
+
+    color: #ffffff;
+
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+
+    text-shadow:
+        0 0 5px rgba(59, 130, 246, 0.65),
+        0 0 12px rgba(59, 130, 246, 0.35);
+}

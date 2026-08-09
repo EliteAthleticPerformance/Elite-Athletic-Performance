@@ -4,80 +4,199 @@
 
 const SchoolService = {
 
-    DEFAULT_SCHOOL: "harrisonville",
+    DEFAULT_SCHOOL: "Demo",
+
+    // ========================================
+    // GET CURRENT SCHOOL
+    // ========================================
 
     getCurrentSchool() {
 
-        return (
-            sessionStorage.getItem("school") ||
-            this.DEFAULT_SCHOOL
-        );
+        const params =
+            new URLSearchParams(window.location.search);
 
+        const urlSchool =
+            params.get("school");
+
+        // ========================================
+        // URL SCHOOL TAKES PRIORITY
+        // ========================================
+
+        if (urlSchool) {
+
+            const configKey =
+                this.getSchoolConfigKey(urlSchool);
+
+            if (configKey) {
+
+                sessionStorage.setItem(
+                    "school",
+                    configKey
+                );
+
+                return configKey;
+            }
+        }
+
+        // ========================================
+        // SESSION SCHOOL
+        // ========================================
+
+        const sessionSchool =
+            sessionStorage.getItem("school");
+
+        if (sessionSchool) {
+
+            const configKey =
+                this.getSchoolConfigKey(sessionSchool);
+
+            if (configKey) {
+
+                sessionStorage.setItem(
+                    "school",
+                    configKey
+                );
+
+                return configKey;
+            }
+        }
+
+        // ========================================
+        // FINAL FALLBACK
+        // ========================================
+
+        return this.DEFAULT_SCHOOL;
     },
-
-    setCurrentSchool(school) {
-
-        sessionStorage.setItem("school", school);
-
-    },
-
-    hasSchool(key) {
-
-    return Boolean(window.SCHOOL_CONFIG[key]);
-
-    },
-
-    getSchools() {
-
-    return Object.values(window.SCHOOL_CONFIG);
-
-},
-
-    getConfig() {
-
-    let school = this.getCurrentSchool();
-
-    if (!this.hasSchool(school)) {
-
-        school = this.DEFAULT_SCHOOL;
-
-        this.setCurrentSchool(school);
-
-    }
-
-    return window.SCHOOL_CONFIG[school];
-
-},
 
 
     // ========================================
-    // NEW CONFIGURATION API
+    // SET CURRENT SCHOOL
+    // ========================================
+
+    setCurrentSchool(school) {
+
+        const configKey =
+            this.getSchoolConfigKey(school);
+
+        sessionStorage.setItem(
+            "school",
+            configKey || this.DEFAULT_SCHOOL
+        );
+    },
+
+
+    // ========================================
+    // CHECK IF SCHOOL EXISTS
+    // CASE-INSENSITIVE
+    // ========================================
+
+    hasSchool(key) {
+
+        if (
+            !key ||
+            !window.SCHOOL_CONFIG
+        ) {
+            return false;
+        }
+
+        const normalized =
+            key.trim().toLowerCase();
+
+        return Object.keys(
+            window.SCHOOL_CONFIG
+        ).some(configKey =>
+            configKey.toLowerCase() === normalized
+        );
+    },
+
+
+    // ========================================
+    // GET CANONICAL CONFIG KEY
+    // ========================================
+
+    getSchoolConfigKey(key) {
+
+        if (
+            !key ||
+            !window.SCHOOL_CONFIG
+        ) {
+            return "";
+        }
+
+        const normalized =
+            key.trim().toLowerCase();
+
+        return Object.keys(
+            window.SCHOOL_CONFIG
+        ).find(configKey =>
+            configKey.toLowerCase() === normalized
+        ) || "";
+    },
+
+
+    // ========================================
+    // GET CONFIG
+    // ========================================
+
+    getConfig() {
+
+        const school =
+            this.getCurrentSchool();
+
+        return (
+            window.SCHOOL_CONFIG[school] ||
+            window.SCHOOL_CONFIG[this.DEFAULT_SCHOOL]
+        );
+    },
+
+
+    // ========================================
+    // BRANDING
     // ========================================
 
     getBranding() {
 
-    return this.getConfig().branding || {};
+        return this.getConfig().branding || {};
 
-},
+    },
+
+
+    // ========================================
+    // DATA
+    // ========================================
 
     getData() {
 
-    return this.getConfig().data || {};
+        return this.getConfig().data || {};
 
-},
+    },
+
+
+    // ========================================
+    // TERMINOLOGY
+    // ========================================
 
     getTerminology() {
 
-    return this.getConfig().terminology || {};
+        return this.getConfig().terminology || {};
 
-},
+    },
+
+
+    // ========================================
+    // FEATURES
+    // ========================================
 
     getFeatures() {
 
-    return this.getConfig().features || {};
+        return this.getConfig().features || {};
 
-},
+    },
 
+
+    // ========================================
+    // SCHOOL KEY
+    // ========================================
 
     getSchoolKey() {
 
@@ -85,19 +204,38 @@ const SchoolService = {
 
     },
 
+
+    // ========================================
+    // SCHOOL NAME
+    // ========================================
+
     getSchoolName() {
 
-    return this.getBranding()?.displayName ??
-           this.getConfig().name;
+        return (
+            this.getBranding()?.displayName ??
+            this.getConfig().name
+        );
 
-},
+    },
+
+
+    // ========================================
+    // LOGO
+    // ========================================
 
     getLogo() {
 
-    return this.getBranding()?.logo ??
-           this.getConfig().logo;
+        return (
+            this.getBranding()?.logo ??
+            this.getConfig().logo
+        );
 
-},
+    },
+
+
+    // ========================================
+    // THEME
+    // ========================================
 
     getTheme() {
 
@@ -106,24 +244,42 @@ const SchoolService = {
     },
 
 
+    // ========================================
+    // MASCOT
+    // ========================================
+
     getMascot() {
 
-    return this.getBranding()?.mascot ?? "";
+        return this.getBranding()?.mascot ?? "";
 
-},
+    },
 
-getShortName() {
 
-    return this.getBranding()?.shortName ?? "";
+    // ========================================
+    // SHORT NAME
+    // ========================================
 
-},
+    getShortName() {
 
-getSlogan() {
+        return this.getBranding()?.shortName ?? "";
 
-    return this.getBranding()?.slogan ?? "";
+    },
 
-},
 
+    // ========================================
+    // SLOGAN
+    // ========================================
+
+    getSlogan() {
+
+        return this.getBranding()?.slogan ?? "";
+
+    },
+
+
+    // ========================================
+    // SUBSCRIPTION
+    // ========================================
 
     getSubscription() {
 
@@ -131,26 +287,46 @@ getSlogan() {
 
     },
 
+
+    // ========================================
+    // STATUS
+    // ========================================
+
     getStatus() {
 
         return this.getSubscription().status;
 
     },
 
+
+    // ========================================
+    // PAID
+    // ========================================
+
     isPaid() {
 
-    return (
-        this.getStatus() ===
-        SUBSCRIPTION_STATUS.PAID
-    );
+        return (
+            this.getStatus() ===
+            SUBSCRIPTION_STATUS.PAID
+        );
 
-},
+    },
+
+
+    // ========================================
+    // ACTIVE
+    // ========================================
 
     isActive() {
 
         return this.getSubscription().active;
 
     },
+
+
+    // ========================================
+    // TRIAL
+    // ========================================
 
     isTrial() {
 
@@ -160,5 +336,9 @@ getSlogan() {
 
 };
 
-window.SchoolService = SchoolService;
 
+// ========================================
+// GLOBAL
+// ========================================
+
+window.SchoolService = SchoolService;

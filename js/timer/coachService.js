@@ -136,21 +136,22 @@ function applyCoachControl() {
 
         case "PAUSE":
 
-            S.isRunning = false;
+            TimerEngine.pause();
 
             TimerUI.refresh();
-            
 
             break;
 
-        case "RESUME":
+        case "RESUME": {
 
-            S.isRunning = true;
+            const elapsed =
+            getElapsedSeconds();
 
-            TimerUI.refresh();
-            
+            TimerEngine.resumeWorkout(elapsed);
 
             break;
+
+        }       
 
         case "JUMP": {
 

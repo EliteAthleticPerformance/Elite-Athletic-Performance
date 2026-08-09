@@ -69,6 +69,27 @@ TimerUI.setStartButton("STOP");
 }
 
 
+// ========================================
+// PAUSE WORKOUT
+// ========================================
+
+function pause() {
+
+    S.isRunning = false;
+
+    if (S.timer) {
+
+        clearTimeout(S.timer);
+
+        S.timer = null;
+
+    }
+
+    S.nextTickTime = null;
+
+}
+
+
 
 // ========================================
 // RESUME WORKOUT
@@ -80,8 +101,13 @@ function resumeWorkout(elapsedSeconds) {
         TimelineService.getWorkoutState(elapsedSeconds);
 
     if (!state) {
-        console.warn("Unable to restore workout state.");
+
+        console.warn(
+            "Unable to restore workout state."
+        );
+
         return;
+
     }
 
     WorkoutService.restoreWorkoutState(state);
@@ -91,13 +117,33 @@ function resumeWorkout(elapsedSeconds) {
         1
     );
 
-    S.originalTotalSeconds = S.classBlockLength;
+    S.originalTotalSeconds =
+        S.classBlockLength;
 
-    TimelineService.updateHighlight();
-    
-    TimerUI.refresh();
+    // Resume timer execution
+    S.isRunning = true;
+
+    // Start a fresh timing cycle
+    S.nextTickTime =
+        Date.now() + 1000;
+
+    if (S.timer) {
+
+        clearTimeout(S.timer);
 
     }
+
+    S.timer =
+        setTimeout(
+            preciseTick,
+            1000
+        );
+
+    TimelineService.updateHighlight();
+
+    TimerUI.refresh();
+
+}
 
 
  function stopAllTimers() {
@@ -280,6 +326,7 @@ function workoutFinishScreen() {
 // ========================================
 
 TimerEngine.start = startTimer;
+TimerEngine.pause = pause;
 TimerEngine.resumeWorkout = resumeWorkout;
 TimerEngine.stop = stopAllTimers;
 TimerEngine.startCooldown = startCooldown;

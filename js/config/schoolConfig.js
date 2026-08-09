@@ -96,77 +96,89 @@ window.PLATFORM_CONFIG = Object.freeze({
 
     productName: "Elite Athletic Performance",
 
-    company: "Maxwell Performance Systems"
+    company: "Maxwell Performance Systems",
+
+    defaultBranding: {
+
+        schoolName: "Elite Athletic Performance",
+
+        displayName: "Elite Athletic Performance",
+
+        mascot: "",
+
+        shortName: "EAP",
+
+        slogan: "Track Athlete Performance Like a College Program",
+
+        logo: "./images/eap-logo.png"
+
+    },
+
+    defaultTheme: {
+
+        primary: "#1e3a8a",
+        primaryLight: "#3b82f6",
+        primaryDark: "#1e40af",
+        secondary: "#f59e0b",
+        secondaryLight: "#fbbf24",
+        background: "#000000"
+
+    }
 
 });
 
 
+// ========================================
+// SCHOOL CONFIGURATIONS
+// ========================================
+
 window.SCHOOL_CONFIG = Object.freeze({
 
+    Demo: {
 
-demo: {
+        key: "Demo",
 
-    key: "demo",
+        name: "Elite Athletic Performance",
 
-    // Legacy
-    name: "Elite Performance Academy",
-    logo: "./images/demo-logo.png",
+        logo: PLATFORM_CONFIG.defaultBranding.logo,
 
-    branding: {
+        branding: {
 
-        schoolName: "Elite Performance Academy",
+            ...PLATFORM_CONFIG.defaultBranding
 
-        displayName: "Elite Performance Academy",
+        },
 
-        mascot: "Titans",
+        subscription: {
 
-        shortName: "EPA",
+            active: true,
+            status: SUBSCRIPTION_STATUS.TRIAL,
+            trial: true,
+            start: null,
+            end: null
 
-        slogan: "Train Smarter • Perform Better",
+        },
 
-        logo: "./images/demo-logo.png"
+        theme: {
+
+            ...PLATFORM_CONFIG.defaultTheme
+
+        },
+
+        data: {
+
+            ...DEFAULT_DATA,
+
+            sheetGids: {}
+
+        },
+
+        terminology: DEFAULT_TERMINOLOGY,
+
+        features: DEFAULT_FEATURES,
+
+        sheetGids: {}
 
     },
-
-     subscription: SUBSCRIPTIONS.PAID,
-
-    theme: {
-
-        primary: "#2563eb",
-        primaryLight: "#60a5fa",
-        primaryDark: "#1d4ed8",
-        secondary: "#f59e0b",
-        secondaryLight: "#fbbf24"
-
-    },
-
-    data: {
-
-    ...DEFAULT_DATA,
-
-    sheetGids: {}
-
-},
-
-
-// -------------------------------------
-// TERMINOLOGY
-// -------------------------------------
-
-terminology: DEFAULT_TERMINOLOGY,
-
-
-// -------------------------------------
-// FEATURES
-// -------------------------------------
-
-features: DEFAULT_FEATURES,
-
-// Legacy compatibility
-sheetGids: {}
-        
-},
-
 
 
  harrisonville: {

@@ -132,6 +132,91 @@ function parseCSV(text) {
 }
 
 
+// ========================================
+// PROCESS CONTROL ROWS
+// ========================================
+
+function processControlRows(rows) {
+
+    for (const row of rows) {
+
+        const firstCell =
+            cleanCell(row[0]).toLowerCase();
+
+        if (!firstCell.startsWith("control_")) {
+            continue;
+        }
+
+        handleControlRow(
+            firstCell,
+            row
+        );
+
+     }
+
+}
+
+
+// ========================================
+// REFRESH CONTROL STATE
+// ========================================
+
+async function refreshControlState() {
+
+    if (!window.APP_CONFIG?.dataURL) {
+
+        console.warn(
+            "WorkoutService: dataURL unavailable."
+        );
+
+        return;
+
+    }
+
+    try {
+
+        const url =
+            window.APP_CONFIG.dataURL +
+            "?type=workout&school=" +
+            window.APP_CONFIG.key +
+            "&_=" +
+            Date.now();
+
+        const response =
+            await fetch(url, {
+            cache: "no-store"
+            });
+
+        if (!response.ok) {
+
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+
+        }
+
+        const csv =
+            await response.text();
+
+        const rows =
+            parseCSV(csv);
+
+        processControlRows(rows);
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "WorkoutService.refreshControlState:",
+            error
+        );
+
+    }
+
+}
+
+
 function resetWorkoutData() {
 
     S.workoutData.length = 0;
@@ -929,6 +1014,8 @@ WorkoutService.isEffectivelyBlankRow = isEffectivelyBlankRow;
 WorkoutService.resetState = resetState;
 
 WorkoutService.restoreWorkoutState = restoreWorkoutState;
+
+WorkoutService.refreshControlState = refreshControlState;
 
 WorkoutService.getTotalSets = getTotalSets;
 
