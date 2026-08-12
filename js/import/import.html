@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>EAP | Import Testing</title>
+
+    <link
+        rel="stylesheet"
+        href="./import.css"
+    >
+
+</head>
+
+
+<body>
+
+    <main class="import-page">
+
+        <!-- ========================================
+             PAGE HEADER
+        ========================================= -->
+
+        <section class="page-header">
+
+            <div>
+
+                <div class="eyebrow">
+                    ELITE ATHLETIC PERFORMANCE
+                </div>
+
+                <h1>
+                    Import Testing
+                </h1>
+
+                <p>
+                    Upload a CSV testing file to analyze,
+                    validate, and preview athlete data.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================
+             UPLOAD CARD
+        ========================================= -->
+
+        <section class="card upload-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2>
+                        CSV File
+                    </h2>
+
+                    <p>
+                        Select the testing file you want
+                        to analyze.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="upload-area">
+
+                <label
+                    for="csvFile"
+                    class="file-label"
+                >
+
+                    <span class="file-icon">
+                        📄
+                    </span>
+
+                    <span>
+                        Choose CSV File
+                    </span>
+
+                </label>
+
+
+                <input
+                    id="csvFile"
+                    type="file"
+                    accept=".csv,text/csv"
+                >
+
+
+                <div
+                    id="selectedFile"
+                    class="selected-file"
+                >
+                    No file selected
+                </div>
+
+
+                <button
+                    id="analyzeButton"
+                    type="button"
+                    disabled
+                    class="primary-button"
+                >
+                    Analyze CSV
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================
+             STATUS
+        ========================================= -->
+
+        <div
+            id="statusMessage"
+            class="status-message hidden"
+        ></div>
+
+
+        <!-- ========================================
+             SUMMARY
+        ========================================= -->
+
+        <!-- ========================================
+     IMPORT SUMMARY
+========================================= -->
+
+<section
+    id="summarySection"
+    class="hidden"
+>
+
+    <div class="section-title">
+
+        <h2>
+            Import Summary
+        </h2>
+
+        <p id="summaryFileName">
+            CSV file
+        </p>
+
+    </div>
+
+
+    <div class="summary-grid">
+
+        <!-- ATHLETES -->
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                Athletes
+            </span>
+
+            <strong
+                id="athletesAnalyzed"
+                class="summary-value"
+            >
+                0
+            </strong>
+
+        </div>
+
+
+        <!-- READY -->
+
+        <div class="summary-card summary-ready">
+
+            <span class="summary-label">
+                Ready to Import
+            </span>
+
+            <strong
+                id="validRecords"
+                class="summary-value"
+            >
+                0
+            </strong>
+
+        </div>
+
+
+        <!-- ERRORS -->
+
+        <div class="summary-card summary-errors">
+
+            <span class="summary-label">
+                Needs Attention
+            </span>
+
+            <strong
+                id="invalidRecords"
+                class="summary-value"
+            >
+                0
+            </strong>
+
+        </div>
+
+
+        <!-- MEASUREMENTS -->
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                Measurements
+            </span>
+
+            <strong
+                id="measurementCount"
+                class="summary-value"
+            >
+                0
+            </strong>
+
+        </div>
+
+
+        <!-- WARNINGS -->
+
+        <div class="summary-card summary-warnings">
+
+            <span class="summary-label">
+                Warnings
+            </span>
+
+            <strong
+                id="warningCount"
+                class="summary-value"
+            >
+                0
+            </strong>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+        <!-- ========================================
+             VALIDATION RESULTS
+        ========================================= -->
+
+        <section
+            id="validationSection"
+            class="card hidden"
+        >
+
+            <div class="card-header">
+
+    <div>
+
+        <h2>
+            Validation Results
+        </h2>
+
+        <p id="validationDescription">
+            Review your imported athlete records.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================
+     REVIEW FILTERS
+========================================= -->
+
+<div class="review-filters">
+
+    <button
+        type="button"
+        class="review-filter active"
+        data-filter="all"
+    >
+        All
+        <span id="filterCountAll">0</span>
+    </button>
+
+
+    <button
+        type="button"
+        class="review-filter"
+        data-filter="valid"
+    >
+        Valid
+        <span id="filterCountValid">0</span>
+    </button>
+
+
+    <button
+        type="button"
+        class="review-filter"
+        data-filter="attention"
+    >
+        Needs Attention
+        <span id="filterCountAttention">0</span>
+    </button>
+
+
+    <button
+        type="button"
+        class="review-filter"
+        data-filter="warnings"
+    >
+        Warnings
+        <span id="filterCountWarnings">0</span>
+    </button>
+
+</div>
+
+
+            <div
+                id="validationResults"
+                class="validation-results"
+            ></div>
+
+        </section>
+
+
+        <!-- ========================================
+             DATA PREVIEW
+        ========================================= -->
+
+        <section
+            id="previewSection"
+            class="card hidden"
+        >
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2>
+                        Data Preview
+                    </h2>
+
+                    <p>
+                        Review the records produced by
+                        the EAP import pipeline.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead id="previewHead">
+                    </thead>
+
+                    <tbody id="previewBody">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================
+             IMPORT ACTION
+        ========================================= -->
+
+        <section
+            id="importActionSection"
+            class="card import-action hidden"
+        >
+
+            <div>
+
+                <h2>
+                    Ready for Import
+                </h2>
+
+                <p id="importActionMessage">
+                    This preview has not yet been connected
+                    to Google Sheets.
+                </p>
+
+            </div>
+
+
+            <button
+                id="importButton"
+                type="button"
+                class="primary-button"
+                disabled
+            >
+                Import to EAP
+            </button>
+
+        </section>
+
+    </main>
+
+
+    <!-- ========================================
+         EAP IMPORT PIPELINE
+    ========================================= -->
+
+    <script src="./csvParser.js"></script>
+<script src="./csvMapper.js"></script>
+<script src="./csvValidator.js"></script>
+<script src="./csvImportService.js"></script>
+<script src="./import.js"></script>
+
+</body>
+
+</html>

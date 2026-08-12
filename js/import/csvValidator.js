@@ -199,25 +199,6 @@ const CSVValidator = {
 
 
         // ========================================
-        // OPTIONAL TEXT WARNINGS
-        // ========================================
-
-        if (this.isBlank(record["Weight Group"])) {
-
-            warnings.push(
-                "Weight Group is blank."
-            );
-        }
-
-        if (this.isBlank(record["Primary Sport"])) {
-
-            warnings.push(
-                "Primary Sport is blank."
-            );
-        }
-
-
-        // ========================================
         // PERFORMANCE VALIDATION
         // ========================================
 

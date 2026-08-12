@@ -4,7 +4,7 @@
 //
 // RESPONSIBILITY:
 // Convert CSVParser output into the
-// EAP canonical 26-column structure.
+// EAP CSV import canonical structure.
 //
 // DOES NOT:
 // - Validate values
@@ -40,7 +40,6 @@ const EAP_CANONICAL_HEADERS = Object.freeze([
     "Gender",
     "Grade",
     "Actual Weight",
-    "Weight Group",
     "Bench Press",
     "Squat",
     "Hang Clean",
