@@ -114,6 +114,16 @@ const ImportPage = {
     );
 
 
+    this.importButton.addEventListener(
+    "click",
+    () => {
+
+        this.importRecords();
+
+    }
+);
+
+
     // ----------------------------------------
     // REVIEW FILTERS
     // ----------------------------------------
@@ -1334,13 +1344,11 @@ renderImportAction(result) {
     );
 
 
-    // ----------------------------------------
-    // ALWAYS DISABLE LIVE IMPORT
-    // ----------------------------------------
-    // Google Sheets integration does not exist
-    // until Checkpoint F.
+// ----------------------------------------
+// IMPORT BUTTON STATE
+// ----------------------------------------
 
-    this.importButton.disabled = true;
+this.importButton.disabled = !result.canImport;
 
 
     // ----------------------------------------
@@ -1497,6 +1505,110 @@ renderImportAction(result) {
         </div>
 
     `;
+},
+
+
+// ========================================
+// IMPORT RECORDS
+// ========================================
+
+async importRecords() {
+
+    if (!this.result) {
+
+        this.showStatus(
+            "Analyze a CSV file before importing.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (!this.result.canImport) {
+
+        this.showStatus(
+            "Import is not available because some records need attention.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const records =
+        this.result.mappedRows || [];
+
+
+    if (!records.length) {
+
+        this.showStatus(
+            "No records are available to import.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    this.importButton.disabled = true;
+
+    this.importButton.textContent =
+        "Importing...";
+
+
+    try {
+
+        let imported = 0;
+
+
+        for (const record of records) {
+
+            await GoogleSheetsWriteService.writeRecord(
+                record
+            );
+
+            imported++;
+
+        }
+
+
+        this.showStatus(
+            `${imported} ${
+                imported === 1
+                    ? "record"
+                    : "records"
+            } imported successfully.`,
+            "success"
+        );
+
+
+        this.importButton.textContent =
+            "Imported";
+
+
+    } catch (error) {
+
+        console.error(
+            "CSV IMPORT ERROR:",
+            error
+        );
+
+
+        this.showStatus(
+            error.message ||
+            "Unable to import records to EAP.",
+            "error"
+        );
+
+
+        this.importButton.disabled = false;
+
+        this.importButton.textContent =
+            "Import to EAP";
+
+    }
+
 },
 
 

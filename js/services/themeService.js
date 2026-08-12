@@ -7,6 +7,25 @@ const ThemeService = window.ThemeService;
 
 
 // ========================================
+// RESOLVE BRANDING ASSET PATH
+// ========================================
+
+function resolveBrandingAsset(path) {
+
+    if (!path) {
+        return "";
+    }
+
+    // Branding paths in schoolConfig.js
+    // are defined relative to the project root.
+    const cleanPath =
+        String(path)
+            .replace(/^\.\/+/, "");
+
+    return "/" + cleanPath;
+}
+
+// ========================================
 // APPLY COMPLETE THEME
 // ========================================
 
@@ -60,7 +79,8 @@ function applyBaseTheme(config) {
     const branding = config.branding;
 
     const logo =
-        branding.logo + "?v=" + Date.now();
+    resolveBrandingAsset(branding.logo) +
+    "?v=" + Date.now();
 
     let favicon =
         document.getElementById("dynamicFavicon");
@@ -136,7 +156,8 @@ function applyHeaderBranding(config) {
     const branding = config.branding;
 
     const logo =
-        branding.logo + "?v=" + Date.now();
+    resolveBrandingAsset(branding.logo) +
+    "?v=" + Date.now();
 
     const headerLogo =
         document.getElementById("schoolLogo");

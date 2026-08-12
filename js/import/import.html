@@ -416,14 +416,25 @@
     </main>
 
 
-    <!-- ========================================
-         EAP IMPORT PIPELINE
-    ========================================= -->
+<!-- ========================================
+     EAP APPLICATION CONFIGURATION
+======================================== -->
 
-    <script src="./csvParser.js"></script>
+<script src="../config/schoolConfig.js"></script>
+<script src="../services/schoolService.js"></script>
+<script src="../services/themeService.js"></script>
+
+
+<!-- ========================================
+     EAP IMPORT PIPELINE
+======================================== -->
+
+<script src="./csvParser.js"></script>
 <script src="./csvMapper.js"></script>
 <script src="./csvValidator.js"></script>
 <script src="./csvImportService.js"></script>
+<script src="../bootstrap.js"></script>
+<script src="./googleSheetsWriteService.js"></script>
 <script src="./import.js"></script>
 
 </body>
