@@ -169,7 +169,24 @@ const GoogleSheetsWriteService = {
 
 
     // ========================================
-    // NATIVE FORM POST
+    // CREATE HIDDEN IFRAME
+    // ========================================
+
+    const iframe =
+        document.createElement("iframe");
+
+    iframe.name =
+        `importFrame_${Date.now()}_${Math.random()
+            .toString(36)
+            .slice(2)}`;
+
+    iframe.style.display = "none";
+
+    document.body.appendChild(iframe);
+
+
+    // ========================================
+    // CREATE NATIVE FORM
     // ========================================
 
     const form =
@@ -179,7 +196,7 @@ const GoogleSheetsWriteService = {
 
     form.action = url;
 
-    form.target = "_blank";
+    form.target = iframe.name;
 
     form.style.display = "none";
 
@@ -207,12 +224,65 @@ const GoogleSheetsWriteService = {
 
 
     // ========================================
+    // WAIT FOR SERVER RESPONSE
+    // ========================================
+
+    const responseLoaded =
+        new Promise((resolve, reject) => {
+
+            const timeout =
+                setTimeout(() => {
+
+                    reject(
+                        new Error(
+                            `Google Sheets request timed out for ${payload.name || "record"}.`
+                        )
+                    );
+
+                }, 60000);
+
+
+            iframe.addEventListener(
+                "load",
+                () => {
+
+                    clearTimeout(timeout);
+
+                    resolve();
+
+                },
+                { once: true }
+            );
+
+        });
+
+
+    // ========================================
     // SUBMIT
     // ========================================
 
     document.body.appendChild(form);
 
     form.submit();
+
+
+    console.log(
+        "Google Sheets POST submitted:",
+        payload.name
+    );
+
+
+    // ========================================
+    // WAIT FOR RESPONSE
+    // ========================================
+
+    await responseLoaded;
+
+
+    console.log(
+        "Google Sheets response received:",
+        payload.name
+    );
 
 
     // ========================================
@@ -222,14 +292,9 @@ const GoogleSheetsWriteService = {
     setTimeout(() => {
 
         form.remove();
+        iframe.remove();
 
-    }, 5000);
-
-
-    console.log(
-        "Google Sheets POST submitted:",
-        payload.name
-    );
+    }, 100);
 
 
     return {
