@@ -207,9 +207,11 @@ function normalizeThreeInchDistance(value) {
     // Leave these values unchanged.
     //
 
-    if (/^\d+\.\d{2}$/.test(text)) {
+    if (
+    /^\d+\.(00|03|06|09)$/.test(text)
+    ) {
 
-        return text;
+    return text;
 
     }
 
