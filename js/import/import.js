@@ -1562,13 +1562,36 @@ async importRecords() {
         let imported = 0;
 
 
-        for (const record of records) {
+        for (let index = 0; index < records.length; index++) {
 
-            await GoogleSheetsWriteService.writeRecord(
-                record
-            );
+            const record =
+                records[index];
 
-            imported++;
+            try {
+
+                await GoogleSheetsWriteService.writeRecord(
+                    record
+                );
+
+                imported++;
+
+            } catch (error) {
+
+                const athlete =
+                    record["Student-Athlete"] ||
+                    `Record ${index + 1}`;
+
+                const message =
+                    error?.message ||
+                    "Google Sheets import failed.";
+
+                throw new Error(
+                    `Import stopped: ${imported} of ${records.length} records imported.\n\n` +
+                    `Failed on record ${index + 1}: ${athlete}.\n\n` +
+                    `${message}`
+                );
+
+            }
 
         }
 
