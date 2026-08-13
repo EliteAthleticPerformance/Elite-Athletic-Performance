@@ -141,6 +141,192 @@ function createEmptyCanonicalRow() {
 
 
 // ========================================
+// NORMALIZE THREE-INCH DISTANCE
+// ========================================
+//
+// Used by:
+// - Broad Jump
+// - Med Ball Toss
+//
+// EAP stores these distances using
+// feet.inches notation with 3-inch increments.
+//
+// Rounding rule:
+// 0" → exact
+// 1" → down
+// 2" → up
+// 3" → exact
+// 4" → down
+// 5" → up
+// 6" → exact
+// 7" → down
+// 8" → up
+// 9" → exact
+// 10" → down
+// 11" → up
+//
+// Examples:
+// 9'4"  → 9.03
+// 9'5"  → 9.06
+// 9'11" → 10.00
+//
+// ========================================
+
+function normalizeThreeInchDistance(value) {
+
+    // ----------------------------------------
+    // BLANK
+    // ----------------------------------------
+
+    if (
+        value === null ||
+        value === undefined ||
+        String(value).trim() === ""
+    ) {
+
+        return "";
+
+    }
+
+
+    const text =
+        String(value).trim();
+
+
+    // ----------------------------------------
+    // ALREADY CANONICAL
+    // ----------------------------------------
+    //
+    // Examples:
+    // 9.00
+    // 9.03
+    // 9.06
+    // 9.09
+    // 10.00
+    //
+    // Leave these values unchanged.
+    //
+
+    if (/^\d+\.\d{2}$/.test(text)) {
+
+        return text;
+
+    }
+
+
+    // ----------------------------------------
+    // PARSE FEET / INCHES
+    // ----------------------------------------
+    //
+    // Examples:
+    // 9'4"
+    // 9'5"
+    // 9'11"
+    //
+    // The double quote is optional.
+    //
+
+    const match =
+        text.match(
+            /^(\d+)\s*['′]\s*(\d+)\s*(?:"|″)?$/
+        );
+
+
+    // ----------------------------------------
+    // NOT A FEET / INCHES VALUE
+    // ----------------------------------------
+
+    if (!match) {
+
+        return value;
+
+    }
+
+
+    let feet =
+        Number(match[1]);
+
+    const inches =
+        Number(match[2]);
+
+
+    // ----------------------------------------
+    // VALIDATE COMPONENTS
+    // ----------------------------------------
+
+    if (
+        !Number.isInteger(feet) ||
+        !Number.isInteger(inches) ||
+        feet < 0 ||
+        inches < 0 ||
+        inches > 11
+    ) {
+
+        return value;
+
+    }
+
+
+    // ----------------------------------------
+    // DETERMINE THREE-INCH ROUNDING
+    // ----------------------------------------
+
+    const remainder =
+        inches % 3;
+
+
+    let roundedInches;
+
+
+    if (remainder === 0) {
+
+        // 0, 3, 6, 9 → exact
+
+        roundedInches =
+            inches;
+
+    } else if (remainder === 1) {
+
+        // 1, 4, 7, 10 → round down
+
+        roundedInches =
+            inches - 1;
+
+    } else {
+
+        // 2, 5, 8, 11 → round up
+
+        roundedInches =
+            inches + 1;
+
+    }
+
+
+    // ----------------------------------------
+    // HANDLE NEXT FOOT
+    // ----------------------------------------
+
+    if (roundedInches === 12) {
+
+        feet += 1;
+
+        roundedInches = 0;
+
+    }
+
+
+    // ----------------------------------------
+    // RETURN EAP CANONICAL FORMAT
+    // ----------------------------------------
+
+    return (
+        `${feet}.${String(roundedInches).padStart(2, "0")}`
+    );
+
+}
+
+
+// ========================================
 // MAP ONE ROW
 // ========================================
 
@@ -149,24 +335,50 @@ function mapRow(rawRow, headerMap) {
     const mappedRow =
         createEmptyCanonicalRow();
 
+
     EAP_CANONICAL_HEADERS.forEach(header => {
 
         const normalizedHeader =
             normalizeHeader(header);
 
+
         const sourceIndex =
             headerMap.get(normalizedHeader);
+
 
         if (sourceIndex === undefined) {
             return;
         }
 
-        mappedRow[header] =
+
+        const rawValue =
             rawRow[sourceIndex] ?? "";
+
+
+        // ========================================
+        // THREE-INCH DISTANCE FIELDS
+        // ========================================
+
+        if (
+            header === "Broad Jump" ||
+            header === "Med Ball Toss"
+        ) {
+
+            mappedRow[header] =
+                normalizeThreeInchDistance(rawValue);
+
+        } else {
+
+            mappedRow[header] =
+                rawValue;
+
+        }
 
     });
 
+
     return mappedRow;
+
 }
 
 
